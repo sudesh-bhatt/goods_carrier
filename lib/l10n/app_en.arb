@@ -1,0 +1,196 @@
+{
+  "@@locale": "en",
+
+  "appName": "Goods Carrier",
+  "@appName": { "description": "Application name" },
+
+  "appTagline": "Logistics made simple",
+  "@appTagline": { "description": "App tagline on splash/onboarding" },
+
+  "actionSave": "Save",
+  "actionCancel": "Cancel",
+  "actionConfirm": "Confirm",
+  "actionContinue": "Continue",
+  "actionSubmit": "Submit",
+  "actionBack": "Back",
+  "actionRetry": "Retry",
+  "actionDone": "Done",
+  "actionEdit": "Edit",
+  "actionDelete": "Delete",
+  "actionSelect": "Select",
+  "actionClose": "Close",
+  "actionYes": "Yes",
+  "actionNo": "No",
+  "actionNext": "Next",
+  "actionSkip": "Skip",
+  "actionAdd": "Add",
+  "actionRemove": "Remove",
+  "actionSearch": "Search",
+  "actionFilter": "Filter",
+  "actionShare": "Share",
+  "actionCopy": "Copy",
+
+  "labelLoading": "Loading...",
+  "@labelLoading": { "description": "Generic loading indicator text" },
+
+  "labelError": "Something went wrong",
+  "labelNoData": "No data available",
+  "labelOptional": "Optional",
+  "labelRequired": "Required",
+  "labelToday": "Today",
+  "labelYesterday": "Yesterday",
+  "labelAll": "All",
+  "labelNew": "New",
+
+  "validationFieldRequired": "{fieldName} is required",
+  "@validationFieldRequired": {
+    "description": "Generic required field message",
+    "placeholders": {
+      "fieldName": { "type": "String" }
+    }
+  },
+  "validationPhoneRequired": "Phone number is required",
+  "validationPhoneInvalid": "Enter a valid 10-digit mobile number",
+  "validationGstRequired": "GST number is required",
+  "validationGstInvalid": "Enter a valid GST number (e.g. 27AABCS1429B1ZB)",
+  "validationVehicleRequired": "Vehicle number is required",
+  "validationVehicleInvalid": "Enter a valid vehicle number (e.g. MH02CC4156)",
+  "validationEmailRequired": "Email is required",
+  "validationEmailInvalid": "Enter a valid email address",
+  "validationOtpInvalid": "Enter the 4-digit OTP",
+  "validationOtpDigitsOnly": "OTP must be 4 digits",
+
+  "statusPending": "Pending",
+  "statusInterestReceived": "Interest Received",
+  "statusAssigned": "Assigned",
+  "statusInTransit": "In Transit",
+  "statusDelivered": "Delivered",
+  "statusCancelled": "Cancelled",
+
+  "tripStatusActive": "Active",
+  "tripStatusPendingConfirmation": "Pending Confirmation",
+  "tripStatusConfirmed": "Confirmed",
+  "tripStatusCompleted": "Completed",
+  "tripStatusCancelled": "Cancelled",
+
+  "vehicleMini": "Mini",
+  "vehicleMiniCapacity": "Up to 500 KG",
+  "vehiclePickupTruck": "Pickup Truck",
+  "vehiclePickupTruckCapacity": "Up to 1.5 Ton",
+  "vehicleTruck": "Truck",
+  "vehicleTruckCapacity": "Up to 5 Ton",
+  "vehicleHeavyDuty": "Heavy Duty",
+  "vehicleHeavyDutyCapacity": "Up to 20 Ton",
+
+  "authWelcome": "Welcome to Goods Carrier",
+  "authSubtitle": "Your trusted logistics partner",
+  "authPhoneLabel": "Mobile Number",
+  "authPhoneHint": "+91 XXXXX XXXXX",
+  "authSendOtp": "Send OTP",
+  "authVerifyOtp": "Verify OTP",
+  "authResendOtp": "Resend OTP",
+  "authResendIn": "Resend in {seconds}s",
+  "@authResendIn": {
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
+  },
+  "authIAmCustomer": "I'm a Customer",
+  "authIAmDriver": "I'm a Driver",
+  "authTermsPrefix": "By continuing, you agree to our ",
+  "authTermsLink": "Terms & Conditions",
+  "authOtpSentTo": "OTP sent to {phone}",
+  "@authOtpSentTo": {
+    "placeholders": {
+      "phone": { "type": "String" }
+    }
+  },
+
+  "roleCustomer": "Customer",
+  "roleDriver": "Driver",
+
+  "profileName": "Full Name",
+  "profileEmail": "Email Address",
+  "profilePhone": "Phone Number",
+  "profileCompanyName": "Company Name",
+  "profileGstNumber": "GST Number",
+  "profileGstNumberHint": "e.g. 27AABCS1429B1ZB",
+  "profileBusinessEmail": "Business Email",
+  "profileVehicleNumber": "Vehicle Number",
+  "profileVehicleNumberHint": "e.g. MH 02 CC 4156",
+  "profileVehicleType": "Vehicle Type",
+  "profileLoadCapacity": "Load Capacity (Tons)",
+  "profileSetupTitle": "Complete Your Profile",
+  "profileSetupSubtitle": "Let's get you started",
+
+  "shipmentPickup": "Pickup Location",
+  "shipmentPickupCity": "Pickup City",
+  "shipmentDrop": "Drop Location",
+  "shipmentDropCity": "Drop City",
+  "shipmentGoods": "Goods Details",
+  "shipmentGoodsType": "Goods Type",
+  "shipmentWeight": "Weight",
+  "shipmentDate": "Shipment Date",
+  "shipmentPrice": "Estimated Price",
+  "shipmentPostNew": "Post Shipment",
+  "shipmentFragile": "Fragile Goods",
+  "shipmentFragileWarning": "Handle with care — fragile goods",
+  "shipmentSpecialInstructions": "Special Instructions",
+  "shipmentSpecialInstructionsHint": "Any special handling requirements...",
+  "shipmentInterestedDrivers": "Interested Drivers",
+  "shipmentSelectDriver": "Select Driver",
+  "shipmentNoDriversYet": "No drivers have shown interest yet",
+  "shipmentId": "Shipment ID",
+  "shipmentActiveCount": "{count} active shipment(s)",
+  "@shipmentActiveCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "tripPostNew": "Post Trip",
+  "tripFrom": "From",
+  "tripTo": "To",
+  "tripDate": "Trip Date",
+  "tripCapacity": "Load Capacity",
+  "tripVehicle": "Vehicle",
+  "tripId": "Trip ID",
+  "tripExpressInterest": "Express Interest",
+  "tripInterestSubmitted": "Interest submitted",
+  "tripPrice": "Your Quote (₹)",
+
+  "notificationsTitle": "Notifications",
+  "notificationMarkAllRead": "Mark all as read",
+  "notificationNoNew": "You're all caught up!",
+
+  "emptyShipments": "No shipments yet",
+  "emptyShipmentsSubtitle": "Post your first shipment to get started",
+  "emptyTrips": "No trips yet",
+  "emptyTripsSubtitle": "Post your available route to receive shipment requests",
+  "emptyNotifications": "No notifications",
+  "emptyHistory": "No history found",
+
+  "errorGeneric": "Something went wrong. Please try again.",
+  "errorNetwork": "No internet connection",
+  "errorNetworkSubtitle": "Check your connection and retry",
+  "errorTimeout": "Request timed out. Please retry.",
+  "errorUnauthorised": "Session expired. Please login again.",
+
+  "settingsTitle": "Settings",
+  "settingsLanguage": "Language",
+  "settingsTheme": "Theme",
+  "settingsThemeLight": "Light",
+  "settingsThemeDark": "Dark",
+  "settingsThemeSystem": "System Default",
+  "settingsLanguageEnglish": "English",
+  "settingsLanguageHindi": "हिन्दी",
+  "settingsLanguageGujarati": "ગુજરાતી",
+  "settingsLogout": "Logout",
+  "settingsLogoutConfirm": "Are you sure you want to logout?",
+  "settingsVersion": "Version {version}",
+  "@settingsVersion": {
+    "placeholders": {
+      "version": { "type": "String" }
+    }
+  }
+}

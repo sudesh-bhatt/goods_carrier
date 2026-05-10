@@ -1,0 +1,71 @@
+name: goods_carrier
+description: A dual-role logistics marketplace app for India.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+
+  # ── State Management ────────────────────────────────────────────────────────
+  # Riverpod 2.x — stable, production-proven, code-gen ecosystem is mature.
+  # Riverpod 3.x + riverpod_generator 4.x is NOT yet stable (analyzer conflicts
+  # with json_serializable, meta version pinned by Flutter SDK, etc.).
+  flutter_riverpod: ^2.5.1
+  riverpod_annotation: ^2.3.5
+
+  # ── Navigation ──────────────────────────────────────────────────────────────
+  go_router: ^14.2.7
+
+  # ── Code-gen annotations (runtime) ──────────────────────────────────────────
+  freezed_annotation: ^2.4.2
+  json_annotation: ^4.9.0
+
+  # ── UI & Responsiveness ─────────────────────────────────────────────────────
+  flutter_screenutil: ^5.9.3
+  google_fonts: ^6.2.1
+
+  # ── Local Storage ───────────────────────────────────────────────────────────
+  shared_preferences: ^2.3.2       # Theme mode, flags, simple prefs
+  flutter_secure_storage: ^9.2.2   # Auth tokens, sensitive data
+  drift_flutter: ^0.2.1            # SQLite local DB — offline cache (Session 7+)
+
+  # ── Networking ──────────────────────────────────────────────────────────────
+  dio: ^5.7.0                       # HTTP client — interceptors, cancellation, form-data
+
+  # ── Utilities ───────────────────────────────────────────────────────────────
+  connectivity_plus: ^6.0.3
+  intl: ^0.20.2
+  flutter_svg: ^2.2.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+  # ── Code generation ─────────────────────────────────────────────────────────
+  # All pinned to the 2.x compatible set — same analyzer version, no conflicts.
+  build_runner: ^2.4.12
+  riverpod_generator: ^2.4.3
+  freezed: ^2.5.2
+  json_serializable: ^6.8.0
+
+  # ── Excluded (re-add when ecosystem stabilises) ─────────────────────────────
+  # custom_lint + riverpod_lint — stuck on analyzer ^8, rest of stack needs ^6
+  # drift_dev              — needs analyzer >=10, conflicts with above
+  # device_info_plus       — win32 conflict with flutter_secure_storage_windows
+
+flutter:
+  uses-material-design: true
+  generate: true      # Enables flutter gen-l10n via l10n.yaml
+  assets:
+    - assets/icons/
+    - assets/images/
+    - assets/images/splash_screen_logo.png
