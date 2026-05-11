@@ -3,10 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:goods_carrier/core/theme/app_color_scheme.dart';
+import 'package:goods_carrier/generated/assets.dart';
 
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/router/app_routes.dart';
-import '../../../../core/theme/app_color_scheme.dart';
 import '../../../../shared/domain/enums/user_role.dart';
 import '../providers/auth_provider.dart';
 
@@ -23,7 +24,8 @@ class _RoleOption {
   final UserRole role;
   final String   title;
   final String   description;
-  final IconData icon;
+  final SvgGenImage icon;
+
 }
 
 const _kRoles = [
@@ -32,14 +34,14 @@ const _kRoles = [
     title:       'Customer / Send Goods',
     description: 'Find transport easily. Ship anything from small parcels to '
                  'full containers globally.',
-    icon:        Icons.inventory_2_rounded,
+    icon:        Assets.icRoleCustomer,
   ),
   _RoleOption(
     role:        UserRole.driver,
     title:       'Driver / Transporter',
     description: 'List trips and earn. Connect with businesses needing reliable '
                  'transport solutions.',
-    icon:        Icons.local_shipping_rounded,
+    icon:        Assets.icRoleDriver,
   ),
 ];
 
@@ -94,7 +96,7 @@ class _RoleSelectionScreenState
               // headlineMedium (textPrimary, w700) + w800 override
               Text(
                 'Choose Your Role',
-                style: textTheme.headlineMedium?.copyWith(
+                style: textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -105,7 +107,7 @@ class _RoleSelectionScreenState
               Text(
                 'Select how you\'d like to use the Goods Carrier platform '
                 'to manage your logistics.',
-                style: textTheme.bodyMedium?.copyWith(height: 1.55),
+                style: textTheme.bodyMedium?.copyWith(fontSize: 12,),
               ),
 
               SizedBox(height: 32.h),
@@ -184,87 +186,82 @@ class _RoleCard extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         curve:    Curves.easeInOut,
-        padding:  EdgeInsets.all(18.w),
+        padding:  EdgeInsets.all(34.w),
         decoration: BoxDecoration(
           // Selected: orange wash. Unselected: themed card background.
           color:        isSelected
-              ? colors.primary.withOpacity(0.07)
+              ? colors.primary.setOpacity(0.07)
               : colors.cardBackground,
           borderRadius: BorderRadius.circular(16.r),
           border: Border.all(
-            color: isSelected ? colors.primary : colors.divider,
+            color: isSelected ? colors.primary : colors.borderColor,
             width: isSelected ? 2.0 : 1.5,
           ),
         ),
-        child: Row(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Icon box ──────────────────────────────────────────────
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              width:  54.w,
-              height: 54.w,
-              decoration: BoxDecoration(
-                // Selected: filled primary. Unselected: subtle inputFill.
-                color:        isSelected ? colors.primary : colors.inputFill,
-                borderRadius: BorderRadius.circular(14.r),
-              ),
-              child: Icon(
-                option.icon,
-                size:  26.w,
-                // Selected: white (on orange). Unselected: textSecondary.
-                color: isSelected ? Colors.white : colors.textSecondary,
-              ),
-            ),
+            // ── Top row: icon  +  title  +  radio ────────────────────
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Icon box
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  width:  64.w,
+                  height: 64.w,
+                  padding: EdgeInsets.all(20.w),
+                  decoration: BoxDecoration(
+                    color:        isSelected ? colors.primary : colors.inputFill,
+                    borderRadius: BorderRadius.circular(14.r),
+                  ),
+                  child: option.icon.svg(
+                    colorFilter: ColorFilter.mode( isSelected ? Colors.white : colors.disableColor, BlendMode.srcIn),
+                  )
 
-            SizedBox(width: 14.w),
+                ),
 
-            // ── Text block ────────────────────────────────────────────
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 2.h),
-                  // titleMedium (textPrimary, w600) + w700 override
-                  Text(
+                SizedBox(width: 14.w),
+
+                // Title — expands to push radio to the right
+                Expanded(
+                  child: Text(
                     option.title,
-                    style: textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
+                    style: textTheme.titleLarge?.copyWith(
+                     color: colors.textPrimary,
                     ),
-                  ),
-                  SizedBox(height: 6.h),
-                  // bodySmall (textHint) with textSecondary + line-height
-                  Text(
-                    option.description,
-                    style: textTheme.bodySmall?.copyWith(
-                      color:  colors.textSecondary,
-                      height: 1.55,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            SizedBox(width: 10.w),
-
-            // ── Radio indicator ───────────────────────────────────────
-            Padding(
-              padding: EdgeInsets.only(top: 2.h),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                width:  22.w,
-                height: 22.w,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: isSelected ? colors.primary : Colors.transparent,
-                  border: Border.all(
-                    color: isSelected ? colors.primary : colors.divider,
-                    width: 2.0,
                   ),
                 ),
-                child: isSelected
-                    ? Icon(Icons.check_rounded, size: 13.w, color: Colors.white)
-                    : null,
+
+                SizedBox(width: 10.w),
+
+                // Radio indicator
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  width:  22.w,
+                  height: 22.w,
+                  /*decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: isSelected ? colors.primary : Colors.transparent,
+                    border: Border.all(
+                      color: isSelected ? colors.primary : colors.divider,
+                      width: 2.0,
+                    ),
+                  ),*/
+                  child: isSelected
+                      ? Assets.icRadioSelected.svg()
+                      : Assets.icRadioUnselected.svg(),
+                ),
+              ],
+            ),
+
+            SizedBox(height: 10.h),
+
+            // ── Description — full width, starts below the icon ──────
+            Text(
+              option.description,
+              style: textTheme.bodyLarge?.copyWith(
+                color:  colors.textPrimary,
               ),
             ),
           ],

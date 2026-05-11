@@ -69,3 +69,29 @@ flutter:
     - assets/icons/
     - assets/images/
     - assets/images/splash_screen_logo.png
+    - assets/svg/ic_radio_selected.svg
+    - assets/svg/ic_radio_unselected.svg
+    - assets/svg/ic_role_customer.svg
+    - assets/svg/ic_role_driver.svg
+  fonts:
+    - family: Manrope-Bold
+      fonts:
+        - asset: assets/fonts/Manrope-Bold.ttf
+    - family: Manrope-ExtraBold
+      fonts:
+        - asset: assets/fonts/Manrope-ExtraBold.ttf
+    - family: Manrope-ExtraLight
+      fonts:
+        - asset: assets/fonts/Manrope-ExtraLight.ttf
+    - family: Manrope-Light
+      fonts:
+        - asset: assets/fonts/Manrope-Light.ttf
+    - family: Manrope-Medium
+      fonts:
+        - asset: assets/fonts/Manrope-Medium.ttf
+    - family: Manrope-Regular
+      fonts:
+        - asset: assets/fonts/Manrope-Regular.ttf
+    - family: Manrope-SemiBold
+      fonts:
+        - asset: assets/fonts/Manrope-SemiBold.ttf

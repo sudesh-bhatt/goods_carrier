@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:goods_carrier/generated/assets.dart';
 
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/router/app_routes.dart';
@@ -34,10 +33,6 @@ class _SplashScreenState extends State<SplashScreen>
 
   late final AnimationController _ctrl;
 
-  /// [0.0 – 0.40] → logo fade-in + scale-up
-  late final Animation<double> _logoOpacity;
-  late final Animation<double> _logoScale;
-
   /// [0.15 – 1.0] → progress bar fills left-to-right
   late final Animation<double> _progress;
 
@@ -46,18 +41,6 @@ class _SplashScreenState extends State<SplashScreen>
     super.initState();
 
     _ctrl = AnimationController(vsync: this, duration: _kProgressDuration);
-
-    _logoOpacity = CurvedAnimation(
-      parent: _ctrl,
-      curve: const Interval(0.0, 0.40, curve: Curves.easeIn),
-    );
-
-    _logoScale = Tween<double>(begin: 0.78, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _ctrl,
-        curve: const Interval(0.0, 0.45, curve: Curves.easeOutBack),
-      ),
-    );
 
     _progress = CurvedAnimation(
       parent: _ctrl,
@@ -89,12 +72,13 @@ class _SplashScreenState extends State<SplashScreen>
       body: SafeArea(
         child: Column(
           children: [
-            // ── Logo + wordmark — vertically centred in remaining space ───
+            // ── Logo — vertically centred (wordmark is baked into the image)
             Expanded(
               child: Center(
-                child: Padding(padding: EdgeInsets.all(20),
-                child: Assets.splashScreenLogo.image(),)
-
+                child: Padding(
+                  padding: EdgeInsets.all(20.w),
+                  child: Assets.splashScreenLogo.image(),
+                ),
               ),
             ),
 

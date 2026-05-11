@@ -87,7 +87,7 @@ class GoodsCarrierApp extends ConsumerWidget {
           // ── Theme ──────────────────────────────────────────────────────────
           theme: AppTheme.light(),
           // darkTheme: AppTheme.dark(),
-          themeMode: themeMode,
+          // themeMode: themeMode,
 
           // ── Global scroll behaviour ────────────────────────────────────────
           scrollBehavior: const _AppScrollBehavior(),

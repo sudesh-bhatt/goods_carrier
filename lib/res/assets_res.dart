@@ -9,4 +9,8 @@ class AssetsRes {
   static const String PROJECT_NAME = 'goods_carrier';
   static const String PROJECT_VERSION = '1.0.0+1';
   static const String SPLASH_SCREEN_LOGO = 'assets/images/splash_screen_logo.png';
+  static const String IC_RADIO_SELECTED = 'assets/svg/ic_radio_selected.svg';
+  static const String IC_RADIO_UNSELECTED = 'assets/svg/ic_radio_unselected.svg';
+  static const String IC_ROLE_CUSTOMER = 'assets/svg/ic_role_customer.svg';
+  static const String IC_ROLE_DRIVER = 'assets/svg/ic_role_driver.svg';
 }

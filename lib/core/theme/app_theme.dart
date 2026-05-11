@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'app_color_scheme.dart';
 
 class AppTheme {
@@ -21,11 +20,11 @@ class AppTheme {
     required AppColorScheme colors,
   }) {
     final isLight = brightness == Brightness.light;
-    final manrope = GoogleFonts.manropeTextTheme();
 
     return ThemeData(
       useMaterial3: true,
       brightness: brightness,
+      fontFamily: 'Manrope',
       extensions: [colors],
       scaffoldBackgroundColor: colors.background,
       colorScheme: ColorScheme.fromSeed(
@@ -33,17 +32,17 @@ class AppTheme {
         brightness: brightness,
       ),
 
-      textTheme: manrope.copyWith(
-        displayLarge:  manrope.displayLarge?.copyWith(color: colors.textPrimary, fontWeight: FontWeight.w800),
-        headlineLarge: manrope.headlineLarge?.copyWith(color: colors.textPrimary, fontWeight: FontWeight.w800),
-        headlineMedium:manrope.headlineMedium?.copyWith(color: colors.textPrimary, fontWeight: FontWeight.w700),
-        titleLarge:    manrope.titleLarge?.copyWith(color: colors.textPrimary, fontWeight: FontWeight.w700),
-        titleMedium:   manrope.titleMedium?.copyWith(color: colors.textPrimary, fontWeight: FontWeight.w600),
-        bodyLarge:     manrope.bodyLarge?.copyWith(color: colors.textPrimary),
-        bodyMedium:    manrope.bodyMedium?.copyWith(color: colors.textSecondary),
-        bodySmall:     manrope.bodySmall?.copyWith(color: colors.textHint),
-        labelLarge:    manrope.labelLarge?.copyWith(color: colors.textPrimary, fontWeight: FontWeight.w600),
-        labelSmall:    manrope.labelSmall?.copyWith(color: colors.textSecondary, letterSpacing: 0.8),
+      textTheme: TextTheme(
+        displayLarge:  TextStyle(fontFamily: 'Manrope', color: colors.textPrimary,   fontWeight: FontWeight.w800),
+        headlineLarge: TextStyle(fontFamily: 'Manrope', color: colors.textPrimary,   fontWeight: FontWeight.w800,fontSize: 24),
+        headlineMedium:TextStyle(fontFamily: 'Manrope', color: colors.textPrimary,   fontWeight: FontWeight.w700,fontSize: 22),
+        titleLarge:    TextStyle(fontFamily: 'Manrope', color: colors.textPrimary,   fontWeight: FontWeight.w700,fontSize: 24),
+        titleMedium:   TextStyle(fontFamily: 'Manrope', color: colors.textPrimary,   fontWeight: FontWeight.w600),
+        bodyLarge:     TextStyle(fontFamily: 'Manrope', color: colors.textPrimary, fontSize: 16, height: 24/16),
+        bodyMedium:    TextStyle(fontFamily: 'Manrope', color: colors.textSecondary),
+        bodySmall:     TextStyle(fontFamily: 'Manrope', color: colors.textHint),
+        labelLarge:    TextStyle(fontFamily: 'Manrope', color: colors.textPrimary,   fontWeight: FontWeight.w600),
+        labelSmall:    TextStyle(fontFamily: 'Manrope', color: colors.textSecondary, letterSpacing: 0.8),
       ),
 
       appBarTheme: AppBarTheme(
@@ -53,7 +52,8 @@ class AppTheme {
         elevation: 0,
         shadowColor: Colors.transparent,
         centerTitle: false,
-        titleTextStyle: GoogleFonts.manrope(
+        titleTextStyle: TextStyle(
+          fontFamily: 'Manrope',
           color: colors.textPrimary,
           fontSize: 18,
           fontWeight: FontWeight.w700,
@@ -104,7 +104,7 @@ class AppTheme {
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(color: colors.error, width: 1.5),
         ),
-        hintStyle: GoogleFonts.manrope(color: colors.textHint, fontSize: 14),
+        hintStyle: const TextStyle(fontFamily: 'Manrope', fontSize: 14, fontWeight: FontWeight.w400),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       ),
 
@@ -116,7 +116,7 @@ class AppTheme {
           minimumSize: const Size(double.infinity, 52),
           elevation: 0,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          textStyle: GoogleFonts.manrope(fontSize: 16, fontWeight: FontWeight.w600),
+          textStyle: const TextStyle(fontFamily: 'Manrope', fontSize: 16, fontWeight: FontWeight.w600),
         ),
       ),
 
@@ -126,14 +126,14 @@ class AppTheme {
           side: BorderSide(color: colors.primary, width: 1.5),
           minimumSize: const Size(double.infinity, 52),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          textStyle: GoogleFonts.manrope(fontSize: 16, fontWeight: FontWeight.w600),
+          textStyle: const TextStyle(fontFamily: 'Manrope', fontSize: 16, fontWeight: FontWeight.w600),
         ),
       ),
 
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: colors.primary,
-          textStyle: GoogleFonts.manrope(fontSize: 14, fontWeight: FontWeight.w600),
+          textStyle: const TextStyle(fontFamily: 'Manrope', fontSize: 14, fontWeight: FontWeight.w600),
         ),
       ),
 
@@ -153,7 +153,7 @@ class AppTheme {
       chipTheme: ChipThemeData(
         backgroundColor: colors.inputFill,
         selectedColor: colors.primary,
-        labelStyle: GoogleFonts.manrope(fontSize: 13),
+        labelStyle: const TextStyle(fontFamily: 'Manrope', fontSize: 13),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
