@@ -251,6 +251,54 @@ class AppLocalizationsGu extends AppLocalizations {
   String get roleDriver => 'ડ્રાઇવર';
 
   @override
+  String get langSelectionTitle => 'આપની ભાષા પસંદ કરો';
+
+  @override
+  String get langSelectionSubtitle => 'ચાલુ રાખવા આપની પસંદીદા ભાષા પસંદ કરો';
+
+  @override
+  String get langEnglishName => 'English';
+
+  @override
+  String get langEnglishSubtitle => 'પ્રાથમિક ભાષા';
+
+  @override
+  String get langHindiName => 'हिन्दी (Hindi)';
+
+  @override
+  String get langHindiSubtitle => 'પ્રમાણભૂત હિન્દી';
+
+  @override
+  String get langGujaratiName => 'ગુજરાતી (Gujarati)';
+
+  @override
+  String get langGujaratiSubtitle => 'પ્રાદેશિક ગુજરાતી';
+
+  @override
+  String get roleSelectionTitle => 'આપની ભૂમિકા પસંદ કરો';
+
+  @override
+  String get roleSelectionSubtitle =>
+      'આપ આપની લોજિસ્ટિક્સ સંચાલિત કરવા ગુડ્સ કેરિયરનો ઉપયોગ કેવી રીતે કરવા માંગો છો તે પસંદ કરો.';
+
+  @override
+  String get roleCustomerTitle => 'ગ્રાહક / માલ મોકલો';
+
+  @override
+  String get roleCustomerDescription =>
+      'સરળતાથી પરિવહન શોધો. નાના પાર્સલથી લઈ પૂરા કન્ટેઇનર સુધી, વૈશ્વિક સ્તરે શિપ કરો.';
+
+  @override
+  String get roleDriverTitle => 'ડ્રાઇવર / ટ્રાન્સપોર્ટર';
+
+  @override
+  String get roleDriverDescription =>
+      'ટ્રિપ પોસ્ટ કરો અને કમાઓ. વિશ્વસનીય પરિવહન ઇચ્છતા વ્યવસાયો સાથે જોડાઓ.';
+
+  @override
+  String get splashInitializing => 'સિસ્ટમ શરૂ થઈ રહ્યું છે';
+
+  @override
   String get profileName => 'પૂરું નામ';
 
   @override

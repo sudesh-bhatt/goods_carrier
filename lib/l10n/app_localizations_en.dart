@@ -251,6 +251,55 @@ class AppLocalizationsEn extends AppLocalizations {
   String get roleDriver => 'Driver';
 
   @override
+  String get langSelectionTitle => 'Select Your Language';
+
+  @override
+  String get langSelectionSubtitle =>
+      'Choose your preferred language to continue';
+
+  @override
+  String get langEnglishName => 'English';
+
+  @override
+  String get langEnglishSubtitle => 'Primary language';
+
+  @override
+  String get langHindiName => 'Hindi (हिन्दी)';
+
+  @override
+  String get langHindiSubtitle => 'Standard Hindi';
+
+  @override
+  String get langGujaratiName => 'Gujarati (ગુજરાતી)';
+
+  @override
+  String get langGujaratiSubtitle => 'Regional Gujarati';
+
+  @override
+  String get roleSelectionTitle => 'Choose Your Role';
+
+  @override
+  String get roleSelectionSubtitle =>
+      'Select how you\'d like to use the Goods Carrier platform to manage your logistics.';
+
+  @override
+  String get roleCustomerTitle => 'Customer / Send Goods';
+
+  @override
+  String get roleCustomerDescription =>
+      'Find transport easily. Ship anything from small parcels to full containers globally.';
+
+  @override
+  String get roleDriverTitle => 'Driver / Transporter';
+
+  @override
+  String get roleDriverDescription =>
+      'List trips and earn. Connect with businesses needing reliable transport solutions.';
+
+  @override
+  String get splashInitializing => 'SYSTEM INITIALIZING';
+
+  @override
   String get profileName => 'Full Name';
 
   @override

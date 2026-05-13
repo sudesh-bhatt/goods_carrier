@@ -251,6 +251,55 @@ class AppLocalizationsHi extends AppLocalizations {
   String get roleDriver => 'ड्राइवर';
 
   @override
+  String get langSelectionTitle => 'अपनी भाषा चुनें';
+
+  @override
+  String get langSelectionSubtitle =>
+      'जारी रखने के लिए अपनी पसंदीदा भाषा चुनें';
+
+  @override
+  String get langEnglishName => 'English';
+
+  @override
+  String get langEnglishSubtitle => 'प्राथमिक भाषा';
+
+  @override
+  String get langHindiName => 'हिन्दी (Hindi)';
+
+  @override
+  String get langHindiSubtitle => 'मानक हिन्दी';
+
+  @override
+  String get langGujaratiName => 'ગુજરાતી (Gujarati)';
+
+  @override
+  String get langGujaratiSubtitle => 'क्षेत्रीय गुजराती';
+
+  @override
+  String get roleSelectionTitle => 'अपनी भूमिका चुनें';
+
+  @override
+  String get roleSelectionSubtitle =>
+      'चुनें कि आप अपनी लॉजिस्टिक्स प्रबंधित करने के लिए गुड्स कैरियर का उपयोग कैसे करना चाहते हैं।';
+
+  @override
+  String get roleCustomerTitle => 'ग्राहक / माल भेजें';
+
+  @override
+  String get roleCustomerDescription =>
+      'आसानी से परिवहन खोजें। छोटे पार्सल से लेकर पूरे कंटेनर तक, दुनिया भर में शिप करें।';
+
+  @override
+  String get roleDriverTitle => 'ड्राइवर / ट्रांसपोर्टर';
+
+  @override
+  String get roleDriverDescription =>
+      'ट्रिप पोस्ट करें और कमाएं। विश्वसनीय परिवहन की जरूरत वाले व्यवसायों से जुड़ें।';
+
+  @override
+  String get splashInitializing => 'सिस्टम प्रारंभ हो रहा है';
+
+  @override
   String get profileName => 'पूरा नाम';
 
   @override

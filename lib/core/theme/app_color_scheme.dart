@@ -18,6 +18,7 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
     required this.error,
     required this.orangeText,
     required this.brownText,
+    required this.selectedText,
     required this.notificationUnread,
     required this.routeTimelineDot,
     required this.borderColor,
@@ -36,8 +37,9 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
   final Color success;
   final Color warningBackground;
   final Color error;
-  final Color orangeText; // price, IDs
-  final Color brownText; // #594136 secondary
+  final Color orangeText;     // price, IDs
+  final Color brownText;      // #594136 subtitle / secondary
+  final Color selectedText;   // #582100 — text on selected/tinted items (light)
   final Color notificationUnread;
   final Color routeTimelineDot;
   final Color disableColor = const Color(0xFFABABAB);
@@ -51,7 +53,7 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
     surface: Color(0xFFFFFFFF),
     cardBackground: Color(0xFFFFFFFF),
     inputFill: Color(0xFFE8E8E8),
-    textPrimary: Color(0xFF1A1A1A),
+    textPrimary: Color(0xFF161C20),   // Figma: #161C20
     textSecondary: Color(0xFF6B6B6B),
     textHint: Color(0xFFAAAAAA),
     divider: Color(0xFFE8E8E8),
@@ -60,6 +62,7 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
     error: Color(0xFFD32F2F),
     orangeText: Color(0xFFFF6D00),
     brownText: Color(0xFF594136),
+    selectedText: Color(0xFF582100),  // Figma: #582100 — selected tile name
     notificationUnread: Color(0xFFFFF8F3),
     routeTimelineDot: Color(0xFFFF6D00),
     borderColor: Color(0xFF000000),
@@ -82,6 +85,7 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
       error: Color(0xFFEF5350),
       orangeText: Color(0xFFFF8C3A),
       brownText: Color(0xFFD4A899),
+      selectedText: Color(0xFFFFB692),  // dark mode: light peach on tinted bg
       notificationUnread: Color(0xFF2D1E00),
       routeTimelineDot: Color(0xFFFF8C3A),
       borderColor: Color(0x00000000));
@@ -103,6 +107,7 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
     Color? error,
     Color? orangeText,
     Color? brownText,
+    Color? selectedText,
     Color? notificationUnread,
     Color? routeTimelineDot,
     Color? borderColor,
@@ -123,6 +128,7 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
         error: error ?? this.error,
         orangeText: orangeText ?? this.orangeText,
         brownText: brownText ?? this.brownText,
+        selectedText: selectedText ?? this.selectedText,
         notificationUnread: notificationUnread ?? this.notificationUnread,
         routeTimelineDot: routeTimelineDot ?? this.routeTimelineDot,
         borderColor: borderColor ?? this.borderColor,
@@ -148,6 +154,7 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
       error: Color.lerp(error, other.error, t)!,
       orangeText: Color.lerp(orangeText, other.orangeText, t)!,
       brownText: Color.lerp(brownText, other.brownText, t)!,
+      selectedText: Color.lerp(selectedText, other.selectedText, t)!,
       notificationUnread:
           Color.lerp(notificationUnread, other.notificationUnread, t)!,
       routeTimelineDot:

@@ -109,6 +109,35 @@
   "roleCustomer": "Customer",
   "roleDriver": "Driver",
 
+  "langSelectionTitle": "Select Your Language",
+  "@langSelectionTitle": { "description": "Heading on the language selection screen" },
+  "langSelectionSubtitle": "Choose your preferred language to continue",
+  "@langSelectionSubtitle": { "description": "Subtitle on the language selection screen" },
+  "langEnglishName": "English",
+  "langEnglishSubtitle": "Primary language",
+  "langHindiName": "Hindi (हिन्दी)",
+  "langHindiSubtitle": "Standard Hindi",
+  "langGujaratiName": "Gujarati (ગુજરાતી)",
+  "langGujaratiSubtitle": "Regional Gujarati",
+
+  "roleSelectionTitle": "Choose Your Role",
+  "@roleSelectionTitle": { "description": "Heading on the role selection screen" },
+  "roleSelectionSubtitle": "Select how you'd like to use the Goods Carrier platform to manage your logistics.",
+  "@roleSelectionSubtitle": { "description": "Subtitle on the role selection screen" },
+
+  "roleCustomerTitle": "Customer / Send Goods",
+  "@roleCustomerTitle": { "description": "Card title for the customer role" },
+  "roleCustomerDescription": "Find transport easily. Ship anything from small parcels to full containers globally.",
+  "@roleCustomerDescription": { "description": "Card description for the customer role" },
+
+  "roleDriverTitle": "Driver / Transporter",
+  "@roleDriverTitle": { "description": "Card title for the driver role" },
+  "roleDriverDescription": "List trips and earn. Connect with businesses needing reliable transport solutions.",
+  "@roleDriverDescription": { "description": "Card description for the driver role" },
+
+  "splashInitializing": "SYSTEM INITIALIZING",
+  "@splashInitializing": { "description": "Progress label on the splash screen" },
+
   "profileName": "Full Name",
   "profileEmail": "Email Address",
   "profilePhone": "Phone Number",

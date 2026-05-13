@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../l10n/app_localizations.dart';
 import '../theme/app_color_scheme.dart';
+import '../theme/app_text_styles.dart';
 
 extension AppThemeExt on BuildContext {
   /// All localised strings — context.l10n.appName, context.l10n.actionSave …
@@ -10,6 +11,9 @@ extension AppThemeExt on BuildContext {
 
   /// Access custom design tokens — context.colors.primary, context.colors.cardBackground
   AppColorScheme get colors => Theme.of(this).extension<AppColorScheme>()!;
+
+  /// Named text styles — context.appTextStyles.screenTitle, .sectionHeading …
+  AppTextStyles get appTextStyles => Theme.of(this).extension<AppTextStyles>()!;
 
   TextTheme get textTheme => Theme.of(this).textTheme;
 

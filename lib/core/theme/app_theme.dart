@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'app_color_scheme.dart';
+import 'app_text_styles.dart';
 
 class AppTheme {
   AppTheme._();
@@ -25,7 +26,7 @@ class AppTheme {
       useMaterial3: true,
       brightness: brightness,
       fontFamily: 'Manrope',
-      extensions: [colors],
+      extensions: [colors, AppTextStyles.defaults],
       scaffoldBackgroundColor: colors.background,
       colorScheme: ColorScheme.fromSeed(
         seedColor: const Color(0xFFFF6D00),
@@ -41,7 +42,7 @@ class AppTheme {
         bodyLarge:     TextStyle(fontFamily: 'Manrope', color: colors.textPrimary, fontSize: 16, height: 24/16),
         bodyMedium:    TextStyle(fontFamily: 'Manrope', color: colors.textSecondary),
         bodySmall:     TextStyle(fontFamily: 'Manrope', color: colors.textHint),
-        labelLarge:    TextStyle(fontFamily: 'Manrope', color: colors.textPrimary,   fontWeight: FontWeight.w600),
+        labelLarge:    TextStyle(fontFamily: 'Manrope', color: colors.textPrimary,   fontWeight: FontWeight.bold,fontSize: 18),
         labelSmall:    TextStyle(fontFamily: 'Manrope', color: colors.textSecondary, letterSpacing: 0.8),
       ),
 

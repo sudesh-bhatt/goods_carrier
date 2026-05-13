@@ -88,6 +88,23 @@
   "roleCustomer": "ग्राहक",
   "roleDriver": "ड्राइवर",
 
+  "langSelectionTitle": "अपनी भाषा चुनें",
+  "langSelectionSubtitle": "जारी रखने के लिए अपनी पसंदीदा भाषा चुनें",
+  "langEnglishName": "English",
+  "langEnglishSubtitle": "प्राथमिक भाषा",
+  "langHindiName": "हिन्दी (Hindi)",
+  "langHindiSubtitle": "मानक हिन्दी",
+  "langGujaratiName": "ગુજરાતી (Gujarati)",
+  "langGujaratiSubtitle": "क्षेत्रीय गुजराती",
+
+  "roleSelectionTitle": "अपनी भूमिका चुनें",
+  "roleSelectionSubtitle": "चुनें कि आप अपनी लॉजिस्टिक्स प्रबंधित करने के लिए गुड्स कैरियर का उपयोग कैसे करना चाहते हैं।",
+  "roleCustomerTitle": "ग्राहक / माल भेजें",
+  "roleCustomerDescription": "आसानी से परिवहन खोजें। छोटे पार्सल से लेकर पूरे कंटेनर तक, दुनिया भर में शिप करें।",
+  "roleDriverTitle": "ड्राइवर / ट्रांसपोर्टर",
+  "roleDriverDescription": "ट्रिप पोस्ट करें और कमाएं। विश्वसनीय परिवहन की जरूरत वाले व्यवसायों से जुड़ें।",
+  "splashInitializing": "सिस्टम प्रारंभ हो रहा है",
+
   "profileName": "पूरा नाम",
   "profileEmail": "ईमेल पता",
   "profilePhone": "फ़ोन नंबर",

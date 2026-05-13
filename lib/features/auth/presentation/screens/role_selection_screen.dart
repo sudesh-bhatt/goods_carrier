@@ -12,37 +12,22 @@ import '../../../../shared/domain/enums/user_role.dart';
 import '../providers/auth_provider.dart';
 
 // ─── Role data model ──────────────────────────────────────────────────────────
+// title & description are intentionally excluded — they are locale-dependent
+// and resolved via context.l10n at build time.
 
 class _RoleOption {
   const _RoleOption({
     required this.role,
-    required this.title,
-    required this.description,
     required this.icon,
   });
 
-  final UserRole role;
-  final String   title;
-  final String   description;
+  final UserRole    role;
   final SvgGenImage icon;
-
 }
 
 const _kRoles = [
-  _RoleOption(
-    role:        UserRole.customer,
-    title:       'Customer / Send Goods',
-    description: 'Find transport easily. Ship anything from small parcels to '
-                 'full containers globally.',
-    icon:        Assets.icRoleCustomer,
-  ),
-  _RoleOption(
-    role:        UserRole.driver,
-    title:       'Driver / Transporter',
-    description: 'List trips and earn. Connect with businesses needing reliable '
-                 'transport solutions.',
-    icon:        Assets.icRoleDriver,
-  ),
+  _RoleOption(role: UserRole.customer, icon: Assets.icRoleCustomer),
+  _RoleOption(role: UserRole.driver,   icon: Assets.icRoleDriver),
 ];
 
 /// Role selection screen — matches the Figma design:
@@ -74,13 +59,21 @@ class _RoleSelectionScreenState
   void _onContinue() {
     HapticFeedback.lightImpact();
     ref.read(authProvider.notifier).selectRole(_selected);
-    context.go(AppRoutes.languageSelection);
+    context.push(AppRoutes.languageSelection);
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n      = context.l10n;
     final colors    = context.colors;
     final textTheme = context.textTheme;
+
+    // Resolve locale-dependent card strings here — _RoleOption is const
+    // and cannot hold l10n references.
+    final cardData = [
+      (option: _kRoles[0], title: l10n.roleCustomerTitle, description: l10n.roleCustomerDescription),
+      (option: _kRoles[1], title: l10n.roleDriverTitle,   description: l10n.roleDriverDescription),
+    ];
 
     return Scaffold(
       backgroundColor: colors.background,
@@ -93,9 +86,8 @@ class _RoleSelectionScreenState
               SizedBox(height: 48.h),
 
               // ── Header ────────────────────────────────────────────────
-              // headlineMedium (textPrimary, w700) + w800 override
               Text(
-                'Choose Your Role',
+                l10n.roleSelectionTitle,
                 style: textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w800,
                 ),
@@ -103,24 +95,24 @@ class _RoleSelectionScreenState
 
               SizedBox(height: 10.h),
 
-              // bodyMedium (textSecondary) with line-height adjustment
               Text(
-                'Select how you\'d like to use the Goods Carrier platform '
-                'to manage your logistics.',
-                style: textTheme.bodyMedium?.copyWith(fontSize: 12,),
+                l10n.roleSelectionSubtitle,
+                style: textTheme.bodyMedium?.copyWith(fontSize: 12),
               ),
 
               SizedBox(height: 32.h),
 
               // ── Role cards ────────────────────────────────────────────
-              ..._kRoles.map((option) => Padding(
+              ...cardData.map((data) => Padding(
                 padding: EdgeInsets.only(bottom: 16.h),
                 child: _RoleCard(
-                  option:     option,
-                  isSelected: _selected == option.role,
+                  option:      data.option,
+                  title:       data.title,
+                  description: data.description,
+                  isSelected:  _selected == data.option.role,
                   onTap: () {
                     HapticFeedback.selectionClick();
-                    setState(() => _selected = option.role);
+                    setState(() => _selected = data.option.role);
                   },
                 ),
               )),
@@ -128,27 +120,25 @@ class _RoleSelectionScreenState
               const Spacer(),
 
               // ── Continue button ───────────────────────────────────────
-              // Uses global ElevatedButtonTheme (primary bg, white fg)
-              // with shape overridden to stadium (pill) per Figma.
               SizedBox(
                 width:  double.infinity,
                 height: 52.h,
                 child: ElevatedButton(
                   onPressed: _onContinue,
-                  style: ElevatedButton.styleFrom(
-                    shape: const StadiumBorder(),
-                  ),
+                  // shape falls through to theme — radius 12 from ElevatedButtonTheme
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Continue',
+                        l10n.actionContinue,
                         style: textTheme.labelLarge?.copyWith(
                           color: Colors.white,
                         ),
                       ),
                       SizedBox(width: 8.w),
-                      const Icon(Icons.arrow_forward_rounded, size: 18),
+                      Assets.ctaRightArrow.svg(
+                        colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                      ),
                     ],
                   ),
                 ),
@@ -168,11 +158,15 @@ class _RoleSelectionScreenState
 class _RoleCard extends StatelessWidget {
   const _RoleCard({
     required this.option,
+    required this.title,
+    required this.description,
     required this.isSelected,
     required this.onTap,
   });
 
   final _RoleOption  option;
+  final String       title;
+  final String       description;
   final bool         isSelected;
   final VoidCallback onTap;
 
@@ -226,9 +220,9 @@ class _RoleCard extends StatelessWidget {
                 // Title — expands to push radio to the right
                 Expanded(
                   child: Text(
-                    option.title,
+                    title,
                     style: textTheme.titleLarge?.copyWith(
-                     color: colors.textPrimary,
+                      color: colors.textPrimary,
                     ),
                   ),
                 ),
@@ -259,9 +253,9 @@ class _RoleCard extends StatelessWidget {
 
             // ── Description — full width, starts below the icon ──────
             Text(
-              option.description,
+              description,
               style: textTheme.bodyLarge?.copyWith(
-                color:  colors.textPrimary,
+                color: colors.textPrimary,
               ),
             ),
           ],

@@ -64,6 +64,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n      = context.l10n;
     final colors    = context.colors;
     final textTheme = context.textTheme;
 
@@ -114,10 +115,8 @@ class _SplashScreenState extends State<SplashScreen>
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          // "SYSTEM INITIALIZING" — bodySmall (textHint) +
-                          // wider tracking
                           Text(
-                            'SYSTEM INITIALIZING',
+                            l10n.splashInitializing,
                             style: textTheme.bodySmall?.copyWith(
                               letterSpacing: 1.5,
                               fontWeight:    FontWeight.w600,

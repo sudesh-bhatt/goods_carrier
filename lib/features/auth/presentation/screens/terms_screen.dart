@@ -180,7 +180,7 @@ class _TermsScreenState extends State<TermsScreen> {
                 AppButton(
                   label: context.l10n.actionContinue,
                   onPressed:
-                      _accepted ? () => context.go(AppRoutes.phoneInput) : null,
+                      _accepted ? () => context.push(AppRoutes.phoneInput) : null,
                 ),
               ],
             ),

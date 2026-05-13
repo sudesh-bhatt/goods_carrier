@@ -88,6 +88,23 @@
   "roleCustomer": "ગ્રાહક",
   "roleDriver": "ડ્રાઇવર",
 
+  "langSelectionTitle": "આપની ભાષા પસંદ કરો",
+  "langSelectionSubtitle": "ચાલુ રાખવા આપની પસંદીદા ભાષા પસંદ કરો",
+  "langEnglishName": "English",
+  "langEnglishSubtitle": "પ્રાથમિક ભાષા",
+  "langHindiName": "हिन्दी (Hindi)",
+  "langHindiSubtitle": "પ્રમાણભૂત હિન્દી",
+  "langGujaratiName": "ગુજરાતી (Gujarati)",
+  "langGujaratiSubtitle": "પ્રાદેશિક ગુજરાતી",
+
+  "roleSelectionTitle": "આપની ભૂમિકા પસંદ કરો",
+  "roleSelectionSubtitle": "આપ આપની લોજિસ્ટિક્સ સંચાલિત કરવા ગુડ્સ કેરિયરનો ઉપયોગ કેવી રીતે કરવા માંગો છો તે પસંદ કરો.",
+  "roleCustomerTitle": "ગ્રાહક / માલ મોકલો",
+  "roleCustomerDescription": "સરળતાથી પરિવહન શોધો. નાના પાર્સલથી લઈ પૂરા કન્ટેઇનર સુધી, વૈશ્વિક સ્તરે શિપ કરો.",
+  "roleDriverTitle": "ડ્રાઇવર / ટ્રાન્સપોર્ટર",
+  "roleDriverDescription": "ટ્રિપ પોસ્ટ કરો અને કમાઓ. વિશ્વસનીય પરિવહન ઇચ્છતા વ્યવસાયો સાથે જોડાઓ.",
+  "splashInitializing": "સિસ્ટમ શરૂ થઈ રહ્યું છે",
+
   "profileName": "પૂરું નામ",
   "profileEmail": "ઈમેઇલ સરનામું",
   "profilePhone": "ફોન નંબર",

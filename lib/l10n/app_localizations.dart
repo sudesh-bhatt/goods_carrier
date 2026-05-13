@@ -568,6 +568,96 @@ abstract class AppLocalizations {
   /// **'Driver'**
   String get roleDriver;
 
+  /// Heading on the language selection screen
+  ///
+  /// In en, this message translates to:
+  /// **'Select Your Language'**
+  String get langSelectionTitle;
+
+  /// Subtitle on the language selection screen
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your preferred language to continue'**
+  String get langSelectionSubtitle;
+
+  /// No description provided for @langEnglishName.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get langEnglishName;
+
+  /// No description provided for @langEnglishSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary language'**
+  String get langEnglishSubtitle;
+
+  /// No description provided for @langHindiName.
+  ///
+  /// In en, this message translates to:
+  /// **'Hindi (हिन्दी)'**
+  String get langHindiName;
+
+  /// No description provided for @langHindiSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard Hindi'**
+  String get langHindiSubtitle;
+
+  /// No description provided for @langGujaratiName.
+  ///
+  /// In en, this message translates to:
+  /// **'Gujarati (ગુજરાતી)'**
+  String get langGujaratiName;
+
+  /// No description provided for @langGujaratiSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Regional Gujarati'**
+  String get langGujaratiSubtitle;
+
+  /// Heading on the role selection screen
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Your Role'**
+  String get roleSelectionTitle;
+
+  /// Subtitle on the role selection screen
+  ///
+  /// In en, this message translates to:
+  /// **'Select how you\'d like to use the Goods Carrier platform to manage your logistics.'**
+  String get roleSelectionSubtitle;
+
+  /// Card title for the customer role
+  ///
+  /// In en, this message translates to:
+  /// **'Customer / Send Goods'**
+  String get roleCustomerTitle;
+
+  /// Card description for the customer role
+  ///
+  /// In en, this message translates to:
+  /// **'Find transport easily. Ship anything from small parcels to full containers globally.'**
+  String get roleCustomerDescription;
+
+  /// Card title for the driver role
+  ///
+  /// In en, this message translates to:
+  /// **'Driver / Transporter'**
+  String get roleDriverTitle;
+
+  /// Card description for the driver role
+  ///
+  /// In en, this message translates to:
+  /// **'List trips and earn. Connect with businesses needing reliable transport solutions.'**
+  String get roleDriverDescription;
+
+  /// Progress label on the splash screen
+  ///
+  /// In en, this message translates to:
+  /// **'SYSTEM INITIALIZING'**
+  String get splashInitializing;
+
   /// No description provided for @profileName.
   ///
   /// In en, this message translates to:

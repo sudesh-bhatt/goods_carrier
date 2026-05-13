@@ -38,7 +38,7 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
     await ref.read(authProvider.notifier).sendOtp(_phoneCtrl.text.trim());
-    if (mounted) context.go(AppRoutes.otpVerification);
+    if (mounted) context.push(AppRoutes.otpVerification);
   }
 
   @override
