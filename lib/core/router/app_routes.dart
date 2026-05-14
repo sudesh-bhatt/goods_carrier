@@ -1,12 +1,13 @@
 /// All named route paths as compile-time constants.
-/// Use with GoRouter: `context.go(AppRoutes.phoneInput)`.
+/// Use with GoRouter: `context.go(AppRoutes.loginScreen)`.
 abstract final class AppRoutes {
   // ── Auth / Onboarding ──────────────────────────────────────────────────────
   static const String splash              = '/';
   static const String roleSelection       = '/role-selection';
   static const String languageSelection   = '/language-selection';
   static const String terms               = '/terms';
-  static const String phoneInput          = '/phone-input';
+  /// Login (phone) — matches Figma "Login Screen".
+  static const String loginScreen         = '/login';
   static const String otpVerification     = '/otp-verification';
   static const String customerProfileSetup = '/profile-setup/customer';
   static const String driverProfileSetup   = '/profile-setup/driver';

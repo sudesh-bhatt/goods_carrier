@@ -224,7 +224,7 @@ class _DriverHeader extends StatelessWidget {
                     border: Border.all(color: colors.surface, width: 2),
                   ),
                   child: Icon(Icons.camera_alt_outlined,
-                      size: 14.w, color: Colors.white),
+                      size: 14.w, color: colors.onPrimary),
                 ),
               ),
             ],
@@ -245,8 +245,11 @@ class _DriverHeader extends StatelessWidget {
               vertical: 4.h,
             ),
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFFFFB300), Color(0xFFFF8F00)],
+              gradient: LinearGradient(
+                colors: [
+                  colors.ratingBannerGradientStart,
+                  colors.ratingBannerGradientEnd,
+                ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -257,12 +260,12 @@ class _DriverHeader extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.workspace_premium_rounded,
-                    size: 14.w, color: Colors.white),
+                    size: 14.w, color: colors.onPrimary),
                 SizedBox(width: 4.w),
                 Text(
                   'Gold Member',
                   style: context.textTheme.labelSmall?.copyWith(
-                    color: Colors.white,
+                    color: colors.onPrimary,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.3,
                   ),

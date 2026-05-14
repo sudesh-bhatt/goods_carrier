@@ -93,7 +93,7 @@ These appear inside `ShipmentCard` / `DriverTripCard` rows.
 
 | File | Description | Where used |
 |------|-------------|------------|
-| `ic_phone.svg` | Phone handset | PhoneInputScreen prefix |
+| `ic_phone.svg` | Phone handset | LoginScreen prefix |
 | `ic_flag_india.svg` | Indian flag (or `+91` text — check design) | Country code prefix |
 | `ic_person.svg` | Person/user silhouette | Name field prefix, Profile screen |
 | `ic_email.svg` | Envelope | Email field prefix |

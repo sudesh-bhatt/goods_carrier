@@ -205,6 +205,18 @@ class AppLocalizationsHi extends AppLocalizations {
   String get authWelcome => 'गुड्स कैरियर में आपका स्वागत है';
 
   @override
+  String get authLoginBrandLine => 'आपका विश्वसनीय लॉजिस्टिक्स साथी';
+
+  @override
+  String get authLoginHeadline => 'मार्केटप्लेस में आपका स्वागत है';
+
+  @override
+  String get authCountryCodeInd => 'IND  +91';
+
+  @override
+  String get authPhoneDigitsPlaceholder => '000-000-0000';
+
+  @override
   String get authSubtitle => 'आपका विश्वसनीय लॉजिस्टिक्स पार्टनर';
 
   @override

@@ -72,6 +72,10 @@
   "vehicleHeavyDutyCapacity": "20 ટન સુધી",
 
   "authWelcome": "ગુડ્સ કેરિયરમાં આપનું સ્વાગત છે",
+  "authLoginBrandLine": "આપનો વિશ્વસ્ત લોજિસ્ટિક્સ ભાગીદાર",
+  "authLoginHeadline": "માર્કેટપ્લેસમાં આપનું સ્વાગત છે",
+  "authCountryCodeInd": "IND  +91",
+  "authPhoneDigitsPlaceholder": "000-000-0000",
   "authSubtitle": "આપનો વિશ્વસ્ત લોજિસ્ટિક્સ ભાગીદાર",
   "authPhoneLabel": "મોબાઇલ નંબર",
   "authPhoneHint": "+91 XXXXX XXXXX",

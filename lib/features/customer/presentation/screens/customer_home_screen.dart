@@ -173,11 +173,15 @@ class CustomerHomeScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push(AppRoutes.postShipment),
         backgroundColor: colors.primary,
-        foregroundColor: Colors.white,
+        foregroundColor: colors.onPrimary,
         icon: const Icon(Icons.add_rounded),
         label: Text(
           context.l10n.shipmentPostNew,
-          style: const TextStyle(fontWeight: FontWeight.w700),
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            color: colors.onPrimary,
+            fontFamily: 'Manrope',
+          ),
         ),
       ),
     );

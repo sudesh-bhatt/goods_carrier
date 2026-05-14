@@ -7,7 +7,7 @@ import '../../features/auth/presentation/screens/customer_profile_setup_screen.d
 import '../../features/auth/presentation/screens/driver_profile_setup_screen.dart';
 import '../../features/auth/presentation/screens/language_selection_screen.dart';
 import '../../features/auth/presentation/screens/otp_verification_screen.dart';
-import '../../features/auth/presentation/screens/phone_input_screen.dart';
+import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/role_selection_screen.dart';
 import '../../features/auth/presentation/screens/splash_screen.dart';
 import '../../features/auth/presentation/screens/terms_screen.dart';
@@ -102,8 +102,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (_, __) => const TermsScreen(),
       ),
       GoRoute(
-        path: AppRoutes.phoneInput,
-        builder: (_, __) => const PhoneInputScreen(),
+        path: AppRoutes.loginScreen,
+        builder: (_, __) => const LoginScreen(),
       ),
       GoRoute(
         path: AppRoutes.otpVerification,
@@ -192,7 +192,7 @@ bool _isAuthPath(String loc) =>
     loc == AppRoutes.roleSelection ||
     loc == AppRoutes.languageSelection ||
     loc == AppRoutes.terms ||
-    loc == AppRoutes.phoneInput ||
+    loc == AppRoutes.loginScreen ||
     loc == AppRoutes.otpVerification ||
     loc == AppRoutes.customerProfileSetup ||
     loc == AppRoutes.driverProfileSetup;

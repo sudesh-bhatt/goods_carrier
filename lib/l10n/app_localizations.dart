@@ -484,6 +484,30 @@ abstract class AppLocalizations {
   /// **'Welcome to Goods Carrier'**
   String get authWelcome;
 
+  /// No description provided for @authLoginBrandLine.
+  ///
+  /// In en, this message translates to:
+  /// **'YOUR LOGISTICS PARTNER'**
+  String get authLoginBrandLine;
+
+  /// No description provided for @authLoginHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to the Marketplace'**
+  String get authLoginHeadline;
+
+  /// No description provided for @authCountryCodeInd.
+  ///
+  /// In en, this message translates to:
+  /// **'IND  +91'**
+  String get authCountryCodeInd;
+
+  /// No description provided for @authPhoneDigitsPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'000-000-0000'**
+  String get authPhoneDigitsPlaceholder;
+
   /// No description provided for @authSubtitle.
   ///
   /// In en, this message translates to:

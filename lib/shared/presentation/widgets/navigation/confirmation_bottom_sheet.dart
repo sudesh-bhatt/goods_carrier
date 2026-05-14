@@ -147,7 +147,7 @@ class ConfirmationBottomSheet extends StatelessWidget {
                   // For dangerous actions override button background to error colour
                   textStyle: isDangerous
                       ? context.textTheme.labelLarge?.copyWith(
-                          color: Colors.white,
+                          color: colors.onPrimary,
                           fontWeight: FontWeight.w600,
                         )
                       : null,

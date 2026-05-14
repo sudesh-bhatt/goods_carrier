@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/extensions/size_ext.dart';
+import '../../../../core/mixins/safe_set_state_mixin.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../shared/presentation/widgets/buttons/app_button.dart';
@@ -18,7 +19,7 @@ class TermsScreen extends StatefulWidget {
   State<TermsScreen> createState() => _TermsScreenState();
 }
 
-class _TermsScreenState extends State<TermsScreen> {
+class _TermsScreenState extends State<TermsScreen> with SafeSetStateMixin {
   bool _accepted = false;
 
   @override
@@ -130,7 +131,7 @@ class _TermsScreenState extends State<TermsScreen> {
                 GestureDetector(
                   onTap: () {
                     HapticFeedback.selectionClick();
-                    setState(() => _accepted = !_accepted);
+                    safeSetState(() => _accepted = !_accepted);
                   },
                   child: Row(
                     children: [
@@ -147,7 +148,7 @@ class _TermsScreenState extends State<TermsScreen> {
                           ),
                         ),
                         child: _accepted
-                            ? Icon(Icons.check, color: Colors.white,
+                            ? Icon(Icons.check, color: colors.onPrimary,
                                 size: 14.w)
                             : null,
                       ),
@@ -180,7 +181,7 @@ class _TermsScreenState extends State<TermsScreen> {
                 AppButton(
                   label: context.l10n.actionContinue,
                   onPressed:
-                      _accepted ? () => context.push(AppRoutes.phoneInput) : null,
+                      _accepted ? () => context.push(AppRoutes.loginScreen) : null,
                 ),
               ],
             ),

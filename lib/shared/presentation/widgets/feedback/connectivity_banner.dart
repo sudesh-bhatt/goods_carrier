@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../core/theme/app_color_scheme.dart';
+import '../../../../core/extensions/theme_ext.dart';
 
 /// A slim animated banner shown at the very top of the screen when the device
 /// goes offline.  It slides in / out with an [AnimatedContainer] height tween
@@ -35,7 +35,7 @@ class ConnectivityBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColorScheme>()!;
+    final colors = context.colors;
 
     return Column(
       children: [
@@ -55,13 +55,13 @@ class ConnectivityBanner extends StatelessWidget {
                   Icon(
                     Icons.wifi_off_rounded,
                     size:  14.r,
-                    color: Colors.white,
+                    color: colors.onPrimary,
                   ),
                   SizedBox(width: 6.w),
                   Text(
                     'No internet connection',
                     style: TextStyle(
-                      color:      Colors.white,
+                      color:      colors.onPrimary,
                       fontSize:   11.sp,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 0.2,

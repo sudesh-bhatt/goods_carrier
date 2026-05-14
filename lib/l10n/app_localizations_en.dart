@@ -205,6 +205,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authWelcome => 'Welcome to Goods Carrier';
 
   @override
+  String get authLoginBrandLine => 'YOUR LOGISTICS PARTNER';
+
+  @override
+  String get authLoginHeadline => 'Welcome to the Marketplace';
+
+  @override
+  String get authCountryCodeInd => 'IND  +91';
+
+  @override
+  String get authPhoneDigitsPlaceholder => '000-000-0000';
+
+  @override
   String get authSubtitle => 'Your trusted logistics partner';
 
   @override

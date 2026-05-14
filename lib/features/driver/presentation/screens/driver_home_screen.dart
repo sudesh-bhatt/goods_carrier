@@ -173,11 +173,15 @@ class DriverHomeScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push(AppRoutes.postTrip),
         backgroundColor: colors.primary,
-        foregroundColor: Colors.white,
+        foregroundColor: colors.onPrimary,
         icon: const Icon(Icons.add_road_rounded),
         label: Text(
           context.l10n.tripPostNew,
-          style: const TextStyle(fontWeight: FontWeight.w700),
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            color: colors.onPrimary,
+            fontFamily: 'Manrope',
+          ),
         ),
       ),
     );

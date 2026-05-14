@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:goods_carrier/core/theme/app_color_scheme.dart';
 import 'package:goods_carrier/generated/assets.dart';
 
+import '../../../../core/mixins/safe_set_state_mixin.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../shared/domain/enums/user_role.dart';
@@ -36,7 +37,7 @@ const _kRoles = [
 ///   - Two selectable cards with animated radio-button indicator
 ///     • Selected  → `primary`-tinted background, `primary` border, filled
 ///                   orange icon box, filled checkmark circle
-///     • Unselected → `cardBackground`, `divider` border, `inputFill` icon
+///     • Unselected → `cardBackground`, `borderColor` (muted outline), `inputFill` icon
 ///                   box, empty circle
 ///   - "Continue →" pill button at bottom (no immediate navigation on tap)
 ///
@@ -51,7 +52,7 @@ class RoleSelectionScreen extends ConsumerStatefulWidget {
 }
 
 class _RoleSelectionScreenState
-    extends ConsumerState<RoleSelectionScreen> {
+    extends ConsumerState<RoleSelectionScreen> with SafeSetStateMixin {
 
   // Customer is pre-selected, matching the Figma default state.
   UserRole _selected = UserRole.customer;
@@ -112,7 +113,7 @@ class _RoleSelectionScreenState
                   isSelected:  _selected == data.option.role,
                   onTap: () {
                     HapticFeedback.selectionClick();
-                    setState(() => _selected = data.option.role);
+                    safeSetState(() => _selected = data.option.role);
                   },
                 ),
               )),
@@ -132,12 +133,15 @@ class _RoleSelectionScreenState
                       Text(
                         l10n.actionContinue,
                         style: textTheme.labelLarge?.copyWith(
-                          color: Colors.white,
+                          color: colors.onPrimary,
                         ),
                       ),
                       SizedBox(width: 8.w),
                       Assets.ctaRightArrow.svg(
-                        colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                        colorFilter: ColorFilter.mode(
+                          colors.onPrimary,
+                          BlendMode.srcIn,
+                        ),
                       ),
                     ],
                   ),
@@ -210,7 +214,10 @@ class _RoleCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(14.r),
                   ),
                   child: option.icon.svg(
-                    colorFilter: ColorFilter.mode( isSelected ? Colors.white : colors.disableColor, BlendMode.srcIn),
+                    colorFilter: ColorFilter.mode(
+                      isSelected ? colors.onPrimary : colors.disableColor,
+                      BlendMode.srcIn,
+                    ),
                   )
 
                 ),

@@ -98,7 +98,7 @@ class TrackingScreen extends ConsumerWidget {
                     ),
                     child: Icon(
                       Icons.local_shipping_rounded,
-                      color: Colors.white,
+                      color: colors.onPrimary,
                       size: AppDimensions.iconLg.w,
                     ),
                   ),
@@ -208,7 +208,7 @@ class _StatusTimeline extends StatelessWidget {
                   ),
                   child: isDone
                       ? Icon(Icons.check_rounded,
-                            size: 12.w, color: Colors.white)
+                            size: 12.w, color: colors.onPrimary)
                       : null,
                 ),
                 if (i < _steps.length - 1)
@@ -252,6 +252,7 @@ class _MapPin extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -268,7 +269,7 @@ class _MapPin extends StatelessWidget {
               ),
             ],
           ),
-          child: Icon(icon, color: Colors.white, size: 16.w),
+          child: Icon(icon, color: colors.onPrimary, size: 16.w),
         ),
         Container(
           padding: EdgeInsets.symmetric(
@@ -282,7 +283,7 @@ class _MapPin extends StatelessWidget {
           child: Text(
             label,
             style: TextStyle(
-              color: Colors.white,
+              color: colors.onPrimary,
               fontSize: 9.sp,
               fontWeight: FontWeight.w700,
             ),

@@ -83,6 +83,10 @@
   "vehicleHeavyDutyCapacity": "Up to 20 Ton",
 
   "authWelcome": "Welcome to Goods Carrier",
+  "authLoginBrandLine": "YOUR LOGISTICS PARTNER",
+  "authLoginHeadline": "Welcome to the Marketplace",
+  "authCountryCodeInd": "IND  +91",
+  "authPhoneDigitsPlaceholder": "000-000-0000",
   "authSubtitle": "Your trusted logistics partner",
   "authPhoneLabel": "Mobile Number",
   "authPhoneHint": "+91 XXXXX XXXXX",

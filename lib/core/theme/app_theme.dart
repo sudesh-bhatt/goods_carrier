@@ -112,7 +112,7 @@ class AppTheme {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: colors.primary,
-          foregroundColor: Colors.white,
+          foregroundColor: colors.onPrimary,
           disabledBackgroundColor: colors.primary.withOpacity(0.4),
           minimumSize: const Size(double.infinity, 52),
           elevation: 0,
@@ -164,7 +164,7 @@ class AppTheme {
 
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: colors.primary,
-        foregroundColor: Colors.white,
+        foregroundColor: colors.onPrimary,
         elevation: 4,
         shape: const CircleBorder(),
       ),

@@ -112,7 +112,7 @@ Architecture: Feature-first Clean Architecture · Riverpod + riverpod_generator 
 - [x] `RoleSelectionScreen` — Customer / Driver role cards, haptic selection
 - [x] `LanguageSelectionScreen` — EN / HI / GU tiles, checkmark animation, persists via `LocaleNotifier`
 - [x] `TermsScreen` — scrollable 10-section T&C, animated checkbox, CTA gated on acceptance
-- [x] `PhoneInputScreen` — +91 emoji flag prefix, 10-digit only, `Validators.phone`
+- [x] `LoginScreen` — IND +91 row, 10-digit field, `Validators.phone`, Figma banner
 - [x] `OtpVerificationScreen` — 4-box `AppOtpField`, 60 s countdown timer, resend CTA, error state with red boxes, redirect-driven navigation
 - [x] `CustomerProfileSetupScreen` — name + email (required), company + GST (optional with divider), avatar placeholder
 - [x] `DriverProfileSetupScreen` — name, 4-chip vehicle type selector, vehicle number, auto-filled capacity field

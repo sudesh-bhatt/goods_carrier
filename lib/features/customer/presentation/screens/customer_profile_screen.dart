@@ -193,7 +193,7 @@ class _AvatarHeader extends StatelessWidget {
                     border: Border.all(color: colors.surface, width: 2),
                   ),
                   child: Icon(Icons.camera_alt_outlined,
-                      size: 14.w, color: Colors.white),
+                      size: 14.w, color: colors.onPrimary),
                 ),
               ),
             ],

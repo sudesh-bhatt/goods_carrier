@@ -36,7 +36,7 @@ class AuthState {
   /// Set after role selection screen; drives profile-setup routing.
   final UserRole? selectedRole;
 
-  /// Set after PhoneInputScreen; displayed on OtpVerificationScreen.
+  /// Set after [LoginScreen]; displayed on OtpVerificationScreen.
   final String? phoneNumber;
 
   final bool    isLoading;

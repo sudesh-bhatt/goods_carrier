@@ -19,6 +19,9 @@ class AppDimensions {
   static const double radiusLg   = 16;
   static const double radiusFull = 999;
 
+  /// Login main card — Figma Login Screen (~28 dp corner radius).
+  static const double radiusLoginCard = 28;
+
   // Component heights
   static const double buttonHeight      = 52;
   static const double inputHeight       = 52;

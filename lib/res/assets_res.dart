@@ -8,10 +8,13 @@ class AssetsRes {
 
   static const String PROJECT_NAME = 'goods_carrier';
   static const String PROJECT_VERSION = '1.0.0+1';
-  static const String SPLASH_SCREEN_LOGO = 'assets/images/splash_screen_logo.png';
+  static const String APP_LOGO = 'assets/images/app_logo.png';
+  static const String LOGIN_SCREEN_BANNER = 'assets/images/login_screen_banner.png';
   static const String CTA_RIGHT_ARROW = 'assets/svg/cta_right_arrow.svg';
   static const String IC_RADIO_SELECTED = 'assets/svg/ic_radio_selected.svg';
   static const String IC_RADIO_UNSELECTED = 'assets/svg/ic_radio_unselected.svg';
   static const String IC_ROLE_CUSTOMER = 'assets/svg/ic_role_customer.svg';
   static const String IC_ROLE_DRIVER = 'assets/svg/ic_role_driver.svg';
+  static const String IC_SECURE_PAYMENT = 'assets/svg/ic_secure_payment.svg';
+  static const String IC_VERIFIED_CARRIERS = 'assets/svg/ic_verified_carriers.svg';
 }

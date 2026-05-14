@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/mixins/safe_set_state_mixin.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../features/settings/presentation/providers/locale_provider.dart';
@@ -19,7 +20,7 @@ class LanguageSelectionScreen extends ConsumerStatefulWidget {
 }
 
 class _LanguageSelectionScreenState
-    extends ConsumerState<LanguageSelectionScreen> {
+    extends ConsumerState<LanguageSelectionScreen> with SafeSetStateMixin {
   late String _selectedCode;
 
   @override
@@ -105,7 +106,7 @@ class _LanguageSelectionScreenState
                         isSelected: _selectedCode == lang.code,
                         onTap: () {
                           HapticFeedback.selectionClick();
-                          setState(() => _selectedCode = lang.code);
+                          safeSetState(() => _selectedCode = lang.code);
                         },
                       ),
                     )),
@@ -121,7 +122,7 @@ class _LanguageSelectionScreenState
                         child: Text(
                           l10n.actionContinue,
                           style: textTheme.labelLarge?.copyWith(
-                            color: Colors.white,
+                            color: colors.onPrimary,
                           ),
                         ),
                       ),
@@ -159,12 +160,8 @@ class _LangTile extends StatelessWidget {
     final colors    = context.colors;
     final textTheme = context.textTheme;
 
-    // ── Figma-exact token values ─────────────────────────────────────────
-    // Selected:   bg #FFB692@20%, border #FF6D00 w2, name #582100
-    // Unselected: bg #FFFFFF,     border #E2BFB0@30% w1, name #161C20
-    // Subtitle: #594136 in both states
-    const Color unselectedBorder = Color(0xFFE2BFB0);
-
+    // Selected:   bg + border from [AppColorScheme]; name #582100 via selectedText
+    // Unselected: surface + muted border; subtitle brownText in both states
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -173,18 +170,20 @@ class _LangTile extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
         decoration: BoxDecoration(
           color: isSelected
-              ? const Color(0xFFFFB692).withOpacity(0.20)
-              : Colors.white,
+              ? colors.languageTileSelectedFill
+              : colors.surface,
           borderRadius: BorderRadius.circular(16.r),
           border: Border.all(
-            color: isSelected ? colors.primary : unselectedBorder.withOpacity(0.30),
+            color: isSelected
+                ? colors.primary
+                : colors.languageTileBorderUnselected.withOpacity(0.30),
             width: isSelected ? 2.0 : 1.0,
           ),
           boxShadow: isSelected
               ? null
               : [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: colors.languageTileShadow,
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -226,7 +225,9 @@ class _LangTile extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: isSelected ? colors.primary : Colors.transparent,
                 border: Border.all(
-                  color: isSelected ? colors.primary : unselectedBorder,
+                  color: isSelected
+                      ? colors.primary
+                      : colors.languageTileBorderUnselected,
                   width: 2.0,
                 ),
               ),
@@ -235,9 +236,9 @@ class _LangTile extends StatelessWidget {
                       child: Container(
                         width:  8.w,
                         height: 8.w,
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.white,
+                          color: colors.onPrimary,
                         ),
                       ),
                     )

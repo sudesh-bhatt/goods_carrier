@@ -213,7 +213,7 @@ class ShipmentRequestCard extends StatelessWidget {
                           child: Text(
                             context.l10n.tripExpressInterest,
                             style: context.textTheme.labelMedium?.copyWith(
-                              color: Colors.white,
+                              color: colors.onPrimary,
                               fontWeight: FontWeight.w700,
                             ),
                           ),

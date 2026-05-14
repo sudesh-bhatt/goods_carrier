@@ -19,20 +19,23 @@ extension AppThemeExt on BuildContext {
 
   bool get isDark => Theme.of(this).brightness == Brightness.dark;
 
-  /// Platform-aware card shadow.
-  List<BoxShadow> get cardShadow => isDark
-      ? [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.4),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ]
-      : [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.07),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ];
+  /// Platform-aware card shadow (tints from [AppColorScheme.shadowCard]).
+  List<BoxShadow> get cardShadow {
+    final shadow = colors.shadowCard;
+    return isDark
+        ? [
+            BoxShadow(
+              color: shadow,
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ]
+        : [
+            BoxShadow(
+              color: shadow,
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ];
+  }
 }

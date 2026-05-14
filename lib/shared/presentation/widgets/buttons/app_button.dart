@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
+import '../../../../core/theme/app_color_scheme.dart';
 
 // ─── Variant enum ─────────────────────────────────────────────────────────────
 
@@ -86,7 +87,7 @@ class AppButton extends StatelessWidget {
           style: ElevatedButton.styleFrom(
             backgroundColor: colors.primary,
             disabledBackgroundColor: colors.primary.withOpacity(0.4),
-            foregroundColor: Colors.white,
+            foregroundColor: colors.onPrimary,
             elevation: 0,
             shadowColor: Colors.transparent,
             shape: RoundedRectangleBorder(borderRadius: effectiveRadius),
@@ -154,14 +155,14 @@ class _ButtonContent extends StatelessWidget {
   final bool isLoading;
   final Widget? leadingIcon;
   final AppButtonVariant variant;
-  final dynamic colors;
+  final AppColorScheme colors;
   final TextStyle? textStyle;
 
   @override
   Widget build(BuildContext context) {
     final Color spinnerColor = variant == AppButtonVariant.primary
-        ? Colors.white
-        : context.colors.primary;
+        ? colors.onPrimary
+        : colors.primary;
 
     if (isLoading) {
       return SizedBox(
@@ -181,8 +182,8 @@ class _ButtonContent extends StatelessWidget {
             ))!
         .copyWith(
           color: variant == AppButtonVariant.primary
-              ? Colors.white
-              : context.colors.primary,
+              ? colors.onPrimary
+              : colors.primary,
         );
 
     if (leadingIcon == null) {

@@ -205,6 +205,18 @@ class AppLocalizationsGu extends AppLocalizations {
   String get authWelcome => 'ગુડ્સ કેરિયરમાં આપનું સ્વાગત છે';
 
   @override
+  String get authLoginBrandLine => 'આપનો વિશ્વસ્ત લોજિસ્ટિક્સ ભાગીદાર';
+
+  @override
+  String get authLoginHeadline => 'માર્કેટપ્લેસમાં આપનું સ્વાગત છે';
+
+  @override
+  String get authCountryCodeInd => 'IND  +91';
+
+  @override
+  String get authPhoneDigitsPlaceholder => '000-000-0000';
+
+  @override
   String get authSubtitle => 'આપનો વિશ્વસ્ત લોજિસ્ટિક્સ ભાગીદાર';
 
   @override

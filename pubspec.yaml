@@ -67,26 +67,34 @@ flutter:
   generate: true      # Enables flutter gen-l10n via l10n.yaml
   assets:
     - assets/images/
-    - assets/images/splash_screen_logo.png
+    - assets/images/app_logo.png
+    - assets/images/login_screen_banner.png
     - assets/svg/cta_right_arrow.svg
     - assets/svg/ic_radio_selected.svg
     - assets/svg/ic_radio_unselected.svg
     - assets/svg/ic_role_customer.svg
     - assets/svg/ic_role_driver.svg
+    - assets/svg/ic_secure_payment.svg
+    - assets/svg/ic_verified_carriers.svg
   fonts:
-    - family: Manrope
+    - family: Manrope-Bold
+      fonts:
+        - asset: assets/fonts/Manrope-Bold.ttf
+    - family: Manrope-ExtraBold
+      fonts:
+        - asset: assets/fonts/Manrope-ExtraBold.ttf
+    - family: Manrope-ExtraLight
       fonts:
         - asset: assets/fonts/Manrope-ExtraLight.ttf
-          weight: 200
+    - family: Manrope-Light
+      fonts:
         - asset: assets/fonts/Manrope-Light.ttf
-          weight: 300
-        - asset: assets/fonts/Manrope-Regular.ttf
-          weight: 400
+    - family: Manrope-Medium
+      fonts:
         - asset: assets/fonts/Manrope-Medium.ttf
-          weight: 500
+    - family: Manrope-Regular
+      fonts:
+        - asset: assets/fonts/Manrope-Regular.ttf
+    - family: Manrope-SemiBold
+      fonts:
         - asset: assets/fonts/Manrope-SemiBold.ttf
-          weight: 600
-        - asset: assets/fonts/Manrope-Bold.ttf
-          weight: 700
-        - asset: assets/fonts/Manrope-ExtraBold.ttf
-          weight: 800
