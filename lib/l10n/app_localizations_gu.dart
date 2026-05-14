@@ -228,6 +228,30 @@ class AppLocalizationsGu extends AppLocalizations {
   }
 
   @override
+  String get authLoginSubtitle =>
+      'સુરક્ષિત લૉગિન કોડ મેળવવા આપનો ફોન નંબર દાખલ કરો.';
+
+  @override
+  String get authPrivacyPolicy => 'ગોપનીયતા નીતિ';
+
+  @override
+  String get authHelpCenter => 'સહાય કેન્દ્ર';
+
+  @override
+  String get authFeatureVerifiedTitle => 'ચકાસાયેલ કેરિયર';
+
+  @override
+  String get authFeatureVerifiedDesc =>
+      '50,000+ વિશ્વસ્ત લોજિસ્ટિક્સ વ્યાવસાયિકો સાથે જોડાઓ.';
+
+  @override
+  String get authFeatureSecureTitle => 'સુરક્ષિત ચૂકવણી';
+
+  @override
+  String get authFeatureSecureDesc =>
+      'એન્ક્રિપ્ટેડ વ્યવહારો અને વિશ્વસ્ત એસ્ક્રો.';
+
+  @override
   String get authIAmCustomer => 'હું ગ્રાહક છું';
 
   @override

@@ -34,7 +34,7 @@ class DriverTripDetailScreen extends ConsumerWidget {
     if (trip == null) {
       return Scaffold(
         appBar: AppBarWidget(title: tripId),
-        body: ErrorView(message: 'Trip not found.'),
+        body: const ErrorView(message: 'Trip not found.'),
       );
     }
 

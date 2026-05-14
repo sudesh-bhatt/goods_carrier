@@ -228,6 +228,30 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get authLoginSubtitle =>
+      'Enter your phone number to receive a secure login code.';
+
+  @override
+  String get authPrivacyPolicy => 'Privacy Policy';
+
+  @override
+  String get authHelpCenter => 'Help Center';
+
+  @override
+  String get authFeatureVerifiedTitle => 'Verified Carriers';
+
+  @override
+  String get authFeatureVerifiedDesc =>
+      'Join 50,000+ trusted logistics professionals.';
+
+  @override
+  String get authFeatureSecureTitle => 'Secure Payments';
+
+  @override
+  String get authFeatureSecureDesc =>
+      'Encrypted transactions and reliable escrow.';
+
+  @override
   String get authIAmCustomer => 'I\'m a Customer';
 
   @override

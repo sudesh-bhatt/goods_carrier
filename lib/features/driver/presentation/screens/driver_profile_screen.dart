@@ -67,7 +67,7 @@ class DriverProfileScreen extends ConsumerWidget {
               SizedBox(height: AppDimensions.xl.h),
 
               // ── Personal info ─────────────────────────────────────────
-              _SectionTitle(title: 'Personal Information'),
+              const _SectionTitle(title: 'Personal Information'),
               SizedBox(height: AppDimensions.sm.h),
               _InfoCard(
                 rows: [
@@ -92,7 +92,7 @@ class DriverProfileScreen extends ConsumerWidget {
               // ── Vehicle / business info ───────────────────────────────
               if (latestTrip != null) ...[
                 SizedBox(height: AppDimensions.xl.h),
-                _SectionTitle(title: 'Vehicle Details'),
+                const _SectionTitle(title: 'Vehicle Details'),
                 SizedBox(height: AppDimensions.sm.h),
                 _InfoCard(
                   rows: [
@@ -117,7 +117,7 @@ class DriverProfileScreen extends ConsumerWidget {
 
               if (user.gstNumber != null || user.companyName != null) ...[
                 SizedBox(height: AppDimensions.xl.h),
-                _SectionTitle(title: 'Business Details'),
+                const _SectionTitle(title: 'Business Details'),
                 SizedBox(height: AppDimensions.sm.h),
                 _InfoCard(
                   rows: [

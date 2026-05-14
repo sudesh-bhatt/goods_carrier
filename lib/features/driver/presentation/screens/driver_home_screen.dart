@@ -114,7 +114,7 @@ class DriverHomeScreen extends ConsumerWidget {
             ],
 
             // ── Available Requests section header ─────────────────────────
-            _SectionHeader(
+            const _SectionHeader(
               title: 'Available Requests',
               actionLabel: '',
               onAction: null,

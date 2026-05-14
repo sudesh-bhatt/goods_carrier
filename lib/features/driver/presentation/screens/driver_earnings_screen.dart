@@ -64,10 +64,10 @@ class DriverEarningsScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: colors.background,
-      appBar: AppBarWidget(title: 'Earnings'),
+      appBar: const AppBarWidget(title: 'Earnings'),
       body: SafeArea(
         child: invoices.isEmpty
-            ? EmptyState(
+            ? const EmptyState(
                 headline: 'No earnings yet',
                 subtitle: 'Complete trips to start earning',
                 fallbackIcon: Icons.currency_rupee_rounded,

@@ -561,7 +561,7 @@ class _Step3Goods extends StatelessWidget {
                     Switch(
                       value: isFragile,
                       onChanged: onFragileChanged,
-                      activeColor: colors.orangeText,
+                      activeThumbColor: colors.orangeText,
                     ),
                   ],
                 ),

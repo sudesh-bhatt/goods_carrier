@@ -228,6 +228,30 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
+  String get authLoginSubtitle =>
+      'सुरक्षित लॉगिन कोड पाने के लिए अपना फ़ोन नंबर दर्ज करें।';
+
+  @override
+  String get authPrivacyPolicy => 'गोपनीयता नीति';
+
+  @override
+  String get authHelpCenter => 'सहायता केंद्र';
+
+  @override
+  String get authFeatureVerifiedTitle => 'सत्यापित कैरियर';
+
+  @override
+  String get authFeatureVerifiedDesc =>
+      '50,000+ विश्वसनीय लॉजिस्टिक्स पेशेवरों से जुड़ें।';
+
+  @override
+  String get authFeatureSecureTitle => 'सुरक्षित भुगतान';
+
+  @override
+  String get authFeatureSecureDesc =>
+      'एन्क्रिप्टेड लेनदेन और विश्वसनीय एस्क्रो।';
+
+  @override
   String get authIAmCustomer => 'मैं ग्राहक हूँ';
 
   @override

@@ -526,6 +526,48 @@ abstract class AppLocalizations {
   /// **'Resend in {seconds}s'**
   String authResendIn(int seconds);
 
+  /// No description provided for @authLoginSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your phone number to receive a secure login code.'**
+  String get authLoginSubtitle;
+
+  /// No description provided for @authPrivacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get authPrivacyPolicy;
+
+  /// No description provided for @authHelpCenter.
+  ///
+  /// In en, this message translates to:
+  /// **'Help Center'**
+  String get authHelpCenter;
+
+  /// No description provided for @authFeatureVerifiedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified Carriers'**
+  String get authFeatureVerifiedTitle;
+
+  /// No description provided for @authFeatureVerifiedDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Join 50,000+ trusted logistics professionals.'**
+  String get authFeatureVerifiedDesc;
+
+  /// No description provided for @authFeatureSecureTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Secure Payments'**
+  String get authFeatureSecureTitle;
+
+  /// No description provided for @authFeatureSecureDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Encrypted transactions and reliable escrow.'**
+  String get authFeatureSecureDesc;
+
   /// No description provided for @authIAmCustomer.
   ///
   /// In en, this message translates to:

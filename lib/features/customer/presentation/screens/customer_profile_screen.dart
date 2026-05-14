@@ -53,7 +53,7 @@ class CustomerProfileScreen extends ConsumerWidget {
               SizedBox(height: AppDimensions.xxl.h),
 
               // ── Personal info ────────────────────────────────────────
-              _SectionTitle(title: 'Personal Information'),
+              const _SectionTitle(title: 'Personal Information'),
               SizedBox(height: AppDimensions.sm.h),
               _InfoCard(
                 rows: [
@@ -84,7 +84,7 @@ class CustomerProfileScreen extends ConsumerWidget {
               // ── Business info (if present) ────────────────────────────
               if (user.companyName != null || user.gstNumber != null) ...[
                 SizedBox(height: AppDimensions.xl.h),
-                _SectionTitle(title: 'Business Details'),
+                const _SectionTitle(title: 'Business Details'),
                 SizedBox(height: AppDimensions.sm.h),
                 _InfoCard(
                   rows: [

@@ -28,7 +28,7 @@ class TrackingScreen extends ConsumerWidget {
     final shipment = state.shipments.where((s) => s.id == shipmentId).firstOrNull;
 
     if (shipment == null) {
-      return Scaffold(
+      return const Scaffold(
         appBar: AppBarWidget(title: 'Tracking'),
         body: ErrorView(message: 'Shipment not found.'),
       );

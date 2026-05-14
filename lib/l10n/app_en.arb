@@ -95,6 +95,13 @@
       "seconds": { "type": "int" }
     }
   },
+  "authLoginSubtitle": "Enter your phone number to receive a secure login code.",
+  "authPrivacyPolicy": "Privacy Policy",
+  "authHelpCenter": "Help Center",
+  "authFeatureVerifiedTitle": "Verified Carriers",
+  "authFeatureVerifiedDesc": "Join 50,000+ trusted logistics professionals.",
+  "authFeatureSecureTitle": "Secure Payments",
+  "authFeatureSecureDesc": "Encrypted transactions and reliable escrow.",
   "authIAmCustomer": "I'm a Customer",
   "authIAmDriver": "I'm a Driver",
   "authTermsPrefix": "By continuing, you agree to our ",

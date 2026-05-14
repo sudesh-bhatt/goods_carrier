@@ -43,7 +43,7 @@ class DriverDetailSheet extends ConsumerWidget {
     final colors = context.colors;
     // In Session 7 this will do a real driver lookup by driverId.
     // For now, map everything to DummyUser.driver.
-    final driver = DummyUser.driver;
+    const driver = DummyUser.driver;
 
     return DraggableScrollableSheet(
       initialChildSize: 0.65,
@@ -217,9 +217,9 @@ class _StatsRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final stats = [
-      _Stat(label: 'Trips',  value: '142'),
-      _Stat(label: 'Rating', value: '4.8 ★'),
-      _Stat(label: 'Years',  value: '6+'),
+      const _Stat(label: 'Trips',  value: '142'),
+      const _Stat(label: 'Rating', value: '4.8 ★'),
+      const _Stat(label: 'Years',  value: '6+'),
     ];
     return Row(
       children: stats.map((s) {

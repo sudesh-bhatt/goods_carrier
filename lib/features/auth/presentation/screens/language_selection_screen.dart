@@ -163,7 +163,7 @@ class _LangTile extends StatelessWidget {
     // Selected:   bg #FFB692@20%, border #FF6D00 w2, name #582100
     // Unselected: bg #FFFFFF,     border #E2BFB0@30% w1, name #161C20
     // Subtitle: #594136 in both states
-    const Color _unselectedBorder = Color(0xFFE2BFB0);
+    const Color unselectedBorder = Color(0xFFE2BFB0);
 
     return GestureDetector(
       onTap: onTap,
@@ -177,7 +177,7 @@ class _LangTile extends StatelessWidget {
               : Colors.white,
           borderRadius: BorderRadius.circular(16.r),
           border: Border.all(
-            color: isSelected ? colors.primary : _unselectedBorder.withOpacity(0.30),
+            color: isSelected ? colors.primary : unselectedBorder.withOpacity(0.30),
             width: isSelected ? 2.0 : 1.0,
           ),
           boxShadow: isSelected
@@ -226,7 +226,7 @@ class _LangTile extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: isSelected ? colors.primary : Colors.transparent,
                 border: Border.all(
-                  color: isSelected ? colors.primary : _unselectedBorder,
+                  color: isSelected ? colors.primary : unselectedBorder,
                   width: 2.0,
                 ),
               ),

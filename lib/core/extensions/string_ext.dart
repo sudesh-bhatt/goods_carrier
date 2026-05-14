@@ -25,7 +25,7 @@ extension DateTimeExt on DateTime {
   String get displayTime => DateFormat('hh:mm a').format(this);
 
   /// "15 April 2026 09:00 AM"
-  String get displayDateTime => '$displayDate ${displayTime}';
+  String get displayDateTime => '$displayDate $displayTime';
 
   bool get isToday {
     final now = DateTime.now();

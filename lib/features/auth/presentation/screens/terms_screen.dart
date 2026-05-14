@@ -39,69 +39,69 @@ class _TermsScreenState extends State<TermsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: AppDimensions.base.h),
-                  _SectionTitle('1. Acceptance of Terms'),
-                  _Para(
+                  const _SectionTitle('1. Acceptance of Terms'),
+                  const _Para(
                     'By using the Goods Carrier application, you agree to these '
                     'Terms and Conditions. If you do not agree, please do not use '
                     'the application. These terms apply to all users, including '
                     'Customers and Drivers.',
                   ),
-                  _SectionTitle('2. Services'),
-                  _Para(
+                  const _SectionTitle('2. Services'),
+                  const _Para(
                     'Goods Carrier is a logistics marketplace that connects '
                     'Customers (shippers) with Drivers (transporters). We do not '
                     'directly provide transportation services. Drivers operate as '
                     'independent service providers.',
                   ),
-                  _SectionTitle('3. User Accounts'),
-                  _Para(
+                  const _SectionTitle('3. User Accounts'),
+                  const _Para(
                     'You must provide accurate and complete information during '
                     'registration. You are responsible for maintaining the '
                     'confidentiality of your account credentials and for all '
                     'activities under your account.',
                   ),
-                  _SectionTitle('4. Customer Responsibilities'),
-                  _Para(
+                  const _SectionTitle('4. Customer Responsibilities'),
+                  const _Para(
                     'Customers must provide accurate pickup and delivery details, '
                     'declare goods correctly (including fragile or hazardous '
                     'materials), and be available for pickup and delivery. '
                     'Misdeclaration of goods may result in account suspension.',
                   ),
-                  _SectionTitle('5. Driver Responsibilities'),
-                  _Para(
+                  const _SectionTitle('5. Driver Responsibilities'),
+                  const _Para(
                     'Drivers must hold valid commercial vehicle permits, '
                     'maintain adequate insurance, handle goods with care, and '
                     'complete deliveries within the agreed timeline. Drivers '
                     'must comply with all applicable traffic and transport laws.',
                   ),
-                  _SectionTitle('6. Payments'),
-                  _Para(
+                  const _SectionTitle('6. Payments'),
+                  const _Para(
                     'Payment terms are agreed between Customer and Driver. '
                     'Goods Carrier may facilitate payments via the in-app '
                     'payment gateway. Platform fees may apply. All transactions '
                     'are subject to applicable taxes.',
                   ),
-                  _SectionTitle('7. Liability'),
-                  _Para(
+                  const _SectionTitle('7. Liability'),
+                  const _Para(
                     'Goods Carrier is not liable for loss or damage to goods '
                     'during transit. We recommend Customers obtain appropriate '
                     'cargo insurance for high-value shipments.',
                   ),
-                  _SectionTitle('8. Privacy'),
-                  _Para(
+                  const _SectionTitle('8. Privacy'),
+                  const _Para(
                     'Your data is processed in accordance with our Privacy Policy. '
                     'By using this app, you consent to the collection and use of '
                     'your information as described therein.',
                   ),
-                  _SectionTitle('9. Dispute Resolution'),
-                  _Para(
+                  const _SectionTitle('9. Dispute Resolution'),
+                  const _Para(
                     'Any disputes shall first be resolved through our in-app '
                     'dispute resolution process. Unresolved disputes shall be '
                     'subject to arbitration under the laws of the Republic of '
                     'India, with jurisdiction in Mumbai.',
                   ),
-                  _SectionTitle('10. Changes to Terms'),
-                  _Para(
+                  const _SectionTitle('10. Changes to Terms'),
+                  const _Para(
                     'We reserve the right to modify these terms at any time. '
                     'Continued use of the app after changes constitutes '
                     'acceptance of the revised terms.',

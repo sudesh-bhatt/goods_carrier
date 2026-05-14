@@ -36,7 +36,7 @@ class ShipmentDetailScreen extends ConsumerWidget {
     if (shipment == null) {
       return Scaffold(
         appBar: AppBarWidget(title: shipmentId),
-        body: ErrorView(message: 'Shipment not found.'),
+        body: const ErrorView(message: 'Shipment not found.'),
       );
     }
 
@@ -71,7 +71,7 @@ class ShipmentDetailScreen extends ConsumerWidget {
                             context: context, status: shipment.status),
                         const Spacer(),
                         Text(
-                          '${shipment.estimatedPrice.inr}',
+                          shipment.estimatedPrice.inr,
                           style: context.textTheme.titleLarge?.copyWith(
                             color: colors.primary,
                             fontWeight: FontWeight.w800,

@@ -84,7 +84,7 @@ class _OtpVerificationScreenState
 
     return Scaffold(
       backgroundColor: colors.background,
-      appBar: AppBarWidget(title: ''),
+      appBar: const AppBarWidget(title: ''),
       body: SafeArea(
         child: Padding(
           padding:
