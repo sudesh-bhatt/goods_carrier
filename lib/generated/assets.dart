@@ -24,6 +24,8 @@ class Assets {
       SvgGenImage('assets/svg/ic_verified_carriers.svg');
   static const AssetGenImage loginScreenBanner =
       AssetGenImage('assets/images/login_screen_banner.png');
+  static const AssetGenImage splashScreenLogo =
+      AssetGenImage('assets/images/splash_screen_logo.png');
   static const $AssetsAssetsGen assets = $AssetsAssetsGen();
 }
 
@@ -40,6 +42,8 @@ class $AssetsImagesGen {
       const AssetGenImage('assets/images/app_logo.png');
   final AssetGenImage loginScreenBanner =
       const AssetGenImage('assets/images/login_screen_banner.png');
+  final AssetGenImage splashScreenLogo =
+      const AssetGenImage('assets/images/splash_screen_logo.png');
 }
 
 class AssetGenImage {
@@ -160,13 +164,13 @@ class SvgGenImage {
       width: width,
       height: height,
       fit: fit,
-      colorFilter: colorFilter ,
       alignment: alignment,
       allowDrawingOutsideViewBox: allowDrawingOutsideViewBox,
       placeholderBuilder: placeholderBuilder,
       semanticsLabel: semanticsLabel,
       excludeFromSemantics: excludeFromSemantics,
       theme: theme,
+      colorFilter: colorFilter,
       clipBehavior: clipBehavior,
     );
   }

@@ -88,7 +88,7 @@
   "authCountryCodeInd": "IND  +91",
   "authPhoneDigitsPlaceholder": "000-000-0000",
   "authSubtitle": "Your trusted logistics partner",
-  "authPhoneLabel": "Mobile Number",
+  "authPhoneLabel": "Phone Number",
   "authPhoneHint": "+91 XXXXX XXXXX",
   "authSendOtp": "Send OTP",
   "authVerifyOtp": "Verify OTP",

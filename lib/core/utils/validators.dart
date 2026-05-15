@@ -1,13 +1,28 @@
 class Validators {
   Validators._();
 
-  /// +91XXXXXXXXXX or 10-digit Indian mobile
+  /// +91XXXXXXXXXX or 10-digit Indian mobile (India-only validator).
   static String? phone(String? value) {
     if (value == null || value.trim().isEmpty) return 'Phone number is required';
     final digits = value.replaceAll(RegExp(r'[^\d]'), '');
     if (digits.length == 12 && digits.startsWith('91')) return null;
     if (digits.length == 10) return null;
     return 'Enter a valid 10-digit mobile number';
+  }
+
+  /// Country-aware phone validator used when a [CountryCodePicker] is present.
+  /// India (+91) requires exactly 10 digits. All other countries: 7–15 digits.
+  static String? phoneForCountry(String dialCode, String? value) {
+    if (value == null || value.trim().isEmpty) return 'Phone number is required';
+    final digits = value.replaceAll(RegExp(r'[^\d]'), '');
+    final isIndia = dialCode == '+91';
+    if (isIndia && digits.length != 10) {
+      return 'Enter a valid 10-digit mobile number';
+    }
+    if (!isIndia && (digits.length < 7 || digits.length > 15)) {
+      return 'Enter a valid phone number';
+    }
+    return null;
   }
 
   /// 15-char Indian GST: 27AABCS1429B1ZB

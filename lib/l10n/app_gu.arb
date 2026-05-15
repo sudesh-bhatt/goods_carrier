@@ -77,7 +77,7 @@
   "authCountryCodeInd": "IND  +91",
   "authPhoneDigitsPlaceholder": "000-000-0000",
   "authSubtitle": "આપનો વિશ્વસ્ત લોજિસ્ટિક્સ ભાગીદાર",
-  "authPhoneLabel": "મોબાઇલ નંબર",
+  "authPhoneLabel": "ફોન નંબર",
   "authPhoneHint": "+91 XXXXX XXXXX",
   "authSendOtp": "OTP મોકલો",
   "authVerifyOtp": "OTP ચકાસો",

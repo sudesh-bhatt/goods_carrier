@@ -31,6 +31,7 @@ dependencies:
   # ── UI & Responsiveness ─────────────────────────────────────────────────────
   flutter_screenutil: ^5.9.3
   google_fonts: ^6.2.1
+  country_code_picker: ^3.0.0   # Standalone country code selector with flag + dial code
 
   # ── Local Storage ───────────────────────────────────────────────────────────
   shared_preferences: ^2.3.2       # Theme mode, flags, simple prefs
@@ -69,6 +70,7 @@ flutter:
     - assets/images/
     - assets/images/app_logo.png
     - assets/images/login_screen_banner.png
+    - assets/images/splash_screen_logo.png
     - assets/svg/cta_right_arrow.svg
     - assets/svg/ic_radio_selected.svg
     - assets/svg/ic_radio_unselected.svg

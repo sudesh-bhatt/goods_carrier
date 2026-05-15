@@ -220,7 +220,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get authSubtitle => 'आपका विश्वसनीय लॉजिस्टिक्स पार्टनर';
 
   @override
-  String get authPhoneLabel => 'मोबाइल नंबर';
+  String get authPhoneLabel => 'फ़ोन नंबर';
 
   @override
   String get authPhoneHint => '+91 XXXXX XXXXX';

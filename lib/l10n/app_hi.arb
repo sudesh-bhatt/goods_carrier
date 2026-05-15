@@ -77,7 +77,7 @@
   "authCountryCodeInd": "IND  +91",
   "authPhoneDigitsPlaceholder": "000-000-0000",
   "authSubtitle": "आपका विश्वसनीय लॉजिस्टिक्स पार्टनर",
-  "authPhoneLabel": "मोबाइल नंबर",
+  "authPhoneLabel": "फ़ोन नंबर",
   "authPhoneHint": "+91 XXXXX XXXXX",
   "authSendOtp": "OTP भेजें",
   "authVerifyOtp": "OTP सत्यापित करें",

@@ -1,3 +1,4 @@
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,9 +14,16 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../generated/assets.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../res/font_res.dart';
 import '../providers/auth_provider.dart';
 
 const _kLoginBannerAsset = 'assets/images/login_screen_banner.png';
+
+/// Figma Login card headline fill (node 2013-1652).
+const _kLoginHeadlineColor = Color(0xFF1A1C1E);
+
+/// Figma login input field fill (lighter than global [AppColorScheme.inputFill]).
+const _kLoginInputFill = Color(0xFFF0F2F5);
 
 /// Login screen — phone capture + OTP request ([Figma Login](https://www.figma.com/design/wT5NdNeg7YVPPcq1nY9D2P/Goods-Carrier--Copy-?node-id=2013-1639)).
 ///
@@ -29,9 +37,10 @@ class LoginScreen extends ConsumerStatefulWidget {
 
 class _LoginScreenState extends ConsumerState<LoginScreen>
     with SafeSetStateMixin {
-  final _formKey = GlobalKey<FormState>();
+  final _formKey   = GlobalKey<FormState>();
   final _phoneCtrl = TextEditingController();
-  bool _submitted = false;
+  bool   _submitted = false;
+  String _dialCode  = '+91';   // updated when user picks a country
 
   @override
   void dispose() {
@@ -42,7 +51,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
   Future<void> _sendOtp() async {
     safeSetState(() => _submitted = true);
     if (!(_formKey.currentState?.validate() ?? false)) return;
-    await ref.read(authProvider.notifier).sendOtp(_phoneCtrl.text.trim());
+    // Full E.164-style number sent to the backend: e.g. +919876543210
+    final fullNumber = '$_dialCode${_phoneCtrl.text.trim()}';
+    await ref.read(authProvider.notifier).sendOtp(fullNumber);
     if (mounted) context.push(AppRoutes.otpVerification);
   }
 
@@ -67,22 +78,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
               l10n: l10n,
               appStyles: appStyles,
             ),
+            SizedBox(height: 30.h),
             Expanded(
               child: SingleChildScrollView(
-                padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 32.h),
+                padding: EdgeInsets.fromLTRB(25.w, 0, 25.w, 32.h),
                 child: Transform.translate(
                   offset: Offset(0, -24.h),
                   child: Column(
                     children: [
                       _FormCard(
-                        l10n: l10n,
-                        colors: colors,
+                        l10n:      l10n,
+                        colors:    colors,
                         textTheme: textTheme,
                         appStyles: appStyles,
-                        formKey: _formKey,
+                        formKey:   _formKey,
                         phoneCtrl: _phoneCtrl,
                         submitted: _submitted,
                         isLoading: isLoading,
+                        dialCode:  _dialCode,
+                        onCountryChanged: (code) => safeSetState(
+                          () => _dialCode = code.dialCode ?? '+91',
+                        ),
                         onSendOtp: _sendOtp,
                       ),
                       SizedBox(height: 20.h),
@@ -157,37 +173,17 @@ class _LoginHeroBanner extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Assets.appLogo.image(
-                      height: 72.h,
+                      height: 150.h,
                       fit: BoxFit.contain,
                     ),
                     SizedBox(height: 10.h),
-                    Text(
-                      l10n.appName,
-                      textAlign: TextAlign.center,
-                      style: appStyles.sectionHeading.copyWith(
-                        color: colors.textPrimary,
-                        fontSize: 22.sp,
-                        height: 1.2,
-                      ),
-                    ),
-                    SizedBox(height: 4.h),
-                    Text(
-                      l10n.authLoginBrandLine,
-                      textAlign: TextAlign.center,
-                      style: appStyles.caption.copyWith(
-                        color: colors.textSecondary,
-                        fontSize: 10.sp,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 1.1,
-                        height: 1.2,
-                      ),
-                    ),
+
                   ],
                 ),
               ),
             ),
           ),
-        ],
+        ]
       ),
     );
   }
@@ -205,18 +201,22 @@ class _FormCard extends StatelessWidget {
     required this.phoneCtrl,
     required this.submitted,
     required this.isLoading,
+    required this.dialCode,
+    required this.onCountryChanged,
     required this.onSendOtp,
   });
 
-  final AppLocalizations l10n;
-  final AppColorScheme colors;
-  final TextTheme textTheme;
-  final AppTextStyles appStyles;
+  final AppLocalizations     l10n;
+  final AppColorScheme       colors;
+  final TextTheme            textTheme;
+  final AppTextStyles        appStyles;
   final GlobalKey<FormState> formKey;
   final TextEditingController phoneCtrl;
-  final bool submitted;
-  final bool isLoading;
-  final VoidCallback onSendOtp;
+  final bool                 submitted;
+  final bool                 isLoading;
+  final String               dialCode;
+  final ValueChanged<CountryCode> onCountryChanged;
+  final VoidCallback         onSendOtp;
 
   @override
   Widget build(BuildContext context) {
@@ -230,7 +230,7 @@ class _FormCard extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(24.w),
+      padding: EdgeInsets.all(32.w),
       decoration: BoxDecoration(
         color: colors.surface,
         borderRadius: radius,
@@ -253,39 +253,55 @@ class _FormCard extends StatelessWidget {
             Text(
               l10n.authLoginHeadline,
               style: appStyles.sectionHeading.copyWith(
-                color: colors.textPrimary,
+                fontFamily: FontRes.MANROPE_EXTRABOLD,
+                color: _kLoginHeadlineColor,
                 fontSize: 24.sp,
-                height: 1.2,
+                fontWeight: FontWeight.w400,
+                height: 1.25,
+                letterSpacing: 0,
               ),
             ),
             SizedBox(height: 8.h),
             Text(
               l10n.authLoginSubtitle,
-              style: textTheme.bodyMedium?.copyWith(
+              style: appStyles.label.copyWith(
                 color: colors.textSecondary,
-                fontSize: 15.sp,
+                fontSize: 14.sp,
                 fontWeight: FontWeight.w400,
-                height: 1.5,
+                height: 20 / 14,
+                letterSpacing: 0,
               ),
             ),
             SizedBox(height: 20.h),
             Text(
               l10n.authPhoneLabel.toUpperCase(),
-              style: textTheme.labelSmall?.copyWith(
+              style: appStyles.caption.copyWith(
+                fontFamily: FontRes.MANROPE_SEMIBOLD,
                 color: colors.textSecondary,
-                fontSize: 11.sp,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 1.2,
-                height: 1.2,
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w400,
+                letterSpacing: 0.8,
+                height: 16 / 12,
               ),
             ),
             SizedBox(height: 8.h),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _CountryCodeChip(colors: colors, textTheme: textTheme, l10n: l10n),
-                SizedBox(width: 8.w),
+                // ── 30 % — country code picker ────────────────────────
                 Expanded(
+                  flex: 4,
+                  child: _CountryBox(
+                    colors:    colors,
+                    textTheme: textTheme,
+                    l10n:      l10n,
+                    onChanged: onCountryChanged,
+                  ),
+                ),
+                SizedBox(width: 8.w),
+                // ── 70 % — phone number input ─────────────────────────
+                Expanded(
+                  flex: 7,
                   child: TextFormField(
                     controller: phoneCtrl,
                     keyboardType: TextInputType.phone,
@@ -293,9 +309,12 @@ class _FormCard extends StatelessWidget {
                     autofocus: true,
                     inputFormatters: [
                       FilteringTextInputFormatter.digitsOnly,
-                      LengthLimitingTextInputFormatter(10),
+                      // India: 10 digits; ITU-T E.164 max for all others: 15.
+                      LengthLimitingTextInputFormatter(
+                        dialCode == '+91' ? 10 : 15,
+                      ),
                     ],
-                    validator: Validators.phone,
+                    validator: (v) => Validators.phoneForCountry(dialCode, v),
                     onFieldSubmitted: (_) => onSendOtp(),
                     style: textTheme.bodyLarge?.copyWith(
                       color: phoneDigitsColor,
@@ -310,7 +329,7 @@ class _FormCard extends StatelessWidget {
                         fontWeight: FontWeight.w400,
                       ),
                       filled: true,
-                      fillColor: colors.inputFill,
+                      fillColor: _kLoginInputFill,
                       border: OutlineInputBorder(
                         borderRadius: fieldRadius,
                         borderSide: orangeFieldBorder,
@@ -388,12 +407,6 @@ class _FormCard extends StatelessWidget {
                             ),
                             SizedBox(width: 8.w),
                             Assets.ctaRightArrow.svg(
-                              width: 18.w,
-                              height: 18.w,
-                              colorFilter: ColorFilter.mode(
-                                colors.onPrimary,
-                                BlendMode.srcIn,
-                              ),
                             ),
                           ],
                         ),
@@ -436,43 +449,191 @@ class _FormCard extends StatelessWidget {
   }
 }
 
-class _CountryCodeChip extends StatelessWidget {
-  const _CountryCodeChip({
+class _CountryBox extends StatelessWidget {
+  const _CountryBox({
     required this.colors,
     required this.textTheme,
     required this.l10n,
+    required this.onChanged,
   });
 
-  final AppColorScheme colors;
-  final TextTheme textTheme;
-  final AppLocalizations l10n;
+  final AppColorScheme            colors;
+  final TextTheme                 textTheme;
+  final AppLocalizations          l10n;
+  final ValueChanged<CountryCode> onChanged;
+
+  /// ISO 3166-1 alpha-3 lookup — covers countries most relevant to an India-
+  /// focused logistics app. Unmapped codes fall back to the alpha-2 value.
+  static String _alpha3(String? alpha2) {
+    const _map = {
+      'IN': 'IND', 'US': 'USA', 'GB': 'GBR', 'CN': 'CHN', 'JP': 'JPN',
+      'DE': 'DEU', 'FR': 'FRA', 'AU': 'AUS', 'CA': 'CAN', 'SG': 'SGP',
+      'AE': 'ARE', 'SA': 'SAU', 'PK': 'PAK', 'BD': 'BGD', 'NP': 'NPL',
+      'LK': 'LKA', 'MY': 'MYS', 'TH': 'THA', 'ID': 'IDN', 'PH': 'PHL',
+      'ZA': 'ZAF', 'NG': 'NGA', 'KE': 'KEN', 'BR': 'BRA', 'MX': 'MEX',
+      'RU': 'RUS', 'KR': 'KOR', 'IT': 'ITA', 'ES': 'ESP', 'NL': 'NLD',
+      'NZ': 'NZL', 'QA': 'QAT', 'KW': 'KWT', 'BH': 'BHR', 'OM': 'OMN',
+      'IR': 'IRN', 'IQ': 'IRQ', 'EG': 'EGY', 'ET': 'ETH', 'GH': 'GHA',
+      'TZ': 'TZA', 'UG': 'UGA', 'MM': 'MMR', 'VN': 'VNM', 'TR': 'TUR',
+    };
+    final key = alpha2?.toUpperCase();
+    return _map[key] ?? (key ?? 'IND');
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 14.h),
-      decoration: BoxDecoration(
-        color: colors.inputFill,
-        borderRadius: BorderRadius.circular(AppDimensions.radiusMd.r),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            l10n.authCountryCodeInd,
-            style: textTheme.bodyMedium?.copyWith(
-              color: colors.textPrimary,
-              fontSize: 15.sp,
-              fontWeight: FontWeight.w800,
+    // Force English country names in the dialog right now.
+    // TODO: swap `const Locale('en')` → `Localizations.localeOf(context)`
+    // once the app's locale switcher is wired through the ancestor tree.
+    return Localizations.override(
+      context: context,
+      locale: const Locale('en'),
+      child: SizedBox(
+        height: 52.h,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: _kLoginInputFill,
+            borderRadius: BorderRadius.circular(AppDimensions.radiusMd.r),
+            border: Border.all(
+              color: colors.primary.withValues(alpha: 0.42),
+              width: 1,
             ),
           ),
-          SizedBox(width: 4.w),
-          Icon(
-            Icons.keyboard_arrow_down_rounded,
-            color: colors.textSecondary,
-            size: 22.w,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(AppDimensions.radiusMd.r),
+            // Theme override propagates into the picker's internal ListTiles,
+            // giving us control over dialog item spacing and divider visibility.
+            child: Theme(
+              data: Theme.of(context).copyWith(
+                listTileTheme: ListTileThemeData(
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 20.w,
+                    vertical:   2.h,
+                  ),
+                  minVerticalPadding: 12.h,
+                  dense: false,
+                  titleTextStyle: TextStyle(
+                    fontFamily: 'Manrope',
+                    fontSize:   14.sp,
+                    fontWeight: FontWeight.w500,
+                    color:      colors.textPrimary,
+                    height:     1.4,
+                  ),
+                ),
+                // Remove the hairline dividers between rows — cleaner look.
+                dividerColor: Colors.transparent,
+              ),
+              child: CountryCodePicker(
+                onChanged: onChanged,
+                initialSelection:          'IN',
+                favorite:                  const ['IN'],
+                showCountryOnly:           false,
+                showOnlyCountryWhenClosed: false,
+                alignLeft:                 false,
+                showDropDownButton:        false,
+                hideMainText:              true,
+                showFlagMain:              false,
+                showFlag:                  true,   // flags shown in the dialog list
+                flagWidth:                 22.w,
+                padding:                   EdgeInsets.zero,
+
+                // ── Closed-state: "IND  +91  ▾" ─────────────────────────────
+                builder: (CountryCode? code) => Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10.w),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          '${_alpha3(code?.code)}  ${code?.dialCode ?? '+91'}',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontFamily: FontRes.MANROPE_REGULAR,
+                            fontSize:   13.sp,
+                            fontWeight: FontWeight.w500,
+                            color:      const Color(0xFF333333),
+                            height:     20 / 13,
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 2.w),
+                      Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        size:  16.w,
+                        color: colors.textSecondary,
+                      ),
+                    ],
+                  ),
+                ),
+
+                // ── Dialog row text ───────────────────────────────────────────
+                // Fallback style; primary control is via listTileTheme above.
+                dialogTextStyle: TextStyle(
+                  fontFamily: 'Manrope',
+                  fontSize:   14.sp,
+                  fontWeight: FontWeight.w500,
+                  color:      colors.textPrimary,
+                  height:     1.4,
+                ),
+
+                // ── Dialog chrome ─────────────────────────────────────────────
+                dialogBackgroundColor: colors.surface,
+                barrierColor:          Colors.black.withOpacity(0.45),
+                closeIcon: Icon(
+                  Icons.close_rounded,
+                  size:  22.w,
+                  color: colors.textPrimary,
+                ),
+
+                // ── Search field ──────────────────────────────────────────────
+                searchStyle: TextStyle(
+                  fontFamily: 'Manrope',
+                  fontSize:   14.sp,
+                  fontWeight: FontWeight.w400,
+                  color:      colors.textPrimary,
+                ),
+                searchDecoration: InputDecoration(
+                  hintText: l10n.actionSearch,
+                  hintStyle: TextStyle(
+                    fontFamily: 'Manrope',
+                    fontSize:   14.sp,
+                    fontWeight: FontWeight.w400,
+                    color:      colors.textHint,
+                  ),
+                  prefixIcon: Icon(
+                    Icons.search_rounded,
+                    color: colors.textSecondary,
+                    size:  20.w,
+                  ),
+                  filled:    true,
+                  fillColor: _kLoginInputFill,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
+                    borderSide:   BorderSide.none,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
+                    borderSide:   BorderSide.none,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
+                    borderSide:   BorderSide(color: colors.primary, width: 1.5),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical:   12,
+                  ),
+                ),
+
+                dialogSize: Size(
+                  MediaQuery.of(context).size.width * 0.90,
+                  600.h,
+                ),
+              ),
+            ),
           ),
-        ],
+        ),
       ),
     );
   }

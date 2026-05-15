@@ -14,7 +14,7 @@ const _kNavigateDelay    = Duration(milliseconds: 2600);
 /// Splash screen — matches the Figma design:
 ///
 ///   - Theme-aware background (`colors.background`)
-///   - Brand logo from `assets/images/app_logo.png`
+///   - Brand logo from `assets/images/splash_screen_logo.png`
 ///   - "Goods Carrier" using `headlineLarge` from the global text theme
 ///   - "YOUR LOGISTICS PARTNER" using `labelSmall` with wider tracking
 ///   - Animated progress bar at the bottom (SYSTEM INITIALIZING … 100 %)
@@ -78,7 +78,7 @@ class _SplashScreenState extends State<SplashScreen>
               child: Center(
                 child: Padding(
                   padding: EdgeInsets.all(20.w),
-                  child: Assets.appLogo.image(),
+                  child: Assets.splashScreenLogo.image(),
                 ),
               ),
             ),

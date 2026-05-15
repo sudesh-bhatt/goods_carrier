@@ -517,7 +517,7 @@ abstract class AppLocalizations {
   /// No description provided for @authPhoneLabel.
   ///
   /// In en, this message translates to:
-  /// **'Mobile Number'**
+  /// **'Phone Number'**
   String get authPhoneLabel;
 
   /// No description provided for @authPhoneHint.

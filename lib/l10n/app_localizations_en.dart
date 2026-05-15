@@ -220,7 +220,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authSubtitle => 'Your trusted logistics partner';
 
   @override
-  String get authPhoneLabel => 'Mobile Number';
+  String get authPhoneLabel => 'Phone Number';
 
   @override
   String get authPhoneHint => '+91 XXXXX XXXXX';

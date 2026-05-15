@@ -220,7 +220,7 @@ class AppLocalizationsGu extends AppLocalizations {
   String get authSubtitle => 'આપનો વિશ્વસ્ત લોજિસ્ટિક્સ ભાગીદાર';
 
   @override
-  String get authPhoneLabel => 'મોબાઇલ નંબર';
+  String get authPhoneLabel => 'ફોન નંબર';
 
   @override
   String get authPhoneHint => '+91 XXXXX XXXXX';
