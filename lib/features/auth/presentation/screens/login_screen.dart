@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_dimensions.dart';
+import '../../../../core/extensions/svg_gen_image_extension.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/mixins/safe_set_state_mixin.dart';
 import '../../../../core/router/app_routes.dart';
@@ -230,7 +231,7 @@ class _FormCard extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(32.w),
+      padding: EdgeInsets.all(24.w),
       decoration: BoxDecoration(
         color: colors.surface,
         borderRadius: radius,
@@ -290,7 +291,7 @@ class _FormCard extends StatelessWidget {
               children: [
                 // ── 30 % — country code picker ────────────────────────
                 Expanded(
-                  flex: 4,
+                  flex: 3,
                   child: _CountryBox(
                     colors:    colors,
                     textTheme: textTheme,
@@ -406,8 +407,11 @@ class _FormCard extends StatelessWidget {
                               ),
                             ),
                             SizedBox(width: 8.w),
-                            Assets.ctaRightArrow.svg(
-                            ),
+                            Icon(
+                              Icons.arrow_forward,
+                              size: 18.w,
+                              color: colors.onPrimary,
+                            )
                           ],
                         ),
                 ),

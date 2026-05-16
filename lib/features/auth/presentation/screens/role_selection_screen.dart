@@ -6,8 +6,9 @@ import 'package:go_router/go_router.dart';
 import 'package:goods_carrier/core/theme/app_color_scheme.dart';
 import 'package:goods_carrier/generated/assets.dart';
 
-import '../../../../core/mixins/safe_set_state_mixin.dart';
+import '../../../../core/extensions/svg_gen_image_extension.dart';
 import '../../../../core/extensions/theme_ext.dart';
+import '../../../../core/mixins/safe_set_state_mixin.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../shared/domain/enums/user_role.dart';
 import '../providers/auth_provider.dart';
@@ -137,12 +138,11 @@ class _RoleSelectionScreenState
                         ),
                       ),
                       SizedBox(width: 8.w),
-                      Assets.ctaRightArrow.svg(
-                        colorFilter: ColorFilter.mode(
-                          colors.onPrimary,
-                          BlendMode.srcIn,
-                        ),
-                      ),
+                     Icon(
+                        Icons.arrow_forward,
+                        size: 18.w,
+                        color: colors.onPrimary,
+                     )
                     ],
                   ),
                 ),
@@ -213,12 +213,11 @@ class _RoleCard extends StatelessWidget {
                     color:        isSelected ? colors.primary : colors.inputFill,
                     borderRadius: BorderRadius.circular(14.r),
                   ),
-                  child: option.icon.svg(
-                    colorFilter: ColorFilter.mode(
-                      isSelected ? colors.onPrimary : colors.disableColor,
-                      BlendMode.srcIn,
-                    ),
-                  )
+                  child: option.icon.svgTint(
+                    color: isSelected
+                        ? colors.onPrimary
+                        : colors.disableColor,
+                  ),
 
                 ),
 

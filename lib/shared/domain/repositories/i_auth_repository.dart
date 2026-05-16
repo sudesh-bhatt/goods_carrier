@@ -17,9 +17,9 @@ abstract class IAuthRepository {
   /// Creates a customer profile on the server and returns the [User].
   Future<User> createCustomerProfile({
     required String name,
-    required String email,
-    String? companyName,
-    String? gstNumber,
+    required String phone,
+    required String address,
+    String? email,
   });
 
   /// Creates a driver profile on the server and returns the [User].

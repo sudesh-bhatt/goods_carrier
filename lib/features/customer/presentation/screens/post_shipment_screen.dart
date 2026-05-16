@@ -13,7 +13,8 @@ import '../../../../shared/domain/enums/shipment_status.dart';
 import '../../../../shared/domain/enums/vehicle_type.dart';
 import '../../../../shared/presentation/widgets/buttons/app_button.dart';
 import '../../../../shared/presentation/widgets/inputs/app_text_field.dart';
-import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
+import '../widgets/customer_light_chrome.dart';
+import '../widgets/customer_subscreen_header.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/customer_shipments_provider.dart';
 
@@ -211,11 +212,11 @@ class _PostShipmentScreenState extends ConsumerState<PostShipmentScreen> {
         if (didPop) return; // step 0 — route already popped by the OS
         _goBack();          // step > 0 — walk back one page
       },
-      child: Scaffold(
+      child: CustomerLightChrome(
+        child: Scaffold(
       backgroundColor: colors.background,
-      appBar: AppBarWidget(
+      appBar: CustomerSubscreenHeader(
         title: context.l10n.shipmentPostNew,
-        leadingType: AppBarLeadingType.back,
       ),
       body: SafeArea(
         child: Column(
@@ -273,6 +274,7 @@ class _PostShipmentScreenState extends ConsumerState<PostShipmentScreen> {
         ),
       ),
     ),   // Scaffold
+    ),   // CustomerLightChrome
     );   // PopScope
   }
 }

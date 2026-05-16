@@ -26,6 +26,8 @@ class AppOtpField extends StatefulWidget {
     this.autofocus = true,
     this.enabled = true,
     this.hasError = false,
+    this.autoSubmitOnComplete = true,
+    this.boxFillColor,
   });
 
   final void Function(String otp) onCompleted;
@@ -35,6 +37,12 @@ class AppOtpField extends StatefulWidget {
   final int length;
   final bool autofocus;
   final bool enabled;
+
+  /// When false, [onCompleted] is not called automatically — use a CTA instead.
+  final bool autoSubmitOnComplete;
+
+  /// Optional fill for empty boxes (Figma login/OTP uses `#F0F2F5`).
+  final Color? boxFillColor;
 
   /// Turns all box borders red — set to true on wrong-OTP server response.
   final bool hasError;
@@ -83,7 +91,9 @@ class _AppOtpFieldState extends State<AppOtpField> {
 
     if (capped.length == widget.length) {
       HapticFeedback.lightImpact();
-      widget.onCompleted(capped);
+      if (widget.autoSubmitOnComplete) {
+        widget.onCompleted(capped);
+      }
     }
   }
 
@@ -112,6 +122,7 @@ class _AppOtpFieldState extends State<AppOtpField> {
                   digit: isFilled ? _otp[index] : null,
                   isActive: isActive,
                   hasError: widget.hasError,
+                  fillColor: widget.boxFillColor,
                 ),
               );
             }),
@@ -149,26 +160,31 @@ class _OtpBox extends StatelessWidget {
     required this.digit,
     required this.isActive,
     required this.hasError,
+    this.fillColor,
   });
 
   final String? digit;
   final bool isActive;
   final bool hasError;
+  final Color? fillColor;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
     final boxSize = 56.w;
+    final boxFill = fillColor ?? colors.inputFill;
 
     final Color borderColor;
+    final double borderWidth;
     if (hasError) {
       borderColor = colors.error;
+      borderWidth = 1.5;
     } else if (isActive) {
       borderColor = colors.primary;
-    } else if (digit != null) {
-      borderColor = colors.primary.withOpacity(0.5);
+      borderWidth = 1.5;
     } else {
-      borderColor = colors.divider;
+      borderColor = Colors.transparent;
+      borderWidth = 0;
     }
 
     return AnimatedContainer(
@@ -176,14 +192,9 @@ class _OtpBox extends StatelessWidget {
       width: boxSize,
       height: boxSize,
       decoration: BoxDecoration(
-        color: digit != null
-            ? colors.primary.withOpacity(0.06)
-            : colors.inputFill,
+        color: boxFill,
         borderRadius: BorderRadius.circular(AppDimensions.radiusMd.r),
-        border: Border.all(
-          color: borderColor,
-          width: isActive || hasError ? 2.0 : 1.5,
-        ),
+        border: Border.all(color: borderColor, width: borderWidth),
       ),
       alignment: Alignment.center,
       child: digit != null
@@ -192,6 +203,7 @@ class _OtpBox extends StatelessWidget {
               style: context.textTheme.headlineSmall?.copyWith(
                 color: colors.textPrimary,
                 fontWeight: FontWeight.w700,
+                fontSize: 22.sp,
               ),
             )
           : isActive

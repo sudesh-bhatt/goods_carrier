@@ -232,12 +232,39 @@ class AppLocalizationsHi extends AppLocalizations {
   String get authVerifyOtp => 'OTP सत्यापित करें';
 
   @override
+  String get authVerifyNumberTitle => 'नंबर सत्यापित करें';
+
+  @override
+  String get authEnterOtp => 'OTP दर्ज करें';
+
+  @override
+  String get authOtpCodeSentPrefix => 'भेजा गया 4-अंकीय कोड दर्ज करें';
+
+  @override
+  String get authVerifyAndContinue => 'सत्यापित करें और जारी रखें';
+
+  @override
   String get authResendOtp => 'OTP पुनः भेजें';
+
+  @override
+  String get authResendSms => 'SMS पुनः भेजें';
+
+  @override
+  String get authResendCodeIn => 'कोड पुनः भेजें';
 
   @override
   String authResendIn(int seconds) {
     return '$seconds सेकंड में पुनः भेजें';
   }
+
+  @override
+  String get authHavingTrouble => 'समस्या हो रही है? ';
+
+  @override
+  String get authNeedHelp => 'सहायता चाहिए';
+
+  @override
+  String get authEncryptedVerification => 'एंड-टू-एंड एन्क्रिप्टेड सत्यापन';
 
   @override
   String get authLoginSubtitle =>
@@ -342,7 +369,13 @@ class AppLocalizationsHi extends AppLocalizations {
   String get profileEmail => 'ईमेल पता';
 
   @override
+  String get profileEmailOptional => 'ईमेल पता (वैकल्पिक)';
+
+  @override
   String get profilePhone => 'फ़ोन नंबर';
+
+  @override
+  String get profilePrimaryAddress => 'प्राथमिक पता';
 
   @override
   String get profileCompanyName => 'कंपनी का नाम';
@@ -369,10 +402,47 @@ class AppLocalizationsHi extends AppLocalizations {
   String get profileLoadCapacity => 'भार क्षमता (टन)';
 
   @override
-  String get profileSetupTitle => 'अपना प्रोफ़ाइल पूरा करें';
+  String get profileSetupTitle => 'अपनी प्रोफ़ाइल बनाएं';
 
   @override
   String get profileSetupSubtitle => 'चलिए शुरू करते हैं';
+
+  @override
+  String get profileCreateButton => 'प्रोफ़ाइल बनाएं';
+
+  @override
+  String get profilePhotoPickerTitle => 'प्रोफ़ाइल फ़ोटो';
+
+  @override
+  String get profilePhotoTakePhoto => 'फ़ोटो लें';
+
+  @override
+  String get profilePhotoChooseGallery => 'गैलरी से चुनें';
+
+  @override
+  String get profilePhotoCameraPermissionDenied =>
+      'प्रोफ़ाइल फ़ोटो के लिए कैमरा अनुमति आवश्यक है। कृपया सेटिंग्स में कैमरा की अनुमति दें।';
+
+  @override
+  String get profilePhotoGalleryPermissionDenied =>
+      'प्रोफ़ाइल फ़ोटो के लिए गैलरी अनुमति आवश्यक है। कृपया सेटिंग्स में फ़ोटो की अनुमति दें।';
+
+  @override
+  String get profilePhotoLimitedTitle => 'सीमित फ़ोटो पहुंच';
+
+  @override
+  String get profilePhotoLimitedMessage =>
+      'आपने केवल चुनी हुई फ़ोटो की अनुमति दी है। पूरी गैलरी के लिए सेटिंग्स में पूर्ण फ़ोटो पहुंच दें।';
+
+  @override
+  String get profilePhotoAllowFullAccess => 'पूर्ण पहुंच दें';
+
+  @override
+  String get profilePhotoContinueWithLimited =>
+      'चुनी हुई फ़ोटो के साथ जारी रखें';
+
+  @override
+  String get actionOpenSettings => 'सेटिंग्स खोलें';
 
   @override
   String get shipmentPickup => 'पिकअप स्थान';
@@ -432,6 +502,145 @@ class AppLocalizationsHi extends AppLocalizations {
   String shipmentActiveCount(int count) {
     return '$count सक्रिय शिपमेंट';
   }
+
+  @override
+  String get customerHomeBrandTitle => 'Good Carrier';
+
+  @override
+  String get customerHomeDriverTrips => 'ड्राइवर यात्राएं';
+
+  @override
+  String get customerHomeInterestBadge => 'आपकी रुचि दर्ज है';
+
+  @override
+  String get customerHomeEstStartDate => 'अनुमानित प्रारंभ तिथि';
+
+  @override
+  String get customerHomeEstEndDate => 'अनुमानित समाप्ति तिथि';
+
+  @override
+  String get customerHomeSearchHint => 'गंतव्य या वाहन से खोजें';
+
+  @override
+  String customerHomeActiveShipments(int count) {
+    return '$count सक्रिय शिपमेंट';
+  }
+
+  @override
+  String get customerHomeYourShipments => 'आपके शिपमेंट';
+
+  @override
+  String get customerNavHome => 'होम';
+
+  @override
+  String get customerNavShipments => 'शिपमेंट';
+
+  @override
+  String get customerNavNotifications => 'सूचनाएं';
+
+  @override
+  String get customerNavProfile => 'प्रोफ़ाइल';
+
+  @override
+  String get actionViewDetails => 'विवरण देखें';
+
+  @override
+  String get customerHomeFilterSoon => 'उन्नत फ़िल्टर जल्द उपलब्ध होंगे';
+
+  @override
+  String get filterSearchTitle => 'फ़िल्टर खोज';
+
+  @override
+  String get filterClearAll => 'सब साफ़ करें';
+
+  @override
+  String get filterRouteDetails => 'मार्ग विवरण';
+
+  @override
+  String get filterFromLabel => 'से';
+
+  @override
+  String get filterFromHint => 'प्रस्थान शहर दर्ज करें';
+
+  @override
+  String get filterToLabel => 'तक';
+
+  @override
+  String get filterToHint => 'गंतव्य दर्ज करें';
+
+  @override
+  String get filterPickupDate => 'पिकअप तिथि';
+
+  @override
+  String get filterCalendar => 'कैलेंडर';
+
+  @override
+  String get filterToday => 'आज';
+
+  @override
+  String get filterVehicleClass => 'वाहन वर्ग';
+
+  @override
+  String get filterLoadCapacity => 'लोड क्षमता';
+
+  @override
+  String get filterApply => 'फ़िल्टर लागू करें';
+
+  @override
+  String get customerMyShipment => 'मेरे शिपमेंट';
+
+  @override
+  String get customerMyProfile => 'मेरी प्रोफ़ाइल';
+
+  @override
+  String get customerRoleLabel => 'ग्राहक';
+
+  @override
+  String get customerAccountSettings => 'खाता सेटिंग्स';
+
+  @override
+  String get customerEditPersonalInfo => 'व्यक्तिगत जानकारी संपादित करें';
+
+  @override
+  String get customerEditPersonalInfoSub => 'नाम, ईमेल, फ़ोन और पता';
+
+  @override
+  String get customerSavedAddresses => 'सहेजे गए पते';
+
+  @override
+  String get customerSavedAddressesSub => 'घर, कार्यालय और अन्य';
+
+  @override
+  String get customerReportedTrips => 'रिपोर्ट की गई यात्राएं';
+
+  @override
+  String get customerReportedTripsSub => 'रिपोर्ट की गई यात्राएं देखें';
+
+  @override
+  String get customerActivity => 'गतिविधि';
+
+  @override
+  String get customerHelpSupport => 'सहायता और समर्थन';
+
+  @override
+  String get customerHelpSupportSub => 'FAQ और अधिक';
+
+  @override
+  String get shipmentEstimatedPay => 'अनुमानित भुगतान';
+
+  @override
+  String get shipmentStatusPublished => 'प्रकाशित';
+
+  @override
+  String shipmentViewInterest(int count) {
+    return 'रुचि देखें ($count)';
+  }
+
+  @override
+  String get shipmentDetailsTitle => 'शिपमेंट विवरण';
+
+  @override
+  String get notificationNewBadge => 'नया';
 
   @override
   String get tripPostNew => 'ट्रिप पोस्ट करें';

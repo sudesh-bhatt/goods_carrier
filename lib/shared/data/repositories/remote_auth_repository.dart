@@ -34,17 +34,17 @@ class RemoteAuthRepository implements IAuthRepository {
   @override
   Future<User> createCustomerProfile({
     required String name,
-    required String email,
-    String? companyName,
-    String? gstNumber,
+    required String phone,
+    required String address,
+    String? email,
   }) async {
     final response = await dio.post(
       ApiConstants.customerProfile,
       data: {
-        'name':  name,
-        'email': email,
-        if (companyName != null) 'company_name': companyName,
-        if (gstNumber   != null) 'gst_number':   gstNumber,
+        'name':    name,
+        'phone':   phone,
+        'address': address,
+        if (email != null && email.isNotEmpty) 'email': email,
       },
     );
     return User.fromJson(response.data['data'] as Map<String, dynamic>);

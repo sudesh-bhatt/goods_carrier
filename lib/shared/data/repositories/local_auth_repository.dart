@@ -37,19 +37,18 @@ class LocalAuthRepository implements IAuthRepository {
   @override
   Future<User> createCustomerProfile({
     required String name,
-    required String email,
-    String? companyName,
-    String? gstNumber,
+    required String phone,
+    required String address,
+    String? email,
   }) async {
     await _delay();
     return User(
-      id:          'USR-${DateTime.now().millisecondsSinceEpoch % 9999}',
-      name:        name,
-      phone:       await _storage.read(key: 'otp_phone') ?? '',
-      email:       email,
-      role:        UserRole.customer,
-      companyName: companyName,
-      gstNumber:   gstNumber,
+      id:      'USR-${DateTime.now().millisecondsSinceEpoch % 9999}',
+      name:    name,
+      phone:   phone,
+      email:   email ?? '',
+      role:    UserRole.customer,
+      address: address,
     );
   }
 

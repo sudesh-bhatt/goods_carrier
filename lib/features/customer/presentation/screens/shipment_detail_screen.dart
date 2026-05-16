@@ -7,10 +7,10 @@ import '../../../../core/extensions/num_ext.dart';
 import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/router/app_routes.dart';
-import '../../../../shared/domain/entities/shipment.dart';
 import '../../../../shared/presentation/widgets/buttons/app_button.dart';
 import '../../../../shared/presentation/widgets/feedback/error_view.dart';
-import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
+import '../widgets/customer_light_chrome.dart';
+import '../widgets/customer_subscreen_header.dart';
 import '../../../../shared/presentation/widgets/navigation/confirmation_bottom_sheet.dart';
 import '../../../../shared/presentation/widgets/route/route_timeline.dart';
 import '../../../../shared/presentation/widgets/status/fragile_banner.dart';
@@ -35,22 +35,25 @@ class ShipmentDetailScreen extends ConsumerWidget {
 
     if (shipment == null) {
       return Scaffold(
-        appBar: AppBarWidget(title: shipmentId),
+        appBar: CustomerSubscreenHeader(
+          title: context.l10n.shipmentDetailsTitle,
+        ),
         body: const ErrorView(message: 'Shipment not found.'),
       );
     }
 
-    return Scaffold(
+    return CustomerLightChrome(
+      child: Scaffold(
       backgroundColor: colors.background,
-      appBar: AppBarWidget(
-        title: shipment.id,
-        actions: [
-          if (shipment.isPending)
-            AppBarAction(
-              icon: Icons.my_location_outlined,
-              onTap: () => context.push(AppRoutes.trackingOf(shipment.id)),
-            ),
-        ],
+      appBar: CustomerSubscreenHeader(
+        title: context.l10n.shipmentDetailsTitle,
+        trailing: shipment.isPending
+            ? IconButton(
+                icon: const Icon(Icons.my_location_outlined),
+                onPressed: () =>
+                    context.push(AppRoutes.trackingOf(shipment.id)),
+              )
+            : SizedBox(width: 32.w),
       ),
       body: SafeArea(
         child: CustomScrollView(
@@ -297,6 +300,7 @@ class ShipmentDetailScreen extends ConsumerWidget {
               ),
             )
           : null,
+    ),
     );
   }
 }

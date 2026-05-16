@@ -232,12 +232,39 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authVerifyOtp => 'Verify OTP';
 
   @override
+  String get authVerifyNumberTitle => 'Verify Number';
+
+  @override
+  String get authEnterOtp => 'Enter OTP';
+
+  @override
+  String get authOtpCodeSentPrefix => 'Enter the 4-digit code sent to';
+
+  @override
+  String get authVerifyAndContinue => 'Verify & Continue';
+
+  @override
   String get authResendOtp => 'Resend OTP';
+
+  @override
+  String get authResendSms => 'Resend SMS';
+
+  @override
+  String get authResendCodeIn => 'Resend code in';
 
   @override
   String authResendIn(int seconds) {
     return 'Resend in ${seconds}s';
   }
+
+  @override
+  String get authHavingTrouble => 'Having trouble? ';
+
+  @override
+  String get authNeedHelp => 'Need Help';
+
+  @override
+  String get authEncryptedVerification => 'END-TO-END ENCRYPTED VERIFICATION';
 
   @override
   String get authLoginSubtitle =>
@@ -342,7 +369,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileEmail => 'Email Address';
 
   @override
+  String get profileEmailOptional => 'Email Address (Optional)';
+
+  @override
   String get profilePhone => 'Phone Number';
+
+  @override
+  String get profilePrimaryAddress => 'Primary Address';
 
   @override
   String get profileCompanyName => 'Company Name';
@@ -369,10 +402,46 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileLoadCapacity => 'Load Capacity (Tons)';
 
   @override
-  String get profileSetupTitle => 'Complete Your Profile';
+  String get profileSetupTitle => 'Create Your Profile';
 
   @override
-  String get profileSetupSubtitle => 'Let\'s get you started';
+  String get profileSetupSubtitle => 'Let\'s get started';
+
+  @override
+  String get profileCreateButton => 'Create Profile';
+
+  @override
+  String get profilePhotoPickerTitle => 'Profile photo';
+
+  @override
+  String get profilePhotoTakePhoto => 'Take photo';
+
+  @override
+  String get profilePhotoChooseGallery => 'Choose from gallery';
+
+  @override
+  String get profilePhotoCameraPermissionDenied =>
+      'Camera access is required to take a profile photo. Please allow camera access in Settings.';
+
+  @override
+  String get profilePhotoGalleryPermissionDenied =>
+      'Photo library access is required to choose a profile photo. Please allow photo access in Settings.';
+
+  @override
+  String get profilePhotoLimitedTitle => 'Limited photo access';
+
+  @override
+  String get profilePhotoLimitedMessage =>
+      'You have allowed access to only selected photos. To browse your full gallery, allow full photo access in Settings.';
+
+  @override
+  String get profilePhotoAllowFullAccess => 'Allow full access';
+
+  @override
+  String get profilePhotoContinueWithLimited => 'Continue with selected photos';
+
+  @override
+  String get actionOpenSettings => 'Open Settings';
 
   @override
   String get shipmentPickup => 'Pickup Location';
@@ -433,6 +502,145 @@ class AppLocalizationsEn extends AppLocalizations {
   String shipmentActiveCount(int count) {
     return '$count active shipment(s)';
   }
+
+  @override
+  String get customerHomeBrandTitle => 'Good Carrier';
+
+  @override
+  String get customerHomeDriverTrips => 'Driver Trips';
+
+  @override
+  String get customerHomeInterestBadge => 'YOUR ARE IN INTEREST';
+
+  @override
+  String get customerHomeEstStartDate => 'estimated start date';
+
+  @override
+  String get customerHomeEstEndDate => 'estimated end date';
+
+  @override
+  String get customerHomeSearchHint => 'Search by destination or vehicle';
+
+  @override
+  String customerHomeActiveShipments(int count) {
+    return '$count Active shipments';
+  }
+
+  @override
+  String get customerHomeYourShipments => 'Your Shipments';
+
+  @override
+  String get customerNavHome => 'Home';
+
+  @override
+  String get customerNavShipments => 'Shipment';
+
+  @override
+  String get customerNavNotifications => 'Notifications';
+
+  @override
+  String get customerNavProfile => 'Profile';
+
+  @override
+  String get actionViewDetails => 'View Details';
+
+  @override
+  String get customerHomeFilterSoon => 'Advanced filters are coming soon';
+
+  @override
+  String get filterSearchTitle => 'Filter Search';
+
+  @override
+  String get filterClearAll => 'Clear All';
+
+  @override
+  String get filterRouteDetails => 'Route Details';
+
+  @override
+  String get filterFromLabel => 'From';
+
+  @override
+  String get filterFromHint => 'Enter origin city';
+
+  @override
+  String get filterToLabel => 'To';
+
+  @override
+  String get filterToHint => 'Enter destination';
+
+  @override
+  String get filterPickupDate => 'Pickup Date';
+
+  @override
+  String get filterCalendar => 'Calendar';
+
+  @override
+  String get filterToday => 'TODAY';
+
+  @override
+  String get filterVehicleClass => 'Vehicle Class';
+
+  @override
+  String get filterLoadCapacity => 'Load Capacity';
+
+  @override
+  String get filterApply => 'Apply Filters';
+
+  @override
+  String get customerMyShipment => 'My Shipment';
+
+  @override
+  String get customerMyProfile => 'My Profile';
+
+  @override
+  String get customerRoleLabel => 'Customer';
+
+  @override
+  String get customerAccountSettings => 'Account Settings';
+
+  @override
+  String get customerEditPersonalInfo => 'Edit Personal Information';
+
+  @override
+  String get customerEditPersonalInfoSub => 'Name, email, phone & address';
+
+  @override
+  String get customerSavedAddresses => 'Saved Addresses';
+
+  @override
+  String get customerSavedAddressesSub => 'Home, Office & others';
+
+  @override
+  String get customerReportedTrips => 'Reported Trips';
+
+  @override
+  String get customerReportedTripsSub => 'Show reported trips';
+
+  @override
+  String get customerActivity => 'Activity';
+
+  @override
+  String get customerHelpSupport => 'Help & Support';
+
+  @override
+  String get customerHelpSupportSub => 'FAQs and more';
+
+  @override
+  String get shipmentEstimatedPay => 'Estimated Pay';
+
+  @override
+  String get shipmentStatusPublished => 'published';
+
+  @override
+  String shipmentViewInterest(int count) {
+    return 'View Interest ($count)';
+  }
+
+  @override
+  String get shipmentDetailsTitle => 'Shipment Details';
+
+  @override
+  String get notificationNewBadge => 'NEW';
 
   @override
   String get tripPostNew => 'Post Trip';

@@ -6,7 +6,7 @@ import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../shared/domain/enums/shipment_status.dart';
 import '../../../../shared/presentation/widgets/feedback/error_view.dart';
-import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
+import '../widgets/customer_subscreen_header.dart';
 import '../../../../shared/presentation/widgets/status/status_chip.dart';
 import '../providers/customer_shipments_provider.dart';
 
@@ -28,22 +28,22 @@ class TrackingScreen extends ConsumerWidget {
     final shipment = state.shipments.where((s) => s.id == shipmentId).firstOrNull;
 
     if (shipment == null) {
-      return const Scaffold(
-        appBar: AppBarWidget(title: 'Tracking'),
-        body: ErrorView(message: 'Shipment not found.'),
+      return Scaffold(
+        appBar: CustomerSubscreenHeader(
+          title: context.l10n.shipmentDetailsTitle,
+        ),
+        body: const ErrorView(message: 'Shipment not found.'),
       );
     }
 
     return Scaffold(
       backgroundColor: colors.background,
-      appBar: AppBarWidget(
+      appBar: CustomerSubscreenHeader(
         title: 'Track ${shipment.id}',
-        actions: [
-          AppBarAction(
-            icon: Icons.share_outlined,
-            onTap: () {}, // Share tracking link — wired in Session 7
-          ),
-        ],
+        trailing: IconButton(
+          icon: const Icon(Icons.share_outlined),
+          onPressed: () {},
+        ),
       ),
       body: Column(
         children: [

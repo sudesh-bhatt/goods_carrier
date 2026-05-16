@@ -1,68 +1,76 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../shared/presentation/widgets/feedback/empty_state.dart';
-import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
-import '../../../../shared/presentation/widgets/notifications/notification_tile.dart';
+import '../../../../shared/presentation/widgets/navigation/customer_bottom_nav_bar.dart';
 import '../providers/customer_notifications_provider.dart';
+import '../widgets/customer_light_chrome.dart';
+import '../widgets/customer_navigation.dart';
+import '../widgets/customer_notification_card.dart';
+import '../widgets/customer_subscreen_header.dart';
 
-/// Customer notification list screen.
-///
-/// Unread items appear with an accent background per [NotificationTile].
-/// "Mark all as read" AppBar action calls [CustomerNotificationsNotifier.markAllRead].
+/// Notifications — [Figma `2013:3460`](https://www.figma.com/design/wT5NdNeg7YVPPcq1nY9D2P/Goods-Carrier--Copy-?node-id=2013-3460).
 class CustomerNotificationsScreen extends ConsumerWidget {
   const CustomerNotificationsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final colors        = context.colors;
+    final colors = context.colors;
+    final l10n = context.l10n;
     final notifications = ref.watch(customerNotificationsProvider);
-    final hasUnread     = notifications.any((n) => !n.isRead);
+    final hasUnread = notifications.any((n) => !n.isRead);
 
-    return Scaffold(
+    return CustomerLightChrome(
+      child: Scaffold(
       backgroundColor: colors.background,
-      appBar: AppBarWidget(
-        title: context.l10n.notificationsTitle,
-        actions: [
-          if (hasUnread)
-            AppBarAction(
-              icon: Icons.done_all_rounded,
-              onTap: () =>
-                  ref.read(customerNotificationsProvider.notifier).markAllRead(),
-            ),
-        ],
+      appBar: CustomerSubscreenHeader(
+        title: l10n.notificationsTitle,
+        trailing: hasUnread
+            ? IconButton(
+                onPressed: () => ref
+                    .read(customerNotificationsProvider.notifier)
+                    .markAllRead(),
+                icon: Icon(
+                  Icons.done_all_rounded,
+                  color: colors.primary,
+                ),
+                tooltip: l10n.notificationMarkAllRead,
+              )
+            : SizedBox(width: 32.w),
       ),
       body: SafeArea(
+        top: false,
         child: notifications.isEmpty
             ? EmptyState(
-                headline: context.l10n.emptyNotifications,
-                subtitle: context.l10n.notificationNoNew,
+                headline: l10n.emptyNotifications,
+                subtitle: l10n.notificationNoNew,
                 fallbackIcon: Icons.notifications_none_rounded,
               )
-            : ListView.separated(
-                padding: EdgeInsets.symmetric(
-                  vertical: AppDimensions.base.h,
-                ),
+            : ListView.builder(
+                padding: EdgeInsets.fromLTRB(24.w, 16.h, 24.w, 100.h),
                 itemCount: notifications.length,
-                separatorBuilder: (_, __) => Divider(
-                  height: 1,
-                  indent: AppDimensions.screenPadding.w + AppDimensions.iconBase.w + AppDimensions.sm.w,
-                  color: colors.divider,
-                ),
                 itemBuilder: (context, index) {
                   final item = notifications[index];
-                  return NotificationTile(
-                    item:       item,
-                    onMarkRead: () => ref
-                        .read(customerNotificationsProvider.notifier)
-                        .markRead(item.id),
+                  return CustomerNotificationCard(
+                    item: item,
+                    onTap: () {
+                      if (!item.isRead) {
+                        ref
+                            .read(customerNotificationsProvider.notifier)
+                            .markRead(item.id);
+                      }
+                    },
                   );
                 },
               ),
       ),
+      bottomNavigationBar: CustomerBottomNavBar(
+        currentTab: CustomerMainTab.notifications,
+        onTabSelected: (tab) => navigateCustomerTab(context, tab),
+      ),
+    ),
     );
   }
 }

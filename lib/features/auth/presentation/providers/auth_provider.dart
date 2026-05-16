@@ -149,17 +149,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
   /// Remote mode: POST /customer/profile → returns the persisted [User].
   Future<void> submitCustomerProfile({
     required String name,
-    required String email,
-    String? companyName,
-    String? gstNumber,
+    required String phone,
+    required String address,
+    String? email,
   }) async {
     state = state.copyWith(isLoading: true, clearError: true);
     try {
       final user = await _repo.createCustomerProfile(
-        name:        name,
-        email:       email,
-        companyName: companyName,
-        gstNumber:   gstNumber,
+        name:    name,
+        phone:   phone,
+        address: address,
+        email:   email,
       );
       state = state.copyWith(
         status:    AuthStatus.authenticated,

@@ -538,17 +538,71 @@ abstract class AppLocalizations {
   /// **'Verify OTP'**
   String get authVerifyOtp;
 
+  /// No description provided for @authVerifyNumberTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify Number'**
+  String get authVerifyNumberTitle;
+
+  /// No description provided for @authEnterOtp.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter OTP'**
+  String get authEnterOtp;
+
+  /// No description provided for @authOtpCodeSentPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the 4-digit code sent to'**
+  String get authOtpCodeSentPrefix;
+
+  /// No description provided for @authVerifyAndContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify & Continue'**
+  String get authVerifyAndContinue;
+
   /// No description provided for @authResendOtp.
   ///
   /// In en, this message translates to:
   /// **'Resend OTP'**
   String get authResendOtp;
 
+  /// No description provided for @authResendSms.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend SMS'**
+  String get authResendSms;
+
+  /// No description provided for @authResendCodeIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend code in'**
+  String get authResendCodeIn;
+
   /// No description provided for @authResendIn.
   ///
   /// In en, this message translates to:
   /// **'Resend in {seconds}s'**
   String authResendIn(int seconds);
+
+  /// No description provided for @authHavingTrouble.
+  ///
+  /// In en, this message translates to:
+  /// **'Having trouble? '**
+  String get authHavingTrouble;
+
+  /// No description provided for @authNeedHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Need Help'**
+  String get authNeedHelp;
+
+  /// No description provided for @authEncryptedVerification.
+  ///
+  /// In en, this message translates to:
+  /// **'END-TO-END ENCRYPTED VERIFICATION'**
+  String get authEncryptedVerification;
 
   /// No description provided for @authLoginSubtitle.
   ///
@@ -736,11 +790,23 @@ abstract class AppLocalizations {
   /// **'Email Address'**
   String get profileEmail;
 
+  /// No description provided for @profileEmailOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Email Address (Optional)'**
+  String get profileEmailOptional;
+
   /// No description provided for @profilePhone.
   ///
   /// In en, this message translates to:
   /// **'Phone Number'**
   String get profilePhone;
+
+  /// No description provided for @profilePrimaryAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary Address'**
+  String get profilePrimaryAddress;
 
   /// No description provided for @profileCompanyName.
   ///
@@ -793,14 +859,80 @@ abstract class AppLocalizations {
   /// No description provided for @profileSetupTitle.
   ///
   /// In en, this message translates to:
-  /// **'Complete Your Profile'**
+  /// **'Create Your Profile'**
   String get profileSetupTitle;
 
   /// No description provided for @profileSetupSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Let\'s get you started'**
+  /// **'Let\'s get started'**
   String get profileSetupSubtitle;
+
+  /// No description provided for @profileCreateButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Profile'**
+  String get profileCreateButton;
+
+  /// No description provided for @profilePhotoPickerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile photo'**
+  String get profilePhotoPickerTitle;
+
+  /// No description provided for @profilePhotoTakePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Take photo'**
+  String get profilePhotoTakePhoto;
+
+  /// No description provided for @profilePhotoChooseGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from gallery'**
+  String get profilePhotoChooseGallery;
+
+  /// No description provided for @profilePhotoCameraPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera access is required to take a profile photo. Please allow camera access in Settings.'**
+  String get profilePhotoCameraPermissionDenied;
+
+  /// No description provided for @profilePhotoGalleryPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo library access is required to choose a profile photo. Please allow photo access in Settings.'**
+  String get profilePhotoGalleryPermissionDenied;
+
+  /// No description provided for @profilePhotoLimitedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Limited photo access'**
+  String get profilePhotoLimitedTitle;
+
+  /// No description provided for @profilePhotoLimitedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You have allowed access to only selected photos. To browse your full gallery, allow full photo access in Settings.'**
+  String get profilePhotoLimitedMessage;
+
+  /// No description provided for @profilePhotoAllowFullAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow full access'**
+  String get profilePhotoAllowFullAccess;
+
+  /// No description provided for @profilePhotoContinueWithLimited.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with selected photos'**
+  String get profilePhotoContinueWithLimited;
+
+  /// No description provided for @actionOpenSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Settings'**
+  String get actionOpenSettings;
 
   /// No description provided for @shipmentPickup.
   ///
@@ -915,6 +1047,276 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} active shipment(s)'**
   String shipmentActiveCount(int count);
+
+  /// No description provided for @customerHomeBrandTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Good Carrier'**
+  String get customerHomeBrandTitle;
+
+  /// No description provided for @customerHomeDriverTrips.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver Trips'**
+  String get customerHomeDriverTrips;
+
+  /// No description provided for @customerHomeInterestBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'YOUR ARE IN INTEREST'**
+  String get customerHomeInterestBadge;
+
+  /// No description provided for @customerHomeEstStartDate.
+  ///
+  /// In en, this message translates to:
+  /// **'estimated start date'**
+  String get customerHomeEstStartDate;
+
+  /// No description provided for @customerHomeEstEndDate.
+  ///
+  /// In en, this message translates to:
+  /// **'estimated end date'**
+  String get customerHomeEstEndDate;
+
+  /// No description provided for @customerHomeSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by destination or vehicle'**
+  String get customerHomeSearchHint;
+
+  /// No description provided for @customerHomeActiveShipments.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} Active shipments'**
+  String customerHomeActiveShipments(int count);
+
+  /// No description provided for @customerHomeYourShipments.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Shipments'**
+  String get customerHomeYourShipments;
+
+  /// No description provided for @customerNavHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get customerNavHome;
+
+  /// No description provided for @customerNavShipments.
+  ///
+  /// In en, this message translates to:
+  /// **'Shipment'**
+  String get customerNavShipments;
+
+  /// No description provided for @customerNavNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get customerNavNotifications;
+
+  /// No description provided for @customerNavProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get customerNavProfile;
+
+  /// No description provided for @actionViewDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'View Details'**
+  String get actionViewDetails;
+
+  /// No description provided for @customerHomeFilterSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced filters are coming soon'**
+  String get customerHomeFilterSoon;
+
+  /// No description provided for @filterSearchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter Search'**
+  String get filterSearchTitle;
+
+  /// No description provided for @filterClearAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear All'**
+  String get filterClearAll;
+
+  /// No description provided for @filterRouteDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Route Details'**
+  String get filterRouteDetails;
+
+  /// No description provided for @filterFromLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get filterFromLabel;
+
+  /// No description provided for @filterFromHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter origin city'**
+  String get filterFromHint;
+
+  /// No description provided for @filterToLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get filterToLabel;
+
+  /// No description provided for @filterToHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter destination'**
+  String get filterToHint;
+
+  /// No description provided for @filterPickupDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Pickup Date'**
+  String get filterPickupDate;
+
+  /// No description provided for @filterCalendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar'**
+  String get filterCalendar;
+
+  /// No description provided for @filterToday.
+  ///
+  /// In en, this message translates to:
+  /// **'TODAY'**
+  String get filterToday;
+
+  /// No description provided for @filterVehicleClass.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle Class'**
+  String get filterVehicleClass;
+
+  /// No description provided for @filterLoadCapacity.
+  ///
+  /// In en, this message translates to:
+  /// **'Load Capacity'**
+  String get filterLoadCapacity;
+
+  /// No description provided for @filterApply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply Filters'**
+  String get filterApply;
+
+  /// No description provided for @customerMyShipment.
+  ///
+  /// In en, this message translates to:
+  /// **'My Shipment'**
+  String get customerMyShipment;
+
+  /// No description provided for @customerMyProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'My Profile'**
+  String get customerMyProfile;
+
+  /// No description provided for @customerRoleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer'**
+  String get customerRoleLabel;
+
+  /// No description provided for @customerAccountSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Settings'**
+  String get customerAccountSettings;
+
+  /// No description provided for @customerEditPersonalInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Personal Information'**
+  String get customerEditPersonalInfo;
+
+  /// No description provided for @customerEditPersonalInfoSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Name, email, phone & address'**
+  String get customerEditPersonalInfoSub;
+
+  /// No description provided for @customerSavedAddresses.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved Addresses'**
+  String get customerSavedAddresses;
+
+  /// No description provided for @customerSavedAddressesSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Home, Office & others'**
+  String get customerSavedAddressesSub;
+
+  /// No description provided for @customerReportedTrips.
+  ///
+  /// In en, this message translates to:
+  /// **'Reported Trips'**
+  String get customerReportedTrips;
+
+  /// No description provided for @customerReportedTripsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Show reported trips'**
+  String get customerReportedTripsSub;
+
+  /// No description provided for @customerActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get customerActivity;
+
+  /// No description provided for @customerHelpSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Help & Support'**
+  String get customerHelpSupport;
+
+  /// No description provided for @customerHelpSupportSub.
+  ///
+  /// In en, this message translates to:
+  /// **'FAQs and more'**
+  String get customerHelpSupportSub;
+
+  /// No description provided for @shipmentEstimatedPay.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated Pay'**
+  String get shipmentEstimatedPay;
+
+  /// No description provided for @shipmentStatusPublished.
+  ///
+  /// In en, this message translates to:
+  /// **'published'**
+  String get shipmentStatusPublished;
+
+  /// No description provided for @shipmentViewInterest.
+  ///
+  /// In en, this message translates to:
+  /// **'View Interest ({count})'**
+  String shipmentViewInterest(int count);
+
+  /// No description provided for @shipmentDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shipment Details'**
+  String get shipmentDetailsTitle;
+
+  /// No description provided for @notificationNewBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'NEW'**
+  String get notificationNewBadge;
 
   /// No description provided for @tripPostNew.
   ///

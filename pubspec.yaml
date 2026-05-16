@@ -45,6 +45,8 @@ dependencies:
   connectivity_plus: ^6.0.3
   intl: ^0.20.2
   flutter_svg: ^2.2.3
+  image_picker: ^1.2.2
+  permission_handler: ^12.0.1
 
 dev_dependencies:
   flutter_test:
@@ -72,6 +74,8 @@ flutter:
     - assets/images/login_screen_banner.png
     - assets/images/splash_screen_logo.png
     - assets/svg/cta_right_arrow.svg
+    - assets/svg/ic_otp_lock.svg
+    - assets/svg/ic_profile_camera.svg
     - assets/svg/ic_radio_selected.svg
     - assets/svg/ic_radio_unselected.svg
     - assets/svg/ic_role_customer.svg

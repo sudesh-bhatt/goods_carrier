@@ -7,124 +7,100 @@ import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../shared/domain/entities/shipment.dart';
-import '../../../../shared/presentation/widgets/cards/shipment_card.dart';
+import '../../../../shared/domain/enums/shipment_status.dart';
 import '../../../../shared/presentation/widgets/feedback/empty_state.dart';
-import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
+import '../../../../shared/presentation/widgets/navigation/customer_bottom_nav_bar.dart';
 import '../providers/customer_shipments_provider.dart';
+import '../widgets/customer_figma_shipment_card.dart';
+import '../widgets/customer_light_chrome.dart';
+import '../widgets/customer_navigation.dart';
+import '../widgets/customer_subscreen_header.dart';
 
-/// Shipment history screen — tabs for Completed and Cancelled.
-///
-/// Data driven by [customerShipmentsProvider] filtered lists.
-class CustomerHistoryScreen extends ConsumerStatefulWidget {
+/// My Shipment list — [Figma `2013:2327`](https://www.figma.com/design/wT5NdNeg7YVPPcq1nY9D2P/Goods-Carrier--Copy-?node-id=2013-2327).
+class CustomerHistoryScreen extends ConsumerWidget {
   const CustomerHistoryScreen({super.key});
 
   @override
-  ConsumerState<CustomerHistoryScreen> createState() =>
-      _CustomerHistoryScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = context.colors;
+    final l10n = context.l10n;
+    final state = ref.watch(customerShipmentsProvider);
+    final shipments = List<Shipment>.from(state.shipments)
+      ..sort((a, b) => b.pickupDateTime.compareTo(a.pickupDateTime));
 
-class _CustomerHistoryScreenState
-    extends ConsumerState<CustomerHistoryScreen>
-    with SingleTickerProviderStateMixin {
-  late final TabController _tabCtrl;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabCtrl = TabController(length: 2, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabCtrl.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final colors    = context.colors;
-    final state     = ref.watch(customerShipmentsProvider);
-    final completed = state.completed;
-    final cancelled = state.cancelled;
-
-    return Scaffold(
+    return CustomerLightChrome(
+      child: Scaffold(
       backgroundColor: colors.background,
-      appBar: AppBarWidget(
-        title: 'Shipment History',
-        bottom: TabBar(
-          controller: _tabCtrl,
-          labelColor: colors.primary,
-          unselectedLabelColor: colors.textHint,
-          indicatorColor: colors.primary,
-          labelStyle: context.textTheme.labelLarge?.copyWith(
-              fontWeight: FontWeight.w700),
-          tabs: const [
-            Tab(text: 'Completed'),
-            Tab(text: 'Cancelled'),
-          ],
-        ),
+      appBar: CustomerSubscreenHeader(
+        title: l10n.customerMyShipment,
+        showBack: true,
       ),
       body: SafeArea(
-        child: TabBarView(
-          controller: _tabCtrl,
-          children: [
-            _ShipmentList(
-              shipments:    completed,
-              emptyHeadline: context.l10n.emptyHistory,
-              emptySubText:  'No completed shipments yet',
-            ),
-            _ShipmentList(
-              shipments:    cancelled,
-              emptyHeadline: context.l10n.emptyHistory,
-              emptySubText:  'No cancelled shipments',
-            ),
-          ],
-        ),
+        top: false,
+        child: state.isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : shipments.isEmpty
+                ? EmptyState(
+                    headline: l10n.emptyShipments,
+                    subtitle: l10n.emptyShipmentsSubtitle,
+                    fallbackIcon: Icons.local_shipping_outlined,
+                    actionLabel: l10n.shipmentPostNew,
+                    onAction: () => context.push(AppRoutes.postShipment),
+                  )
+                : RefreshIndicator(
+                    color: colors.primary,
+                    onRefresh: () =>
+                        ref.read(customerShipmentsProvider.notifier).refresh(),
+                    child: ListView.builder(
+                      padding: EdgeInsets.fromLTRB(
+                        24.w,
+                        16.h,
+                        24.w,
+                        100.h,
+                      ),
+                      itemCount: shipments.length,
+                      itemBuilder: (context, index) {
+                        final shipment = shipments[index];
+                        final interestCount =
+                            shipment.interestedDriverIds.length;
+                        final showInterest = shipment.status ==
+                                ShipmentStatus.interestReceived ||
+                            interestCount > 0;
+
+                        return Padding(
+                          padding: EdgeInsets.only(
+                            bottom: AppDimensions.base.h,
+                          ),
+                          child: CustomerFigmaShipmentCard(
+                            shipment: shipment,
+                            onTap: () => context.push(
+                              AppRoutes.shipmentDetailOf(shipment.id),
+                            ),
+                            interestCount: interestCount,
+                            primaryActionLabel: showInterest
+                                ? l10n.shipmentViewInterest(interestCount)
+                                : l10n.actionViewDetails,
+                            onPrimaryAction: () => context.push(
+                              AppRoutes.shipmentDetailOf(shipment.id),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
       ),
-    );
-  }
-}
-
-// ─── Shipment list tab ────────────────────────────────────────────────────────
-
-class _ShipmentList extends ConsumerWidget {
-  const _ShipmentList({
-    required this.shipments,
-    required this.emptyHeadline,
-    required this.emptySubText,
-  });
-
-  final List<Shipment> shipments;
-  final String         emptyHeadline;
-  final String         emptySubText;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    if (shipments.isEmpty) {
-      return EmptyState(
-        headline: emptyHeadline,
-        subtitle:  emptySubText,
-        fallbackIcon:     Icons.history_rounded,
-      );
-    }
-
-    return ListView.builder(
-      padding: EdgeInsets.symmetric(
-        horizontal: AppDimensions.screenPadding.w,
-        vertical:   AppDimensions.base.h,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => context.push(AppRoutes.postShipment),
+        backgroundColor: colors.primary,
+        foregroundColor: colors.onPrimary,
+        child: Icon(Icons.add_rounded, size: 28.w),
       ),
-      itemCount: shipments.length,
-      itemBuilder: (context, index) {
-        final shipment = shipments[index];
-        return Padding(
-          padding: EdgeInsets.only(bottom: AppDimensions.base.h),
-          child: ShipmentCard(
-            shipment: shipment,
-            onTap: () =>
-                context.push(AppRoutes.shipmentDetailOf(shipment.id)),
-          ),
-        );
-      },
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      bottomNavigationBar: CustomerBottomNavBar(
+        currentTab: CustomerMainTab.shipments,
+        onTabSelected: (tab) => navigateCustomerTab(context, tab),
+      ),
+    ),
     );
   }
 }
