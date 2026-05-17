@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app.dart';
+import 'core/providers/shared_preferences_provider.dart';
 import 'core/utils/platform_utils.dart';
 import 'features/settings/presentation/providers/locale_provider.dart';
 import 'features/settings/presentation/providers/theme_provider.dart';
@@ -27,6 +28,7 @@ Future<void> main() async {
   runApp(
     ProviderScope(
       overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
         themeProvider.overrideWith((ref) => ThemeNotifier(savedThemeMode)),
         localeProvider.overrideWith((ref) => LocaleNotifier(savedLocale)),
       ],

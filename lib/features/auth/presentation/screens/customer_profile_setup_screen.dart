@@ -15,6 +15,7 @@ import '../../../../core/utils/media_permission_helper.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../res/font_res.dart';
 import '../../../../shared/presentation/widgets/inputs/address_autocomplete_field.dart';
+import '../../../../shared/presentation/widgets/sheets/app_modal_bottom_sheet.dart';
 import '../providers/auth_provider.dart';
 
 /// Figma profile field fill ([Create Profile](https://www.figma.com/design/wT5NdNeg7YVPPcq1nY9D2P/Goods-Carrier--Copy-?node-id=2013-1813)).
@@ -81,8 +82,9 @@ class _CustomerProfileSetupScreenState
     HapticFeedback.lightImpact();
     final l10n = context.l10n;
 
-    final source = await showModalBottomSheet<ImageSource>(
+    final source = await AppModalBottomSheet.show<ImageSource>(
       context: context,
+      isScrollControlled: false,
       backgroundColor: context.colors.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(

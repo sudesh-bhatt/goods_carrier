@@ -21,6 +21,26 @@ class AppTheme {
     required AppColorScheme colors,
   }) {
     final isLight = brightness == Brightness.light;
+    final colorScheme = ColorScheme.fromSeed(
+      seedColor: colors.primary,
+      brightness: brightness,
+      surface: colors.surface,
+      onSurface: colors.textPrimary,
+    ).copyWith(
+      primary: colors.primary,
+      onPrimary: colors.onPrimary,
+      primaryContainer: colors.inputFill,
+      onPrimaryContainer: colors.textPrimary,
+      secondary: colors.primary,
+      onSecondary: colors.onPrimary,
+      surface: colors.surface,
+      onSurface: colors.textPrimary,
+      surfaceContainerHighest: colors.inputFill,
+      surfaceContainerHigh: colors.inputFill,
+      surfaceContainer: colors.cardBackground,
+      tertiaryContainer: colors.inputFill,
+      onTertiaryContainer: colors.textPrimary,
+    );
 
     return ThemeData(
       useMaterial3: true,
@@ -28,10 +48,7 @@ class AppTheme {
       fontFamily: 'Manrope',
       extensions: [colors, AppTextStyles.defaults],
       scaffoldBackgroundColor: colors.background,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: const Color(0xFFFF6D00),
-        brightness: brightness,
-      ),
+      colorScheme: colorScheme,
 
       textTheme: TextTheme(
         displayLarge:  TextStyle(fontFamily: 'Manrope', color: colors.textPrimary,   fontWeight: FontWeight.w800),
@@ -149,6 +166,15 @@ class AppTheme {
         dragHandleSize: const Size(40, 4),
       ),
 
+      dialogTheme: DialogThemeData(
+        backgroundColor: colors.surface,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      ),
+
+      datePickerTheme: _datePickerTheme(colors),
+      timePickerTheme: _timePickerTheme(colors),
+
       dividerTheme: DividerThemeData(color: colors.divider, thickness: 1, space: 1),
 
       chipTheme: ChipThemeData(
@@ -168,6 +194,104 @@ class AppTheme {
         elevation: 4,
         shape: const CircleBorder(),
       ),
+    );
+  }
+
+  /// Material date picker — white/grey surfaces, brand orange selection.
+  static DatePickerThemeData _datePickerTheme(AppColorScheme colors) {
+    return DatePickerThemeData(
+      backgroundColor: colors.surface,
+      headerBackgroundColor: colors.surface,
+      headerForegroundColor: colors.textPrimary,
+      surfaceTintColor: Colors.transparent,
+      dividerColor: colors.divider,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      weekdayStyle: TextStyle(
+        fontFamily: 'Manrope',
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+        color: colors.textSecondary,
+      ),
+      dayStyle: TextStyle(
+        fontFamily: 'Manrope',
+        fontSize: 14,
+        color: colors.textPrimary,
+      ),
+      yearStyle: TextStyle(
+        fontFamily: 'Manrope',
+        fontSize: 14,
+        color: colors.textPrimary,
+      ),
+      headerHeadlineStyle: TextStyle(
+        fontFamily: 'Manrope',
+        fontSize: 32,
+        fontWeight: FontWeight.w700,
+        color: colors.textPrimary,
+      ),
+      headerHelpStyle: TextStyle(
+        fontFamily: 'Manrope',
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+        color: colors.textSecondary,
+      ),
+      todayForegroundColor: WidgetStatePropertyAll(colors.primary),
+      todayBackgroundColor: const WidgetStatePropertyAll(Colors.transparent),
+      dayForegroundColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) return colors.onPrimary;
+        if (states.contains(WidgetState.disabled)) return colors.textHint;
+        return colors.textPrimary;
+      }),
+      dayBackgroundColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) return colors.primary;
+        return Colors.transparent;
+      }),
+      yearForegroundColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) return colors.onPrimary;
+        return colors.textPrimary;
+      }),
+      yearBackgroundColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) return colors.primary;
+        return Colors.transparent;
+      }),
+    );
+  }
+
+  /// Material time picker — white/grey surfaces, brand orange accents.
+  static TimePickerThemeData _timePickerTheme(AppColorScheme colors) {
+    final selectedHourFill = colors.primary.withValues(alpha: 0.12);
+
+    return TimePickerThemeData(
+      backgroundColor: colors.surface,
+      dialBackgroundColor: colors.inputFill,
+      dialHandColor: colors.primary,
+      dialTextColor: colors.textPrimary,
+      entryModeIconColor: colors.textSecondary,
+      hourMinuteColor: WidgetStateColor.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) return selectedHourFill;
+        return colors.inputFill;
+      }),
+      hourMinuteTextColor: colors.textPrimary,
+      dayPeriodColor: WidgetStateColor.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) return colors.primary;
+        return colors.inputFill;
+      }),
+      dayPeriodTextColor: WidgetStateColor.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) return colors.onPrimary;
+        return colors.textPrimary;
+      }),
+      helpTextStyle: TextStyle(
+        fontFamily: 'Manrope',
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+        color: colors.textSecondary,
+      ),
+      hourMinuteTextStyle: TextStyle(
+        fontFamily: 'Manrope',
+        fontSize: 56,
+        fontWeight: FontWeight.w400,
+        color: colors.textPrimary,
+      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     );
   }
 }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_dimensions.dart';
+import '../../../../core/router/app_routes.dart';
 import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../shared/domain/entities/user.dart';
@@ -159,7 +161,8 @@ class DriverProfileScreen extends ConsumerWidget {
                     isDangerous:  true,
                   );
                   if (confirmed == true && context.mounted) {
-                    ref.read(authProvider.notifier).logout();
+                    await ref.read(authProvider.notifier).logout();
+                    if (context.mounted) context.go(AppRoutes.splash);
                   }
                 },
               ),

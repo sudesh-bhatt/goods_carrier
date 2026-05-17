@@ -994,6 +994,162 @@ abstract class AppLocalizations {
   /// **'Post Shipment'**
   String get shipmentPostNew;
 
+  /// No description provided for @shipmentPostConfirmationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmation'**
+  String get shipmentPostConfirmationTitle;
+
+  /// No description provided for @shipmentPostSuccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shipment Post Successfully'**
+  String get shipmentPostSuccessTitle;
+
+  /// No description provided for @shipmentPostSuccessBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your shipment has been post successfully your shipment id is #{shipmentId}'**
+  String shipmentPostSuccessBody(String shipmentId);
+
+  /// No description provided for @shipmentPostBackToHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Home'**
+  String get shipmentPostBackToHome;
+
+  /// No description provided for @shipmentPostDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'DATE'**
+  String get shipmentPostDateLabel;
+
+  /// No description provided for @shipmentPostTotalPriceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'TOTAL PRICE'**
+  String get shipmentPostTotalPriceLabel;
+
+  /// No description provided for @shipmentEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Shipment'**
+  String get shipmentEditTitle;
+
+  /// No description provided for @shipmentUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Shipment'**
+  String get shipmentUpdate;
+
+  /// No description provided for @shipmentFormPrecisionLogistics.
+  ///
+  /// In en, this message translates to:
+  /// **'Precision Logistics'**
+  String get shipmentFormPrecisionLogistics;
+
+  /// No description provided for @shipmentFormHeroTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Where is your cargo heading?'**
+  String get shipmentFormHeroTitle;
+
+  /// No description provided for @shipmentFormHeroSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Fill in the details below to get instant bids from verified carriers.'**
+  String get shipmentFormHeroSubtitle;
+
+  /// No description provided for @shipmentFormFromHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter origin city or warehouse'**
+  String get shipmentFormFromHint;
+
+  /// No description provided for @shipmentFormToHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter destination address'**
+  String get shipmentFormToHint;
+
+  /// No description provided for @shipmentFormVehicleRequirement.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle Requirement'**
+  String get shipmentFormVehicleRequirement;
+
+  /// No description provided for @shipmentFormEstWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Est. Weight'**
+  String get shipmentFormEstWeight;
+
+  /// No description provided for @shipmentFormEstWeightType.
+  ///
+  /// In en, this message translates to:
+  /// **'Est. Weight Type'**
+  String get shipmentFormEstWeightType;
+
+  /// No description provided for @shipmentFormPickupDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferred Pickup Date'**
+  String get shipmentFormPickupDate;
+
+  /// No description provided for @shipmentFormPickupTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferred Pickup Time'**
+  String get shipmentFormPickupTime;
+
+  /// No description provided for @shipmentFormYourBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Budget'**
+  String get shipmentFormYourBudget;
+
+  /// No description provided for @shipmentFormBudgetHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter target price'**
+  String get shipmentFormBudgetHint;
+
+  /// No description provided for @shipmentFormCommentsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Additional Comments (Optional)'**
+  String get shipmentFormCommentsLabel;
+
+  /// No description provided for @shipmentFormCommentsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Please provide any additional context regarding this shipment'**
+  String get shipmentFormCommentsHint;
+
+  /// No description provided for @shipmentFormTerms.
+  ///
+  /// In en, this message translates to:
+  /// **'You have successfully agreed to our Terms & Conditions.'**
+  String get shipmentFormTerms;
+
+  /// No description provided for @shipmentFormVehicleRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a vehicle requirement'**
+  String get shipmentFormVehicleRequired;
+
+  /// No description provided for @shipmentFormScheduleRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select pickup date and time'**
+  String get shipmentFormScheduleRequired;
+
+  /// No description provided for @shipmentFormTermsRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please accept the Terms & Conditions'**
+  String get shipmentFormTermsRequired;
+
   /// No description provided for @shipmentFragile.
   ///
   /// In en, this message translates to:

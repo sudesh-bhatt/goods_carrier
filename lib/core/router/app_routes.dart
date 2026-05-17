@@ -15,6 +15,9 @@ abstract final class AppRoutes {
   // ── Customer ───────────────────────────────────────────────────────────────
   static const String customerHome         = '/customer/home';
   static const String postShipment         = '/customer/post-shipment';
+  static const String shipmentPostConfirmation =
+      '/customer/post-shipment/confirmation';
+  static const String editShipment         = '/customer/shipment/:id/edit';
   static const String shipmentDetail       = '/customer/shipment/:id';
   static const String tracking             = '/customer/tracking/:id';
   static const String customerNotifications= '/customer/notifications';
@@ -33,6 +36,7 @@ abstract final class AppRoutes {
 
   /// Build `/customer/shipment/:id` → `/customer/shipment/TRK-0001`
   static String shipmentDetailOf(String id) => '/customer/shipment/$id';
+  static String editShipmentOf(String id) => '/customer/shipment/$id/edit';
   static String trackingOf(String id)        => '/customer/tracking/$id';
   static String driverTripDetailOf(String id)=> '/driver/trip/$id';
 }

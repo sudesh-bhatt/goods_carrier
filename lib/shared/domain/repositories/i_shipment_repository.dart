@@ -17,6 +17,9 @@ abstract class IShipmentRepository {
   /// the server-assigned ID (may differ from the optimistic local ID).
   Future<Shipment> createShipment(Shipment shipment);
 
+  /// Updates an existing shipment (edit flow).
+  Future<Shipment> updateShipment(Shipment shipment);
+
   /// Cancels a pending shipment. Throws [AppException] if the shipment is
   /// not in a cancellable state (i.e., already assigned or in transit).
   Future<void> cancelShipment(String shipmentId);

@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../shared/data/repositories/local_auth_repository.dart';
+import 'shared_preferences_provider.dart';
 import '../../shared/data/repositories/local_shipment_repository.dart';
 import '../../shared/data/repositories/local_trip_repository.dart';
 import '../../shared/data/repositories/remote_shipment_repository.dart';
@@ -17,7 +18,7 @@ import '../network/dio_client.dart';
 ///
 /// **To go live:** comment out the `Local` line and uncomment `Remote`.
 final shipmentRepositoryProvider = Provider<IShipmentRepository>((ref) {
-  return LocalShipmentRepository();
+  return LocalShipmentRepository(ref.read(sharedPreferencesProvider));
   // return RemoteShipmentRepository(ref.read(dioProvider));
 });
 

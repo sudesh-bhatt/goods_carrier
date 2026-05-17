@@ -99,21 +99,30 @@ class _FigmaTab extends StatelessWidget {
     final content = Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
-          icon,
-          size: 18.w,
-          color: selected ? colors.onPrimary : colors.textSecondary,
+        AnimatedScale(
+          scale: selected ? 1.08 : 1.0,
+          duration: const Duration(milliseconds: 280),
+          curve: Curves.easeOutBack,
+          child: Icon(
+            icon,
+            size: 18.w,
+            color: selected ? colors.onPrimary : colors.textSecondary,
+          ),
         ),
         SizedBox(height: 4.h),
-        Text(
-          label,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
+        AnimatedDefaultTextStyle(
+          duration: const Duration(milliseconds: 280),
+          curve: Curves.easeOutCubic,
           style: TextStyle(
             fontFamily: FontRes.MANROPE_SEMIBOLD,
             fontSize: 11.sp,
             fontWeight: FontWeight.w600,
             color: selected ? colors.onPrimary : colors.textSecondary,
+          ),
+          child: Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ],
@@ -127,13 +136,15 @@ class _FigmaTab extends StatelessWidget {
           borderRadius: BorderRadius.circular(16.r),
           child: Padding(
             padding: EdgeInsets.symmetric(vertical: 4.h),
-            child: selected
-                ? Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 12.w,
-                      vertical: 8.h,
-                    ),
-                    decoration: BoxDecoration(
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 320),
+              curve: Curves.easeOutCubic,
+              padding: EdgeInsets.symmetric(
+                horizontal: selected ? 12.w : 8.w,
+                vertical: 8.h,
+              ),
+              decoration: selected
+                  ? BoxDecoration(
                       color: colors.primary,
                       borderRadius: BorderRadius.circular(16.r),
                       boxShadow: [
@@ -143,16 +154,10 @@ class _FigmaTab extends StatelessWidget {
                           offset: const Offset(0, 3),
                         ),
                       ],
-                    ),
-                    child: content,
-                  )
-                : Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 8.w,
-                      vertical: 8.h,
-                    ),
-                    child: content,
-                  ),
+                    )
+                  : null,
+              child: content,
+            ),
           ),
         ),
       ),

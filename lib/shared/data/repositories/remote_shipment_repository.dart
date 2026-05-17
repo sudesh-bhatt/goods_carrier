@@ -39,6 +39,15 @@ class RemoteShipmentRepository implements IShipmentRepository {
   }
 
   @override
+  Future<Shipment> updateShipment(Shipment shipment) async {
+    final response = await _dio.put(
+      '${ApiConstants.customerShipments}/${shipment.id}',
+      data: shipment.toJson(),
+    );
+    return Shipment.fromJson(response.data['data'] as Map<String, dynamic>);
+  }
+
+  @override
   Future<void> cancelShipment(String shipmentId) =>
       _dio.patch(ApiConstants.cancelShipment(shipmentId));
 

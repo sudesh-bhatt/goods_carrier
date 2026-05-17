@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/providers/repository_providers.dart';
+import '../../../../core/providers/shared_preferences_provider.dart';
+import '../../../../shared/data/local/auth_preferences_store.dart';
 import '../../../../shared/domain/entities/user.dart';
 import '../../../../shared/domain/enums/user_role.dart';
 import '../../../../shared/domain/repositories/i_auth_repository.dart';
@@ -31,7 +33,7 @@ class AuthState {
   });
 
   final AuthStatus status;
-  final User?      user;
+  final User? user;
 
   /// Set after role selection screen; drives profile-setup routing.
   final UserRole? selectedRole;
@@ -39,57 +41,77 @@ class AuthState {
   /// Set after [LoginScreen]; displayed on OtpVerificationScreen.
   final String? phoneNumber;
 
-  final bool    isLoading;
+  final bool isLoading;
   final String? error;
 
-  bool get isAuthenticated   => status == AuthStatus.authenticated;
+  bool get isAuthenticated => status == AuthStatus.authenticated;
   bool get needsProfileSetup => status == AuthStatus.profileSetupPending;
   bool get isUnauthenticated => status == AuthStatus.unauthenticated;
 
   AuthState copyWith({
     AuthStatus? status,
-    User?       user,
-    UserRole?   selectedRole,
-    String?     phoneNumber,
-    bool?       isLoading,
-    String?     error,
-    bool        clearError = false,
-    bool        clearUser  = false,
+    User? user,
+    UserRole? selectedRole,
+    String? phoneNumber,
+    bool? isLoading,
+    String? error,
+    bool clearError = false,
+    bool clearUser = false,
   }) =>
       AuthState(
-        status:       status       ?? this.status,
-        user:         clearUser    ? null : (user ?? this.user),
+        status: status ?? this.status,
+        user: clearUser ? null : (user ?? this.user),
         selectedRole: selectedRole ?? this.selectedRole,
-        phoneNumber:  phoneNumber  ?? this.phoneNumber,
-        isLoading:    isLoading    ?? this.isLoading,
-        error:        clearError   ? null : (error ?? this.error),
+        phoneNumber: phoneNumber ?? this.phoneNumber,
+        isLoading: isLoading ?? this.isLoading,
+        error: clearError ? null : (error ?? this.error),
       );
 }
 
 // ─── Notifier ─────────────────────────────────────────────────────────────────
 
 class AuthNotifier extends StateNotifier<AuthState> {
-  AuthNotifier(this._repo) : super(const AuthState()) {
+  AuthNotifier(this._repo, this._prefsStore) : super(const AuthState()) {
+    _restoreFromPreferences();
     _tryRestoreSession();
   }
 
   final IAuthRepository _repo;
+  final AuthPreferencesStore _prefsStore;
 
-  // ── Session restore ────────────────────────────────────────────────────────
+  void _restoreFromPreferences() {
+    final user = _prefsStore.loadUser();
+    if (user == null) return;
+
+    state = AuthState(
+      status: AuthStatus.authenticated,
+      user: user,
+      selectedRole: user.role,
+      phoneNumber: user.phone,
+    );
+  }
+
+  Future<void> _persistUser(User user) => _prefsStore.saveUser(user);
 
   /// On cold start, checks secure storage for a valid access token.
   ///
-  /// Local mode: no token is ever stored by [LocalAuthRepository], so this
-  /// always leaves state as [AuthStatus.unauthenticated].
-  /// Remote mode: if a token exists the app skips the auth flow.
-  /// A full implementation would call a /me endpoint to fetch the User.
+  /// Profile restore from [AuthPreferencesStore] is handled synchronously in
+  /// [_restoreFromPreferences]. Tokens remain for future remote API use.
   Future<void> _tryRestoreSession() async {
+    if (state.isAuthenticated) return;
+
     try {
       final token = await _repo.getAccessToken();
       if (token != null) {
-        // TODO(remote): call /me and populate state.user before flipping to
-        // authenticated.  Skipped here — LocalAuthRepository never stores
-        // a token so this branch is never reached in dev mode.
+        final user = _prefsStore.loadUser();
+        if (user != null) {
+          state = AuthState(
+            status: AuthStatus.authenticated,
+            user: user,
+            selectedRole: user.role,
+            phoneNumber: user.phone,
+          );
+        }
       }
     } catch (_) {
       // Silently swallow — worst case the user re-authenticates.
@@ -104,10 +126,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   // ── OTP flow ───────────────────────────────────────────────────────────────
 
-  /// Trigger OTP SMS to [phone].
-  ///
-  /// Local mode: simulates an 800 ms network delay and always succeeds.
-  /// Remote mode: POST /auth/otp/send.
   Future<void> sendOtp(String phone) async {
     state = state.copyWith(isLoading: true, clearError: true);
     try {
@@ -118,22 +136,29 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
-  /// Validate [otp] entered by the user.
-  ///
-  /// Local mode: any 4-digit code succeeds.
-  /// Remote mode: POST /auth/otp/verify → receives access + refresh tokens,
-  /// persists them in secure storage, then transitions to
-  /// [AuthStatus.profileSetupPending].
   Future<void> verifyOtp(String otp) async {
     state = state.copyWith(isLoading: true, clearError: true);
     try {
       final tokens = await _repo.verifyOtp(state.phoneNumber ?? '', otp);
       await _repo.saveTokens(
-        accessToken:  tokens['access_token']!,
+        accessToken: tokens['access_token']!,
         refreshToken: tokens['refresh_token']!,
       );
+
+      final savedUser = _prefsStore.loadUser();
+      if (savedUser != null) {
+        await _persistUser(savedUser);
+        state = state.copyWith(
+          status: AuthStatus.authenticated,
+          user: savedUser,
+          selectedRole: savedUser.role,
+          isLoading: false,
+        );
+        return;
+      }
+
       state = state.copyWith(
-        status:    AuthStatus.profileSetupPending,
+        status: AuthStatus.profileSetupPending,
         isLoading: false,
       );
     } catch (e) {
@@ -143,10 +168,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   // ── Profile setup ──────────────────────────────────────────────────────────
 
-  /// Submit customer profile form.
-  ///
-  /// Local mode: builds a dummy [User] and moves to [AuthStatus.authenticated].
-  /// Remote mode: POST /customer/profile → returns the persisted [User].
   Future<void> submitCustomerProfile({
     required String name,
     required String phone,
@@ -156,14 +177,15 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = state.copyWith(isLoading: true, clearError: true);
     try {
       final user = await _repo.createCustomerProfile(
-        name:    name,
-        phone:   phone,
+        name: name,
+        phone: phone,
         address: address,
-        email:   email,
+        email: email,
       );
+      await _persistUser(user);
       state = state.copyWith(
-        status:    AuthStatus.authenticated,
-        user:      user,
+        status: AuthStatus.authenticated,
+        user: user,
         isLoading: false,
       );
     } catch (e) {
@@ -171,10 +193,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
-  /// Submit driver profile form.
-  ///
-  /// Local mode: builds a dummy [User] and moves to [AuthStatus.authenticated].
-  /// Remote mode: POST /driver/profile → returns the persisted [User].
   Future<void> submitDriverProfile({
     required String name,
     required String vehicleNumber,
@@ -184,14 +202,15 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = state.copyWith(isLoading: true, clearError: true);
     try {
       final user = await _repo.createDriverProfile(
-        name:          name,
+        name: name,
         vehicleNumber: vehicleNumber,
-        vehicleType:   vehicleType,
-        capacityTons:  capacityTons,
+        vehicleType: vehicleType,
+        capacityTons: capacityTons,
       );
+      await _persistUser(user);
       state = state.copyWith(
-        status:    AuthStatus.authenticated,
-        user:      user,
+        status: AuthStatus.authenticated,
+        user: user,
         isLoading: false,
       );
     } catch (e) {
@@ -201,24 +220,23 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   // ── Logout ─────────────────────────────────────────────────────────────────
 
-  /// Clears tokens from secure storage and resets state to unauthenticated.
   Future<void> logout() async {
     try {
       await _repo.clearTokens();
+      await _prefsStore.clearUser();
     } catch (_) {
-      // Clear local state regardless of remote failure.
+      await _prefsStore.clearUser();
     }
     state = const AuthState();
   }
 
   // ── Dev helpers ────────────────────────────────────────────────────────────
 
-  /// Skip the full auth flow with a pre-built dummy user.
-  /// Only used by the debug quick-login on the role-selection screen.
   void loginAsDummyUser(User user) {
+    _persistUser(user);
     state = AuthState(
-      status:       AuthStatus.authenticated,
-      user:         user,
+      status: AuthStatus.authenticated,
+      user: user,
       selectedRole: user.role,
     );
   }
@@ -227,5 +245,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
 // ─── Provider ─────────────────────────────────────────────────────────────────
 
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>(
-  (ref) => AuthNotifier(ref.read(authRepositoryProvider)),
+  (ref) => AuthNotifier(
+    ref.read(authRepositoryProvider),
+    AuthPreferencesStore(ref.read(sharedPreferencesProvider)),
+  ),
 );

@@ -7,6 +7,7 @@ import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/dummy/dummy_user.dart';
 import '../../../../shared/domain/entities/user.dart';
 import '../../../../shared/presentation/widgets/buttons/app_button.dart';
+import '../../../../shared/presentation/widgets/sheets/app_modal_bottom_sheet.dart';
 import '../providers/customer_shipments_provider.dart';
 
 /// Modal bottom sheet displaying driver detail + "Select Driver" CTA.
@@ -28,10 +29,8 @@ class DriverDetailSheet extends ConsumerWidget {
     required String driverId,
     required String shipmentId,
   }) =>
-      showModalBottomSheet<bool>(
+      AppModalBottomSheet.show<bool>(
         context: context,
-        isScrollControlled: true,
-        backgroundColor: Colors.transparent,
         builder: (_) => DriverDetailSheet._(
           driverId:   driverId,
           shipmentId: shipmentId,

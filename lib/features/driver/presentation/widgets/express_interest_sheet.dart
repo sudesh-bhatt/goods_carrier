@@ -8,6 +8,7 @@ import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../shared/domain/entities/shipment.dart';
 import '../../../../shared/presentation/widgets/buttons/app_button.dart';
+import '../../../../shared/presentation/widgets/sheets/app_modal_bottom_sheet.dart';
 import '../../../../shared/presentation/widgets/route/route_timeline.dart';
 import '../providers/driver_shipment_requests_provider.dart';
 
@@ -24,10 +25,8 @@ class ExpressInterestSheet extends ConsumerStatefulWidget {
     BuildContext context, {
     required Shipment shipment,
   }) =>
-      showModalBottomSheet<bool>(
+      AppModalBottomSheet.show<bool>(
         context: context,
-        isScrollControlled: true,
-        backgroundColor: Colors.transparent,
         builder: (_) => ExpressInterestSheet._(shipment: shipment),
       );
 

@@ -11,13 +11,16 @@ import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/role_selection_screen.dart';
 import '../../features/auth/presentation/screens/splash_screen.dart';
 import '../../features/auth/presentation/screens/terms_screen.dart';
-import '../../features/customer/presentation/screens/customer_history_screen.dart';
-import '../../features/customer/presentation/screens/customer_home_screen.dart';
-import '../../features/customer/presentation/screens/customer_notifications_screen.dart';
-import '../../features/customer/presentation/screens/customer_profile_screen.dart';
-import '../../features/customer/presentation/screens/post_shipment_screen.dart';
+import '../../features/customer/presentation/screens/customer_main_shell_screen.dart';
+import '../../features/customer/presentation/screens/shipment_form_screen.dart';
+import '../../features/customer/presentation/screens/shipment_post_confirmation_screen.dart';
+import '../../features/customer/presentation/models/shipment_post_confirmation_args.dart';
 import '../../features/customer/presentation/screens/shipment_detail_screen.dart';
 import '../../features/customer/presentation/screens/tracking_screen.dart';
+import '../../features/customer/presentation/tabs/customer_home_tab.dart';
+import '../../features/customer/presentation/tabs/customer_notifications_tab.dart';
+import '../../features/customer/presentation/tabs/customer_profile_tab.dart';
+import '../../features/customer/presentation/tabs/customer_shipments_tab.dart';
 import '../../features/driver/presentation/screens/driver_earnings_screen.dart';
 import '../../features/driver/presentation/screens/driver_home_screen.dart';
 import '../../features/driver/presentation/screens/driver_notifications_screen.dart';
@@ -29,14 +32,40 @@ import 'app_routes.dart';
 
 // ─── Router notifier ──────────────────────────────────────────────────────────
 
-/// [ChangeNotifier] that bridges Riverpod's [authProvider] to GoRouter's
-/// [refreshListenable]. GoRouter re-evaluates the redirect whenever
-/// [AuthState] changes.
 class _RouterNotifier extends ChangeNotifier {
   _RouterNotifier(this._ref) {
     _ref.listen<AuthState>(authProvider, (_, __) => notifyListeners());
   }
   final Ref _ref;
+}
+
+Page<void> _customerTabPage({
+  required GoRouterState state,
+  required Widget child,
+}) {
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    transitionDuration: const Duration(milliseconds: 280),
+    reverseTransitionDuration: const Duration(milliseconds: 220),
+    child: child,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      final curved = CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeOutCubic,
+        reverseCurve: Curves.easeInCubic,
+      );
+      return FadeTransition(
+        opacity: curved,
+        child: SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0.04, 0),
+            end: Offset.zero,
+          ).animate(curved),
+          child: child,
+        ),
+      );
+    },
+  );
 }
 
 // ─── Router provider ──────────────────────────────────────────────────────────
@@ -49,23 +78,20 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     debugLogDiagnostics: false,
     refreshListenable: notifier,
 
-    // ── Redirect ──────────────────────────────────────────────────────────
     redirect: (context, state) {
       final auth = ref.read(authProvider);
-      final loc  = state.matchedLocation;
+      final loc = state.matchedLocation;
 
-      // 1. Authenticated → redirect away from any auth/onboarding path.
       if (auth.isAuthenticated) {
         final isOnAuthPath = _isAuthPath(loc);
-        if (isOnAuthPath) {
+        if (isOnAuthPath && loc != AppRoutes.splash) {
           return auth.user!.role == UserRole.customer
               ? AppRoutes.customerHome
               : AppRoutes.driverHome;
         }
-        return null; // already on a valid home screen
+        return null;
       }
 
-      // 2. Profile setup pending → redirect to the correct setup screen.
       if (auth.needsProfileSetup) {
         final setupPath = auth.selectedRole == UserRole.customer
             ? AppRoutes.customerProfileSetup
@@ -74,17 +100,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return null;
       }
 
-      // 3. Unauthenticated → allow free navigation through the onboarding flow;
-      //    block any attempt to jump directly into home screens.
       if (loc.startsWith('/customer') || loc.startsWith('/driver')) {
         return AppRoutes.splash;
       }
       return null;
     },
 
-    // ── Routes ───────────────────────────────────────────────────────────
     routes: [
-      // ── Auth / Onboarding ──────────────────────────────────────────────
       GoRoute(
         path: AppRoutes.splash,
         builder: (_, __) => const SplashScreen(),
@@ -118,41 +140,93 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (_, __) => const DriverProfileSetupScreen(),
       ),
 
-      // ── Customer screens (Session 4) ───────────────────────────────────
-      GoRoute(
-        path: AppRoutes.customerHome,
-        builder: (_, __) => const CustomerHomeScreen(),
+      // ── Customer main shell (single scaffold, tab bodies only) ─────────
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
+          return CustomerMainShellScreen(navigationShell: navigationShell);
+        },
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.customerHome,
+                pageBuilder: (context, state) => _customerTabPage(
+                  state: state,
+                  child: const CustomerHomeTab(),
+                ),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.customerHistory,
+                pageBuilder: (context, state) => _customerTabPage(
+                  state: state,
+                  child: const CustomerShipmentsTab(),
+                ),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.customerNotifications,
+                pageBuilder: (context, state) => _customerTabPage(
+                  state: state,
+                  child: const CustomerNotificationsTab(),
+                ),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.customerProfile,
+                pageBuilder: (context, state) => _customerTabPage(
+                  state: state,
+                  child: const CustomerProfileTab(),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
+
+      // ── Customer full-screen flows (outside shell) ─────────────────────
       GoRoute(
         path: AppRoutes.postShipment,
-        builder: (_, __) => const PostShipmentScreen(),
+        builder: (_, __) => const ShipmentFormScreen(),
       ),
       GoRoute(
-        path: AppRoutes.shipmentDetail,        // '/customer/shipment/:id'
+        path: AppRoutes.shipmentPostConfirmation,
+        builder: (_, state) {
+          final extra = state.extra;
+          if (extra is! ShipmentPostConfirmationArgs) {
+            return const SizedBox.shrink();
+          }
+          return ShipmentPostConfirmationScreen(args: extra);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.editShipment,
+        builder: (_, state) => ShipmentFormScreen(
+          shipmentId: state.pathParameters['id'],
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.shipmentDetail,
         builder: (_, state) => ShipmentDetailScreen(
           shipmentId: state.pathParameters['id']!,
         ),
       ),
       GoRoute(
-        path: AppRoutes.tracking,              // '/customer/tracking/:id'
+        path: AppRoutes.tracking,
         builder: (_, state) => TrackingScreen(
           shipmentId: state.pathParameters['id']!,
         ),
       ),
-      GoRoute(
-        path: AppRoutes.customerNotifications,
-        builder: (_, __) => const CustomerNotificationsScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.customerProfile,
-        builder: (_, __) => const CustomerProfileScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.customerHistory,
-        builder: (_, __) => const CustomerHistoryScreen(),
-      ),
 
-      // ── Driver screens (Session 5) ────────────────────────────────────
       GoRoute(
         path: AppRoutes.driverHome,
         builder: (_, __) => const DriverHomeScreen(),
@@ -162,7 +236,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (_, __) => const PostTripScreen(),
       ),
       GoRoute(
-        path: AppRoutes.driverTripDetail,         // '/driver/trip/:id'
+        path: AppRoutes.driverTripDetail,
         builder: (_, state) => DriverTripDetailScreen(
           tripId: state.pathParameters['id']!,
         ),
@@ -185,8 +259,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   );
 });
 
-// ─── Helper ───────────────────────────────────────────────────────────────────
-
 bool _isAuthPath(String loc) =>
     loc == AppRoutes.splash ||
     loc == AppRoutes.roleSelection ||
@@ -197,8 +269,6 @@ bool _isAuthPath(String loc) =>
     loc == AppRoutes.customerProfileSetup ||
     loc == AppRoutes.driverProfileSetup;
 
-// ─── Error page ───────────────────────────────────────────────────────────────
-
 class _RouterErrorPage extends StatelessWidget {
   const _RouterErrorPage({required this.error});
   final Exception? error;
@@ -207,8 +277,10 @@ class _RouterErrorPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Text('Route not found\n${error?.toString() ?? ''}',
-            textAlign: TextAlign.center),
+        child: Text(
+          'Route not found\n${error?.toString() ?? ''}',
+          textAlign: TextAlign.center,
+        ),
       ),
     );
   }

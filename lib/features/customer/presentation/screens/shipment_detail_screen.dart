@@ -278,10 +278,20 @@ class ShipmentDetailScreen extends ConsumerWidget {
                   AppDimensions.screenPadding.w,
                   AppDimensions.base.h,
                 ),
-                child: AppButton(
-                  label: 'Cancel Shipment',
-                  variant: AppButtonVariant.secondary,
-                  onPressed: () async {
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    AppButton(
+                      label: context.l10n.shipmentEditTitle,
+                      onPressed: () => context.push(
+                        AppRoutes.editShipmentOf(shipment.id),
+                      ),
+                    ),
+                    SizedBox(height: AppDimensions.sm.h),
+                    AppButton(
+                      label: 'Cancel Shipment',
+                      variant: AppButtonVariant.secondary,
+                      onPressed: () async {
                     final confirmed = await ConfirmationBottomSheet.show(
                       context,
                       title:       'Cancel Shipment?',
@@ -296,6 +306,8 @@ class ShipmentDetailScreen extends ConsumerWidget {
                       context.pop();
                     }
                   },
+                    ),
+                  ],
                 ),
               ),
             )

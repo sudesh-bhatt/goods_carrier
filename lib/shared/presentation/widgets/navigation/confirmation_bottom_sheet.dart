@@ -4,6 +4,7 @@ import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../buttons/app_button.dart';
+import '../sheets/app_modal_bottom_sheet.dart';
 
 /// Modal bottom sheet with title, body text, and confirm / cancel CTAs.
 ///
@@ -55,10 +56,8 @@ class ConfirmationBottomSheet extends StatelessWidget {
     Widget? leadingIcon,
   }) {
     final l10n = context.l10n;
-    return showModalBottomSheet<bool>(
+    return AppModalBottomSheet.show<bool>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
       builder: (_) => ConfirmationBottomSheet._(
         title: title,
         body: body,

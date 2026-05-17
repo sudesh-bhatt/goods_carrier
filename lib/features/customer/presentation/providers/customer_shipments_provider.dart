@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../../core/providers/repository_providers.dart';
 import '../../../../shared/domain/entities/shipment.dart';
 import '../../../../shared/domain/enums/shipment_status.dart';
@@ -39,21 +40,35 @@ class CustomerShipmentsState {
 
 class CustomerShipmentsNotifier
     extends StateNotifier<CustomerShipmentsState> {
-  CustomerShipmentsNotifier(this._repo)
+  CustomerShipmentsNotifier(this._repo, this._ref)
       : super(const CustomerShipmentsState(shipments: [])) {
     _load();
+    _ref.listen<AuthState>(authProvider, (previous, next) {
+      final id = next.user?.id;
+      if (id != null && id != previous?.user?.id) {
+        _load(customerId: id);
+      }
+    });
   }
 
   final IShipmentRepository _repo;
+  final Ref _ref;
+
+  String get _customerId => _ref.read(authProvider).user?.id ?? '';
 
   /// Load initial shipment list from the repository.
   ///
   /// In Local mode this returns dummy data instantly; in Remote mode this
   /// makes an authenticated GET to [ApiConstants.customerShipments].
-  Future<void> _load({String customerId = 'USR-DUMMY'}) async {
+  Future<void> _load({String? customerId}) async {
+    final id = customerId ?? _customerId;
+    if (id.isEmpty) {
+      state = state.copyWith(isLoading: false, shipments: []);
+      return;
+    }
     state = state.copyWith(isLoading: true);
     try {
-      final shipments = await _repo.getCustomerShipments(customerId);
+      final shipments = await _repo.getCustomerShipments(id);
       state = state.copyWith(isLoading: false, shipments: shipments);
     } catch (e) {
       state = state.copyWith(
@@ -64,8 +79,33 @@ class CustomerShipmentsNotifier
   }
 
   /// Pull-to-refresh — re-fetches from the repository.
-  Future<void> refresh({String customerId = 'USR-DUMMY'}) =>
-      _load(customerId: customerId);
+  Future<void> refresh() => _load();
+
+  /// Replaces an existing shipment (edit flow).
+  Future<void> updateShipment(Shipment shipment) async {
+    final prev = state.shipments;
+    state = state.copyWith(
+      isLoading: true,
+      shipments: prev
+          .map((s) => s.id == shipment.id ? shipment : s)
+          .toList(),
+    );
+    try {
+      final saved = await _repo.updateShipment(shipment);
+      state = state.copyWith(
+        isLoading: false,
+        shipments: state.shipments
+            .map((s) => s.id == shipment.id ? saved : s)
+            .toList(),
+      );
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        shipments: prev,
+        error: e.toString(),
+      );
+    }
+  }
 
   /// Optimistically inserts [shipment] and persists via the repository.
   Future<void> addShipment(Shipment shipment) async {
@@ -136,5 +176,8 @@ class CustomerShipmentsNotifier
 
 final customerShipmentsProvider =
     StateNotifierProvider<CustomerShipmentsNotifier, CustomerShipmentsState>(
-  (ref) => CustomerShipmentsNotifier(ref.read(shipmentRepositoryProvider)),
+  (ref) => CustomerShipmentsNotifier(
+    ref.read(shipmentRepositoryProvider),
+    ref,
+  ),
 );

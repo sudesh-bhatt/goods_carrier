@@ -474,6 +474,92 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shipmentPostNew => 'Post Shipment';
 
   @override
+  String get shipmentPostConfirmationTitle => 'Confirmation';
+
+  @override
+  String get shipmentPostSuccessTitle => 'Shipment Post Successfully';
+
+  @override
+  String shipmentPostSuccessBody(String shipmentId) {
+    return 'Your shipment has been post successfully your shipment id is #$shipmentId';
+  }
+
+  @override
+  String get shipmentPostBackToHome => 'Back to Home';
+
+  @override
+  String get shipmentPostDateLabel => 'DATE';
+
+  @override
+  String get shipmentPostTotalPriceLabel => 'TOTAL PRICE';
+
+  @override
+  String get shipmentEditTitle => 'Edit Shipment';
+
+  @override
+  String get shipmentUpdate => 'Update Shipment';
+
+  @override
+  String get shipmentFormPrecisionLogistics => 'Precision Logistics';
+
+  @override
+  String get shipmentFormHeroTitle => 'Where is your cargo heading?';
+
+  @override
+  String get shipmentFormHeroSubtitle =>
+      'Fill in the details below to get instant bids from verified carriers.';
+
+  @override
+  String get shipmentFormFromHint => 'Enter origin city or warehouse';
+
+  @override
+  String get shipmentFormToHint => 'Enter destination address';
+
+  @override
+  String get shipmentFormVehicleRequirement => 'Vehicle Requirement';
+
+  @override
+  String get shipmentFormEstWeight => 'Est. Weight';
+
+  @override
+  String get shipmentFormEstWeightType => 'Est. Weight Type';
+
+  @override
+  String get shipmentFormPickupDate => 'Preferred Pickup Date';
+
+  @override
+  String get shipmentFormPickupTime => 'Preferred Pickup Time';
+
+  @override
+  String get shipmentFormYourBudget => 'Your Budget';
+
+  @override
+  String get shipmentFormBudgetHint => 'Enter target price';
+
+  @override
+  String get shipmentFormCommentsLabel => 'Additional Comments (Optional)';
+
+  @override
+  String get shipmentFormCommentsHint =>
+      'Please provide any additional context regarding this shipment';
+
+  @override
+  String get shipmentFormTerms =>
+      'You have successfully agreed to our Terms & Conditions.';
+
+  @override
+  String get shipmentFormVehicleRequired =>
+      'Please select a vehicle requirement';
+
+  @override
+  String get shipmentFormScheduleRequired =>
+      'Please select pickup date and time';
+
+  @override
+  String get shipmentFormTermsRequired =>
+      'Please accept the Terms & Conditions';
+
+  @override
   String get shipmentFragile => 'Fragile Goods';
 
   @override

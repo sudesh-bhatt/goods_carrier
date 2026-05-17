@@ -474,6 +474,89 @@ class AppLocalizationsGu extends AppLocalizations {
   String get shipmentPostNew => 'શિપમેન્ટ પોસ્ટ કરો';
 
   @override
+  String get shipmentPostConfirmationTitle => 'પુષ્ટિ';
+
+  @override
+  String get shipmentPostSuccessTitle => 'શિપમેન્ટ સફળતાપૂર્વક પોસ્ટ થઈ';
+
+  @override
+  String shipmentPostSuccessBody(String shipmentId) {
+    return 'તમારી શિપમેન્ટ સફળતાપૂર્વક પોસ્ટ થઈ ગઈ છે. તમારી શિપમેન્ટ આઈડી #$shipmentId છે';
+  }
+
+  @override
+  String get shipmentPostBackToHome => 'હોમ પર પાછા જાઓ';
+
+  @override
+  String get shipmentPostDateLabel => 'તારીખ';
+
+  @override
+  String get shipmentPostTotalPriceLabel => 'કુલ કિંમત';
+
+  @override
+  String get shipmentEditTitle => 'શિપમેન્ટ સંપાદિત કરો';
+
+  @override
+  String get shipmentUpdate => 'શિપમેન્ટ અપડેટ કરો';
+
+  @override
+  String get shipmentFormPrecisionLogistics => 'પ્રિસિઝન લોજિસ્ટિક્સ';
+
+  @override
+  String get shipmentFormHeroTitle => 'તમારો માલ ક્યાં જઈ રહ્યો છે?';
+
+  @override
+  String get shipmentFormHeroSubtitle =>
+      'ચકાસાયેલ કેરિયરો પાસેથી ત્વરિત બિડ મેળવવા વિગતો ભરો.';
+
+  @override
+  String get shipmentFormFromHint => 'મૂળ શહેર અથવા વેરહાઉસ દાખલ કરો';
+
+  @override
+  String get shipmentFormToHint => 'ગંતવ્ય સરનામું દાખલ કરો';
+
+  @override
+  String get shipmentFormVehicleRequirement => 'વાહન જરૂરિયાત';
+
+  @override
+  String get shipmentFormEstWeight => 'અંદાજિત વજન';
+
+  @override
+  String get shipmentFormEstWeightType => 'વજન એકમ';
+
+  @override
+  String get shipmentFormPickupDate => 'પસંદગીની પિકઅપ તારીખ';
+
+  @override
+  String get shipmentFormPickupTime => 'પસંદગીનો પિકઅપ સમય';
+
+  @override
+  String get shipmentFormYourBudget => 'તમારું બજેટ';
+
+  @override
+  String get shipmentFormBudgetHint => 'લક્ષ્ય કિંમત દાખલ કરો';
+
+  @override
+  String get shipmentFormCommentsLabel => 'વધારાની ટિપ્પણી (વૈકલ્પિક)';
+
+  @override
+  String get shipmentFormCommentsHint =>
+      'આ શિપમેન્ટ વિશે કોઈ વધારાની માહિતી આપો';
+
+  @override
+  String get shipmentFormTerms => 'તમે અમારી નિયમો અને શરતો સ્વીકારી છે.';
+
+  @override
+  String get shipmentFormVehicleRequired => 'કૃપા કરીને વાહન જરૂરિયાત પસંદ કરો';
+
+  @override
+  String get shipmentFormScheduleRequired =>
+      'કૃપા કરીને પિકઅપ તારીખ અને સમય પસંદ કરો';
+
+  @override
+  String get shipmentFormTermsRequired => 'કૃપા કરીને નિયમો અને શરતો સ્વીકારો';
+
+  @override
   String get shipmentFragile => 'નાજુક માલ';
 
   @override

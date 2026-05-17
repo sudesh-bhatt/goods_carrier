@@ -10,6 +10,7 @@ import '../../../../res/font_res.dart';
 import '../../../domain/enums/vehicle_type.dart';
 import '../../../domain/models/shipment_filter.dart';
 import '../buttons/app_button.dart';
+import '../sheets/app_modal_bottom_sheet.dart';
 
 /// Figma filter bottom sheet (`2013:1268` / Filter Search).
 const _kSheetBackground = Color(0xFFF8F9FA);
@@ -35,10 +36,8 @@ class FilterSearchSheet extends StatefulWidget {
     BuildContext context, {
     ShipmentFilter initial = const ShipmentFilter(),
   }) {
-    return showModalBottomSheet<ShipmentFilter>(
+    return AppModalBottomSheet.show<ShipmentFilter>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
       barrierColor: _kScrim,
       builder: (_) => FilterSearchSheet(initial: initial),
     );
