@@ -688,7 +688,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customerEditPersonalInfo => 'Edit Personal Information';
 
   @override
-  String get customerEditPersonalInfoSub => 'Name, email, phone & address';
+  String get customerEditPersonalInfoSub => 'Name, Email, Phone';
+
+  @override
+  String get customerEditProfileTitle => 'Edit Your Profile';
+
+  @override
+  String get customerUpdateProfileButton => 'Update Profile';
+
+  @override
+  String get customerDefaultShippingAddress => 'Default Shipping Address';
+
+  @override
+  String get customerAddressNotSet => 'Add your shipping address';
+
+  @override
+  String get customerEditAddressTitle => 'Edit Address';
 
   @override
   String get customerSavedAddresses => 'Saved Addresses';
@@ -704,6 +719,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get customerActivity => 'Activity';
+
+  @override
+  String get customerSettingsSub => 'Push notification, Privacy Policy';
 
   @override
   String get customerHelpSupport => 'Help & Support';
@@ -773,6 +791,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get emptyShipmentsSubtitle =>
       'Post your first shipment to get started';
+
+  @override
+  String get customerEmptyShipmentsTitle => 'No Active Shipments';
+
+  @override
+  String get customerEmptyShipmentsDescription =>
+      'You haven\'t posted any requirements yet. Start by adding your first shipment to experience precision tracking.';
 
   @override
   String get emptyTrips => 'No trips yet';

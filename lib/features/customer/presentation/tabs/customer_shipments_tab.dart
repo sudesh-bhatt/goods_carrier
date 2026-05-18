@@ -8,9 +8,9 @@ import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../shared/domain/entities/shipment.dart';
 import '../../../../shared/domain/enums/shipment_status.dart';
-import '../../../../shared/presentation/widgets/feedback/empty_state.dart';
 import '../providers/customer_shipments_provider.dart';
 import '../widgets/customer_figma_shipment_card.dart';
+import '../widgets/customer_shipments_empty_view.dart';
 
 /// My Shipment tab body.
 class CustomerShipmentsTab extends ConsumerStatefulWidget {
@@ -40,10 +40,9 @@ class _CustomerShipmentsTabState extends ConsumerState<CustomerShipmentsTab>
     }
 
     if (shipments.isEmpty) {
-      return EmptyState(
-        headline: l10n.emptyShipments,
-        subtitle: l10n.emptyShipmentsSubtitle,
-        fallbackIcon: Icons.local_shipping_outlined,
+      return CustomerShipmentsEmptyView(
+        title: l10n.customerEmptyShipmentsTitle,
+        description: l10n.customerEmptyShipmentsDescription,
         actionLabel: l10n.shipmentPostNew,
         onAction: () => context.push(AppRoutes.postShipment),
       );

@@ -1,34 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/constants/app_dimensions.dart';
+import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/mixins/safe_set_state_mixin.dart';
 import '../../../../core/utils/media_permission_helper.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../res/font_res.dart';
-import '../../../../features/customer/presentation/widgets/customer_profile_form_widgets.dart';
 import '../../../../shared/presentation/widgets/inputs/address_autocomplete_field.dart';
+import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
 import '../../../../shared/presentation/widgets/sheets/app_modal_bottom_sheet.dart';
-import '../providers/auth_provider.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
+import '../widgets/customer_edit_profile_address_card.dart';
+import '../widgets/customer_profile_form_widgets.dart';
 
-/// Horizontal inset for the Create Profile CTA.
-const _kCreateProfileButtonInset = 48.0;
-
-/// Profile setup for new Customer accounts — matches Figma Create Your Profile.
-class CustomerProfileSetupScreen extends ConsumerStatefulWidget {
-  const CustomerProfileSetupScreen({super.key});
+/// Edit customer profile — [Figma](https://www.figma.com/design/YxnNResvDQnbkcPhGejtxa/Mobile-App-UI--Developer-?node-id=1-1877).
+class CustomerEditProfileScreen extends ConsumerStatefulWidget {
+  const CustomerEditProfileScreen({super.key});
 
   @override
-  ConsumerState<CustomerProfileSetupScreen> createState() =>
-      _CustomerProfileSetupScreenState();
+  ConsumerState<CustomerEditProfileScreen> createState() =>
+      _CustomerEditProfileScreenState();
 }
 
-class _CustomerProfileSetupScreenState
-    extends ConsumerState<CustomerProfileSetupScreen>
+class _CustomerEditProfileScreenState extends ConsumerState<CustomerEditProfileScreen>
     with SafeSetStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _nameCtrl = TextEditingController();
@@ -39,11 +38,22 @@ class _CustomerProfileSetupScreenState
   bool _submitted = false;
   XFile? _profileImage;
 
+  static const _kNameHint = 'Johnathan Sterling';
+  static const _kEmailHint = 'j.sterling@logistics.com';
+  static const _kAddressHint = '123 Precision Avenue, Tech District';
+
   @override
   void initState() {
     super.initState();
-    final raw = ref.read(authProvider).phoneNumber;
-    _phoneCtrl.text = _formatPhoneDisplay(raw);
+    final user = ref.read(authProvider).user;
+    if (user != null) {
+      if (user.name.trim().isNotEmpty) _nameCtrl.text = user.name;
+      _phoneCtrl.text = _formatPhoneDisplay(user.phone);
+      if (user.email.trim().isNotEmpty) _emailCtrl.text = user.email;
+      if ((user.address ?? '').trim().isNotEmpty) {
+        _addressCtrl.text = user.address!.trim();
+      }
+    }
   }
 
   @override
@@ -55,21 +65,23 @@ class _CustomerProfileSetupScreenState
     super.dispose();
   }
 
-  String _formatPhoneDisplay(String? raw) {
-    if (raw == null || raw.isEmpty) return '';
+  String _formatPhoneDisplay(String raw) {
     final digits = raw.replaceAll(RegExp(r'\D'), '');
     if (digits.length >= 10 && digits.startsWith('91')) {
       final local = digits.substring(2);
       if (local.length == 10) return '+91 $local';
     }
     if (raw.startsWith('+')) return raw;
-    return '+91 $raw';
+    return raw.isEmpty ? raw : '+91 $raw';
   }
 
-  String _phoneForSubmit() {
-    final raw = ref.read(authProvider).phoneNumber;
-    if (raw != null && raw.isNotEmpty) return raw;
-    return _phoneCtrl.text.replaceAll(RegExp(r'\s'), '');
+  Future<bool> _ensureMediaPermission(ImageSource source) async {
+    if (source == ImageSource.camera) {
+      return MediaPermissionHelper.ensureCamera();
+    }
+    final access = await MediaPermissionHelper.ensureGallery();
+    return access == GalleryAccessResult.full ||
+        access == GalleryAccessResult.limited;
   }
 
   Future<void> _pickProfileImage() async {
@@ -99,21 +111,18 @@ class _CustomerProfileSetupScreenState
                     l10n.profilePhotoPickerTitle,
                     style: sheetContext.textTheme.titleMedium?.copyWith(
                       fontFamily: FontRes.MANROPE_BOLD,
-                      fontWeight: FontWeight.w400,
                     ),
                   ),
                 ),
                 ListTile(
                   leading: Icon(Icons.photo_camera_outlined, color: colors.primary),
                   title: Text(l10n.profilePhotoTakePhoto),
-                  onTap: () =>
-                      Navigator.pop(sheetContext, ImageSource.camera),
+                  onTap: () => Navigator.pop(sheetContext, ImageSource.camera),
                 ),
                 ListTile(
                   leading: Icon(Icons.photo_library_outlined, color: colors.primary),
                   title: Text(l10n.profilePhotoChooseGallery),
-                  onTap: () =>
-                      Navigator.pop(sheetContext, ImageSource.gallery),
+                  onTap: () => Navigator.pop(sheetContext, ImageSource.gallery),
                 ),
                 ListTile(
                   leading: Icon(Icons.close, color: colors.textSecondary),
@@ -150,103 +159,54 @@ class _CustomerProfileSetupScreenState
     }
   }
 
-  /// Returns `true` when the user may proceed to the system picker / camera.
-  Future<bool> _ensureMediaPermission(ImageSource source) async {
+  Future<void> _editAddress() async {
+    HapticFeedback.selectionClick();
     final l10n = context.l10n;
+    final draftCtrl = TextEditingController(text: _addressCtrl.text);
 
-    if (source == ImageSource.camera) {
-      final granted = await MediaPermissionHelper.ensureCamera();
-      if (granted) return true;
-
-      if (!mounted) return false;
-      await _showPermissionDeniedDialog(
-        message: l10n.profilePhotoCameraPermissionDenied,
-      );
-      return false;
-    }
-
-    final access = await MediaPermissionHelper.ensureGallery();
-    switch (access) {
-      case GalleryAccessResult.full:
-        return true;
-      case GalleryAccessResult.limited:
-        if (!mounted) return false;
-        return _showLimitedGalleryDialog();
-      case GalleryAccessResult.denied:
-      case GalleryAccessResult.permanentlyDenied:
-        if (!mounted) return false;
-        await _showPermissionDeniedDialog(
-          message: l10n.profilePhotoGalleryPermissionDenied,
-        );
-        return false;
-    }
-  }
-
-  Future<void> _showPermissionDeniedDialog({
-    required String message,
-  }) async {
-    final l10n = context.l10n;
-
-    await showDialog<void>(
+    await AppModalBottomSheet.show<void>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.profilePhotoPickerTitle),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n.actionCancel),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              MediaPermissionHelper.openSettings();
-            },
-            child: Text(l10n.actionOpenSettings),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Explains partial gallery access; user can open Settings or continue.
-  Future<bool> _showLimitedGalleryDialog() async {
-    final l10n = context.l10n;
-
-    final choice = await showDialog<String>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.profilePhotoLimitedTitle),
-        content: Text(l10n.profilePhotoLimitedMessage),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, 'continue'),
-            child: Text(l10n.profilePhotoContinueWithLimited),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, 'settings'),
-            child: Text(l10n.profilePhotoAllowFullAccess),
-          ),
-        ],
-      ),
-    );
-
-    if (choice == 'settings') {
-      await MediaPermissionHelper.openSettings();
-      return false;
-    }
-    if (choice == 'continue') {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.profilePhotoLimitedMessage),
-            duration: const Duration(seconds: 4),
+      builder: (sheetContext) {
+        return Padding(
+          padding: EdgeInsets.fromLTRB(20.w, 8.h, 20.w, 20.h),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                l10n.customerEditAddressTitle,
+                style: TextStyle(
+                  fontFamily: FontRes.MANROPE_BOLD,
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.w700,
+                  color: sheetContext.colors.textPrimary,
+                ),
+              ),
+              SizedBox(height: 16.h),
+              AddressAutocompleteField(
+                label: l10n.customerDefaultShippingAddress,
+                hint: _kAddressHint,
+                controller: draftCtrl,
+                fillColor: kCustomerProfileFieldFill,
+              ),
+              SizedBox(height: 16.h),
+              SizedBox(
+                height: 48.h,
+                child: ElevatedButton(
+                  onPressed: () {
+                    safeSetState(() => _addressCtrl.text = draftCtrl.text.trim());
+                    Navigator.pop(sheetContext);
+                  },
+                  child: Text(l10n.actionSave),
+                ),
+              ),
+            ],
           ),
         );
-      }
-      return true;
-    }
-    return false;
+      },
+    );
+
+    draftCtrl.dispose();
   }
 
   Future<void> _submit() async {
@@ -254,41 +214,39 @@ class _CustomerProfileSetupScreenState
     if (!(_formKey.currentState?.validate() ?? false)) return;
     FocusScope.of(context).unfocus();
 
-    await ref.read(authProvider.notifier).submitCustomerProfile(
+    final user = ref.read(authProvider).user;
+    if (user == null) return;
+
+    await ref.read(authProvider.notifier).updateCustomerProfile(
           name: _nameCtrl.text.trim(),
-          phone: _phoneForSubmit(),
+          phone: user.phone,
           address: _addressCtrl.text.trim(),
           email: _emailCtrl.text.trim().isEmpty ? null : _emailCtrl.text.trim(),
         );
+
+    if (!mounted) return;
+    final error = ref.read(authProvider).error;
+    if (error != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error)),
+      );
+      return;
+    }
+
+    context.pop();
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final colors = context.colors;
-    final textTheme = context.textTheme;
-    final appStyles = context.appTextStyles;
     final isLoading = ref.watch(authProvider).isLoading;
 
     return Scaffold(
       backgroundColor: colors.background,
-      appBar: AppBar(
-        backgroundColor: colors.surface,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        surfaceTintColor: Colors.transparent,
-        automaticallyImplyLeading: false,
-        title: Text(
-          l10n.profileSetupTitle,
-          style: TextStyle(
-            fontFamily: FontRes.MANROPE_BOLD,
-            color: colors.textPrimary,
-            fontSize: 18.sp,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-      ),
+      appBar: _EditProfileAppBar(title: l10n.customerEditProfileTitle),
       body: SafeArea(
+        top: false,
         child: GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
           behavior: HitTestBehavior.opaque,
@@ -298,11 +256,11 @@ class _CustomerProfileSetupScreenState
                 ? AutovalidateMode.onUserInteraction
                 : AutovalidateMode.disabled,
             child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: 20.w),
+              padding: EdgeInsets.symmetric(horizontal: 24.w),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  SizedBox(height: 16.h),
+                  SizedBox(height: 32.h),
                   Center(
                     child: CustomerProfileAvatar(
                       colors: colors,
@@ -310,91 +268,84 @@ class _CustomerProfileSetupScreenState
                       onTap: _pickProfileImage,
                     ),
                   ),
-                  SizedBox(height: 20.h),
-                  Text(
-                    l10n.profileSetupSubtitle,
-                    style: appStyles.sectionHeading.copyWith(
-                      fontFamily: FontRes.MANROPE_EXTRABOLD,
-                      color: const Color(0xFF1A1C1E),
-                      fontSize: 24.sp,
-                      fontWeight: FontWeight.w400,
-                      height: 1.25,
-                    ),
-                  ),
-                  SizedBox(height: 24.h),
+                  SizedBox(height: 40.h),
                   CustomerProfileFormField(
                     label: l10n.profileName,
-                    hint: 'Johnathan Sterling',
+                    hint: _kNameHint,
                     controller: _nameCtrl,
                     keyboardType: TextInputType.name,
                     textCapitalization: TextCapitalization.words,
                     textInputAction: TextInputAction.next,
-                    autofocus: true,
                     suffixIcon: Icons.person_outline_rounded,
+                    fillColor: const Color(0xFFEFF4FA),
                     validator: (v) => Validators.required(v, l10n.profileName),
                   ),
-                  SizedBox(height: 16.h),
+                  SizedBox(height: 24.h),
                   CustomerProfileFormField(
                     label: l10n.profilePhone,
                     controller: _phoneCtrl,
                     readOnly: true,
                     suffixIcon: Icons.phone_outlined,
+                    fillColor: const Color(0xFFEFF4FA),
                   ),
-                  SizedBox(height: 16.h),
+                  SizedBox(height: 24.h),
                   CustomerProfileFormField(
-                    label: l10n.profileEmailOptional,
-                    hint: 'j.sterling@logistics.com',
+                    label: l10n.profileEmail,
+                    hint: _kEmailHint,
                     controller: _emailCtrl,
                     keyboardType: TextInputType.emailAddress,
-                    textInputAction: TextInputAction.next,
+                    textInputAction: TextInputAction.done,
                     suffixIcon: Icons.mail_outline_rounded,
+                    fillColor: const Color(0xFFEFF4FA),
                     validator: (v) {
                       if (v == null || v.trim().isEmpty) return null;
                       return Validators.email(v);
                     },
                   ),
-                  SizedBox(height: 16.h),
-                  AddressAutocompleteField(
-                    label: l10n.profilePrimaryAddress,
-                    hint: '123 Precision Avenue, Tech District',
-                    controller: _addressCtrl,
-                    fillColor: kCustomerProfileFieldFill,
-                    autovalidateMode: _submitted
-                        ? AutovalidateMode.onUserInteraction
-                        : AutovalidateMode.disabled,
-                    validator: (v) =>
-                        Validators.required(v, l10n.profilePrimaryAddress),
-                  ),
-                  SizedBox(height: 32.h),
+                  SizedBox(height: 24.h),
                   Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: _kCreateProfileButtonInset.w,
+                    padding: EdgeInsets.only(left: 4.w),
+                    child: Text(
+                      l10n.customerDefaultShippingAddress.toUpperCase(),
+                      style: TextStyle(
+                        fontFamily: FontRes.MANROPE_EXTRABOLD,
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1.8,
+                        height: 16 / 12,
+                        color: colors.brownText,
+                      ),
                     ),
+                  ),
+                  SizedBox(height: 8.h),
+                  CustomerEditProfileAddressCard(
+                    address: _addressCtrl.text,
+                    placeholder: _kAddressHint,
+                    onTap: _editAddress,
+                  ),
+                  SizedBox(height: 40.h),
+                  Center(
                     child: DecoratedBox(
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(
-                          AppDimensions.radiusLg.r,
-                        ),
+                        borderRadius: BorderRadius.circular(12.r),
                         boxShadow: [
                           BoxShadow(
-                            color: colors.primary.withValues(alpha: 0.28),
-                            blurRadius: 14,
-                            offset: Offset(0, 6.h),
+                            color: colors.primary.withValues(alpha: 0.3),
+                            blurRadius: 24,
+                            offset: Offset(0, 8.h),
                           ),
                         ],
                       ),
                       child: SizedBox(
-                        width: double.infinity,
-                        height: 52.h,
+                        width: 274.w,
+                        height: 56.h,
                         child: ElevatedButton(
                           onPressed: isLoading ? null : _submit,
                           style: ElevatedButton.styleFrom(
                             elevation: 0,
                             shadowColor: Colors.transparent,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                AppDimensions.radiusLg.r,
-                              ),
+                              borderRadius: BorderRadius.circular(12.r),
                             ),
                           ),
                           child: isLoading
@@ -407,20 +358,75 @@ class _CustomerProfileSetupScreenState
                                   ),
                                 )
                               : Text(
-                                  l10n.profileCreateButton,
-                                  style: textTheme.labelLarge?.copyWith(
-                                    color: colors.onPrimary,
-                                    fontSize: 16.sp,
+                                  l10n.customerUpdateProfileButton,
+                                  style: TextStyle(
+                                    fontFamily: FontRes.MANROPE_BOLD,
+                                    fontSize: 18.sp,
                                     fontWeight: FontWeight.w700,
+                                    height: 28 / 18,
+                                    color: colors.onPrimary,
                                   ),
                                 ),
                         ),
                       ),
                     ),
                   ),
-                  SizedBox(height: 24.h),
+                  SizedBox(height: 32.h),
                 ],
               ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _EditProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const _EditProfileAppBar({required this.title});
+
+  final String title;
+
+  @override
+  Size get preferredSize => Size.fromHeight(60.h);
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: colors.surface.withValues(alpha: 0.8),
+        boxShadow: [
+          BoxShadow(
+            color: colors.primary.withValues(alpha: 0.05),
+            blurRadius: 2,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: SizedBox(
+          height: 60.h,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.w),
+            child: Row(
+              children: [
+                AppBarBackButton(onTap: () => context.pop()),
+                SizedBox(width: 8.w),
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontFamily: FontRes.MANROPE_BOLD,
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.45,
+                    height: 28 / 18,
+                    color: const Color(0xFF191C1D),
+                  ),
+                ),
+              ],
             ),
           ),
         ),

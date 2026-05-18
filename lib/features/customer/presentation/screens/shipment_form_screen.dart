@@ -17,6 +17,7 @@ import '../../../../shared/domain/entities/shipment.dart';
 import '../../../../shared/domain/enums/shipment_status.dart';
 import '../../../../shared/domain/enums/vehicle_type.dart';
 import '../../../../shared/presentation/widgets/buttons/app_button.dart';
+import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
 import '../../../../shared/presentation/widgets/sheets/app_picker_bottom_sheet.dart';
 import '../providers/customer_shipments_provider.dart';
 import '../widgets/customer_light_chrome.dart';
@@ -586,25 +587,8 @@ class _ShipmentFormAppBar extends StatelessWidget implements PreferredSizeWidget
             padding: EdgeInsets.symmetric(horizontal: 24.w),
             child: Row(
               children: [
-                Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () {
-                      HapticFeedback.lightImpact();
-                      context.pop();
-                    },
-                    borderRadius: BorderRadius.circular(999),
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 4.w, top: 8.h, bottom: 8.h, right: 8.w),
-                      child: Icon(
-                        Icons.chevron_left_rounded,
-                        size: 28.w,
-                        color: ShipmentFormTokens.primary,
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(width: 16.w),
+                AppBarBackButton(onTap: () => context.pop()),
+                SizedBox(width: 8.w),
                 Text(
                   title,
                   style: TextStyle(

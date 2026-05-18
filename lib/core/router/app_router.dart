@@ -11,7 +11,9 @@ import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/role_selection_screen.dart';
 import '../../features/auth/presentation/screens/splash_screen.dart';
 import '../../features/auth/presentation/screens/terms_screen.dart';
+import '../../features/customer/presentation/screens/customer_edit_profile_screen.dart';
 import '../../features/customer/presentation/screens/customer_main_shell_screen.dart';
+import '../../features/customer/presentation/widgets/customer_tab_slide_container.dart';
 import '../../features/customer/presentation/screens/shipment_form_screen.dart';
 import '../../features/customer/presentation/screens/shipment_post_confirmation_screen.dart';
 import '../../features/customer/presentation/models/shipment_post_confirmation_args.dart';
@@ -37,35 +39,6 @@ class _RouterNotifier extends ChangeNotifier {
     _ref.listen<AuthState>(authProvider, (_, __) => notifyListeners());
   }
   final Ref _ref;
-}
-
-Page<void> _customerTabPage({
-  required GoRouterState state,
-  required Widget child,
-}) {
-  return CustomTransitionPage<void>(
-    key: state.pageKey,
-    transitionDuration: const Duration(milliseconds: 280),
-    reverseTransitionDuration: const Duration(milliseconds: 220),
-    child: child,
-    transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      final curved = CurvedAnimation(
-        parent: animation,
-        curve: Curves.easeOutCubic,
-        reverseCurve: Curves.easeInCubic,
-      );
-      return FadeTransition(
-        opacity: curved,
-        child: SlideTransition(
-          position: Tween<Offset>(
-            begin: const Offset(0.04, 0),
-            end: Offset.zero,
-          ).animate(curved),
-          child: child,
-        ),
-      );
-    },
-  );
 }
 
 // ─── Router provider ──────────────────────────────────────────────────────────
@@ -141,19 +114,22 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
 
       // ── Customer main shell (single scaffold, tab bodies only) ─────────
-      StatefulShellRoute.indexedStack(
+      StatefulShellRoute(
         builder: (context, state, navigationShell) {
           return CustomerMainShellScreen(navigationShell: navigationShell);
+        },
+        navigatorContainerBuilder: (context, navigationShell, children) {
+          return CustomerTabSlideContainer(
+            currentIndex: navigationShell.currentIndex,
+            children: children,
+          );
         },
         branches: [
           StatefulShellBranch(
             routes: [
               GoRoute(
                 path: AppRoutes.customerHome,
-                pageBuilder: (context, state) => _customerTabPage(
-                  state: state,
-                  child: const CustomerHomeTab(),
-                ),
+                builder: (_, __) => const CustomerHomeTab(),
               ),
             ],
           ),
@@ -161,10 +137,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: AppRoutes.customerHistory,
-                pageBuilder: (context, state) => _customerTabPage(
-                  state: state,
-                  child: const CustomerShipmentsTab(),
-                ),
+                builder: (_, __) => const CustomerShipmentsTab(),
               ),
             ],
           ),
@@ -172,10 +145,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: AppRoutes.customerNotifications,
-                pageBuilder: (context, state) => _customerTabPage(
-                  state: state,
-                  child: const CustomerNotificationsTab(),
-                ),
+                builder: (_, __) => const CustomerNotificationsTab(),
               ),
             ],
           ),
@@ -183,10 +153,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: AppRoutes.customerProfile,
-                pageBuilder: (context, state) => _customerTabPage(
-                  state: state,
-                  child: const CustomerProfileTab(),
-                ),
+                builder: (_, __) => const CustomerProfileTab(),
               ),
             ],
           ),
@@ -194,6 +161,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
 
       // ── Customer full-screen flows (outside shell) ─────────────────────
+      GoRoute(
+        path: AppRoutes.customerEditProfile,
+        builder: (_, __) => const CustomerEditProfileScreen(),
+      ),
       GoRoute(
         path: AppRoutes.postShipment,
         builder: (_, __) => const ShipmentFormScreen(),

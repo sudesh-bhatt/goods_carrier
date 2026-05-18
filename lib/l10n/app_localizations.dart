@@ -1399,8 +1399,38 @@ abstract class AppLocalizations {
   /// No description provided for @customerEditPersonalInfoSub.
   ///
   /// In en, this message translates to:
-  /// **'Name, email, phone & address'**
+  /// **'Name, Email, Phone'**
   String get customerEditPersonalInfoSub;
+
+  /// No description provided for @customerEditProfileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Your Profile'**
+  String get customerEditProfileTitle;
+
+  /// No description provided for @customerUpdateProfileButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Profile'**
+  String get customerUpdateProfileButton;
+
+  /// No description provided for @customerDefaultShippingAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Default Shipping Address'**
+  String get customerDefaultShippingAddress;
+
+  /// No description provided for @customerAddressNotSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your shipping address'**
+  String get customerAddressNotSet;
+
+  /// No description provided for @customerEditAddressTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Address'**
+  String get customerEditAddressTitle;
 
   /// No description provided for @customerSavedAddresses.
   ///
@@ -1431,6 +1461,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Activity'**
   String get customerActivity;
+
+  /// No description provided for @customerSettingsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Push notification, Privacy Policy'**
+  String get customerSettingsSub;
 
   /// No description provided for @customerHelpSupport.
   ///
@@ -1563,6 +1599,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Post your first shipment to get started'**
   String get emptyShipmentsSubtitle;
+
+  /// No description provided for @customerEmptyShipmentsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No Active Shipments'**
+  String get customerEmptyShipmentsTitle;
+
+  /// No description provided for @customerEmptyShipmentsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'You haven\'t posted any requirements yet. Start by adding your first shipment to experience precision tracking.'**
+  String get customerEmptyShipmentsDescription;
 
   /// No description provided for @emptyTrips.
   ///

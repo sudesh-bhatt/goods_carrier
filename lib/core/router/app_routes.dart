@@ -22,6 +22,7 @@ abstract final class AppRoutes {
   static const String tracking             = '/customer/tracking/:id';
   static const String customerNotifications= '/customer/notifications';
   static const String customerProfile      = '/customer/profile';
+  static const String customerEditProfile  = '/customer/profile/edit';
   static const String customerHistory      = '/customer/history';
 
   // ── Driver ────────────────────────────────────────────────────────────────

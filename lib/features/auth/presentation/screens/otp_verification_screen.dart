@@ -15,6 +15,7 @@ import '../../../../generated/assets.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../res/font_res.dart';
 import '../../../../shared/presentation/widgets/inputs/app_otp_field.dart';
+import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
 import '../providers/auth_provider.dart';
 
 /// Figma OTP input fill — matches Login screen fields.
@@ -374,17 +375,7 @@ class _OtpAppBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 0,
       scrolledUnderElevation: 0,
       surfaceTintColor: Colors.transparent,
-      leading: IconButton(
-        icon: Icon(
-          Icons.arrow_back,
-          size: 32.w,
-          color: colors.primary,
-        ),
-        onPressed: () {
-          HapticFeedback.lightImpact();
-          context.pop();
-        },
-      ),
+      leading: AppBarBackButton(onTap: () => context.pop()),
       title: Align(
         alignment: Alignment.centerLeft,
         child: Text(

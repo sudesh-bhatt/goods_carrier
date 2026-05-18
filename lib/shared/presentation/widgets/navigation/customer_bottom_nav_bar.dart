@@ -50,7 +50,7 @@ class CustomerBottomNavBar extends StatelessWidget {
               ),
               _FigmaTab(
                 label: l10n.customerNavShipments,
-                icon: Icons.inventory_2_outlined,
+                icon: Icons.local_shipping_outlined,
                 selected: currentTab == CustomerMainTab.shipments,
                 onTap: () => _select(CustomerMainTab.shipments),
               ),

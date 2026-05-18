@@ -684,7 +684,22 @@ class AppLocalizationsGu extends AppLocalizations {
   String get customerEditPersonalInfo => 'વ્યક્તિગત માહિતી સંપાદિત કરો';
 
   @override
-  String get customerEditPersonalInfoSub => 'નામ, ઈમેલ, ફોન અને સરનામું';
+  String get customerEditPersonalInfoSub => 'નામ, ઈમેલ, ફોન';
+
+  @override
+  String get customerEditProfileTitle => 'તમારી પ્રોફાઇલ સંપાદિત કરો';
+
+  @override
+  String get customerUpdateProfileButton => 'પ્રોફાઇલ અપડેટ કરો';
+
+  @override
+  String get customerDefaultShippingAddress => 'ડિફૉલ્ટ શિપિંગ સરનામું';
+
+  @override
+  String get customerAddressNotSet => 'તમારું શિપિંગ સરનામું ઉમેરો';
+
+  @override
+  String get customerEditAddressTitle => 'સરનામું સંપાદિત કરો';
 
   @override
   String get customerSavedAddresses => 'સાચવેલા સરનામાં';
@@ -700,6 +715,9 @@ class AppLocalizationsGu extends AppLocalizations {
 
   @override
   String get customerActivity => 'પ્રવૃત્તિ';
+
+  @override
+  String get customerSettingsSub => 'પુશ સૂચના, ગોપનીયતા નીતિ';
 
   @override
   String get customerHelpSupport => 'મદદ અને સપોર્ટ';
@@ -769,6 +787,13 @@ class AppLocalizationsGu extends AppLocalizations {
   @override
   String get emptyShipmentsSubtitle =>
       'પ્રારંભ કરવા આપનો પ્રથમ શિપમેન્ટ પોસ્ટ કરો';
+
+  @override
+  String get customerEmptyShipmentsTitle => 'કોઈ સક્રિય શિપમેન્ટ નથી';
+
+  @override
+  String get customerEmptyShipmentsDescription =>
+      'તમે હજી સુધી કોઈ જરૂરિયાત પોસ્ટ કરી નથી. ચોકસાઈથી ટ્રેકિંગ માટે તમારું પહેલું શિપમેન્ટ ઉમેરીને શરૂ કરો.';
 
   @override
   String get emptyTrips => 'હજી કોઈ ટ્રિપ નથી';

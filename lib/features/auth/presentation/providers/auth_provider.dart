@@ -193,6 +193,31 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  /// Updates the logged-in customer profile locally (edit profile flow).
+  Future<void> updateCustomerProfile({
+    required String name,
+    required String phone,
+    required String address,
+    String? email,
+  }) async {
+    final current = state.user;
+    if (current == null) return;
+
+    state = state.copyWith(isLoading: true, clearError: true);
+    try {
+      final updated = current.copyWith(
+        name: name,
+        phone: phone,
+        address: address,
+        email: email ?? '',
+      );
+      await _persistUser(updated);
+      state = state.copyWith(user: updated, isLoading: false);
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+    }
+  }
+
   Future<void> submitDriverProfile({
     required String name,
     required String vehicleNumber,

@@ -71,6 +71,7 @@ flutter:
   assets:
     - assets/images/
     - assets/images/app_logo.png
+    - assets/images/empty_trip_placeholder.png
     - assets/images/login_screen_banner.png
     - assets/images/splash_screen_logo.png
     - assets/svg/cta_right_arrow.svg

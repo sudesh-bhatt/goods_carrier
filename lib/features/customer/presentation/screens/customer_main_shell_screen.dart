@@ -10,6 +10,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/presentation/widgets/navigation/customer_bottom_nav_bar.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/customer_notifications_provider.dart';
+import '../providers/customer_shipments_provider.dart';
 import '../widgets/customer_light_chrome.dart';
 import '../widgets/customer_main_header.dart';
 
@@ -48,12 +49,15 @@ class CustomerMainShellScreen extends ConsumerWidget {
     final l10n = context.l10n;
     final tab = _currentTab;
     final user = ref.watch(authProvider).user;
-    final unreadCount = ref.watch(customerUnreadCountProvider);
     final notifications = ref.watch(customerNotificationsProvider);
     final hasUnread = notifications.any((n) => !n.isRead);
 
-    final showFab =
-        tab == CustomerMainTab.home || tab == CustomerMainTab.shipments;
+    final shipmentsState = ref.watch(customerShipmentsProvider);
+    final hasShipments = shipmentsState.shipments.isNotEmpty;
+    final showFab = tab == CustomerMainTab.home ||
+        (tab == CustomerMainTab.shipments &&
+            !shipmentsState.isLoading &&
+            hasShipments);
 
     return CustomerLightChrome(
       child: Scaffold(
@@ -63,7 +67,6 @@ class CustomerMainShellScreen extends ConsumerWidget {
           children: [
             CustomerMainHeader(
               title: _titleForTab(tab, l10n),
-              unreadCount: unreadCount,
               userName: user?.name,
               trailing: tab == CustomerMainTab.notifications && hasUnread
                   ? IconButton(
@@ -77,12 +80,6 @@ class CustomerMainShellScreen extends ConsumerWidget {
                       tooltip: l10n.notificationMarkAllRead,
                     )
                   : null,
-              onNotifications: tab == CustomerMainTab.notifications
-                  ? null
-                  : () => _onTabSelected(
-                        context,
-                        CustomerMainTab.notifications,
-                      ),
               onProfile: tab == CustomerMainTab.profile
                   ? null
                   : () => _onTabSelected(context, CustomerMainTab.profile),

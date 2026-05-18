@@ -1,9 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
+
+/// Standard back control — orange left arrow used on all app bars.
+class AppBarBackButton extends StatelessWidget {
+  const AppBarBackButton({
+    super.key,
+    this.onTap,
+    this.size,
+    this.color,
+  });
+
+  final VoidCallback? onTap;
+  final double? size;
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+
+    return IconButton(
+      onPressed: () {
+        HapticFeedback.lightImpact();
+        if (onTap != null) {
+          onTap!();
+        } else if (context.canPop()) {
+          context.pop();
+        } else {
+          Navigator.maybePop(context);
+        }
+      },
+      icon: Icon(
+        Icons.arrow_back,
+        size: size ?? 24.w,
+        color: color ?? colors.primary,
+      ),
+      tooltip: context.l10n.actionBack,
+    );
+  }
+}
 
 /// Consistent [PreferredSizeWidget] AppBar used across all screens.
 ///
@@ -101,15 +140,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
     Widget? leadingWidget;
     switch (leadingType) {
       case AppBarLeadingType.back:
-        leadingWidget = IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            size: AppDimensions.iconMd.w,
-            color: colors.textPrimary,
-          ),
-          onPressed: handleLeadingTap,
-          tooltip: context.l10n.actionBack,
-        );
+        leadingWidget = AppBarBackButton(onTap: handleLeadingTap);
       case AppBarLeadingType.menu:
         leadingWidget = IconButton(
           icon: Icon(

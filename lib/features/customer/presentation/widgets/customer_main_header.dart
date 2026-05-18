@@ -9,18 +9,14 @@ class CustomerMainHeader extends StatelessWidget {
   const CustomerMainHeader({
     super.key,
     required this.title,
-    required this.unreadCount,
     this.userName,
     this.trailing,
-    this.onNotifications,
     this.onProfile,
   });
 
   final String title;
-  final int unreadCount;
   final String? userName;
   final Widget? trailing;
-  final VoidCallback? onNotifications;
   final VoidCallback? onProfile;
 
   @override
@@ -40,22 +36,32 @@ class CustomerMainHeader extends StatelessWidget {
           child: Row(
             children: [
               Expanded(
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 280),
-                    switchInCurve: Curves.easeOutCubic,
-                    switchOutCurve: Curves.easeInCubic,
-                    child: Text(
-                      title,
-                      key: ValueKey<String>(title),
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        fontFamily: FontRes.MANROPE_EXTRABOLD,
-                        fontSize: 20.sp,
-                        fontWeight: FontWeight.w800,
-                        color: colors.textPrimary,
-                      ),
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  switchInCurve: Curves.easeOut,
+                  switchOutCurve: Curves.easeIn,
+                  layoutBuilder: (currentChild, previousChildren) {
+                    return Stack(
+                      alignment: Alignment.centerLeft,
+                      clipBehavior: Clip.none,
+                      children: [
+                        ...previousChildren,
+                        if (currentChild != null) currentChild,
+                      ],
+                    );
+                  },
+                  transitionBuilder: (child, animation) {
+                    return FadeTransition(opacity: animation, child: child);
+                  },
+                  child: Text(
+                    title,
+                    key: ValueKey<String>(title),
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      fontFamily: FontRes.MANROPE_EXTRABOLD,
+                      fontSize: 20.sp,
+                      fontWeight: FontWeight.w800,
+                      color: colors.textPrimary,
                     ),
                   ),
                 ),
@@ -64,40 +70,6 @@ class CustomerMainHeader extends StatelessWidget {
                 trailing!,
                 SizedBox(width: 4.w),
               ],
-              if (onNotifications != null)
-                IconButton(
-                  padding: EdgeInsets.zero,
-                  constraints:
-                      BoxConstraints(minWidth: 40.w, minHeight: 40.w),
-                  onPressed: onNotifications,
-                  icon: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Icon(
-                        Icons.notifications_none_rounded,
-                        size: 24.w,
-                        color: colors.primary,
-                      ),
-                      if (unreadCount > 0)
-                        Positioned(
-                          top: 0,
-                          right: 0,
-                          child: Container(
-                            width: 8.w,
-                            height: 8.w,
-                            decoration: BoxDecoration(
-                              color: colors.primary,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: colors.surface,
-                                width: 1.5,
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
               if (onProfile != null) ...[
                 SizedBox(width: 8.w),
                 GestureDetector(
