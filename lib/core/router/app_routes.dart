@@ -23,6 +23,11 @@ abstract final class AppRoutes {
   static const String customerNotifications= '/customer/notifications';
   static const String customerProfile      = '/customer/profile';
   static const String customerEditProfile  = '/customer/profile/edit';
+  static const String customerSettings = '/customer/profile/settings';
+  static const String customerReportedTrips = '/customer/profile/reported-trips';
+  static const String customerSavedAddresses = '/customer/profile/addresses';
+  static const String customerAddAddress   = '/customer/profile/addresses/add';
+  static const String customerEditAddress  = '/customer/profile/addresses/:id/edit';
   static const String customerHistory      = '/customer/history';
 
   // ── Driver ────────────────────────────────────────────────────────────────
@@ -40,4 +45,6 @@ abstract final class AppRoutes {
   static String editShipmentOf(String id) => '/customer/shipment/$id/edit';
   static String trackingOf(String id)        => '/customer/tracking/$id';
   static String driverTripDetailOf(String id)=> '/driver/trip/$id';
+  static String customerEditAddressOf(String id) =>
+      '/customer/profile/addresses/$id/edit';
 }

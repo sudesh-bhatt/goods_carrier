@@ -11,7 +11,11 @@ import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/role_selection_screen.dart';
 import '../../features/auth/presentation/screens/splash_screen.dart';
 import '../../features/auth/presentation/screens/terms_screen.dart';
+import '../../features/customer/presentation/screens/add_address_screen.dart';
 import '../../features/customer/presentation/screens/customer_edit_profile_screen.dart';
+import '../../features/customer/presentation/screens/customer_settings_screen.dart';
+import '../../features/customer/presentation/screens/reported_trips_screen.dart';
+import '../../features/customer/presentation/screens/saved_addresses_screen.dart';
 import '../../features/customer/presentation/screens/customer_main_shell_screen.dart';
 import '../../features/customer/presentation/widgets/customer_tab_slide_container.dart';
 import '../../features/customer/presentation/screens/shipment_form_screen.dart';
@@ -164,6 +168,28 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.customerEditProfile,
         builder: (_, __) => const CustomerEditProfileScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.customerSettings,
+        builder: (_, __) => const CustomerSettingsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.customerReportedTrips,
+        builder: (_, __) => const ReportedTripsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.customerSavedAddresses,
+        builder: (_, __) => const SavedAddressesScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.customerAddAddress,
+        builder: (_, __) => const AddAddressScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.customerEditAddress,
+        builder: (_, state) => AddAddressScreen(
+          addressId: state.pathParameters['id'],
+        ),
       ),
       GoRoute(
         path: AppRoutes.postShipment,

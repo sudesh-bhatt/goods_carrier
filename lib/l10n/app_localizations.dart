@@ -1444,6 +1444,120 @@ abstract class AppLocalizations {
   /// **'Home, Office & others'**
   String get customerSavedAddressesSub;
 
+  /// No description provided for @customerSavedLocationsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'SAVED LOCATIONS'**
+  String get customerSavedLocationsSection;
+
+  /// No description provided for @customerAddAddressTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Address'**
+  String get customerAddAddressTitle;
+
+  /// No description provided for @customerEditAddressScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Address'**
+  String get customerEditAddressScreenTitle;
+
+  /// No description provided for @customerSelectAddressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'SELECT ADDRESS LABEL'**
+  String get customerSelectAddressLabel;
+
+  /// No description provided for @customerAddressLabelHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get customerAddressLabelHome;
+
+  /// No description provided for @customerAddressLabelOffice.
+  ///
+  /// In en, this message translates to:
+  /// **'Office'**
+  String get customerAddressLabelOffice;
+
+  /// No description provided for @customerAddressLabelOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get customerAddressLabelOther;
+
+  /// No description provided for @customerAddressFullLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Full Address Line'**
+  String get customerAddressFullLine;
+
+  /// No description provided for @customerAddressFullLineHint.
+  ///
+  /// In en, this message translates to:
+  /// **'House No, Street Name, Area'**
+  String get customerAddressFullLineHint;
+
+  /// No description provided for @customerAddressCity.
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get customerAddressCity;
+
+  /// No description provided for @customerAddressCityHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. San Francisco'**
+  String get customerAddressCityHint;
+
+  /// No description provided for @customerAddressPincode.
+  ///
+  /// In en, this message translates to:
+  /// **'Pincode'**
+  String get customerAddressPincode;
+
+  /// No description provided for @customerAddressPincodeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Zip Code'**
+  String get customerAddressPincodeHint;
+
+  /// No description provided for @customerAddressLandmark.
+  ///
+  /// In en, this message translates to:
+  /// **'Landmark (Optional)'**
+  String get customerAddressLandmark;
+
+  /// No description provided for @customerAddressLandmarkHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Near by famous place'**
+  String get customerAddressLandmarkHint;
+
+  /// No description provided for @customerAddressLandmarkTip.
+  ///
+  /// In en, this message translates to:
+  /// **'Providing an accurate landmark helps our delivery partners find your location 30% faster.'**
+  String get customerAddressLandmarkTip;
+
+  /// No description provided for @customerSaveAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Address'**
+  String get customerSaveAddress;
+
+  /// No description provided for @customerAddressSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Address saved'**
+  String get customerAddressSaved;
+
+  /// No description provided for @customerLocationPermissionNeeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permission is required to show your current position.'**
+  String get customerLocationPermissionNeeded;
+
   /// No description provided for @customerReportedTrips.
   ///
   /// In en, this message translates to:
@@ -1455,6 +1569,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Show reported trips'**
   String get customerReportedTripsSub;
+
+  /// No description provided for @customerReportedByYouBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'REPORTED BY YOU'**
+  String get customerReportedByYouBadge;
+
+  /// No description provided for @customerEstimatedPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated Price'**
+  String get customerEstimatedPrice;
 
   /// No description provided for @customerActivity.
   ///
@@ -1731,6 +1857,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Are you sure you want to logout?'**
   String get settingsLogoutConfirm;
+
+  /// No description provided for @customerSettingsNotificationsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get customerSettingsNotificationsSection;
+
+  /// No description provided for @customerSettingsPushNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Push Notifications'**
+  String get customerSettingsPushNotifications;
+
+  /// No description provided for @customerSettingsPushNotificationsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Real-time shipment updates'**
+  String get customerSettingsPushNotificationsSub;
+
+  /// No description provided for @customerSettingsLanguageSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Language setting'**
+  String get customerSettingsLanguageSection;
+
+  /// No description provided for @customerSettingsChooseLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Language'**
+  String get customerSettingsChooseLanguage;
+
+  /// No description provided for @customerSettingsLegalSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal & About'**
+  String get customerSettingsLegalSection;
+
+  /// No description provided for @customerSettingsAboutApp.
+  ///
+  /// In en, this message translates to:
+  /// **'About Good Carrier'**
+  String get customerSettingsAboutApp;
+
+  /// No description provided for @customerSettingsVersionFooter.
+  ///
+  /// In en, this message translates to:
+  /// **'GOOD CARRIER V4.2.0-STABLE'**
+  String get customerSettingsVersionFooter;
 
   /// No description provided for @settingsVersion.
   ///

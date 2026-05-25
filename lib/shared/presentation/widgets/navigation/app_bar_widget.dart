@@ -6,6 +6,47 @@ import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
 
+/// Figma flow screens — 32×32 tap target, 16px orange chevron (`1:3130`, `1:3201`).
+class FigmaFlowBackButton extends StatelessWidget {
+  const FigmaFlowBackButton({
+    super.key,
+    this.onTap,
+    this.color = const Color(0xFFFF6D00),
+  });
+
+  final VoidCallback? onTap;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          HapticFeedback.lightImpact();
+          if (onTap != null) {
+            onTap!();
+          } else if (context.canPop()) {
+            context.pop();
+          } else {
+            Navigator.maybePop(context);
+          }
+        },
+        customBorder: const CircleBorder(),
+        child: SizedBox(
+          width: 32.w,
+          height: 32.w,
+          child: Icon(
+            Icons.arrow_back,
+            size: 16.w,
+            color: color,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 /// Standard back control — orange left arrow used on all app bars.
 class AppBarBackButton extends StatelessWidget {
   const AppBarBackButton({

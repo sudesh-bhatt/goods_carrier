@@ -45,6 +45,10 @@
 	<string>Goods Carrier needs camera access to take your profile photo.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Goods Carrier needs photo library access to choose your profile photo.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Goods Carrier uses your location to place addresses on the map.</string>
+	<key>GOOGLE_MAPS_API_KEY</key>
+	<string></string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

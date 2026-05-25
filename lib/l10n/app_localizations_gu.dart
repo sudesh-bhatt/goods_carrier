@@ -708,10 +708,75 @@ class AppLocalizationsGu extends AppLocalizations {
   String get customerSavedAddressesSub => 'ઘર, ઓફિસ અને અન્ય';
 
   @override
+  String get customerSavedLocationsSection => 'SAVED LOCATIONS';
+
+  @override
+  String get customerAddAddressTitle => 'Add Address';
+
+  @override
+  String get customerEditAddressScreenTitle => 'Edit Address';
+
+  @override
+  String get customerSelectAddressLabel => 'SELECT ADDRESS LABEL';
+
+  @override
+  String get customerAddressLabelHome => 'Home';
+
+  @override
+  String get customerAddressLabelOffice => 'Office';
+
+  @override
+  String get customerAddressLabelOther => 'Other';
+
+  @override
+  String get customerAddressFullLine => 'Full Address Line';
+
+  @override
+  String get customerAddressFullLineHint => 'House No, Street Name, Area';
+
+  @override
+  String get customerAddressCity => 'City';
+
+  @override
+  String get customerAddressCityHint => 'e.g. San Francisco';
+
+  @override
+  String get customerAddressPincode => 'Pincode';
+
+  @override
+  String get customerAddressPincodeHint => 'Zip Code';
+
+  @override
+  String get customerAddressLandmark => 'Landmark (Optional)';
+
+  @override
+  String get customerAddressLandmarkHint => 'Near by famous place';
+
+  @override
+  String get customerAddressLandmarkTip =>
+      'Providing an accurate landmark helps our delivery partners find your location 30% faster.';
+
+  @override
+  String get customerSaveAddress => 'Save Address';
+
+  @override
+  String get customerAddressSaved => 'Address saved';
+
+  @override
+  String get customerLocationPermissionNeeded =>
+      'Location permission is required to show your current position.';
+
+  @override
   String get customerReportedTrips => 'રિપોર્ટ કરેલી ટ્રિપ';
 
   @override
   String get customerReportedTripsSub => 'રિપોર્ટ કરેલી ટ્રિપ જુઓ';
+
+  @override
+  String get customerReportedByYouBadge => 'REPORTED BY YOU';
+
+  @override
+  String get customerEstimatedPrice => 'Estimated Price';
 
   @override
   String get customerActivity => 'પ્રવૃત્તિ';
@@ -854,6 +919,31 @@ class AppLocalizationsGu extends AppLocalizations {
 
   @override
   String get settingsLogoutConfirm => 'શું આપ ખરેખર લૉગઆઉટ કરવા માંગો છો?';
+
+  @override
+  String get customerSettingsNotificationsSection => 'Notifications';
+
+  @override
+  String get customerSettingsPushNotifications => 'Push Notifications';
+
+  @override
+  String get customerSettingsPushNotificationsSub =>
+      'Real-time shipment updates';
+
+  @override
+  String get customerSettingsLanguageSection => 'Language setting';
+
+  @override
+  String get customerSettingsChooseLanguage => 'Choose Language';
+
+  @override
+  String get customerSettingsLegalSection => 'Legal & About';
+
+  @override
+  String get customerSettingsAboutApp => 'About Good Carrier';
+
+  @override
+  String get customerSettingsVersionFooter => 'GOOD CARRIER V4.2.0-STABLE';
 
   @override
   String settingsVersion(String version) {

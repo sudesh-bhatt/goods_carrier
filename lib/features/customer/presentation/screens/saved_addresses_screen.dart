@@ -1,0 +1,75 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../../core/extensions/size_ext.dart';
+import '../../../../core/extensions/theme_ext.dart';
+import '../../../../core/router/app_routes.dart';
+import '../providers/customer_saved_addresses_provider.dart';
+import '../widgets/customer_flow_header.dart';
+import '../widgets/saved_addresses/saved_address_card.dart';
+import '../widgets/saved_addresses/saved_address_tokens.dart';
+import '../widgets/saved_addresses/saved_locations_section_header.dart';
+
+/// Saved addresses list — [Figma](https://www.figma.com/design/YxnNResvDQnbkcPhGejtxa/Mobile-App-UI--Developer-?node-id=1-3130).
+class SavedAddressesScreen extends ConsumerWidget {
+  const SavedAddressesScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final state = ref.watch(customerSavedAddressesProvider);
+
+    return Scaffold(
+      backgroundColor: SavedAddressTokens.screenBg,
+      appBar: CustomerFlowHeader(title: l10n.customerSavedAddresses),
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(bottom: 8.h, right: 4.w),
+        child: Material(
+          color: SavedAddressTokens.accentUnderline,
+          borderRadius: BorderRadius.circular(16.r),
+          elevation: 8,
+          shadowColor: const Color.fromRGBO(159, 66, 0, 0.3),
+          child: InkWell(
+            onTap: () => context.push(AppRoutes.customerAddAddress),
+            borderRadius: BorderRadius.circular(16.r),
+            child: SizedBox(
+              width: 64.w,
+              height: 64.w,
+              child: Icon(
+                Icons.add_rounded,
+                color: Colors.white,
+                size: 17.5.w,
+              ),
+            ),
+          ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      body: state.isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : ListView.separated(
+              padding: EdgeInsets.fromLTRB(24.w, 32.h, 24.w, 128.h),
+              itemCount: state.addresses.length + 1,
+              separatorBuilder: (_, index) {
+                if (index == 0) return SizedBox(height: 24.h);
+                return SizedBox(height: 28.h);
+              },
+              itemBuilder: (context, index) {
+                if (index == 0) {
+                  return SavedLocationsSectionHeader(
+                    label: l10n.customerSavedLocationsSection,
+                  );
+                }
+                final address = state.addresses[index - 1];
+                return SavedAddressCard(
+                  address: address,
+                  onTap: () => context.push(
+                    AppRoutes.customerEditAddressOf(address.id),
+                  ),
+                );
+              },
+            ),
+    );
+  }
+}

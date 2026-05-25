@@ -53,11 +53,11 @@ class CustomerMainShellScreen extends ConsumerWidget {
     final hasUnread = notifications.any((n) => !n.isRead);
 
     final shipmentsState = ref.watch(customerShipmentsProvider);
+    final hasActiveShipments = shipmentsState.active.isNotEmpty;
     final hasShipments = shipmentsState.shipments.isNotEmpty;
-    final showFab = tab == CustomerMainTab.home ||
-        (tab == CustomerMainTab.shipments &&
-            !shipmentsState.isLoading &&
-            hasShipments);
+    final showFab = !shipmentsState.isLoading &&
+        ((tab == CustomerMainTab.home && hasActiveShipments) ||
+            (tab == CustomerMainTab.shipments && hasShipments));
 
     return CustomerLightChrome(
       child: Scaffold(

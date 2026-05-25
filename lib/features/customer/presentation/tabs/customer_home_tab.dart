@@ -16,6 +16,7 @@ import '../../../../shared/presentation/widgets/feedback/skeleton_card.dart';
 import '../providers/customer_shipments_provider.dart';
 import '../widgets/customer_home_search_section.dart';
 import '../widgets/customer_home_trip_card.dart';
+import '../widgets/customer_shipments_empty_view.dart';
 
 /// Home tab body — driver trips feed (no shell chrome).
 class CustomerHomeTab extends ConsumerStatefulWidget {
@@ -61,6 +62,19 @@ class _CustomerHomeTabState extends ConsumerState<CustomerHomeTab>
     final l10n = context.l10n;
     final state = ref.watch(customerShipmentsProvider);
     final activeList = _filterShipments(state.active);
+
+    if (state.isLoading && state.active.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (state.active.isEmpty) {
+      return CustomerShipmentsEmptyView(
+        title: l10n.customerEmptyShipmentsTitle,
+        description: l10n.customerEmptyShipmentsDescription,
+        actionLabel: l10n.shipmentPostNew,
+        onAction: () => context.push(AppRoutes.postShipment),
+      );
+    }
 
     return RefreshIndicator(
       color: colors.primary,
@@ -127,20 +141,6 @@ class _CustomerHomeTabState extends ConsumerState<CustomerHomeTab>
                   child: const SkeletonCard(),
                 ),
                 childCount: 3,
-              ),
-            )
-          else if (state.active.isEmpty)
-            SliverFillRemaining(
-              hasScrollBody: false,
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 25.w),
-                child: EmptyState(
-                  headline: l10n.emptyShipments,
-                  subtitle: l10n.emptyShipmentsSubtitle,
-                  fallbackIcon: Icons.local_shipping_outlined,
-                  actionLabel: l10n.shipmentPostNew,
-                  onAction: () => context.push(AppRoutes.postShipment),
-                ),
               ),
             )
           else if (activeList.isEmpty)
