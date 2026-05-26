@@ -6,7 +6,8 @@ import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../shared/domain/enums/shipment_status.dart';
 import '../../../../shared/presentation/widgets/feedback/error_view.dart';
-import '../widgets/customer_subscreen_header.dart';
+import '../../../../core/router/app_routes.dart';
+import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
 import '../../../../shared/presentation/widgets/status/status_chip.dart';
 import '../providers/customer_shipments_provider.dart';
 
@@ -29,8 +30,9 @@ class TrackingScreen extends ConsumerWidget {
 
     if (shipment == null) {
       return Scaffold(
-        appBar: CustomerSubscreenHeader(
+        appBar: FlowScreenAppBar(
           title: context.l10n.shipmentDetailsTitle,
+          fallbackRoute: AppRoutes.customerHome,
         ),
         body: const ErrorView(message: 'Shipment not found.'),
       );
@@ -38,8 +40,9 @@ class TrackingScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: colors.background,
-      appBar: CustomerSubscreenHeader(
+      appBar: FlowScreenAppBar(
         title: 'Track ${shipment.id}',
+        fallbackRoute: AppRoutes.customerHome,
         trailing: IconButton(
           icon: const Icon(Icons.share_outlined),
           onPressed: () {},

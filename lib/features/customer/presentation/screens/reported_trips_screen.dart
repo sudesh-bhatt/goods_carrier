@@ -6,7 +6,8 @@ import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/mixins/safe_set_state_mixin.dart';
 import '../../../../res/font_res.dart';
 import '../providers/customer_reported_trips_provider.dart';
-import '../widgets/customer_flow_header.dart';
+import '../../../../core/router/app_routes.dart';
+import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
 import '../widgets/reported_trips/reported_trip_card.dart';
 import '../widgets/reported_trips/reported_trips_search_field.dart';
 import '../widgets/reported_trips/reported_trips_tokens.dart';
@@ -49,7 +50,10 @@ class _ReportedTripsScreenState extends ConsumerState<ReportedTripsScreen>
 
     return Scaffold(
       backgroundColor: ReportedTripsTokens.screenBg,
-      appBar: CustomerFlowHeader(title: l10n.customerReportedTrips),
+      appBar: FlowScreenAppBar(
+        title: l10n.customerReportedTrips,
+        fallbackRoute: AppRoutes.customerHome,
+      ),
       body: state.isLoading
           ? const Center(child: CircularProgressIndicator())
           : ListView(

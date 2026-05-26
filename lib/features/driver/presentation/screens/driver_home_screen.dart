@@ -40,9 +40,9 @@ class DriverHomeScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: colors.background,
-      appBar: AppBarWidget(
+      appBar: FlowScreenAppBar(
         title: context.l10n.appName,
-        leadingType: AppBarLeadingType.none,
+        showBack: false,
         actions: [
           AppBarAction(
             icon: Icons.notifications_outlined,

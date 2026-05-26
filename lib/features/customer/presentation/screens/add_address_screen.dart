@@ -14,7 +14,8 @@ import '../../../../res/font_res.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../shared/domain/enums/saved_address_label.dart';
 import '../providers/customer_saved_addresses_provider.dart';
-import '../widgets/customer_flow_header.dart';
+import '../../../../core/router/app_routes.dart';
+import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
 import '../widgets/saved_addresses/add_address_form_widgets.dart';
 import '../widgets/saved_addresses/address_map_picker.dart';
 import '../widgets/saved_addresses/saved_address_tokens.dart';
@@ -162,7 +163,10 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen>
 
     return Scaffold(
       backgroundColor: SavedAddressTokens.screenBg,
-      appBar: CustomerFlowHeader(title: title),
+      appBar: FlowScreenAppBar(
+        title: title,
+        fallbackRoute: AppRoutes.customerHome,
+      ),
       body: !_initialized
           ? const Center(child: CircularProgressIndicator())
           : Column(

@@ -93,7 +93,7 @@ class _CustomerProfileTabState extends ConsumerState<CustomerProfileTab>
                 icon: Icons.help_outline_rounded,
                 title: l10n.customerHelpSupport,
                 subtitle: l10n.customerHelpSupportSub,
-                onTap: () {},
+                onTap: () => context.push(AppRoutes.customerSupportCenter),
               ),
             ],
           ),

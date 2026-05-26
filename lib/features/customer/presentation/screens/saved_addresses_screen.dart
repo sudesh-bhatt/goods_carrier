@@ -6,7 +6,8 @@ import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/router/app_routes.dart';
 import '../providers/customer_saved_addresses_provider.dart';
-import '../widgets/customer_flow_header.dart';
+import '../../../../core/router/app_routes.dart';
+import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
 import '../widgets/saved_addresses/saved_address_card.dart';
 import '../widgets/saved_addresses/saved_address_tokens.dart';
 import '../widgets/saved_addresses/saved_locations_section_header.dart';
@@ -22,7 +23,10 @@ class SavedAddressesScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: SavedAddressTokens.screenBg,
-      appBar: CustomerFlowHeader(title: l10n.customerSavedAddresses),
+      appBar: FlowScreenAppBar(
+        title: l10n.customerSavedAddresses,
+        fallbackRoute: AppRoutes.customerHome,
+      ),
       floatingActionButton: Padding(
         padding: EdgeInsets.only(bottom: 8.h, right: 4.w),
         child: Material(

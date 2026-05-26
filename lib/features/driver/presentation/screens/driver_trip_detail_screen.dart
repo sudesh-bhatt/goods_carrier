@@ -33,14 +33,14 @@ class DriverTripDetailScreen extends ConsumerWidget {
 
     if (trip == null) {
       return Scaffold(
-        appBar: AppBarWidget(title: tripId),
+        appBar: FlowScreenAppBar(title: tripId),
         body: const ErrorView(message: 'Trip not found.'),
       );
     }
 
     return Scaffold(
       backgroundColor: colors.background,
-      appBar: AppBarWidget(title: trip.id),
+      appBar: FlowScreenAppBar(title: trip.id),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(

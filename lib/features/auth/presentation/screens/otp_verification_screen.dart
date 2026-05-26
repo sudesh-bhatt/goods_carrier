@@ -120,7 +120,7 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen>
 
     return Scaffold(
       backgroundColor: colors.background,
-      appBar: _OtpAppBar(title: l10n.authVerifyNumberTitle, colors: colors),
+      appBar: FlowScreenAppBar(title: l10n.authVerifyNumberTitle),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -353,44 +353,6 @@ class _OtpActionBlock extends StatelessWidget {
           textTheme: textTheme,
         ),
       ],
-    );
-  }
-}
-
-// ─── App bar (orange back + left title) ───────────────────────────────────────
-
-class _OtpAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const _OtpAppBar({required this.title, required this.colors});
-
-  final String title;
-  final AppColorScheme colors;
-
-  @override
-  Size get preferredSize => Size.fromHeight(56.h);
-
-  @override
-  Widget build(BuildContext context) {
-    return AppBar(
-      backgroundColor: colors.surface,
-      elevation: 0,
-      scrolledUnderElevation: 0,
-      surfaceTintColor: Colors.transparent,
-      leading: AppBarBackButton(onTap: () => context.pop()),
-      title: Align(
-        alignment: Alignment.centerLeft,
-        child: Text(
-          title,
-          style: TextStyle(
-            fontFamily: FontRes.MANROPE_BOLD,
-            color: colors.textPrimary,
-            fontSize: 18.sp,
-            fontWeight: FontWeight.w400,
-            height: 24 / 18,
-          ),
-        ),
-      ),
-      centerTitle: false,
-      titleSpacing: 0,
     );
   }
 }

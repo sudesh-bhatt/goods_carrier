@@ -24,6 +24,7 @@ abstract final class AppRoutes {
   static const String customerProfile      = '/customer/profile';
   static const String customerEditProfile  = '/customer/profile/edit';
   static const String customerSettings = '/customer/profile/settings';
+  static const String customerSupportCenter = '/customer/profile/support';
   static const String customerReportedTrips = '/customer/profile/reported-trips';
   static const String customerSavedAddresses = '/customer/profile/addresses';
   static const String customerAddAddress   = '/customer/profile/addresses/add';

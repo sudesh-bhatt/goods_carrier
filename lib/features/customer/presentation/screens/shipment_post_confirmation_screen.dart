@@ -8,6 +8,7 @@ import '../../../../core/router/app_routes.dart';
 import '../../../../res/font_res.dart';
 import '../../../../shared/presentation/widgets/buttons/app_button.dart';
 import '../models/shipment_post_confirmation_args.dart';
+import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
 import '../widgets/customer_light_chrome.dart';
 import '../widgets/shipment_form/shipment_form_tokens.dart';
 
@@ -30,7 +31,10 @@ class ShipmentPostConfirmationScreen extends StatelessWidget {
     return CustomerLightChrome(
       child: Scaffold(
         backgroundColor: ShipmentFormTokens.background,
-        appBar: const _ConfirmationAppBar(),
+        appBar: FlowScreenAppBar(
+          title: l10n.shipmentPostConfirmationTitle,
+          showBack: false,
+        ),
         body: SafeArea(
           top: false,
           child: Column(
@@ -108,51 +112,6 @@ class ShipmentPostConfirmationScreen extends StatelessWidget {
                 ),
               ),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ConfirmationAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const _ConfirmationAppBar();
-
-  @override
-  Size get preferredSize => Size.fromHeight(60.h);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: ShipmentFormTokens.cardFill,
-        boxShadow: [
-          BoxShadow(
-            color: ShipmentFormTokens.primary.withValues(alpha: 0.05),
-            blurRadius: 2,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        bottom: false,
-        child: SizedBox(
-          height: 60.h,
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24.w),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                context.l10n.shipmentPostConfirmationTitle,
-                style: TextStyle(
-                  fontFamily: FontRes.MANROPE_BOLD,
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: -0.45,
-                  color: ShipmentFormTokens.title,
-                ),
-              ),
-            ),
           ),
         ),
       ),

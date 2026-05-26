@@ -36,7 +36,7 @@ class DriverProfileScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: colors.background,
-      appBar: AppBarWidget(
+      appBar: FlowScreenAppBar(
         title: 'My Profile',
         actions: [
           AppBarAction(

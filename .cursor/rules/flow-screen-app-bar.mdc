@@ -1,0 +1,59 @@
+---
+description: Use FlowScreenAppBar for all screen app bars (back + left title)
+globs: lib/**/*.dart
+alwaysApply: true
+---
+
+# App bar — use FlowScreenAppBar
+
+For any screen that shows a top bar with a title (and usually a back button), use **`FlowScreenAppBar`** from:
+
+`lib/shared/presentation/widgets/navigation/app_bar_widget.dart`
+
+Do **not** add custom `_FooAppBar` widgets, raw `AppBar(...)`, `CustomerFlowHeader`, or `CustomerSubscreenHeader`.
+
+## Standard (back + title)
+
+```dart
+import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
+
+Scaffold(
+  appBar: FlowScreenAppBar(title: context.l10n.myScreenTitle),
+  ...
+);
+```
+
+## Customer profile sub-screens (pop or home)
+
+```dart
+appBar: FlowScreenAppBar(
+  title: l10n.customerSavedAddresses,
+  fallbackRoute: AppRoutes.customerHome,
+),
+```
+
+## No back button (setup / confirmation / driver home)
+
+```dart
+appBar: FlowScreenAppBar(
+  title: l10n.profileSetupTitle,
+  showBack: false,
+),
+```
+
+## Right-side icon(s)
+
+```dart
+appBar: FlowScreenAppBar(
+  title: context.l10n.notificationsTitle,
+  actions: [
+    AppBarAction(icon: Icons.done_all_rounded, onTap: _markAllRead),
+  ],
+),
+```
+
+Or a custom widget via `trailing:`.
+
+## Exceptions
+
+Use **`AppBarWidget`** only when you need Material `AppBar` features not on `FlowScreenAppBar`: `AppBarLeadingType.menu`, centered title, `subtitle`, or `bottom` (e.g. `TabBar`).

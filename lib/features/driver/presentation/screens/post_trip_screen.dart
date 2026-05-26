@@ -106,7 +106,7 @@ class _PostTripScreenState extends ConsumerState<PostTripScreen> {
 
     return Scaffold(
       backgroundColor: colors.background,
-      appBar: AppBarWidget(title: context.l10n.tripPostNew),
+      appBar: FlowScreenAppBar(title: context.l10n.tripPostNew),
       body: SafeArea(
         child: GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),

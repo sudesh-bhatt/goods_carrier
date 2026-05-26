@@ -64,7 +64,7 @@ class DriverEarningsScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: colors.background,
-      appBar: const AppBarWidget(title: 'Earnings'),
+      appBar: const FlowScreenAppBar(title: 'Earnings'),
       body: SafeArea(
         child: invoices.isEmpty
             ? const EmptyState(

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
+import '../../../../res/font_res.dart';
 
 /// Figma flow screens — 32×32 tap target, 16px orange chevron (`1:3130`, `1:3201`).
 class FigmaFlowBackButton extends StatelessWidget {
@@ -40,6 +41,111 @@ class FigmaFlowBackButton extends StatelessWidget {
             Icons.arrow_back,
             size: 16.w,
             color: color,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Standard app bar for almost all screens — back + left title (+ optional actions).
+///
+/// Use this instead of raw [AppBar], [AppBarWidget], or custom `_FooAppBar` widgets.
+/// Matches Figma Post Shipment: semi-transparent white bar, orange back, 18px bold title.
+class FlowScreenAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const FlowScreenAppBar({
+    super.key,
+    required this.title,
+    this.onBackTap,
+    this.fallbackRoute,
+    this.trailing,
+    this.actions = const [],
+    this.backgroundColor,
+    this.showShadow = true,
+    this.showBack = true,
+  });
+
+  static const titleColor = Color(0xFF191C1D);
+
+  final String title;
+  final VoidCallback? onBackTap;
+
+  /// When [onBackTap] is null and the route cannot pop, navigates here.
+  final String? fallbackRoute;
+  final Widget? trailing;
+  final List<AppBarAction> actions;
+  final Color? backgroundColor;
+  final bool showShadow;
+  final bool showBack;
+
+  @override
+  Size get preferredSize => Size.fromHeight(64.h);
+
+  void _handleBack(BuildContext context) {
+    if (onBackTap != null) {
+      onBackTap!();
+      return;
+    }
+    if (context.canPop()) {
+      context.pop();
+      return;
+    }
+    if (fallbackRoute != null) {
+      context.go(fallbackRoute!);
+      return;
+    }
+    Navigator.maybePop(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: backgroundColor ?? Colors.white.withValues(alpha: 0.8),
+        boxShadow: showShadow
+            ? [
+                BoxShadow(
+                  color: colors.primary.withValues(alpha: 0.05),
+                  blurRadius: 2,
+                  offset: const Offset(0, 1),
+                ),
+              ]
+            : null,
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: SizedBox(
+          height: 64.h,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.w),
+            child: Row(
+              children: [
+                if (showBack)
+                  AppBarBackButton(onTap: () => _handleBack(context))
+                else
+                  SizedBox(width: 48.w),
+                SizedBox(width: 8.w),
+                Expanded(
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontFamily: FontRes.MANROPE_BOLD,
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w700,
+                      height: 28 / 18,
+                      letterSpacing: -0.45,
+                      color: titleColor,
+                    ),
+                  ),
+                ),
+                ...actions.map((a) => _ActionButton(action: a)),
+                if (trailing != null) trailing!,
+              ],
+            ),
           ),
         ),
       ),
@@ -85,33 +191,9 @@ class AppBarBackButton extends StatelessWidget {
   }
 }
 
-/// Consistent [PreferredSizeWidget] AppBar used across all screens.
+/// Legacy centered [AppBar] wrapper — prefer [FlowScreenAppBar] for new screens.
 ///
-/// Features:
-/// - Transparent background with surface colour fallback
-/// - Haptic feedback on back / menu tap
-/// - Supports back chevron OR hamburger menu as leading
-/// - Up to two action icon slots on the right
-/// - Optional subtitle below title
-///
-/// ```dart
-/// // Standard back-nav screen
-/// Scaffold(
-///   appBar: AppBarWidget(title: context.l10n.shipmentGoods),
-/// );
-///
-/// // Driver home — hamburger + bell + avatar
-/// Scaffold(
-///   appBar: AppBarWidget(
-///     title: context.l10n.appName,
-///     leadingType: AppBarLeadingType.menu,
-///     onLeadingTap: () => _openDrawer(),
-///     actions: [
-///       AppBarAction(icon: Icons.notifications_outlined, onTap: _openNotifs),
-///     ],
-///   ),
-/// );
-/// ```
+/// Only use when you need [AppBarLeadingType.menu], centered title, or [bottom] slot.
 enum AppBarLeadingType { back, menu, none }
 
 class AppBarAction {

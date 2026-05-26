@@ -23,7 +23,7 @@ class DriverNotificationsScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: colors.background,
-      appBar: AppBarWidget(
+      appBar: FlowScreenAppBar(
         title: context.l10n.notificationsTitle,
         actions: [
           if (hasUnread)

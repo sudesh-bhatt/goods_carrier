@@ -795,6 +795,62 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customerHelpSupportSub => 'FAQs and more';
 
   @override
+  String get supportCenterTitle => 'Support Center';
+
+  @override
+  String get supportFaqSectionTitle => 'Frequently Asked Questions';
+
+  @override
+  String get supportDirectChannelsTitle => 'Direct Channels';
+
+  @override
+  String get supportEmailTitle => 'Email Support';
+
+  @override
+  String get supportEmailDisplay => 'yourname@gmail.com';
+
+  @override
+  String get supportCallTitle => 'Call Support';
+
+  @override
+  String get supportPhoneDisplay => '+91 9898989898';
+
+  @override
+  String get supportEmailCopied => 'Email address copied';
+
+  @override
+  String get supportPhoneCopied => 'Phone number copied';
+
+  @override
+  String get supportFaqTrackQuestion => 'How to track my shipment?';
+
+  @override
+  String get supportFaqTrackAnswer =>
+      'Open the Shipments tab, select your active shipment, and tap Track to see live status updates from pickup through delivery.';
+
+  @override
+  String get supportFaqChargesQuestion => 'What are the delivery charges?';
+
+  @override
+  String get supportFaqChargesAnswer =>
+      'Charges depend on distance, vehicle type, and load weight. You will see an estimated price before you confirm a booking.';
+
+  @override
+  String get supportFaqCancelQuestion => 'How to cancel a shipment?';
+
+  @override
+  String get supportFaqCancelAnswer =>
+      'Go to Shipment Details while the trip is still pending and tap Cancel Shipment. Once a driver is assigned, contact support to request cancellation.';
+
+  @override
+  String get supportFaqCustomsQuestion =>
+      'National customs documentation requirements?';
+
+  @override
+  String get supportFaqCustomsAnswer =>
+      'Cross-border shipments may need an invoice, packing list, and HS codes. Our team will guide you on any extra documents required for your route.';
+
+  @override
   String get shipmentEstimatedPay => 'Estimated Pay';
 
   @override

@@ -10,7 +10,7 @@ import '../../../../core/router/app_routes.dart';
 import '../../../../shared/presentation/widgets/buttons/app_button.dart';
 import '../../../../shared/presentation/widgets/feedback/error_view.dart';
 import '../widgets/customer_light_chrome.dart';
-import '../widgets/customer_subscreen_header.dart';
+import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
 import '../../../../shared/presentation/widgets/navigation/confirmation_bottom_sheet.dart';
 import '../../../../shared/presentation/widgets/route/route_timeline.dart';
 import '../../../../shared/presentation/widgets/status/fragile_banner.dart';
@@ -35,8 +35,9 @@ class ShipmentDetailScreen extends ConsumerWidget {
 
     if (shipment == null) {
       return Scaffold(
-        appBar: CustomerSubscreenHeader(
+        appBar: FlowScreenAppBar(
           title: context.l10n.shipmentDetailsTitle,
+          fallbackRoute: AppRoutes.customerHome,
         ),
         body: const ErrorView(message: 'Shipment not found.'),
       );
@@ -45,8 +46,9 @@ class ShipmentDetailScreen extends ConsumerWidget {
     return CustomerLightChrome(
       child: Scaffold(
       backgroundColor: colors.background,
-      appBar: CustomerSubscreenHeader(
+      appBar: FlowScreenAppBar(
         title: context.l10n.shipmentDetailsTitle,
+        fallbackRoute: AppRoutes.customerHome,
         trailing: shipment.isPending
             ? IconButton(
                 icon: const Icon(Icons.my_location_outlined),

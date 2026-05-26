@@ -791,6 +791,61 @@ class AppLocalizationsGu extends AppLocalizations {
   String get customerHelpSupportSub => 'FAQ અને વધુ';
 
   @override
+  String get supportCenterTitle => 'સપોર્ટ સેન્ટર';
+
+  @override
+  String get supportFaqSectionTitle => 'વારંવાર પૂછાતા પ્રશ્નો';
+
+  @override
+  String get supportDirectChannelsTitle => 'ડાયરેક્ટ ચેનલ';
+
+  @override
+  String get supportEmailTitle => 'ઈમેલ સપોર્ટ';
+
+  @override
+  String get supportEmailDisplay => 'yourname@gmail.com';
+
+  @override
+  String get supportCallTitle => 'કૉલ સપોર્ટ';
+
+  @override
+  String get supportPhoneDisplay => '+91 9898989898';
+
+  @override
+  String get supportEmailCopied => 'ઈમેલ કોપી થયો';
+
+  @override
+  String get supportPhoneCopied => 'ફોન નંબર કોપી થયો';
+
+  @override
+  String get supportFaqTrackQuestion => 'મારું શિપમેન્ટ કેવી રીતે ટ્રેક કરું?';
+
+  @override
+  String get supportFaqTrackAnswer =>
+      'શિપમેન્ટ ટેબ ખોલો, સક્રિય શિપમેન્ટ પસંદ કરો અને ટ્રેક પર ટેપ કરીને લાઇવ સ્ટેટસ જુઓ.';
+
+  @override
+  String get supportFaqChargesQuestion => 'ડિલિવરી ચાર્જ શું છે?';
+
+  @override
+  String get supportFaqChargesAnswer =>
+      'ચાર્જ અંતર, વાહન પ્રકાર અને વજન પર આધારિત છે. બુકિંગ પહેલાં અંદાજિત કિંમત દેખાશે.';
+
+  @override
+  String get supportFaqCancelQuestion => 'શિપમેન્ટ કેવી રીતે રદ કરું?';
+
+  @override
+  String get supportFaqCancelAnswer =>
+      'પેન્ડિંગ સ્થિતિમાં શિપમેન્ટ વિગતોમાં જઈને રદ કરો. ડ્રાઇવર અસાઇન થયા પછી સપોર્ટનો સંપર્ક કરો.';
+
+  @override
+  String get supportFaqCustomsQuestion => 'રાષ્ટ્રીય કસ્ટમ દસ્તાવેજ જરૂરિયાતો?';
+
+  @override
+  String get supportFaqCustomsAnswer =>
+      'સરહદ પાર શિપમેન્ટ માટે ઇન્વૉઇસ, પેકિંગ લિસ્ટ અને HS કોડ જરૂરી હોઈ શકે. અમારી ટીમ વધારાના દસ્તાવેજોમાં માર્ગદર્શન આપશે.';
+
+  @override
   String get shipmentEstimatedPay => 'અંદાજિત ચુકવણી';
 
   @override

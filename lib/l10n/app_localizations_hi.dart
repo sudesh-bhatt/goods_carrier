@@ -792,6 +792,62 @@ class AppLocalizationsHi extends AppLocalizations {
   String get customerHelpSupportSub => 'FAQ और अधिक';
 
   @override
+  String get supportCenterTitle => 'सहायता केंद्र';
+
+  @override
+  String get supportFaqSectionTitle => 'अक्सर पूछे जाने वाले प्रश्न';
+
+  @override
+  String get supportDirectChannelsTitle => 'सीधे संपर्क';
+
+  @override
+  String get supportEmailTitle => 'ईमेल सहायता';
+
+  @override
+  String get supportEmailDisplay => 'yourname@gmail.com';
+
+  @override
+  String get supportCallTitle => 'कॉल सहायता';
+
+  @override
+  String get supportPhoneDisplay => '+91 9898989898';
+
+  @override
+  String get supportEmailCopied => 'ईमेल पता कॉपी हो गया';
+
+  @override
+  String get supportPhoneCopied => 'फ़ोन नंबर कॉपी हो गया';
+
+  @override
+  String get supportFaqTrackQuestion => 'मेरा शिपमेंट कैसे ट्रैक करें?';
+
+  @override
+  String get supportFaqTrackAnswer =>
+      'शिपमेंट टैब खोलें, अपना सक्रिय शिपमेंट चुनें और ट्रैक पर टैप करके लाइव स्थिति देखें।';
+
+  @override
+  String get supportFaqChargesQuestion => 'डिलीवरी शुल्क क्या हैं?';
+
+  @override
+  String get supportFaqChargesAnswer =>
+      'शुल्क दूरी, वाहन प्रकार और वजन पर निर्भर करते हैं। बुकिंग से पहले अनुमानित कीमत दिखाई जाती है।';
+
+  @override
+  String get supportFaqCancelQuestion => 'शिपमेंट कैसे रद्द करें?';
+
+  @override
+  String get supportFaqCancelAnswer =>
+      'पेंडिंग स्थिति में शिपमेंट विवरण में जाकर रद्द करें। ड्राइवर असाइन होने के बाद सहायता से संपर्क करें।';
+
+  @override
+  String get supportFaqCustomsQuestion =>
+      'राष्ट्रीय कस्टम दस्तावेज़ आवश्यकताएं?';
+
+  @override
+  String get supportFaqCustomsAnswer =>
+      'सीमा पार शिपमेंट के लिए इनवॉइस, पैकिंग लिस्ट और HS कोड की जरूरत हो सकती है। हमारी टीम अतिरिक्त दस्तावेज़ों में मार्गदर्शन करेगी।';
+
+  @override
   String get shipmentEstimatedPay => 'अनुमानित भुगतान';
 
   @override

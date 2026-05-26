@@ -244,7 +244,7 @@ class _CustomerEditProfileScreenState extends ConsumerState<CustomerEditProfileS
 
     return Scaffold(
       backgroundColor: colors.background,
-      appBar: _EditProfileAppBar(title: l10n.customerEditProfileTitle),
+      appBar: FlowScreenAppBar(title: l10n.customerEditProfileTitle),
       body: SafeArea(
         top: false,
         child: GestureDetector(
@@ -374,59 +374,6 @@ class _CustomerEditProfileScreenState extends ConsumerState<CustomerEditProfileS
                   SizedBox(height: 32.h),
                 ],
               ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _EditProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const _EditProfileAppBar({required this.title});
-
-  final String title;
-
-  @override
-  Size get preferredSize => Size.fromHeight(60.h);
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-
-    return Container(
-      decoration: BoxDecoration(
-        color: colors.surface.withValues(alpha: 0.8),
-        boxShadow: [
-          BoxShadow(
-            color: colors.primary.withValues(alpha: 0.05),
-            blurRadius: 2,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        bottom: false,
-        child: SizedBox(
-          height: 60.h,
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24.w),
-            child: Row(
-              children: [
-                AppBarBackButton(onTap: () => context.pop()),
-                SizedBox(width: 8.w),
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontFamily: FontRes.MANROPE_BOLD,
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.45,
-                    height: 28 / 18,
-                    color: const Color(0xFF191C1D),
-                  ),
-                ),
-              ],
             ),
           ),
         ),

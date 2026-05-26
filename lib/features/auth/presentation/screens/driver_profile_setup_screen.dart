@@ -73,9 +73,9 @@ class _DriverProfileSetupScreenState
 
     return Scaffold(
       backgroundColor: colors.background,
-      appBar: AppBarWidget(
+      appBar: FlowScreenAppBar(
         title: context.l10n.profileSetupTitle,
-        leadingType: AppBarLeadingType.none,
+        showBack: false,
       ),
       body: SafeArea(
         child: GestureDetector(

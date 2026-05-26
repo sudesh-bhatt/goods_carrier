@@ -12,6 +12,7 @@ import '../../../../core/utils/validators.dart';
 import '../../../../res/font_res.dart';
 import '../../../../features/customer/presentation/widgets/customer_profile_form_widgets.dart';
 import '../../../../shared/presentation/widgets/inputs/address_autocomplete_field.dart';
+import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
 import '../../../../shared/presentation/widgets/sheets/app_modal_bottom_sheet.dart';
 import '../providers/auth_provider.dart';
 
@@ -272,21 +273,9 @@ class _CustomerProfileSetupScreenState
 
     return Scaffold(
       backgroundColor: colors.background,
-      appBar: AppBar(
-        backgroundColor: colors.surface,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        surfaceTintColor: Colors.transparent,
-        automaticallyImplyLeading: false,
-        title: Text(
-          l10n.profileSetupTitle,
-          style: TextStyle(
-            fontFamily: FontRes.MANROPE_BOLD,
-            color: colors.textPrimary,
-            fontSize: 18.sp,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
+      appBar: FlowScreenAppBar(
+        title: l10n.profileSetupTitle,
+        showBack: false,
       ),
       body: SafeArea(
         child: GestureDetector(

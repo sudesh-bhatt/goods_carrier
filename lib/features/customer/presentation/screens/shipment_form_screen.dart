@@ -317,7 +317,7 @@ class _ShipmentFormScreenState extends ConsumerState<ShipmentFormScreen>
     return CustomerLightChrome(
       child: Scaffold(
         backgroundColor: ShipmentFormTokens.background,
-        appBar: _ShipmentFormAppBar(
+        appBar: FlowScreenAppBar(
           title: isEditing ? l10n.shipmentEditTitle : l10n.shipmentPostNew,
         ),
         body: Form(
@@ -560,47 +560,6 @@ class _ShipmentFormScreenState extends ConsumerState<ShipmentFormScreen>
                 ),
               ),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ShipmentFormAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const _ShipmentFormAppBar({required this.title});
-
-  final String title;
-
-  @override
-  Size get preferredSize => Size.fromHeight(64.h);
-
-  @override
-  Widget build(BuildContext context) {
-    return ColoredBox(
-      color: Colors.white.withValues(alpha: 0.8),
-      child: SafeArea(
-        bottom: false,
-        child: SizedBox(
-          height: 64.h,
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24.w),
-            child: Row(
-              children: [
-                AppBarBackButton(onTap: () => context.pop()),
-                SizedBox(width: 8.w),
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontFamily: FontRes.MANROPE_BOLD,
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.45,
-                    color: ShipmentFormTokens.title,
-                  ),
-                ),
-              ],
-            ),
           ),
         ),
       ),

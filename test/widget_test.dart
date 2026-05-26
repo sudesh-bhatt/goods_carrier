@@ -11,20 +11,29 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:goods_carrier/app.dart';
+import 'package:goods_carrier/core/providers/shared_preferences_provider.dart';
+import 'package:goods_carrier/features/settings/presentation/providers/locale_provider.dart';
+import 'package:goods_carrier/features/settings/presentation/providers/theme_provider.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  setUp(() {
-    // Provide a clean SharedPreferences mock for each test so
-    // ThemeProvider and LocaleProvider initialise without touching disk.
+  late SharedPreferences prefs;
+
+  setUp(() async {
     SharedPreferences.setMockInitialValues({});
+    prefs = await SharedPreferences.getInstance();
   });
 
   testWidgets('App boots without errors', (WidgetTester tester) async {
     await tester.pumpWidget(
-      const ProviderScope(
-        child: GoodsCarrierApp(),
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          themeProvider.overrideWith((ref) => ThemeNotifier(ThemeMode.system)),
+          localeProvider.overrideWith((ref) => LocaleNotifier(const Locale('en'))),
+        ],
+        child: const GoodsCarrierApp(),
       ),
     );
 

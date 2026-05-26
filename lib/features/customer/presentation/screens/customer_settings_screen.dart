@@ -8,10 +8,11 @@ import '../../../../core/router/app_routes.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../settings/presentation/providers/locale_provider.dart';
 import '../../../settings/presentation/providers/push_notifications_provider.dart';
-import '../widgets/customer_flow_header.dart';
+import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
 import '../widgets/settings/customer_settings_tokens.dart';
 import '../widgets/settings/customer_settings_widgets.dart';
 import '../../../../shared/presentation/widgets/sheets/app_picker_bottom_sheet.dart';
+import '../../../auth/presentation/screens/terms_screen.dart';
 
 /// Customer settings — [Figma](https://www.figma.com/design/YxnNResvDQnbkcPhGejtxa/Mobile-App-UI--Developer-?node-id=1-3296).
 class CustomerSettingsScreen extends ConsumerWidget {
@@ -60,7 +61,10 @@ class CustomerSettingsScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: CustomerSettingsTokens.screenBg,
-      appBar: CustomerFlowHeader(title: l10n.settingsTitle),
+      appBar: FlowScreenAppBar(
+        title: l10n.settingsTitle,
+        fallbackRoute: AppRoutes.customerHome,
+      ),
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(24.w, 32.h, 24.w, 48.h),
         child: Column(
@@ -95,11 +99,17 @@ class CustomerSettingsScreen extends ConsumerWidget {
               items: [
                 SettingsLegalRow(
                   label: l10n.authPrivacyPolicy,
-                  onTap: () => context.push(AppRoutes.terms),
+                  onTap: () => context.push(
+                    AppRoutes.terms,
+                    extra: LegalDocument.privacy,
+                  ),
                 ),
                 SettingsLegalRow(
                   label: l10n.authTermsLink,
-                  onTap: () => context.push(AppRoutes.terms),
+                  onTap: () => context.push(
+                    AppRoutes.terms,
+                    extra: LegalDocument.terms,
+                  ),
                 ),
                 SettingsLegalRow(
                   label: l10n.customerSettingsAboutApp,

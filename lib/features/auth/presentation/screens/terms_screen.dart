@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_dimensions.dart';
@@ -9,26 +10,41 @@ import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../shared/presentation/widgets/buttons/app_button.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
+import '../providers/auth_provider.dart';
+
+/// Which legal document to display (Settings vs onboarding).
+enum LegalDocument { terms, privacy }
 
 /// Scrollable Terms & Conditions screen. The "Accept & Continue" CTA is only
-/// enabled after the user checks the agreement checkbox.
-class TermsScreen extends StatefulWidget {
-  const TermsScreen({super.key});
+/// enabled after the user checks the agreement checkbox (onboarding only).
+class TermsScreen extends ConsumerStatefulWidget {
+  const TermsScreen({super.key, this.document = LegalDocument.terms});
+
+  final LegalDocument document;
 
   @override
-  State<TermsScreen> createState() => _TermsScreenState();
+  ConsumerState<TermsScreen> createState() => _TermsScreenState();
 }
 
-class _TermsScreenState extends State<TermsScreen> with SafeSetStateMixin {
+class _TermsScreenState extends ConsumerState<TermsScreen>
+    with SafeSetStateMixin {
   bool _accepted = false;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final l10n = context.l10n;
+    final isAuthenticated = ref.watch(authProvider).isAuthenticated;
+    final showOnboardingFooter = !isAuthenticated;
+
+    final title = switch (widget.document) {
+      LegalDocument.privacy => l10n.authPrivacyPolicy,
+      LegalDocument.terms => l10n.authTermsLink,
+    };
 
     return Scaffold(
       backgroundColor: colors.background,
-      appBar: AppBarWidget(title: context.l10n.authTermsLink),
+      appBar: FlowScreenAppBar(title: title),
       body: Column(
         children: [
           // ── Scrollable T&C body ────────────────────────────────────────
@@ -113,79 +129,85 @@ class _TermsScreenState extends State<TermsScreen> with SafeSetStateMixin {
             ),
           ),
 
-          // ── Bottom: checkbox + CTA ─────────────────────────────────────
-          Container(
-            padding: EdgeInsets.fromLTRB(
-              AppDimensions.screenPadding.w,
-              AppDimensions.base.h,
-              AppDimensions.screenPadding.w,
-              AppDimensions.xl.h,
-            ),
-            decoration: BoxDecoration(
-              color: colors.surface,
-              border: Border(top: BorderSide(color: colors.divider)),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    HapticFeedback.selectionClick();
-                    safeSetState(() => _accepted = !_accepted);
-                  },
-                  child: Row(
-                    children: [
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 150),
-                        width: 22.w,
-                        height: 22.w,
-                        decoration: BoxDecoration(
-                          color: _accepted ? colors.primary : Colors.transparent,
-                          borderRadius: BorderRadius.circular(4.r),
-                          border: Border.all(
-                            color: _accepted ? colors.primary : colors.divider,
-                            width: 1.5,
-                          ),
-                        ),
-                        child: _accepted
-                            ? Icon(Icons.check, color: colors.onPrimary,
-                                size: 14.w)
-                            : null,
-                      ),
-                      SizedBox(width: AppDimensions.sm.w),
-                      Expanded(
-                        child: RichText(
-                          text: TextSpan(
-                            style: context.textTheme.bodySmall?.copyWith(
-                              color: colors.textSecondary,
+          if (showOnboardingFooter)
+            Container(
+              padding: EdgeInsets.fromLTRB(
+                AppDimensions.screenPadding.w,
+                AppDimensions.base.h,
+                AppDimensions.screenPadding.w,
+                AppDimensions.xl.h,
+              ),
+              decoration: BoxDecoration(
+                color: colors.surface,
+                border: Border(top: BorderSide(color: colors.divider)),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      HapticFeedback.selectionClick();
+                      safeSetState(() => _accepted = !_accepted);
+                    },
+                    child: Row(
+                      children: [
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 150),
+                          width: 22.w,
+                          height: 22.w,
+                          decoration: BoxDecoration(
+                            color: _accepted
+                                ? colors.primary
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(4.r),
+                            border: Border.all(
+                              color: _accepted
+                                  ? colors.primary
+                                  : colors.divider,
+                              width: 1.5,
                             ),
-                            children: [
-                              TextSpan(text: context.l10n.authTermsPrefix),
-                              TextSpan(
-                                text: context.l10n.authTermsLink,
-                                style: TextStyle(
-                                  color: colors.primary,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                          ),
+                          child: _accepted
+                              ? Icon(
+                                  Icons.check,
+                                  color: colors.onPrimary,
+                                  size: 14.w,
+                                )
+                              : null,
+                        ),
+                        SizedBox(width: AppDimensions.sm.w),
+                        Expanded(
+                          child: RichText(
+                            text: TextSpan(
+                              style: context.textTheme.bodySmall?.copyWith(
+                                color: colors.textSecondary,
                               ),
-                            ],
+                              children: [
+                                TextSpan(text: l10n.authTermsPrefix),
+                                TextSpan(
+                                  text: l10n.authTermsLink,
+                                  style: TextStyle(
+                                    color: colors.primary,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-
-                SizedBox(height: AppDimensions.base.h),
-
-                AppButton(
-                  label: context.l10n.actionContinue,
-                  onPressed:
-                      _accepted ? () => context.push(AppRoutes.loginScreen) : null,
-                ),
-              ],
+                  SizedBox(height: AppDimensions.base.h),
+                  AppButton(
+                    label: l10n.actionContinue,
+                    onPressed: _accepted
+                        ? () => context.push(AppRoutes.loginScreen)
+                        : null,
+                  ),
+                ],
+              ),
             ),
-          ),
         ],
       ),
     );

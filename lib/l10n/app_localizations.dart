@@ -1606,6 +1606,108 @@ abstract class AppLocalizations {
   /// **'FAQs and more'**
   String get customerHelpSupportSub;
 
+  /// No description provided for @supportCenterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Support Center'**
+  String get supportCenterTitle;
+
+  /// No description provided for @supportFaqSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Frequently Asked Questions'**
+  String get supportFaqSectionTitle;
+
+  /// No description provided for @supportDirectChannelsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct Channels'**
+  String get supportDirectChannelsTitle;
+
+  /// No description provided for @supportEmailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Email Support'**
+  String get supportEmailTitle;
+
+  /// No description provided for @supportEmailDisplay.
+  ///
+  /// In en, this message translates to:
+  /// **'yourname@gmail.com'**
+  String get supportEmailDisplay;
+
+  /// No description provided for @supportCallTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Call Support'**
+  String get supportCallTitle;
+
+  /// No description provided for @supportPhoneDisplay.
+  ///
+  /// In en, this message translates to:
+  /// **'+91 9898989898'**
+  String get supportPhoneDisplay;
+
+  /// No description provided for @supportEmailCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Email address copied'**
+  String get supportEmailCopied;
+
+  /// No description provided for @supportPhoneCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number copied'**
+  String get supportPhoneCopied;
+
+  /// No description provided for @supportFaqTrackQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'How to track my shipment?'**
+  String get supportFaqTrackQuestion;
+
+  /// No description provided for @supportFaqTrackAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the Shipments tab, select your active shipment, and tap Track to see live status updates from pickup through delivery.'**
+  String get supportFaqTrackAnswer;
+
+  /// No description provided for @supportFaqChargesQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'What are the delivery charges?'**
+  String get supportFaqChargesQuestion;
+
+  /// No description provided for @supportFaqChargesAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Charges depend on distance, vehicle type, and load weight. You will see an estimated price before you confirm a booking.'**
+  String get supportFaqChargesAnswer;
+
+  /// No description provided for @supportFaqCancelQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'How to cancel a shipment?'**
+  String get supportFaqCancelQuestion;
+
+  /// No description provided for @supportFaqCancelAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to Shipment Details while the trip is still pending and tap Cancel Shipment. Once a driver is assigned, contact support to request cancellation.'**
+  String get supportFaqCancelAnswer;
+
+  /// No description provided for @supportFaqCustomsQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'National customs documentation requirements?'**
+  String get supportFaqCustomsQuestion;
+
+  /// No description provided for @supportFaqCustomsAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Cross-border shipments may need an invoice, packing list, and HS codes. Our team will guide you on any extra documents required for your route.'**
+  String get supportFaqCustomsAnswer;
+
   /// No description provided for @shipmentEstimatedPay.
   ///
   /// In en, this message translates to:

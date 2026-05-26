@@ -14,6 +14,7 @@ import '../../features/auth/presentation/screens/terms_screen.dart';
 import '../../features/customer/presentation/screens/add_address_screen.dart';
 import '../../features/customer/presentation/screens/customer_edit_profile_screen.dart';
 import '../../features/customer/presentation/screens/customer_settings_screen.dart';
+import '../../features/customer/presentation/screens/support_center_screen.dart';
 import '../../features/customer/presentation/screens/reported_trips_screen.dart';
 import '../../features/customer/presentation/screens/saved_addresses_screen.dart';
 import '../../features/customer/presentation/screens/customer_main_shell_screen.dart';
@@ -60,7 +61,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       final loc = state.matchedLocation;
 
       if (auth.isAuthenticated) {
-        final isOnAuthPath = _isAuthPath(loc);
+        // Allow in-app legal screens (e.g. Settings → Privacy Policy).
+        if (loc == AppRoutes.terms) return null;
+
+        final isOnAuthPath = _isAuthOnboardingPath(loc);
         if (isOnAuthPath && loc != AppRoutes.splash) {
           return auth.user!.role == UserRole.customer
               ? AppRoutes.customerHome
@@ -98,7 +102,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: AppRoutes.terms,
-        builder: (_, __) => const TermsScreen(),
+        builder: (_, state) {
+          final document = state.extra is LegalDocument
+              ? state.extra! as LegalDocument
+              : LegalDocument.terms;
+          return TermsScreen(document: document);
+        },
       ),
       GoRoute(
         path: AppRoutes.loginScreen,
@@ -172,6 +181,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.customerSettings,
         builder: (_, __) => const CustomerSettingsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.customerSupportCenter,
+        builder: (_, __) => const SupportCenterScreen(),
       ),
       GoRoute(
         path: AppRoutes.customerReportedTrips,
@@ -256,11 +269,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   );
 });
 
-bool _isAuthPath(String loc) =>
+/// Onboarding-only paths — authenticated users are sent to their home shell.
+bool _isAuthOnboardingPath(String loc) =>
     loc == AppRoutes.splash ||
     loc == AppRoutes.roleSelection ||
     loc == AppRoutes.languageSelection ||
-    loc == AppRoutes.terms ||
     loc == AppRoutes.loginScreen ||
     loc == AppRoutes.otpVerification ||
     loc == AppRoutes.customerProfileSetup ||
