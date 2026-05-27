@@ -166,9 +166,16 @@ class _CustomerEditProfileScreenState extends ConsumerState<CustomerEditProfileS
 
     await AppModalBottomSheet.show<void>(
       context: context,
+      backgroundColor: context.colors.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppDimensions.radiusLg.r),
+        ),
+      ),
       builder: (sheetContext) {
+        final bottomInset = MediaQuery.viewInsetsOf(sheetContext).bottom;
         return Padding(
-          padding: EdgeInsets.fromLTRB(20.w, 8.h, 20.w, 20.h),
+          padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 20.h + bottomInset),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,

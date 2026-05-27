@@ -1,7 +1,8 @@
 import 'package:dio/dio.dart';
 
 import '../config/google_places_config.dart';
-
+/// Gooogle Api Key Android SDK== AIzaSyCcOuYM8_Wo-3bz61kAft6TFOvRdKsa84I
+/// Gooogle Api Key IOS SDK== AIzaSyCPeryXfeNsD9G_gYfYHOHbka2CaF1PbnY
 /// A single Places Autocomplete prediction.
 class PlacePrediction {
   const PlacePrediction({

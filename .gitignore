@@ -12,11 +12,23 @@
 .swiftpm/
 migrate_working_dir/
 
-# IntelliJ related
+# IntelliJ — ignore local IDE state; keep shared SDK/module config in git.
+.idea/*
+!.idea/runConfigurations/
+!.idea/runConfigurations/**
+!.idea/modules.xml
+!.idea/misc.xml
+!.idea/dart.xml
+!.idea/runConfigurations/
+!.idea/runConfigurations/**
+!.idea/libraries/
+!.idea/libraries/**
+
 *.iml
+!goods_carrier.iml
+!android/goods_carrier_android.iml
 *.ipr
 *.iws
-.idea/
 
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line
