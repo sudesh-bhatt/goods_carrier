@@ -162,9 +162,8 @@ class _CustomerEditProfileScreenState extends ConsumerState<CustomerEditProfileS
   Future<void> _editAddress() async {
     HapticFeedback.selectionClick();
     final l10n = context.l10n;
-    final draftCtrl = TextEditingController(text: _addressCtrl.text);
 
-    await AppModalBottomSheet.show<void>(
+    final saved = await AppModalBottomSheet.show<String>(
       context: context,
       backgroundColor: context.colors.surface,
       shape: RoundedRectangleBorder(
@@ -172,48 +171,18 @@ class _CustomerEditProfileScreenState extends ConsumerState<CustomerEditProfileS
           top: Radius.circular(AppDimensions.radiusLg.r),
         ),
       ),
-      builder: (sheetContext) {
-        final bottomInset = MediaQuery.viewInsetsOf(sheetContext).bottom;
-        return Padding(
-          padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 20.h + bottomInset),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                l10n.customerEditAddressTitle,
-                style: TextStyle(
-                  fontFamily: FontRes.MANROPE_BOLD,
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.w700,
-                  color: sheetContext.colors.textPrimary,
-                ),
-              ),
-              SizedBox(height: 16.h),
-              AddressAutocompleteField(
-                label: l10n.customerDefaultShippingAddress,
-                hint: _kAddressHint,
-                controller: draftCtrl,
-                fillColor: kCustomerProfileFieldFill,
-              ),
-              SizedBox(height: 16.h),
-              SizedBox(
-                height: 48.h,
-                child: ElevatedButton(
-                  onPressed: () {
-                    safeSetState(() => _addressCtrl.text = draftCtrl.text.trim());
-                    Navigator.pop(sheetContext);
-                  },
-                  child: Text(l10n.actionSave),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
+      builder: (sheetContext) => _AddressEditSheet(
+        title: l10n.customerEditAddressTitle,
+        label: l10n.customerDefaultShippingAddress,
+        hint: _kAddressHint,
+        saveLabel: l10n.actionSave,
+        initialAddress: _addressCtrl.text,
+      ),
     );
 
-    draftCtrl.dispose();
+    if (saved != null) {
+      safeSetState(() => _addressCtrl.text = saved);
+    }
   }
 
   Future<void> _submit() async {
@@ -383,6 +352,87 @@ class _CustomerEditProfileScreenState extends ConsumerState<CustomerEditProfileS
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Address editor sheet — owns its [TextEditingController] until fully disposed.
+class _AddressEditSheet extends StatefulWidget {
+  const _AddressEditSheet({
+    required this.title,
+    required this.label,
+    required this.hint,
+    required this.saveLabel,
+    required this.initialAddress,
+  });
+
+  final String title;
+  final String label;
+  final String hint;
+  final String saveLabel;
+  final String initialAddress;
+
+  @override
+  State<_AddressEditSheet> createState() => _AddressEditSheetState();
+}
+
+class _AddressEditSheetState extends State<_AddressEditSheet> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialAddress);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _save() {
+    FocusScope.of(context).unfocus();
+    Navigator.pop(context, _controller.text.trim());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
+    return Padding(
+      padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 20.h + bottomInset),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              widget.title,
+              style: TextStyle(
+                fontFamily: FontRes.MANROPE_BOLD,
+                fontSize: 18.sp,
+                fontWeight: FontWeight.w700,
+                color: context.colors.textPrimary,
+              ),
+            ),
+            SizedBox(height: 16.h),
+            AddressAutocompleteField(
+              label: widget.label,
+              hint: widget.hint,
+              controller: _controller,
+              fillColor: kCustomerProfileFieldFill,
+            ),
+            SizedBox(height: 16.h),
+            SizedBox(
+              height: 48.h,
+              child: ElevatedButton(
+                onPressed: _save,
+                child: Text(widget.saveLabel),
+              ),
+            ),
+          ],
         ),
       ),
     );

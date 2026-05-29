@@ -48,7 +48,7 @@
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Goods Carrier uses your location to place addresses on the map.</string>
 	<key>GOOGLE_MAPS_API_KEY</key>
-	<string>AIzaSyCPeryXfeNsD9G_gYfYHOHbka2CaF1PbnY</string>
+	<string>$(GOOGLE_MAPS_API_KEY)</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

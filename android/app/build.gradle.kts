@@ -14,6 +14,22 @@ if (localPropertiesFile.exists()) {
     localPropertiesFile.load(FileInputStream(localPropertiesFile))
 }
 
+fun loadDotEnv(): Map<String, String> {
+    val envFile = rootProject.file("../.env")
+    if (!envFile.exists()) return emptyMap()
+    return envFile.readLines()
+        .mapNotNull { line ->
+            val trimmed = line.trim()
+            if (trimmed.isEmpty() || trimmed.startsWith("#")) return@mapNotNull null
+            val eq = trimmed.indexOf('=')
+            if (eq <= 0) return@mapNotNull null
+            trimmed.substring(0, eq).trim() to trimmed.substring(eq + 1).trim()
+        }
+        .toMap()
+}
+
+val dotEnv = loadDotEnv()
+
 android {
     namespace = "com.goodscarrier.goods_carrier"
     compileSdk = flutter.compileSdkVersion
@@ -38,7 +54,8 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         manifestPlaceholders["googleMapsApiKey"] =
-            localProperties.getProperty("GOOGLE_MAPS_API_KEY", "")
+            dotEnv["GOOGLE_API_KEY"]
+                ?: localProperties.getProperty("GOOGLE_API_KEY", "")
     }
 
     buildTypes {

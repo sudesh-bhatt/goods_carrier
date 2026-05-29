@@ -2,20 +2,22 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import '../../../../core/config/google_maps_config.dart';
 import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/mixins/safe_set_state_mixin.dart';
 import '../../../../res/font_res.dart';
+import '../../../../core/utils/map_location_helper.dart';
 import '../../../../core/utils/validators.dart';
+import '../../../../core/services/google_places_service.dart';
 import '../../../../shared/domain/enums/saved_address_label.dart';
+import '../../../../shared/domain/entities/saved_address.dart';
 import '../providers/customer_saved_addresses_provider.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
+import '../widgets/saved_addresses/add_address_autocomplete_field.dart';
 import '../widgets/saved_addresses/add_address_form_widgets.dart';
 import '../widgets/saved_addresses/address_map_picker.dart';
 import '../widgets/saved_addresses/saved_address_tokens.dart';
@@ -49,58 +51,40 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen>
   @override
   void initState() {
     super.initState();
-    _position = const LatLng(
-      GoogleMapsConfig.defaultLatitude,
-      GoogleMapsConfig.defaultLongitude,
-    );
+    _position = MapLocationHelper.defaultPosition;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _bootstrap();
     });
   }
 
   Future<void> _bootstrap() async {
+    SavedAddress? existing;
     if (_isEditing) {
-      final existing = ref
+      existing = ref
           .read(customerSavedAddressesProvider.notifier)
           .byId(widget.addressId!);
-      if (existing != null) {
-        safeSetState(() {
-          _label = existing.label;
-          _fullAddressCtrl.text = existing.fullAddressLine;
-          _cityCtrl.text = existing.city;
-          _pincodeCtrl.text = existing.pincode;
-          _landmarkCtrl.text = existing.landmark ?? '';
-          _position = LatLng(existing.latitude, existing.longitude);
-          _initialized = true;
-        });
-        return;
-      }
     }
 
-    await _resolveInitialPosition();
-    if (mounted) safeSetState(() => _initialized = true);
-  }
+    if (existing != null) {
+      safeSetState(() {
+        _label = existing!.label;
+        _fullAddressCtrl.text = existing.fullAddressLine;
+        _cityCtrl.text = existing.city;
+        _pincodeCtrl.text = existing.pincode;
+        _landmarkCtrl.text = existing.landmark ?? '';
+      });
+    }
 
-  Future<void> _resolveInitialPosition() async {
-    try {
-      var permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-      }
-      if (permission == LocationPermission.whileInUse ||
-          permission == LocationPermission.always) {
-        final pos = await Geolocator.getCurrentPosition(
-          locationSettings: const LocationSettings(
-            accuracy: LocationAccuracy.medium,
-            timeLimit: Duration(seconds: 10),
-          ),
-        );
-        safeSetState(() {
-          _position = LatLng(pos.latitude, pos.longitude);
-        });
-      }
-    } catch (_) {
-      // Keep default center.
+    final resolved = await MapLocationHelper.resolveInitialPosition(
+      savedLatitude: existing?.latitude,
+      savedLongitude: existing?.longitude,
+    );
+
+    if (mounted) {
+      safeSetState(() {
+        _position = resolved;
+        _initialized = true;
+      });
     }
   }
 
@@ -120,6 +104,23 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen>
       SavedAddressLabel.office => l10n.customerAddressLabelOffice,
       SavedAddressLabel.other => l10n.customerAddressLabelOther,
     };
+  }
+
+  void _onPlaceSelected(PlaceAddressDetails details) {
+    safeSetState(() {
+      if (details.city.isNotEmpty) {
+        _cityCtrl.text = details.city;
+      }
+      if (details.pincode.isNotEmpty) {
+        _pincodeCtrl.text = details.pincode;
+      }
+      if (MapLocationHelper.isValidCoordinate(
+        details.latitude,
+        details.longitude,
+      )) {
+        _position = LatLng(details.latitude, details.longitude);
+      }
+    });
   }
 
   Future<void> _save() async {
@@ -205,12 +206,15 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen>
                               otherLabel: l10n.customerAddressLabelOther,
                             ),
                             SizedBox(height: 32.h),
-                            AddAddressTextField(
+                            AddAddressAutocompleteField(
                               label: l10n.customerAddressFullLine,
                               hint: l10n.customerAddressFullLineHint,
                               controller: _fullAddressCtrl,
-                              icon: Icons.map_outlined,
+                              onPlaceSelected: _onPlaceSelected,
                               textInputAction: TextInputAction.next,
+                              autovalidateMode: _submitted
+                                  ? AutovalidateMode.onUserInteraction
+                                  : AutovalidateMode.disabled,
                               validator: (v) => Validators.required(
                                 v,
                                 l10n.customerAddressFullLine,

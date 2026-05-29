@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app.dart';
+import 'core/config/env_config.dart';
 import 'core/providers/shared_preferences_provider.dart';
 import 'core/utils/platform_utils.dart';
 import 'features/settings/presentation/providers/locale_provider.dart';
@@ -11,6 +12,7 @@ import 'features/settings/presentation/providers/theme_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await EnvConfig.load();
   GoogleFonts.config.allowRuntimeFetching = false;
 
   // Android: draw content behind status/nav bars.

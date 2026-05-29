@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:developer' as developer;
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -14,8 +16,7 @@ import '../../../../res/font_res.dart';
 
 /// Profile-style address field with Google Places autocomplete (India).
 ///
-/// Requires `--dart-define=GOOGLE_PLACES_API_KEY=...`. Without a key, behaves
-/// as a normal text field.
+/// Requires `GOOGLE_API_KEY` in `.env`. Without a key, behaves as a normal field.
 class AddressAutocompleteField extends ConsumerStatefulWidget {
   const AddressAutocompleteField({
     super.key,
@@ -66,12 +67,16 @@ class _AddressAutocompleteFieldState
     super.dispose();
   }
 
+  void _safeSetState(VoidCallback fn) {
+    if (mounted) setState(fn);
+  }
+
   static String _newSessionToken() =>
       '${DateTime.now().microsecondsSinceEpoch}_${Random().nextInt(1 << 32)}';
 
   void _onFocusChange() {
     if (!_focusNode.hasFocus) {
-      setState(() => _predictions = []);
+      _safeSetState(() => _predictions = []);
     } else {
       _sessionToken = _newSessionToken();
     }
@@ -80,7 +85,7 @@ class _AddressAutocompleteFieldState
   void _onQueryChanged(String query) {
     _debounce?.cancel();
     if (!GooglePlacesConfig.isConfigured || query.trim().length < 3) {
-      setState(() {
+      _safeSetState(() {
         _predictions = [];
         _isLoading = false;
         _error = null;
@@ -88,7 +93,7 @@ class _AddressAutocompleteFieldState
       return;
     }
 
-    setState(() {
+    _safeSetState(() {
       _isLoading = true;
       _error = null;
     });
@@ -96,25 +101,58 @@ class _AddressAutocompleteFieldState
     _debounce = Timer(const Duration(milliseconds: _debounceMs), () async {
       try {
         final service = ref.read(googlePlacesServiceProvider);
+        if (kDebugMode) {
+          developer.log(
+            'fetchPredictions query="$query" '
+            'keyConfigured=${GooglePlacesConfig.isConfigured}',
+            name: 'AddressAutocomplete',
+          );
+        }
+
         final results = await service.fetchPredictions(
           input: query,
           sessionToken: _sessionToken,
         );
+
+        if (kDebugMode) {
+          developer.log(
+            'fetchPredictions ok count=${results.length}',
+            name: 'AddressAutocomplete',
+          );
+        }
+
         if (!mounted) return;
-        setState(() {
+        _safeSetState(() {
           _predictions = results;
           _isLoading = false;
         });
-      } on GooglePlacesException catch (e) {
+      } on GooglePlacesException catch (e, st) {
+        if (kDebugMode) {
+          developer.log(
+            'fetchPredictions failed status=${e.status} '
+            'message=${e.errorMessage}',
+            name: 'AddressAutocomplete',
+            error: e,
+            stackTrace: st,
+          );
+        }
         if (!mounted) return;
-        setState(() {
+        _safeSetState(() {
           _predictions = [];
           _isLoading = false;
-          _error = e.status;
+          _error = e.displayMessage;
         });
-      } catch (_) {
+      } catch (e, st) {
+        if (kDebugMode) {
+          developer.log(
+            'fetchPredictions unexpected error',
+            name: 'AddressAutocomplete',
+            error: e,
+            stackTrace: st,
+          );
+        }
         if (!mounted) return;
-        setState(() {
+        _safeSetState(() {
           _predictions = [];
           _isLoading = false;
         });
@@ -123,7 +161,7 @@ class _AddressAutocompleteFieldState
   }
 
   Future<void> _selectPrediction(PlacePrediction prediction) async {
-    setState(() {
+    _safeSetState(() {
       _predictions = [];
       _isLoading = true;
     });
@@ -135,15 +173,23 @@ class _AddressAutocompleteFieldState
         placeId: prediction.placeId,
         sessionToken: _sessionToken,
       );
+      if (!mounted) return;
       widget.controller.text =
           address.isNotEmpty ? address : prediction.description;
-    } catch (_) {
+    } catch (e, st) {
+      if (kDebugMode) {
+        developer.log(
+          'fetchFormattedAddress failed',
+          name: 'AddressAutocomplete',
+          error: e,
+          stackTrace: st,
+        );
+      }
+      if (!mounted) return;
       widget.controller.text = prediction.description;
     } finally {
       _sessionToken = _newSessionToken();
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+      _safeSetState(() => _isLoading = false);
     }
   }
 
@@ -247,11 +293,12 @@ class _AddressAutocompleteFieldState
                 shadowColor: colors.shadowCard,
                 borderRadius: BorderRadius.circular(AppDimensions.radiusMd.r),
                 color: colors.surface,
-                child: ListView.separated(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  padding: EdgeInsets.symmetric(vertical: 4.h),
-                  itemCount: _predictions.length,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxHeight: 220.h),
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    padding: EdgeInsets.symmetric(vertical: 4.h),
+                    itemCount: _predictions.length,
                   separatorBuilder: (_, __) => Divider(
                     height: 1,
                     color: colors.divider,
@@ -289,6 +336,7 @@ class _AddressAutocompleteFieldState
                       ),
                     );
                   },
+                ),
                 ),
               ),
             ],

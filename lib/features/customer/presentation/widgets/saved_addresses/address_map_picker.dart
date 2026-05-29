@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -6,6 +8,8 @@ import '../../../../../core/config/google_maps_config.dart';
 import '../../../../../core/extensions/size_ext.dart';
 import '../../../../../core/extensions/theme_ext.dart';
 import '../../../../../core/mixins/safe_set_state_mixin.dart';
+import '../../../../../core/services/google_maps_setup_checker.dart';
+import '../../../../../core/utils/map_location_helper.dart';
 import '../../../../../res/font_res.dart';
 import 'saved_address_tokens.dart';
 
@@ -29,20 +33,42 @@ class _AddressMapPickerState extends State<AddressMapPicker>
   GoogleMapController? _mapController;
   late LatLng _mapCenter;
   bool _locating = false;
+  bool _myLocationEnabled = false;
+  bool _userDraggingMap = false;
+  LatLng? _pendingCameraTarget;
+
+  static final _mapGestures = <Factory<OneSequenceGestureRecognizer>>{
+    Factory<EagerGestureRecognizer>(() => EagerGestureRecognizer()),
+  };
 
   @override
   void initState() {
     super.initState();
     _mapCenter = widget.position;
+    _refreshMyLocationLayer();
+    GoogleMapsSetupChecker.logSetupHintsIfNeeded();
   }
 
   @override
   void didUpdateWidget(AddressMapPicker oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.position != widget.position &&
+        !_userDraggingMap &&
         _distance(widget.position, _mapCenter) > 0.0001) {
       _mapCenter = widget.position;
-      _animateTo(_mapCenter);
+      _moveCameraTo(_mapCenter);
+    }
+  }
+
+  Future<void> _refreshMyLocationLayer() async {
+    var permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+    final enabled = permission == LocationPermission.whileInUse ||
+        permission == LocationPermission.always;
+    if (mounted && enabled != _myLocationEnabled) {
+      safeSetState(() => _myLocationEnabled = enabled);
     }
   }
 
@@ -51,23 +77,46 @@ class _AddressMapPickerState extends State<AddressMapPicker>
         (a.longitude - b.longitude).abs();
   }
 
-  Future<void> _animateTo(LatLng target) async {
+  Future<void> _moveCameraTo(LatLng target, {double zoom = 16}) async {
+    _mapCenter = target;
+    _pendingCameraTarget = target;
+
     final controller = _mapController;
     if (controller == null) return;
-    await controller.animateCamera(
-      CameraUpdate.newLatLng(target),
-    );
+
+    try {
+      await controller.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(target: target, zoom: zoom),
+        ),
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('[AddressMapPicker] camera move failed: $e');
+      }
+    }
+  }
+
+  Future<void> _onMapCreated(GoogleMapController controller) async {
+    _mapController = controller;
+    if (kDebugMode) {
+      debugPrint(
+        '[AddressMapPicker] map ready at '
+        '${_mapCenter.latitude}, ${_mapCenter.longitude} '
+        'envKeyConfigured=${GoogleMapsConfig.isConfigured}',
+      );
+    }
+    await Future<void>.delayed(const Duration(milliseconds: 150));
+    final target = _pendingCameraTarget ?? _mapCenter;
+    await _moveCameraTo(target);
   }
 
   Future<void> _goToCurrentLocation() async {
     safeSetState(() => _locating = true);
     try {
-      var permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-      }
-      if (permission == LocationPermission.denied ||
-          permission == LocationPermission.deniedForever) {
+      await _refreshMyLocationLayer();
+      final target = await MapLocationHelper.getFreshCurrentLocation();
+      if (target == null) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -78,19 +127,9 @@ class _AddressMapPickerState extends State<AddressMapPicker>
         return;
       }
 
-      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) return;
-
-      final pos = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
-          timeLimit: Duration(seconds: 12),
-        ),
-      );
-      final target = LatLng(pos.latitude, pos.longitude);
       safeSetState(() => _mapCenter = target);
       widget.onPositionChanged(target);
-      await _animateTo(target);
+      await _moveCameraTo(target);
     } finally {
       if (mounted) safeSetState(() => _locating = false);
     }
@@ -110,20 +149,30 @@ class _AddressMapPickerState extends State<AddressMapPicker>
             GoogleMap(
               initialCameraPosition: CameraPosition(
                 target: _mapCenter,
-                zoom: 15,
+                zoom: 16,
               ),
-              onMapCreated: (controller) => _mapController = controller,
+              gestureRecognizers: _mapGestures,
+              onMapCreated: _onMapCreated,
+              onCameraMoveStarted: () {
+                _userDraggingMap = true;
+              },
               onCameraMove: (position) {
                 _mapCenter = position.target;
               },
               onCameraIdle: () {
+                _userDraggingMap = false;
                 widget.onPositionChanged(_mapCenter);
               },
+              myLocationEnabled: _myLocationEnabled,
               myLocationButtonEnabled: false,
               zoomControlsEnabled: false,
               mapToolbarEnabled: false,
               compassEnabled: false,
-              liteModeEnabled: false,
+              scrollGesturesEnabled: true,
+              zoomGesturesEnabled: true,
+              rotateGesturesEnabled: false,
+              tiltGesturesEnabled: false,
+              mapType: MapType.normal,
             ),
             if (!GoogleMapsConfig.isConfigured)
               Positioned.fill(
@@ -133,7 +182,8 @@ class _AddressMapPickerState extends State<AddressMapPicker>
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 24.w),
                       child: Text(
-                        'Add GOOGLE_PLACES_API_KEY or GOOGLE_MAPS_API_KEY to enable the map.',
+                        'Add GOOGLE_API_KEY to .env and run '
+                        'dart run tool/sync_env.dart',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontFamily: FontRes.MANROPE_MEDIUM,
