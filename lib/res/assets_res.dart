@@ -8,6 +8,8 @@ class AssetsRes {
 
   static const String PROJECT_NAME = 'goods_carrier';
   static const String PROJECT_VERSION = '1.0.0+1';
+  static const String APP_ICON_PNG = 'assets/images/app_icon.png';
+  static const String APP_ICON_SVG = 'assets/svg/app_icon.svg';
   static const String APP_LOGO = 'assets/images/app_logo.png';
   static const String EMPTY_TRIP_PLACEHOLDER = 'assets/images/empty_trip_placeholder.png';
   static const String LOGIN_SCREEN_BANNER = 'assets/images/login_screen_banner.png';

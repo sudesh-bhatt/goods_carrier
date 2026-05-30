@@ -55,17 +55,27 @@ class LocalAuthRepository implements IAuthRepository {
   @override
   Future<User> createDriverProfile({
     required String name,
-    required String vehicleNumber,
-    required String vehicleType,
-    required double capacityTons,
+    String? email,
+    String? address,
+    String? companyName,
+    String? gstName,
+    String? gstNumber,
+    String? businessEmail,
+    String? businessPhone,
   }) async {
     await _delay();
     return User(
       id:    'USR-${DateTime.now().millisecondsSinceEpoch % 9999}',
       name:  name,
       phone: await _storage.read(key: 'otp_phone') ?? '',
-      email: '',
+      email: email ?? '',
       role:  UserRole.driver,
+      address: address,
+      companyName: companyName,
+      gstName: gstName,
+      gstNumber: gstNumber,
+      businessEmail: businessEmail,
+      businessPhone: businessPhone,
     );
   }
 

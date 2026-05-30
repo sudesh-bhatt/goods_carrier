@@ -27,6 +27,8 @@ import '../widgets/shipment_form/shipment_form_card.dart';
 import '../widgets/shipment_form/shipment_form_field.dart';
 import '../widgets/shipment_form/shipment_form_route_card.dart';
 import '../widgets/shipment_form/shipment_form_tokens.dart';
+import '../widgets/shipment_form/shipment_form_pickers.dart';
+import '../widgets/shipment_form/shipment_form_schedule_field.dart';
 import '../widgets/shipment_form/shipment_form_weight_row.dart';
 
 /// Unified create / edit shipment form — Figma Post Shipment (`1:2787`).
@@ -161,19 +163,7 @@ class _ShipmentFormScreenState extends ConsumerState<ShipmentFormScreen>
   }
 
   Future<void> _pickVehicle() async {
-    final picked = await AppPickerBottomSheet.show<VehicleType>(
-      context: context,
-      title: context.l10n.shipmentFormVehicleRequirement,
-      items: VehicleType.values
-          .map(
-            (v) => AppPickerItem<VehicleType>(
-              value: v,
-              label: v.label,
-              subtitle: v.capacityLabel,
-            ),
-          )
-          .toList(),
-    );
+    final picked = await ShipmentFormPickers.showVehicleType(context);
     if (picked == null) return;
     safeSetState(() {
       _vehicleType = picked;
@@ -200,14 +190,7 @@ class _ShipmentFormScreenState extends ConsumerState<ShipmentFormScreen>
   }
 
   Future<void> _pickWeightUnit() async {
-    final picked = await AppPickerBottomSheet.show<String>(
-      context: context,
-      title: context.l10n.shipmentFormEstWeightType,
-      items: const [
-        AppPickerItem(value: 'KG', label: 'KG'),
-        AppPickerItem(value: 'Ton', label: 'Ton'),
-      ],
-    );
+    final picked = await ShipmentFormPickers.showWeightUnit(context);
     if (picked != null) safeSetState(() => _weightUnit = picked);
   }
 
@@ -484,7 +467,7 @@ class _ShipmentFormScreenState extends ConsumerState<ShipmentFormScreen>
                         padding: EdgeInsets.fromLTRB(24.w, 23.h, 24.w, 24.h),
                         child: Column(
                           children: [
-                            _ScheduleField(
+                            ShipmentFormScheduleField(
                               label: l10n.shipmentFormPickupDate,
                               value: _formatDate(_pickupDate),
                               icon: Icons.calendar_today_outlined,
@@ -492,7 +475,7 @@ class _ShipmentFormScreenState extends ConsumerState<ShipmentFormScreen>
                               isPlaceholder: _pickupDate == null,
                             ),
                             SizedBox(height: 23.h),
-                            _ScheduleField(
+                            ShipmentFormScheduleField(
                               label: l10n.shipmentFormPickupTime,
                               value: _formatTime(_pickupTime),
                               icon: Icons.access_time_rounded,
@@ -622,62 +605,6 @@ class _ShipmentFormScreenState extends ConsumerState<ShipmentFormScreen>
           ),
         ),
       ),
-    );
-  }
-}
-
-class _ScheduleField extends StatelessWidget {
-  const _ScheduleField({
-    required this.label,
-    required this.value,
-    required this.icon,
-    required this.onTap,
-    this.isPlaceholder = false,
-  });
-
-  final String label;
-  final String value;
-  final IconData icon;
-  final VoidCallback onTap;
-  final bool isPlaceholder;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        ShipmentFormFieldLabel(text: label),
-        SizedBox(height: 8.h),
-        GestureDetector(
-          onTap: onTap,
-          child: Container(
-            height: 52.h,
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
-            decoration: BoxDecoration(
-              color: ShipmentFormTokens.fieldFill,
-              borderRadius: BorderRadius.circular(12.r),
-            ),
-            child: Row(
-              children: [
-                Icon(icon, size: 18.w, color: ShipmentFormTokens.primary),
-                SizedBox(width: 12.w),
-                Expanded(
-                  child: Text(
-                    value,
-                    style: TextStyle(
-                      fontFamily: FontRes.MANROPE_MEDIUM,
-                      fontSize: 16.sp,
-                      color: isPlaceholder
-                          ? ShipmentFormTokens.hint
-                          : ShipmentFormTokens.heading,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

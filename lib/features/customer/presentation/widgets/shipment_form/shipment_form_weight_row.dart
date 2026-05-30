@@ -13,6 +13,7 @@ class ShipmentFormWeightRow extends StatelessWidget {
     required this.weightLabel,
     required this.unitLabel,
     required this.onUnitTap,
+    this.weightValidator,
   });
 
   final TextEditingController weightController;
@@ -20,6 +21,7 @@ class ShipmentFormWeightRow extends StatelessWidget {
   final String weightLabel;
   final String unitLabel;
   final VoidCallback onUnitTap;
+  final String? Function(String?)? weightValidator;
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +43,7 @@ class ShipmentFormWeightRow extends StatelessWidget {
                   FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
                 ],
                 textAlign: TextAlign.center,
+                validator: weightValidator,
               ),
             ),
           ),

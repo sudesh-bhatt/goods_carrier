@@ -874,6 +874,66 @@ abstract class AppLocalizations {
   /// **'Create Profile'**
   String get profileCreateButton;
 
+  /// No description provided for @driverProfileCompleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete Profile'**
+  String get driverProfileCompleteTitle;
+
+  /// No description provided for @driverProfilePersonalDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal Details'**
+  String get driverProfilePersonalDetails;
+
+  /// No description provided for @driverProfileBusinessDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Business Details'**
+  String get driverProfileBusinessDetails;
+
+  /// No description provided for @driverProfileCompleteButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete Profile'**
+  String get driverProfileCompleteButton;
+
+  /// No description provided for @profileCity.
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get profileCity;
+
+  /// No description provided for @profilePostalCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Postal Code'**
+  String get profilePostalCode;
+
+  /// No description provided for @profileFullAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Full Address'**
+  String get profileFullAddress;
+
+  /// No description provided for @profileGstName.
+  ///
+  /// In en, this message translates to:
+  /// **'GST Name'**
+  String get profileGstName;
+
+  /// No description provided for @profileGstNumberOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'GST Number (Optional)'**
+  String get profileGstNumberOptional;
+
+  /// No description provided for @profileBusinessPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone Number'**
+  String get profileBusinessPhone;
+
   /// No description provided for @profilePhotoPickerTitle.
   ///
   /// In en, this message translates to:
@@ -1275,6 +1335,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Profile'**
   String get customerNavProfile;
+
+  /// No description provided for @driverNavMyTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'My Trip'**
+  String get driverNavMyTrip;
+
+  /// No description provided for @driverMyTripTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My Trip'**
+  String get driverMyTripTitle;
+
+  /// No description provided for @driverHomeShipmentId.
+  ///
+  /// In en, this message translates to:
+  /// **'Shipment ID'**
+  String get driverHomeShipmentId;
+
+  /// No description provided for @driverShipmentDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shipment Details'**
+  String get driverShipmentDetailsTitle;
+
+  /// No description provided for @driverAddRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Request'**
+  String get driverAddRequest;
+
+  /// No description provided for @driverRequestSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Sent'**
+  String get driverRequestSent;
+
+  /// No description provided for @driverConfirmRequestTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Request'**
+  String get driverConfirmRequestTitle;
+
+  /// No description provided for @driverConfirmRequestBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to show interest in this shipment? The customer will be notified.'**
+  String get driverConfirmRequestBody;
+
+  /// No description provided for @driverConfirmYesContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, Continue'**
+  String get driverConfirmYesContinue;
+
+  /// No description provided for @driverGoodsDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Goods Details'**
+  String get driverGoodsDetails;
+
+  /// No description provided for @driverGoodsType.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get driverGoodsType;
+
+  /// No description provided for @driverGoodsWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get driverGoodsWeight;
+
+  /// No description provided for @driverFragileHandlingRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Fragile Handling Required'**
+  String get driverFragileHandlingRequired;
+
+  /// No description provided for @driverPickupLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Pickup Location'**
+  String get driverPickupLocation;
+
+  /// No description provided for @driverDropLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Drop Location'**
+  String get driverDropLocation;
+
+  /// No description provided for @driverVehicleRequirement.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle Requirement'**
+  String get driverVehicleRequirement;
+
+  /// No description provided for @driverMatchesYourVehicle.
+  ///
+  /// In en, this message translates to:
+  /// **'Matches Your Vehicle'**
+  String get driverMatchesYourVehicle;
+
+  /// No description provided for @driverReportShipmentQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Report a shipment?'**
+  String get driverReportShipmentQuestion;
+
+  /// No description provided for @driverConfirmationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmation'**
+  String get driverConfirmationTitle;
+
+  /// No description provided for @driverInterestSentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Sent Successfully'**
+  String get driverInterestSentTitle;
+
+  /// No description provided for @driverInterestSentBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your request has been sent to the customer. You will be notified once they respond.'**
+  String get driverInterestSentBody;
+
+  /// No description provided for @driverSummaryDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get driverSummaryDate;
+
+  /// No description provided for @driverSummaryTotalPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Price'**
+  String get driverSummaryTotalPrice;
 
   /// No description provided for @actionViewDetails.
   ///
@@ -2020,6 +2218,168 @@ abstract class AppLocalizations {
   /// **'Post Trip'**
   String get tripPostNew;
 
+  /// No description provided for @driverAddTripTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Trip'**
+  String get driverAddTripTitle;
+
+  /// No description provided for @driverPublishTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish Trip'**
+  String get driverPublishTrip;
+
+  /// No description provided for @driverTripFormContext.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip Details'**
+  String get driverTripFormContext;
+
+  /// No description provided for @driverTripFormHero.
+  ///
+  /// In en, this message translates to:
+  /// **'Set your route & load'**
+  String get driverTripFormHero;
+
+  /// No description provided for @driverTripFormRouteInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Route Information'**
+  String get driverTripFormRouteInfo;
+
+  /// No description provided for @driverTripFormFromLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'From Location'**
+  String get driverTripFormFromLocation;
+
+  /// No description provided for @driverTripFormToLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'To Location'**
+  String get driverTripFormToLocation;
+
+  /// No description provided for @driverTripFormFromHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter departure city'**
+  String get driverTripFormFromHint;
+
+  /// No description provided for @driverTripFormToHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter destination city'**
+  String get driverTripFormToHint;
+
+  /// No description provided for @driverTripFormSchedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule'**
+  String get driverTripFormSchedule;
+
+  /// No description provided for @driverTripFormEstStartDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Est. Start Date'**
+  String get driverTripFormEstStartDate;
+
+  /// No description provided for @driverTripFormEstStartTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Est. Start Time'**
+  String get driverTripFormEstStartTime;
+
+  /// No description provided for @driverTripFormEstEndDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Est. End Date'**
+  String get driverTripFormEstEndDate;
+
+  /// No description provided for @driverTripFormEstEndTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Est. End Time'**
+  String get driverTripFormEstEndTime;
+
+  /// No description provided for @driverTripFormVehicleCapacity.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle & Capacity'**
+  String get driverTripFormVehicleCapacity;
+
+  /// No description provided for @driverTripFormVehicleCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle Category'**
+  String get driverTripFormVehicleCategory;
+
+  /// No description provided for @driverTripFormLoadCapacity.
+  ///
+  /// In en, this message translates to:
+  /// **'Load Capacity'**
+  String get driverTripFormLoadCapacity;
+
+  /// No description provided for @driverTripFormEstPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Est. Price'**
+  String get driverTripFormEstPrice;
+
+  /// No description provided for @driverTripFormDriverInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver Info'**
+  String get driverTripFormDriverInfo;
+
+  /// No description provided for @driverTripFormDriverName.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver Name'**
+  String get driverTripFormDriverName;
+
+  /// No description provided for @driverTripFormDriverPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver Phone'**
+  String get driverTripFormDriverPhone;
+
+  /// No description provided for @driverTripFormDriverNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'E.g Vikram singh R'**
+  String get driverTripFormDriverNameHint;
+
+  /// No description provided for @driverTripFormVehicleRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a vehicle category'**
+  String get driverTripFormVehicleRequired;
+
+  /// No description provided for @driverTripFormScheduleRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select start and end schedule'**
+  String get driverTripFormScheduleRequired;
+
+  /// No description provided for @driverTripFormEndBeforeStart.
+  ///
+  /// In en, this message translates to:
+  /// **'End schedule must be after start schedule'**
+  String get driverTripFormEndBeforeStart;
+
+  /// No description provided for @driverTripFormCapacityRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid load capacity'**
+  String get driverTripFormCapacityRequired;
+
+  /// No description provided for @driverTripFormPriceRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid estimated price'**
+  String get driverTripFormPriceRequired;
+
   /// No description provided for @tripFrom.
   ///
   /// In en, this message translates to:
@@ -2127,6 +2487,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Post your available route to receive shipment requests'**
   String get emptyTripsSubtitle;
+
+  /// No description provided for @driverEmptyTripsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No Active Trip'**
+  String get driverEmptyTripsTitle;
+
+  /// No description provided for @driverEmptyTripsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'You haven\'t posted any requirements yet. Start by adding your first Trip to experience precision tracking.'**
+  String get driverEmptyTripsDescription;
 
   /// No description provided for @emptyNotifications.
   ///

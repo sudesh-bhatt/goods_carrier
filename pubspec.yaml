@@ -67,6 +67,15 @@ dev_dependencies:
   # custom_lint + riverpod_lint — stuck on analyzer ^8, rest of stack needs ^6
   # drift_dev              — needs analyzer >=10, conflicts with above
   # device_info_plus       — win32 conflict with flutter_secure_storage_windows
+  flutter_launcher_icons: ^0.14.4
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: assets/images/app_icon.png
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: assets/images/app_icon.png
+  remove_alpha_ios: true
 
 flutter:
   uses-material-design: true
@@ -74,10 +83,12 @@ flutter:
   assets:
     - .env
     - assets/images/
+    - assets/images/app_icon.png
     - assets/images/app_logo.png
     - assets/images/empty_trip_placeholder.png
     - assets/images/login_screen_banner.png
     - assets/images/splash_screen_logo.png
+    - assets/svg/app_icon.svg
     - assets/svg/cta_right_arrow.svg
     - assets/svg/ic_otp_lock.svg
     - assets/svg/ic_profile_camera.svg

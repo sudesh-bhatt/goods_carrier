@@ -26,6 +26,7 @@ import '../../features/customer/presentation/screens/cancel_shipment_screen.dart
 import '../../features/customer/presentation/models/report_trip_confirmation_args.dart';
 import '../../features/customer/presentation/models/report_trip_screen_args.dart';
 import '../../features/customer/presentation/screens/customer_trip_detail_screen.dart';
+import '../../features/customer/presentation/widgets/trip_detail/trip_detail_tokens.dart';
 import '../../features/customer/presentation/screens/report_trip_screen.dart';
 import '../../features/customer/presentation/screens/report_trip_success_screen.dart';
 import '../../features/customer/presentation/models/shipment_cancel_confirmation_args.dart';
@@ -37,11 +38,15 @@ import '../../features/customer/presentation/tabs/customer_notifications_tab.dar
 import '../../features/customer/presentation/tabs/customer_profile_tab.dart';
 import '../../features/customer/presentation/tabs/customer_shipments_tab.dart';
 import '../../features/driver/presentation/screens/driver_earnings_screen.dart';
-import '../../features/driver/presentation/screens/driver_home_screen.dart';
-import '../../features/driver/presentation/screens/driver_notifications_screen.dart';
-import '../../features/driver/presentation/screens/driver_profile_screen.dart';
+import '../../features/driver/presentation/screens/driver_main_shell_screen.dart';
+import '../../features/driver/presentation/screens/driver_interest_success_screen.dart';
+import '../../features/driver/presentation/models/driver_interest_success_args.dart';
 import '../../features/driver/presentation/screens/driver_trip_detail_screen.dart';
 import '../../features/driver/presentation/screens/post_trip_screen.dart';
+import '../../features/driver/presentation/tabs/driver_home_tab.dart';
+import '../../features/driver/presentation/tabs/driver_my_trips_tab.dart';
+import '../../features/driver/presentation/tabs/driver_notifications_tab.dart';
+import '../../features/driver/presentation/tabs/driver_profile_tab.dart';
 import '../../shared/domain/enums/user_role.dart';
 import 'app_routes.dart';
 
@@ -289,10 +294,54 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
 
-      GoRoute(
-        path: AppRoutes.driverHome,
-        builder: (_, __) => const DriverHomeScreen(),
+      // ── Driver main shell (single scaffold, tab bodies only) ─────────
+      StatefulShellRoute(
+        builder: (context, state, navigationShell) {
+          return DriverMainShellScreen(navigationShell: navigationShell);
+        },
+        navigatorContainerBuilder: (context, navigationShell, children) {
+          return CustomerTabSlideContainer(
+            currentIndex: navigationShell.currentIndex,
+            children: children,
+          );
+        },
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.driverHome,
+                builder: (_, __) => const DriverHomeTab(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.driverMyTrips,
+                builder: (_, __) => const DriverMyTripsTab(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.driverNotifications,
+                builder: (_, __) => const DriverNotificationsTab(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.driverProfile,
+                builder: (_, __) => const DriverProfileTab(),
+              ),
+            ],
+          ),
+        ],
       ),
+
+      // ── Driver full-screen flows (outside shell) ─────────────────────
       GoRoute(
         path: AppRoutes.postTrip,
         builder: (_, __) => const PostTripScreen(),
@@ -304,12 +353,23 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
-        path: AppRoutes.driverNotifications,
-        builder: (_, __) => const DriverNotificationsScreen(),
+        path: AppRoutes.driverShipmentDetail,
+        builder: (_, state) => CustomerTripDetailScreen(
+          shipmentId: state.pathParameters['id']!,
+          audience: TripDetailAudience.driver,
+        ),
       ),
       GoRoute(
-        path: AppRoutes.driverProfile,
-        builder: (_, __) => const DriverProfileScreen(),
+        path: AppRoutes.driverInterestSuccess,
+        builder: (_, state) {
+          final extra = state.extra;
+          if (extra is! DriverInterestSuccessArgs) {
+            return const _RouterErrorPage(
+              error: FormatException('Missing interest success args'),
+            );
+          }
+          return DriverInterestSuccessScreen(args: extra);
+        },
       ),
       GoRoute(
         path: AppRoutes.driverEarnings,

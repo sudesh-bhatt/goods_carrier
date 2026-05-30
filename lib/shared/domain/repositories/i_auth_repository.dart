@@ -25,9 +25,13 @@ abstract class IAuthRepository {
   /// Creates a driver profile on the server and returns the [User].
   Future<User> createDriverProfile({
     required String name,
-    required String vehicleNumber,
-    required String vehicleType,
-    required double capacityTons,
+    String? email,
+    String? address,
+    String? companyName,
+    String? gstName,
+    String? gstNumber,
+    String? businessEmail,
+    String? businessPhone,
   });
 
   // ── Token management ──────────────────────────────────────────────────────

@@ -86,11 +86,13 @@ class DriverTripsNotifier extends StateNotifier<DriverTripsState> {
   Future<void> postTrip({
     required String      fromCity,
     required String      toCity,
-    required DateTime    startDate,
+    required DateTime    estimatedStartDate,
+    required DateTime    estimatedEndDate,
     required VehicleType vehicleType,
     required String      vehicleNumber,
     required double      loadCapacityTons,
     required double      estimatedPrice,
+    String?              driverName,
   }) async {
     final user  = _ref.read(authProvider).user!;
     final now   = DateTime.now();
@@ -99,11 +101,11 @@ class DriverTripsNotifier extends StateNotifier<DriverTripsState> {
     final optimistic = DriverTrip(
       id:                 tempId,
       driverId:           user.id,
-      driverName:         user.name,
+      driverName:         driverName ?? user.name,
       fromCity:           fromCity,
       toCity:             toCity,
-      estimatedStartDate: startDate,
-      estimatedEndDate:   startDate.add(const Duration(days: 3)),
+      estimatedStartDate: estimatedStartDate,
+      estimatedEndDate:   estimatedEndDate,
       vehicleCategory:    vehicleType,
       vehicleNumber:      vehicleNumber,
       loadCapacityTons:   loadCapacityTons,

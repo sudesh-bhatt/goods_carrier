@@ -20,12 +20,17 @@ import '../providers/driver_trips_provider.dart';
 /// Shows personal info, vehicle details (from last active/completed trip),
 /// a subscription tier badge, trip history tabs, and theme toggle.
 class DriverProfileScreen extends ConsumerWidget {
-  const DriverProfileScreen({super.key});
+  const DriverProfileScreen({super.key, this.embedded = false});
+
+  final bool embedded;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors    = context.colors;
-    final user      = ref.watch(authProvider).user!;
+    final user      = ref.watch(authProvider).user;
+    if (user == null) {
+      return const SizedBox.shrink();
+    }
     final tripsState = ref.watch(driverTripsProvider);
     final themeMode  = ref.watch(themeProvider);
     final allTrips   = tripsState.trips;
@@ -34,19 +39,7 @@ class DriverProfileScreen extends ConsumerWidget {
     // Derive vehicle info from the most recent trip (placeholder for Session 7 profile API)
     final latestTrip = allTrips.isNotEmpty ? allTrips.first : null;
 
-    return Scaffold(
-      backgroundColor: colors.background,
-      appBar: FlowScreenAppBar(
-        title: 'My Profile',
-        actions: [
-          AppBarAction(
-            icon: Icons.edit_outlined,
-            onTap: () {}, // Edit profile — Session 7
-          ),
-        ],
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
+    final body = SingleChildScrollView(
           padding: EdgeInsets.symmetric(
               horizontal: AppDimensions.screenPadding.w),
           child: Column(
@@ -161,8 +154,8 @@ class DriverProfileScreen extends ConsumerWidget {
                     isDangerous:  true,
                   );
                   if (confirmed == true && context.mounted) {
+                    context.go(AppRoutes.splash);
                     await ref.read(authProvider.notifier).logout();
-                    if (context.mounted) context.go(AppRoutes.splash);
                   }
                 },
               ),
@@ -178,8 +171,24 @@ class DriverProfileScreen extends ConsumerWidget {
               SizedBox(height: AppDimensions.xl.h),
             ],
           ),
-        ),
+        );
+
+    if (embedded) {
+      return body;
+    }
+
+    return Scaffold(
+      backgroundColor: colors.background,
+      appBar: FlowScreenAppBar(
+        title: 'My Profile',
+        actions: [
+          AppBarAction(
+            icon: Icons.edit_outlined,
+            onTap: () {}, // Edit profile — Session 7
+          ),
+        ],
       ),
+      body: SafeArea(child: body),
     );
   }
 }

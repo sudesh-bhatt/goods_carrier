@@ -411,6 +411,36 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileCreateButton => 'Create Profile';
 
   @override
+  String get driverProfileCompleteTitle => 'Complete Profile';
+
+  @override
+  String get driverProfilePersonalDetails => 'Personal Details';
+
+  @override
+  String get driverProfileBusinessDetails => 'Business Details';
+
+  @override
+  String get driverProfileCompleteButton => 'Complete Profile';
+
+  @override
+  String get profileCity => 'City';
+
+  @override
+  String get profilePostalCode => 'Postal Code';
+
+  @override
+  String get profileFullAddress => 'Full Address';
+
+  @override
+  String get profileGstName => 'GST Name';
+
+  @override
+  String get profileGstNumberOptional => 'GST Number (Optional)';
+
+  @override
+  String get profileBusinessPhone => 'Phone Number';
+
+  @override
   String get profilePhotoPickerTitle => 'Profile photo';
 
   @override
@@ -626,6 +656,77 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get customerNavProfile => 'Profile';
+
+  @override
+  String get driverNavMyTrip => 'My Trip';
+
+  @override
+  String get driverMyTripTitle => 'My Trip';
+
+  @override
+  String get driverHomeShipmentId => 'Shipment ID';
+
+  @override
+  String get driverShipmentDetailsTitle => 'Shipment Details';
+
+  @override
+  String get driverAddRequest => 'Add Request';
+
+  @override
+  String get driverRequestSent => 'Request Sent';
+
+  @override
+  String get driverConfirmRequestTitle => 'Confirm Request';
+
+  @override
+  String get driverConfirmRequestBody =>
+      'Are you sure you want to show interest in this shipment? The customer will be notified.';
+
+  @override
+  String get driverConfirmYesContinue => 'Yes, Continue';
+
+  @override
+  String get driverGoodsDetails => 'Goods Details';
+
+  @override
+  String get driverGoodsType => 'Type';
+
+  @override
+  String get driverGoodsWeight => 'Weight';
+
+  @override
+  String get driverFragileHandlingRequired => 'Fragile Handling Required';
+
+  @override
+  String get driverPickupLocation => 'Pickup Location';
+
+  @override
+  String get driverDropLocation => 'Drop Location';
+
+  @override
+  String get driverVehicleRequirement => 'Vehicle Requirement';
+
+  @override
+  String get driverMatchesYourVehicle => 'Matches Your Vehicle';
+
+  @override
+  String get driverReportShipmentQuestion => 'Report a shipment?';
+
+  @override
+  String get driverConfirmationTitle => 'Confirmation';
+
+  @override
+  String get driverInterestSentTitle => 'Request Sent Successfully';
+
+  @override
+  String get driverInterestSentBody =>
+      'Your request has been sent to the customer. You will be notified once they respond.';
+
+  @override
+  String get driverSummaryDate => 'Date';
+
+  @override
+  String get driverSummaryTotalPrice => 'Total Price';
 
   @override
   String get actionViewDetails => 'View Details';
@@ -1018,6 +1119,90 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tripPostNew => 'Post Trip';
 
   @override
+  String get driverAddTripTitle => 'Add Trip';
+
+  @override
+  String get driverPublishTrip => 'Publish Trip';
+
+  @override
+  String get driverTripFormContext => 'Trip Details';
+
+  @override
+  String get driverTripFormHero => 'Set your route & load';
+
+  @override
+  String get driverTripFormRouteInfo => 'Route Information';
+
+  @override
+  String get driverTripFormFromLocation => 'From Location';
+
+  @override
+  String get driverTripFormToLocation => 'To Location';
+
+  @override
+  String get driverTripFormFromHint => 'Enter departure city';
+
+  @override
+  String get driverTripFormToHint => 'Enter destination city';
+
+  @override
+  String get driverTripFormSchedule => 'Schedule';
+
+  @override
+  String get driverTripFormEstStartDate => 'Est. Start Date';
+
+  @override
+  String get driverTripFormEstStartTime => 'Est. Start Time';
+
+  @override
+  String get driverTripFormEstEndDate => 'Est. End Date';
+
+  @override
+  String get driverTripFormEstEndTime => 'Est. End Time';
+
+  @override
+  String get driverTripFormVehicleCapacity => 'Vehicle & Capacity';
+
+  @override
+  String get driverTripFormVehicleCategory => 'Vehicle Category';
+
+  @override
+  String get driverTripFormLoadCapacity => 'Load Capacity';
+
+  @override
+  String get driverTripFormEstPrice => 'Est. Price';
+
+  @override
+  String get driverTripFormDriverInfo => 'Driver Info';
+
+  @override
+  String get driverTripFormDriverName => 'Driver Name';
+
+  @override
+  String get driverTripFormDriverPhone => 'Driver Phone';
+
+  @override
+  String get driverTripFormDriverNameHint => 'E.g Vikram singh R';
+
+  @override
+  String get driverTripFormVehicleRequired =>
+      'Please select a vehicle category';
+
+  @override
+  String get driverTripFormScheduleRequired =>
+      'Please select start and end schedule';
+
+  @override
+  String get driverTripFormEndBeforeStart =>
+      'End schedule must be after start schedule';
+
+  @override
+  String get driverTripFormCapacityRequired => 'Enter a valid load capacity';
+
+  @override
+  String get driverTripFormPriceRequired => 'Enter a valid estimated price';
+
+  @override
   String get tripFrom => 'From';
 
   @override
@@ -1073,6 +1258,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get emptyTripsSubtitle =>
       'Post your available route to receive shipment requests';
+
+  @override
+  String get driverEmptyTripsTitle => 'No Active Trip';
+
+  @override
+  String get driverEmptyTripsDescription =>
+      'You haven\'t posted any requirements yet. Start by adding your first Trip to experience precision tracking.';
 
   @override
   String get emptyNotifications => 'No notifications';

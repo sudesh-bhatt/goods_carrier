@@ -45,7 +45,10 @@ class _CustomerProfileTabState extends ConsumerState<CustomerProfileTab>
   Widget build(BuildContext context) {
     super.build(context);
     final l10n = context.l10n;
-    final user = ref.watch(authProvider).user!;
+    final user = ref.watch(authProvider).user;
+    if (user == null) {
+      return const SizedBox.shrink();
+    }
 
     return SingleChildScrollView(
       padding: EdgeInsets.fromLTRB(24.w, 24.h, 24.w, 32.h),
@@ -110,8 +113,8 @@ class _CustomerProfileTabState extends ConsumerState<CustomerProfileTab>
                 isDangerous: true,
               );
               if (confirmed == true && context.mounted) {
+                context.go(AppRoutes.splash);
                 await ref.read(authProvider.notifier).logout();
-                if (context.mounted) context.go(AppRoutes.splash);
               }
             },
           ),

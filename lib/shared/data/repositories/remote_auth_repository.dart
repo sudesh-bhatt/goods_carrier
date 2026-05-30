@@ -53,17 +53,25 @@ class RemoteAuthRepository implements IAuthRepository {
   @override
   Future<User> createDriverProfile({
     required String name,
-    required String vehicleNumber,
-    required String vehicleType,
-    required double capacityTons,
+    String? email,
+    String? address,
+    String? companyName,
+    String? gstName,
+    String? gstNumber,
+    String? businessEmail,
+    String? businessPhone,
   }) async {
     final response = await dio.post(
       ApiConstants.driverProfile,
       data: {
-        'name':           name,
-        'vehicle_number': vehicleNumber,
-        'vehicle_type':   vehicleType,
-        'capacity_tons':  capacityTons,
+        'name': name,
+        if (email != null && email.isNotEmpty) 'email': email,
+        if (address != null && address.isNotEmpty) 'address': address,
+        if (companyName != null && companyName.isNotEmpty) 'company_name': companyName,
+        if (gstName != null && gstName.isNotEmpty) 'gst_name': gstName,
+        if (gstNumber != null && gstNumber.isNotEmpty) 'gst_number': gstNumber,
+        if (businessEmail != null && businessEmail.isNotEmpty) 'business_email': businessEmail,
+        if (businessPhone != null && businessPhone.isNotEmpty) 'business_phone': businessPhone,
       },
     );
     return User.fromJson(response.data['data'] as Map<String, dynamic>);

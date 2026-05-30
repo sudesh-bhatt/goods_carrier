@@ -411,6 +411,36 @@ class AppLocalizationsHi extends AppLocalizations {
   String get profileCreateButton => 'प्रोफ़ाइल बनाएं';
 
   @override
+  String get driverProfileCompleteTitle => 'प्रोफ़ाइल पूर्ण करें';
+
+  @override
+  String get driverProfilePersonalDetails => 'व्यक्तिगत विवरण';
+
+  @override
+  String get driverProfileBusinessDetails => 'व्यापार विवरण';
+
+  @override
+  String get driverProfileCompleteButton => 'प्रोफ़ाइल पूर्ण करें';
+
+  @override
+  String get profileCity => 'शहर';
+
+  @override
+  String get profilePostalCode => 'पिन कोड';
+
+  @override
+  String get profileFullAddress => 'पूरा पता';
+
+  @override
+  String get profileGstName => 'GST नाम';
+
+  @override
+  String get profileGstNumberOptional => 'GST नंबर (वैकल्पिक)';
+
+  @override
+  String get profileBusinessPhone => 'फ़ोन नंबर';
+
+  @override
   String get profilePhotoPickerTitle => 'प्रोफ़ाइल फ़ोटो';
 
   @override
@@ -623,6 +653,77 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get customerNavProfile => 'प्रोफ़ाइल';
+
+  @override
+  String get driverNavMyTrip => 'मेरी यात्रा';
+
+  @override
+  String get driverMyTripTitle => 'मेरी यात्रा';
+
+  @override
+  String get driverHomeShipmentId => 'शिपमेंट ID';
+
+  @override
+  String get driverShipmentDetailsTitle => 'शिपमेंट विवरण';
+
+  @override
+  String get driverAddRequest => 'अनुरोध जोड़ें';
+
+  @override
+  String get driverRequestSent => 'अनुरोध भेजा गया';
+
+  @override
+  String get driverConfirmRequestTitle => 'अनुरोध की पुष्टि करें';
+
+  @override
+  String get driverConfirmRequestBody =>
+      'क्या आप वाकई इस शिपमेंट में रुचि दिखाना चाहते हैं? ग्राहक को सूचित किया जाएगा।';
+
+  @override
+  String get driverConfirmYesContinue => 'हाँ, जारी रखें';
+
+  @override
+  String get driverGoodsDetails => 'माल का विवरण';
+
+  @override
+  String get driverGoodsType => 'प्रकार';
+
+  @override
+  String get driverGoodsWeight => 'वज़न';
+
+  @override
+  String get driverFragileHandlingRequired => 'नाज़ुक हैंडलिंग आवश्यक';
+
+  @override
+  String get driverPickupLocation => 'पिकअप स्थान';
+
+  @override
+  String get driverDropLocation => 'ड्रॉप स्थान';
+
+  @override
+  String get driverVehicleRequirement => 'वाहन आवश्यकता';
+
+  @override
+  String get driverMatchesYourVehicle => 'आपके वाहन से मेल खाता है';
+
+  @override
+  String get driverReportShipmentQuestion => 'शिपमेंट की रिपोर्ट करें?';
+
+  @override
+  String get driverConfirmationTitle => 'पुष्टि';
+
+  @override
+  String get driverInterestSentTitle => 'अनुरोध सफलतापूर्वक भेजा गया';
+
+  @override
+  String get driverInterestSentBody =>
+      'आपका अनुरोध ग्राहक को भेज दिया गया है। जब वे जवाब देंगे तो आपको सूचित किया जाएगा।';
+
+  @override
+  String get driverSummaryDate => 'तारीख';
+
+  @override
+  String get driverSummaryTotalPrice => 'कुल कीमत';
 
   @override
   String get actionViewDetails => 'विवरण देखें';
@@ -1015,6 +1116,89 @@ class AppLocalizationsHi extends AppLocalizations {
   String get tripPostNew => 'ट्रिप पोस्ट करें';
 
   @override
+  String get driverAddTripTitle => 'ट्रिप जोड़ें';
+
+  @override
+  String get driverPublishTrip => 'ट्रिप प्रकाशित करें';
+
+  @override
+  String get driverTripFormContext => 'ट्रिप विवरण';
+
+  @override
+  String get driverTripFormHero => 'अपना मार्ग और लोड सेट करें';
+
+  @override
+  String get driverTripFormRouteInfo => 'मार्ग जानकारी';
+
+  @override
+  String get driverTripFormFromLocation => 'प्रस्थान स्थान';
+
+  @override
+  String get driverTripFormToLocation => 'गंतव्य स्थान';
+
+  @override
+  String get driverTripFormFromHint => 'प्रस्थान शहर दर्ज करें';
+
+  @override
+  String get driverTripFormToHint => 'गंतव्य शहर दर्ज करें';
+
+  @override
+  String get driverTripFormSchedule => 'शेड्यूल';
+
+  @override
+  String get driverTripFormEstStartDate => 'अनु. प्रारंभ तिथि';
+
+  @override
+  String get driverTripFormEstStartTime => 'अनु. प्रारंभ समय';
+
+  @override
+  String get driverTripFormEstEndDate => 'अनु. समाप्ति तिथि';
+
+  @override
+  String get driverTripFormEstEndTime => 'अनु. समाप्ति समय';
+
+  @override
+  String get driverTripFormVehicleCapacity => 'वाहन और क्षमता';
+
+  @override
+  String get driverTripFormVehicleCategory => 'वाहन श्रेणी';
+
+  @override
+  String get driverTripFormLoadCapacity => 'लोड क्षमता';
+
+  @override
+  String get driverTripFormEstPrice => 'अनु. कीमत';
+
+  @override
+  String get driverTripFormDriverInfo => 'ड्राइवर जानकारी';
+
+  @override
+  String get driverTripFormDriverName => 'ड्राइवर का नाम';
+
+  @override
+  String get driverTripFormDriverPhone => 'ड्राइवर फोन';
+
+  @override
+  String get driverTripFormDriverNameHint => 'उदा. विक्रम सिंह आर';
+
+  @override
+  String get driverTripFormVehicleRequired => 'कृपया वाहन श्रेणी चुनें';
+
+  @override
+  String get driverTripFormScheduleRequired =>
+      'कृपया प्रारंभ और समाप्ति शेड्यूल चुनें';
+
+  @override
+  String get driverTripFormEndBeforeStart =>
+      'समाप्ति शेड्यूल प्रारंभ के बाद होना चाहिए';
+
+  @override
+  String get driverTripFormCapacityRequired => 'मान्य लोड क्षमता दर्ज करें';
+
+  @override
+  String get driverTripFormPriceRequired => 'मान्य अनुमानित कीमत दर्ज करें';
+
+  @override
   String get tripFrom => 'से';
 
   @override
@@ -1070,6 +1254,13 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get emptyTripsSubtitle =>
       'शिपमेंट अनुरोध पाने के लिए अपना रूट पोस्ट करें';
+
+  @override
+  String get driverEmptyTripsTitle => 'कोई सक्रिय ट्रिप नहीं';
+
+  @override
+  String get driverEmptyTripsDescription =>
+      'आपने अभी तक कोई आवश्यकता पोस्ट नहीं की है। सटीक ट्रैकिंग के लिए अपनी पहली ट्रिप जोड़कर शुरू करें।';
 
   @override
   String get emptyNotifications => 'कोई सूचना नहीं';

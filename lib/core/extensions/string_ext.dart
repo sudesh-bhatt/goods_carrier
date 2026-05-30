@@ -27,6 +27,10 @@ extension DateTimeExt on DateTime {
   /// "15 April 2026 09:00 AM"
   String get displayDateTime => '$displayDate $displayTime';
 
+  /// "Oct 24, 10:00 AM" — driver location rows (`1:916`).
+  String get locationScheduleLabel =>
+      DateFormat('MMM d, hh:mm a').format(this);
+
   /// "15 April 2026 | 09:00AM" — Figma trip details (`1:2117`).
   String get figmaTripDetailDateTime {
     final time = DateFormat('hh:mm').format(this) +

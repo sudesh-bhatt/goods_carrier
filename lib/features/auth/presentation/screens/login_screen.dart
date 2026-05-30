@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -6,7 +8,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_dimensions.dart';
-import '../../../../core/extensions/svg_gen_image_extension.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/mixins/safe_set_state_mixin.dart';
 import '../../../../core/router/app_routes.dart';
@@ -26,7 +27,12 @@ const _kLoginHeadlineColor = Color(0xFF1A1C1E);
 /// Figma login input field fill (lighter than global [AppColorScheme.inputFill]).
 const _kLoginInputFill = Color(0xFFF0F2F5);
 
-/// Login screen — phone capture + OTP request ([Figma Login](https://www.figma.com/design/wT5NdNeg7YVPPcq1nY9D2P/Goods-Carrier--Copy-?node-id=2013-1639)).
+/// Figma social-proof tiles (node 1-837).
+const _kFeatureTileHeight = 122.4;
+const _kFeatureTileTitleColor = Color(0xFF323539);
+const _kFeatureTileBodyColor = Color(0xFF44474E);
+
+/// Login screen — phone capture + OTP request
 ///
 /// Top: warehouse banner + logo + app name. No back button (entry from terms flow).
 class LoginScreen extends ConsumerStatefulWidget {
@@ -290,14 +296,11 @@ class _FormCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // ── 30 % — country code picker ────────────────────────
-                Expanded(
-                  flex: 3,
-                  child: _CountryBox(
-                    colors:    colors,
-                    textTheme: textTheme,
-                    l10n:      l10n,
-                    onChanged: onCountryChanged,
-                  ),
+                _CountryBox(
+                  colors:    colors,
+                  textTheme: textTheme,
+                  l10n:      l10n,
+                  onChanged: onCountryChanged,
                 ),
                 SizedBox(width: 8.w),
                 // ── 70 % — phone number input ─────────────────────────
@@ -688,35 +691,37 @@ class _FeatureRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: _FeatureTile(
-            colors: colors,
-            appStyles: appStyles,
-            leading: SizedBox(
-              height: 28.h,
-              child: Assets.icVerifiedCarriers.svg(),
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: _FeatureTile(
+              colors: colors,
+              appStyles: appStyles,
+              leading: Assets.icVerifiedCarriers.svg(
+                height: 21.h,
+                width: 22.w,
+              ),
+              title: l10n.authFeatureVerifiedTitle,
+              desc: l10n.authFeatureVerifiedDesc,
             ),
-            title: l10n.authFeatureVerifiedTitle,
-            desc: l10n.authFeatureVerifiedDesc,
           ),
-        ),
-        SizedBox(width: 12.w),
-        Expanded(
-          child: _FeatureTile(
-            colors: colors,
-            appStyles: appStyles,
-            leading: SizedBox(
-              height: 28.h,
-              child: Assets.icSecurePayment.svg(),
+          SizedBox(width: 16.w),
+          Expanded(
+            child: _FeatureTile(
+              colors: colors,
+              appStyles: appStyles,
+              leading: Assets.icSecurePayment.svg(
+                height: 20.h,
+                width: 16.w,
+              ),
+              title: l10n.authFeatureSecureTitle,
+              desc: l10n.authFeatureSecureDesc,
             ),
-            title: l10n.authFeatureSecureTitle,
-            desc: l10n.authFeatureSecureDesc,
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -738,43 +743,62 @@ class _FeatureTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(16.w),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(AppDimensions.radiusLg.r),
-        boxShadow: [
-          BoxShadow(
-            color: colors.languageTileShadow,
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          leading,
-          SizedBox(height: 8.h),
-          Text(
-            title,
-            style: appStyles.cardTitle.copyWith(
-              color: colors.textPrimary,
-              fontSize: 15.sp,
-              height: 1.3,
+    final radius = BorderRadius.circular(AppDimensions.radiusLg.r);
+
+    return ClipRRect(
+      borderRadius: radius,
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
+        child: Container(
+          height: _kFeatureTileHeight.h,
+          padding: EdgeInsets.all(16.w),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.5),
+            borderRadius: radius,
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.8),
             ),
           ),
-          SizedBox(height: 4.h),
-          Text(
-            desc,
-            style: appStyles.caption.copyWith(
-              color: colors.textSecondary,
-              fontSize: 12.sp,
-              fontWeight: FontWeight.w400,
-              height: 1.45,
-            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: 22.h,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: leading,
+                ),
+              ),
+              SizedBox(height: 3.4.h),
+              Text(
+                title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: appStyles.cardTitle.copyWith(
+                  color: _kFeatureTileTitleColor,
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w700,
+                  height: 20 / 14,
+                ),
+              ),
+              SizedBox(height: 3.4.h),
+              SizedBox(
+                height: 36.h,
+                child: Text(
+                  desc,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: appStyles.caption.copyWith(
+                    color: _kFeatureTileBodyColor,
+                    fontSize: 11.sp,
+                    fontWeight: FontWeight.w400,
+                    height: 18 / 11,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

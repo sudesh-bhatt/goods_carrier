@@ -220,17 +220,25 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   Future<void> submitDriverProfile({
     required String name,
-    required String vehicleNumber,
-    required String vehicleType,
-    required double capacityTons,
+    String? email,
+    String? address,
+    String? companyName,
+    String? gstName,
+    String? gstNumber,
+    String? businessEmail,
+    String? businessPhone,
   }) async {
     state = state.copyWith(isLoading: true, clearError: true);
     try {
       final user = await _repo.createDriverProfile(
         name: name,
-        vehicleNumber: vehicleNumber,
-        vehicleType: vehicleType,
-        capacityTons: capacityTons,
+        email: email,
+        address: address,
+        companyName: companyName,
+        gstName: gstName,
+        gstNumber: gstNumber,
+        businessEmail: businessEmail,
+        businessPhone: businessPhone,
       );
       await _persistUser(user);
       state = state.copyWith(
