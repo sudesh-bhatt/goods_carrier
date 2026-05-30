@@ -13,6 +13,7 @@ import '../../../../core/utils/validators.dart';
 import '../../../../res/font_res.dart';
 import '../../../../shared/presentation/widgets/inputs/address_autocomplete_field.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
+import '../../../../shared/presentation/widgets/sheets/app_bottom_sheet.dart';
 import '../../../../shared/presentation/widgets/sheets/app_modal_bottom_sheet.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../widgets/customer_edit_profile_address_card.dart';
@@ -90,47 +91,35 @@ class _CustomerEditProfileScreenState extends ConsumerState<CustomerEditProfileS
 
     final source = await AppModalBottomSheet.show<ImageSource>(
       context: context,
-      isScrollControlled: false,
-      backgroundColor: context.colors.surface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(AppDimensions.radiusLg.r),
-        ),
-      ),
       builder: (sheetContext) {
         final colors = sheetContext.colors;
-        return SafeArea(
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(8.w, 8.h, 8.w, 8.h),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8.h),
-                  child: Text(
-                    l10n.profilePhotoPickerTitle,
-                    style: sheetContext.textTheme.titleMedium?.copyWith(
-                      fontFamily: FontRes.MANROPE_BOLD,
-                    ),
-                  ),
-                ),
-                ListTile(
-                  leading: Icon(Icons.photo_camera_outlined, color: colors.primary),
-                  title: Text(l10n.profilePhotoTakePhoto),
-                  onTap: () => Navigator.pop(sheetContext, ImageSource.camera),
-                ),
-                ListTile(
-                  leading: Icon(Icons.photo_library_outlined, color: colors.primary),
-                  title: Text(l10n.profilePhotoChooseGallery),
-                  onTap: () => Navigator.pop(sheetContext, ImageSource.gallery),
-                ),
-                ListTile(
-                  leading: Icon(Icons.close, color: colors.textSecondary),
-                  title: Text(l10n.actionCancel),
-                  onTap: () => Navigator.pop(sheetContext),
-                ),
-              ],
-            ),
+        return AppBottomSheetContainer(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              AppBottomSheetHeaderIcon(icon: Icons.camera_alt_outlined),
+              SizedBox(height: AppBottomSheetTokens.sectionGap.h),
+              AppBottomSheetTitle(text: l10n.profilePhotoPickerTitle),
+              SizedBox(height: AppBottomSheetTokens.sectionGap.h),
+              ListTile(
+                leading:
+                    Icon(Icons.photo_camera_outlined, color: colors.primary),
+                title: Text(l10n.profilePhotoTakePhoto),
+                onTap: () => Navigator.pop(sheetContext, ImageSource.camera),
+              ),
+              ListTile(
+                leading:
+                    Icon(Icons.photo_library_outlined, color: colors.primary),
+                title: Text(l10n.profilePhotoChooseGallery),
+                onTap: () => Navigator.pop(sheetContext, ImageSource.gallery),
+              ),
+              SizedBox(height: AppBottomSheetTokens.sectionGap.h),
+              AppBottomSheetSecondaryButton(
+                label: l10n.actionNo,
+                onPressed: () => Navigator.pop(sheetContext),
+              ),
+            ],
           ),
         );
       },
@@ -165,12 +154,6 @@ class _CustomerEditProfileScreenState extends ConsumerState<CustomerEditProfileS
 
     final saved = await AppModalBottomSheet.show<String>(
       context: context,
-      backgroundColor: context.colors.surface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(AppDimensions.radiusLg.r),
-        ),
-      ),
       builder: (sheetContext) => _AddressEditSheet(
         title: l10n.customerEditAddressTitle,
         label: l10n.customerDefaultShippingAddress,
@@ -400,40 +383,27 @@ class _AddressEditSheetState extends State<_AddressEditSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
-    return Padding(
-      padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 20.h + bottomInset),
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              widget.title,
-              style: TextStyle(
-                fontFamily: FontRes.MANROPE_BOLD,
-                fontSize: 18.sp,
-                fontWeight: FontWeight.w700,
-                color: context.colors.textPrimary,
-              ),
-            ),
-            SizedBox(height: 16.h),
-            AddressAutocompleteField(
-              label: widget.label,
-              hint: widget.hint,
-              controller: _controller,
-              fillColor: kCustomerProfileFieldFill,
-            ),
-            SizedBox(height: 16.h),
-            SizedBox(
-              height: 48.h,
-              child: ElevatedButton(
-                onPressed: _save,
-                child: Text(widget.saveLabel),
-              ),
-            ),
-          ],
-        ),
+    return AppBottomSheetContainer(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          AppBottomSheetTitle(text: widget.title),
+          SizedBox(height: AppBottomSheetTokens.sectionGap.h),
+          AddressAutocompleteField(
+            label: widget.label,
+            hint: widget.hint,
+            controller: _controller,
+            fillColor: kCustomerProfileFieldFill,
+          ),
+          SizedBox(height: AppBottomSheetTokens.sectionGap.h),
+          AppBottomSheetActionRow(
+            secondaryLabel: context.l10n.actionNo,
+            primaryLabel: widget.saveLabel,
+            onSecondary: () => Navigator.pop(context),
+            onPrimary: _save,
+          ),
+        ],
       ),
     );
   }

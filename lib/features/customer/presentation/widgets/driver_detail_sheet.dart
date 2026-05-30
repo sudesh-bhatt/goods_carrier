@@ -6,14 +6,11 @@ import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/dummy/dummy_user.dart';
 import '../../../../shared/domain/entities/user.dart';
-import '../../../../shared/presentation/widgets/buttons/app_button.dart';
+import '../../../../shared/presentation/widgets/sheets/app_bottom_sheet.dart';
 import '../../../../shared/presentation/widgets/sheets/app_modal_bottom_sheet.dart';
 import '../providers/customer_shipments_provider.dart';
 
 /// Modal bottom sheet displaying driver detail + "Select Driver" CTA.
-///
-/// Shows dummy [DummyUser.driver] data (real driver lookup comes in Session 7).
-/// On "Select Driver" → calls [CustomerShipmentsNotifier.selectDriver] and pops.
 class DriverDetailSheet extends ConsumerWidget {
   const DriverDetailSheet._({
     required this.driverId,
@@ -23,7 +20,6 @@ class DriverDetailSheet extends ConsumerWidget {
   final String driverId;
   final String shipmentId;
 
-  /// Show the sheet and return whether a driver was selected.
   static Future<bool?> show(
     BuildContext context, {
     required String driverId,
@@ -32,62 +28,32 @@ class DriverDetailSheet extends ConsumerWidget {
       AppModalBottomSheet.show<bool>(
         context: context,
         builder: (_) => DriverDetailSheet._(
-          driverId:   driverId,
+          driverId: driverId,
           shipmentId: shipmentId,
         ),
       );
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final colors = context.colors;
-    // In Session 7 this will do a real driver lookup by driverId.
-    // For now, map everything to DummyUser.driver.
     const driver = DummyUser.driver;
 
-    return DraggableScrollableSheet(
-      initialChildSize: 0.65,
-      minChildSize:     0.5,
-      maxChildSize:     0.92,
-      builder: (context, scrollCtrl) => Container(
-        decoration: BoxDecoration(
-          color: colors.surface,
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(AppDimensions.radiusLg.r),
-          ),
-        ),
-        child: Column(
-          children: [
-            // Drag handle
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: AppDimensions.sm.h),
-              child: Container(
-                width: 40.w,
-                height: 4.h,
-                decoration: BoxDecoration(
-                  color: colors.divider,
-                  borderRadius:
-                      BorderRadius.circular(AppDimensions.radiusFull.r),
-                ),
-              ),
-            ),
-
-            Expanded(
-              child: ListView(
-                controller: scrollCtrl,
-                padding: EdgeInsets.symmetric(
-                    horizontal: AppDimensions.screenPadding.w),
+    return AppBottomSheetContainer(
+      maxHeight: MediaQuery.sizeOf(context).height *
+          AppBottomSheetTokens.maxHeightFraction,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          AppBottomSheetTitle(text: driver.name),
+          SizedBox(height: AppBottomSheetTokens.sectionGap.h),
+          Flexible(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // ── Driver header ─────────────────────────────────────
                   _DriverHeader(driver: driver),
-
                   SizedBox(height: AppDimensions.xl.h),
-
-                  // ── Stats row ────────────────────────────────────────
                   _StatsRow(driver: driver),
-
                   SizedBox(height: AppDimensions.xl.h),
-
-                  // ── Vehicle details ──────────────────────────────────
                   _InfoCard(
                     title: 'Vehicle Info',
                     rows: [
@@ -108,26 +74,23 @@ class DriverDetailSheet extends ConsumerWidget {
                       ),
                     ],
                   ),
-
-                  SizedBox(height: AppDimensions.xl.h),
-
-                  // ── Select CTA ────────────────────────────────────────
-                  AppButton(
-                    label: context.l10n.shipmentSelectDriver,
-                    onPressed: () {
-                      ref
-                          .read(customerShipmentsProvider.notifier)
-                          .selectDriver(shipmentId, driverId);
-                      Navigator.of(context).pop(true);
-                    },
-                  ),
-
-                  SizedBox(height: AppDimensions.xl.h),
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+          SizedBox(height: AppBottomSheetTokens.sectionGap.h),
+          AppBottomSheetActionRow(
+            secondaryLabel: context.l10n.actionNo,
+            primaryLabel: context.l10n.shipmentSelectDriver,
+            onSecondary: () => Navigator.of(context).pop(false),
+            onPrimary: () {
+              ref
+                  .read(customerShipmentsProvider.notifier)
+                  .selectDriver(shipmentId, driverId);
+              Navigator.of(context).pop(true);
+            },
+          ),
+        ],
       ),
     );
   }
@@ -144,7 +107,6 @@ class _DriverHeader extends StatelessWidget {
     final colors = context.colors;
     return Row(
       children: [
-        // Avatar initials
         Container(
           width: 64.w,
           height: 64.w,
@@ -168,17 +130,10 @@ class _DriverHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                driver.name,
-                style: context.textTheme.titleMedium?.copyWith(
-                  color: colors.textPrimary,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              SizedBox(height: 2.h),
-              Text(
                 driver.phone,
                 style: context.textTheme.bodyMedium?.copyWith(
-                    color: colors.textSecondary),
+                  color: colors.textSecondary,
+                ),
               ),
               SizedBox(height: 4.h),
               Container(
@@ -188,7 +143,8 @@ class _DriverHeader extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   color: colors.success.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(AppDimensions.radiusFull.r),
+                  borderRadius:
+                      BorderRadius.circular(AppDimensions.radiusFull.r),
                 ),
                 child: Text(
                   'Verified Driver',
@@ -216,9 +172,9 @@ class _StatsRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final stats = [
-      const _Stat(label: 'Trips',  value: '142'),
+      const _Stat(label: 'Trips', value: '142'),
       const _Stat(label: 'Rating', value: '4.8 ★'),
-      const _Stat(label: 'Years',  value: '6+'),
+      const _Stat(label: 'Years', value: '6+'),
     ];
     return Row(
       children: stats.map((s) {
@@ -242,7 +198,8 @@ class _StatsRow extends StatelessWidget {
                 Text(
                   s.label,
                   style: context.textTheme.bodySmall?.copyWith(
-                      color: colors.textHint),
+                    color: colors.textHint,
+                  ),
                 ),
               ],
             ),
@@ -263,7 +220,7 @@ class _Stat {
 
 class _InfoCard extends StatelessWidget {
   const _InfoCard({required this.title, required this.rows});
-  final String         title;
+  final String title;
   final List<_InfoRow> rows;
 
   @override
@@ -305,8 +262,8 @@ class _InfoRow extends StatelessWidget {
   });
 
   final IconData icon;
-  final String   label;
-  final String   value;
+  final String label;
+  final String value;
 
   @override
   Widget build(BuildContext context) {

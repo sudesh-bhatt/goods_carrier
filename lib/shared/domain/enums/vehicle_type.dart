@@ -17,4 +17,12 @@ enum VehicleType {
         VehicleType.truck       => 'Cap: 5 Ton',
         VehicleType.heavyDuty   => 'Cap: 10–20 Ton',
       };
+
+  /// Short capacity for trip detail — Figma `1:2117`.
+  String get capacityDisplay => switch (this) {
+        VehicleType.mini        => '500 KG',
+        VehicleType.pickupTruck => '1 Ton',
+        VehicleType.truck       => '5 Ton',
+        VehicleType.heavyDuty   => '10–20 Ton',
+      };
 }

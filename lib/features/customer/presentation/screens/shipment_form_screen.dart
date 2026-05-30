@@ -11,6 +11,8 @@ import '../models/shipment_post_confirmation_args.dart';
 import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/mixins/safe_set_state_mixin.dart';
+import '../../../../core/services/google_places_service.dart';
+import '../../../../core/utils/map_location_helper.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../res/font_res.dart';
 import '../../../../shared/domain/entities/shipment.dart';
@@ -60,6 +62,13 @@ class _ShipmentFormScreenState extends ConsumerState<ShipmentFormScreen>
   bool _submitted = false;
   Shipment? _existing;
 
+  String? _fromCity;
+  String? _toCity;
+  double _fromLat = 0;
+  double _fromLng = 0;
+  double _toLat = 0;
+  double _toLng = 0;
+
   static const _goodsOptions = [
     'Electric',
     'Electronics',
@@ -89,8 +98,18 @@ class _ShipmentFormScreenState extends ConsumerState<ShipmentFormScreen>
     if (shipment == null) return;
 
     _existing = shipment;
-    _fromCtrl.text = shipment.pickup.city;
-    _toCtrl.text = shipment.drop.city;
+    _fromCtrl.text = shipment.pickup.fullAddress.isNotEmpty
+        ? shipment.pickup.fullAddress
+        : shipment.pickup.city;
+    _toCtrl.text = shipment.drop.fullAddress.isNotEmpty
+        ? shipment.drop.fullAddress
+        : shipment.drop.city;
+    _fromCity = shipment.pickup.city;
+    _toCity = shipment.drop.city;
+    _fromLat = shipment.pickup.lat;
+    _fromLng = shipment.pickup.lng;
+    _toLat = shipment.drop.lat;
+    _toLng = shipment.drop.lng;
     _goodsTypeCtrl.text = shipment.goods.type;
     _vehicleType = shipment.vehicleType;
     _vehicleCtrl.text = shipment.vehicleType.label;
@@ -203,6 +222,40 @@ class _ShipmentFormScreenState extends ConsumerState<ShipmentFormScreen>
     return DateTime(d.year, d.month, d.day, t.hour, t.minute);
   }
 
+  void _onFromPlaceSelected(PlaceAddressDetails details) {
+    safeSetState(() {
+      _fromCity = details.city.isNotEmpty ? details.city : null;
+      if (MapLocationHelper.isValidCoordinate(
+        details.latitude,
+        details.longitude,
+      )) {
+        _fromLat = details.latitude;
+        _fromLng = details.longitude;
+      }
+    });
+  }
+
+  void _onToPlaceSelected(PlaceAddressDetails details) {
+    safeSetState(() {
+      _toCity = details.city.isNotEmpty ? details.city : null;
+      if (MapLocationHelper.isValidCoordinate(
+        details.latitude,
+        details.longitude,
+      )) {
+        _toLat = details.latitude;
+        _toLng = details.longitude;
+      }
+    });
+  }
+
+  String _cityFromField(String text, String? resolvedCity) {
+    if (resolvedCity != null && resolvedCity.isNotEmpty) return resolvedCity;
+    final parts = text.split(',').map((p) => p.trim()).where((p) => p.isNotEmpty);
+    final list = parts.toList();
+    if (list.length >= 2) return list[list.length - 2];
+    return text.trim();
+  }
+
   double _estimatePrice(VehicleType v, double weightKg) => switch (v) {
         VehicleType.mini => 800 + weightKg * 0.5,
         VehicleType.pickupTruck => 1500 + weightKg * 0.8,
@@ -219,12 +272,16 @@ class _ShipmentFormScreenState extends ConsumerState<ShipmentFormScreen>
       id: id,
       customerId: customerId,
       pickup: ShipmentLocation(
-        city: _fromCtrl.text.trim(),
+        city: _cityFromField(_fromCtrl.text.trim(), _fromCity),
         fullAddress: _fromCtrl.text.trim(),
+        lat: _fromLat,
+        lng: _fromLng,
       ),
       drop: ShipmentLocation(
-        city: _toCtrl.text.trim(),
+        city: _cityFromField(_toCtrl.text.trim(), _toCity),
         fullAddress: _toCtrl.text.trim(),
+        lat: _toLat,
+        lng: _toLng,
       ),
       pickupDateTime: _buildPickupDateTime(),
       dropDateTime: _buildPickupDateTime().add(const Duration(days: 2)),
@@ -376,6 +433,8 @@ class _ShipmentFormScreenState extends ConsumerState<ShipmentFormScreen>
                         toController: _toCtrl,
                         fromHint: l10n.shipmentFormFromHint,
                         toHint: l10n.shipmentFormToHint,
+                        onFromPlaceSelected: _onFromPlaceSelected,
+                        onToPlaceSelected: _onToPlaceSelected,
                         fromValidator: (v) =>
                             Validators.required(v, 'From'),
                         toValidator: (v) => Validators.required(v, 'To'),

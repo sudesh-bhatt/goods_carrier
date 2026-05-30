@@ -7,9 +7,7 @@ import '../../../../core/extensions/theme_ext.dart';
 import '../../../../res/font_res.dart';
 import '../../../../shared/domain/entities/shipment.dart';
 import '../../../../shared/domain/enums/shipment_status.dart';
-import '../../../../shared/presentation/widgets/buttons/app_button.dart';
-
-/// Home feed trip card — Figma Customer Home (`2013:1440`).
+/// Home feed trip card — Figma Customer Home (`1:1439`).
 class CustomerHomeTripCard extends StatelessWidget {
   const CustomerHomeTripCard({
     super.key,
@@ -35,19 +33,28 @@ class CustomerHomeTripCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: colors.surface,
-          borderRadius: BorderRadius.circular(16.r),
-          boxShadow: context.cardShadow,
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(
+            color: const Color.fromRGBO(195, 198, 215, 0.05),
+          ),
+          boxShadow: const [
+            BoxShadow(
+              color: Color.fromRGBO(0, 0, 0, 0.03),
+              blurRadius: 12,
+              offset: Offset(0, 4),
+            ),
+          ],
         ),
-        padding: EdgeInsets.all(22.w),
+        padding: EdgeInsets.all(21.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (showInterestBadge) ...[
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE3F2FD),
-                  borderRadius: BorderRadius.circular(8.r),
+                  color: const Color(0xFF048FF5),
+                  borderRadius: BorderRadius.circular(999.r),
                 ),
                 child: Text(
                   l10n.customerHomeInterestBadge,
@@ -55,8 +62,8 @@ class CustomerHomeTripCard extends StatelessWidget {
                     fontFamily: FontRes.MANROPE_BOLD,
                     fontSize: 10.sp,
                     fontWeight: FontWeight.w700,
-                    letterSpacing: 0.5,
-                    color: const Color(0xFF1565C0),
+                    letterSpacing: -0.5,
+                    color: Colors.white,
                   ),
                 ),
               ),
@@ -119,7 +126,7 @@ class CustomerHomeTripCard extends StatelessWidget {
             ),
             SizedBox(height: 16.h),
             Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Expanded(
                   child: Column(
@@ -128,31 +135,28 @@ class CustomerHomeTripCard extends StatelessWidget {
                       Text(
                         l10n.shipmentPrice.toUpperCase(),
                         style: TextStyle(
-                          fontFamily: FontRes.MANROPE_REGULAR,
-                          fontSize: 11.sp,
-                          color: colors.textHint,
+                          fontFamily: FontRes.MANROPE_MEDIUM,
+                          fontSize: 10.sp,
+                          fontWeight: FontWeight.w500,
+                          color: const Color(0xFF434655),
                         ),
                       ),
                       Text(
                         shipment.estimatedPrice.inr,
                         style: TextStyle(
                           fontFamily: FontRes.MANROPE_EXTRABOLD,
-                          fontSize: 22.sp,
+                          fontSize: 21.sp,
                           fontWeight: FontWeight.w800,
-                          color: colors.orangeText,
+                          letterSpacing: -1,
+                          color: colors.primary,
                         ),
                       ),
                     ],
                   ),
                 ),
-                SizedBox(
-                  width: 140.w,
-                  child: AppButton(
-                    label: l10n.actionViewDetails,
-                    onPressed: onViewDetails,
-                    height: 44,
-                    variant: AppButtonVariant.secondary,
-                  ),
+                _ViewDetailsButton(
+                  label: l10n.actionViewDetails,
+                  onPressed: onViewDetails,
                 ),
               ],
             ),
@@ -246,6 +250,57 @@ class _RouteRow extends StatelessWidget {
           ],
         ),
       ],
+    );
+  }
+}
+
+/// Figma outline button — 140×44, padding 10×25, 14.5px label, single line.
+class _ViewDetailsButton extends StatelessWidget {
+  const _ViewDetailsButton({
+    required this.label,
+    required this.onPressed,
+  });
+
+  final String label;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+
+    return SizedBox(
+      width: 140.w,
+      height: 44.h,
+      child: OutlinedButton(
+        onPressed: onPressed,
+        style: OutlinedButton.styleFrom(
+          foregroundColor: colors.primary,
+          padding: EdgeInsets.symmetric(horizontal: 25.w, vertical: 10.h),
+          minimumSize: Size(140.w, 44.h),
+          fixedSize: Size(140.w, 44.h),
+          alignment: Alignment.center,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          visualDensity: VisualDensity.compact,
+          side: BorderSide(color: colors.primary, width: 1),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.r),
+          ),
+        ),
+        child: Text(
+          label,
+          maxLines: 1,
+          softWrap: false,
+          textAlign: TextAlign.center,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            fontFamily: FontRes.MANROPE_SEMIBOLD,
+            fontSize: 14.5.sp,
+            fontWeight: FontWeight.w600,
+            height: 1,
+            color: colors.primary,
+          ),
+        ),
+      ),
     );
   }
 }

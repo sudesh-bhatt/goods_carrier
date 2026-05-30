@@ -865,6 +865,153 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shipmentDetailsTitle => 'Shipment Details';
 
   @override
+  String get customerTripDetailsTitle => 'Trip Details';
+
+  @override
+  String get customerReportTripQuestion => 'Report a trip?';
+
+  @override
+  String get customerReportIssueTitle => 'Report Issue';
+
+  @override
+  String get reportTripHeadline => 'Report this post';
+
+  @override
+  String get reportTripDescription =>
+      'Help us understand the issue by selecting a reason';
+
+  @override
+  String get reportReasonSpam => 'Spam or misleading information';
+
+  @override
+  String get reportReasonIncorrect => 'Incorrect details';
+
+  @override
+  String get reportReasonFraud => 'Fraud or suspicious activity';
+
+  @override
+  String get reportReasonInappropriate => 'Inappropriate content';
+
+  @override
+  String get reportReasonNotAvailable => 'Already completed / not available';
+
+  @override
+  String get reportReasonOther => 'Other';
+
+  @override
+  String get reportTripDetailsHint => 'Describe the issue';
+
+  @override
+  String get reportTripSubmit => 'Report';
+
+  @override
+  String get reportTripStatusTitle => 'Report Status';
+
+  @override
+  String get reportTripSuccessTitle => 'Report Submitted';
+
+  @override
+  String get reportTripSuccessBody =>
+      'Thank you for helping us improve the platform. Our team will review this report shortly.';
+
+  @override
+  String get reportIdLabel => 'REPORT ID';
+
+  @override
+  String get reportDateLabel => 'DATE';
+
+  @override
+  String get reportReviewTimeInfo => 'Average review time: 24 hours';
+
+  @override
+  String get customerTripEstimatedStartDate => 'Estimated start date';
+
+  @override
+  String get customerTripEstimatedEndDate => 'Estimated end date';
+
+  @override
+  String get customerTripEstimatedPrice => 'Estimated price';
+
+  @override
+  String get customerExpertDriver => 'Expert Driver';
+
+  @override
+  String get actionRequest => 'Request';
+
+  @override
+  String get customerShipmentPublishBadge => 'Publish';
+
+  @override
+  String get customerPaymentSummary => 'Payment summary';
+
+  @override
+  String get customerBaseFare => 'Base Fare';
+
+  @override
+  String get customerTotalAmount => 'Total Amount';
+
+  @override
+  String get customerCancelShipment => 'Cancel Shipment';
+
+  @override
+  String get shipmentRemoveTitle => 'Remove Shipment?';
+
+  @override
+  String shipmentRemoveBody(String shipmentId) {
+    return 'This will remove shipment $shipmentId. This action cannot be undone.';
+  }
+
+  @override
+  String get cancelShipmentHeadline => 'Precision Review Required';
+
+  @override
+  String get cancelShipmentDescription =>
+      'Please select a reason for cancellation. This data helps our kinetic ledger optimize future logistics routes.';
+
+  @override
+  String get cancelShipmentReasonLegend => 'Reason for cancellation';
+
+  @override
+  String get cancelReasonChangeOfPlans => 'Change of plans';
+
+  @override
+  String get cancelReasonBetterPrice => 'Found a better price';
+
+  @override
+  String get cancelReasonDriverDelayed => 'Driver delayed';
+
+  @override
+  String get cancelReasonIncorrectDetails => 'Incorrect details entered';
+
+  @override
+  String get cancelReasonOther => 'Other';
+
+  @override
+  String get cancelShipmentCommentsLabel => 'Additional comments (optional)';
+
+  @override
+  String get cancelShipmentCommentsHint =>
+      'Please provide any additional context regarding this cancellation...';
+
+  @override
+  String get cancelShipmentNoticeTitle => 'Notice';
+
+  @override
+  String get cancelShipmentNoticeBody =>
+      'Cancellations processed after the 2-hour window may incur a handling fee. Review the Ledger Policies for more information.';
+
+  @override
+  String get cancelShipmentKeep => 'Keep Shipment';
+
+  @override
+  String get shipmentCancelSuccessTitle => 'Shipment Cancel Successfully';
+
+  @override
+  String shipmentCancelSuccessBody(String shipmentId) {
+    return 'Your shipment has been cancel successfully your shipment id is #$shipmentId';
+  }
+
+  @override
   String get notificationNewBadge => 'NEW';
 
   @override
@@ -932,6 +1079,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get emptyHistory => 'No history found';
+
+  @override
+  String get customerHomeNoMatchingShipments =>
+      'No shipments match your filters';
+
+  @override
+  String get customerHomeNoMatchingShipmentsHint =>
+      'Try a different vehicle type or clear filters to see all trips';
 
   @override
   String get errorGeneric => 'Something went wrong. Please try again.';

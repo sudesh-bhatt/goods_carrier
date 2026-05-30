@@ -40,6 +40,18 @@ class _CustomerHomeTabState extends ConsumerState<CustomerHomeTab>
     super.dispose();
   }
 
+  void _resetFilters() {
+    safeSetState(() {
+      _shipmentFilter = const ShipmentFilter();
+      _searchCtrl.clear();
+    });
+  }
+
+  bool get _hasLocalFilters =>
+      _searchCtrl.text.trim().isNotEmpty ||
+      _shipmentFilter.vehicleClass != null ||
+      _shipmentFilter.hasActiveFilters;
+
   List<Shipment> _filterShipments(List<Shipment> source) {
     final query = _searchCtrl.text.trim().toLowerCase();
     return source.where((s) {
@@ -49,6 +61,8 @@ class _CustomerHomeTabState extends ConsumerState<CustomerHomeTab>
         s.id,
         s.pickup.city,
         s.drop.city,
+        s.pickup.fullAddress,
+        s.drop.fullAddress,
         s.vehicleType.label,
       ].join(' ').toLowerCase();
       return haystack.contains(query);
@@ -58,6 +72,14 @@ class _CustomerHomeTabState extends ConsumerState<CustomerHomeTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+
+    ref.listen<CustomerShipmentsState>(customerShipmentsProvider, (prev, next) {
+      if (prev == null) return;
+      if (next.active.length > prev.active.length) {
+        _resetFilters();
+      }
+    });
+
     final colors = context.colors;
     final l10n = context.l10n;
     final state = ref.watch(customerShipmentsProvider);
@@ -149,9 +171,12 @@ class _CustomerHomeTabState extends ConsumerState<CustomerHomeTab>
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 25.w),
                 child: EmptyState(
-                  headline: l10n.emptyHistory,
-                  subtitle: l10n.customerHomeSearchHint,
-                  fallbackIcon: Icons.search_off_rounded,
+                  headline: l10n.customerHomeNoMatchingShipments,
+                  subtitle: l10n.customerHomeNoMatchingShipmentsHint,
+                  fallbackIcon: Icons.filter_list_off_rounded,
+                  actionLabel:
+                      _hasLocalFilters ? l10n.filterClearAll : null,
+                  onAction: _hasLocalFilters ? _resetFilters : null,
                 ),
               ),
             )
@@ -169,10 +194,10 @@ class _CustomerHomeTabState extends ConsumerState<CustomerHomeTab>
                       child: CustomerHomeTripCard(
                         shipment: shipment,
                         onTap: () => context.push(
-                          AppRoutes.shipmentDetailOf(shipment.id),
+                          AppRoutes.tripDetailOf(shipment.id),
                         ),
                         onViewDetails: () => context.push(
-                          AppRoutes.shipmentDetailOf(shipment.id),
+                          AppRoutes.tripDetailOf(shipment.id),
                         ),
                       ),
                     );

@@ -33,6 +33,7 @@ class ShipmentFilter {
     this.capacityBand = LoadCapacityBand.from500kgTo2t,
     this.capacityRangeStart = 0.15,
     this.capacityRangeEnd = 0.82,
+    this.restrictCapacity = false,
   });
 
   final String? fromCity;
@@ -43,12 +44,15 @@ class ShipmentFilter {
   final double capacityRangeStart;
   final double capacityRangeEnd;
 
+  /// When true, [capacityBand] is applied (set from the filter sheet only).
+  final bool restrictCapacity;
+
   bool get hasActiveFilters =>
       (fromCity?.trim().isNotEmpty ?? false) ||
       (toCity?.trim().isNotEmpty ?? false) ||
       pickupDate != null ||
       vehicleClass != null ||
-      capacityBand != LoadCapacityBand.from500kgTo2t;
+      restrictCapacity;
 
   ShipmentFilter copyWith({
     String? fromCity,
@@ -58,6 +62,7 @@ class ShipmentFilter {
     LoadCapacityBand? capacityBand,
     double? capacityRangeStart,
     double? capacityRangeEnd,
+    bool? restrictCapacity,
     bool clearFromCity = false,
     bool clearToCity = false,
     bool clearPickupDate = false,
@@ -74,6 +79,7 @@ class ShipmentFilter {
       capacityBand: capacityBand ?? this.capacityBand,
       capacityRangeStart: capacityRangeStart ?? this.capacityRangeStart,
       capacityRangeEnd: capacityRangeEnd ?? this.capacityRangeEnd,
+      restrictCapacity: restrictCapacity ?? this.restrictCapacity,
     );
   }
 
@@ -105,7 +111,7 @@ class ShipmentFilter {
     if (vehicleClass != null && shipment.vehicleType != vehicleClass) {
       return false;
     }
-    if (!_matchesCapacity(shipment.goods.weightKg)) {
+    if (restrictCapacity && !_matchesCapacity(shipment.goods.weightKg)) {
       return false;
     }
     return true;

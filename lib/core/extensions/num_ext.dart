@@ -7,4 +7,11 @@ extension CurrencyExt on num {
         symbol: '₹',
         decimalDigits: 0,
       ).format(this);
+
+  /// ₹10,450.00 — payment summary rows.
+  String get inrDetailed => NumberFormat.currency(
+        locale: 'en_IN',
+        symbol: '₹',
+        decimalDigits: 2,
+      ).format(this);
 }

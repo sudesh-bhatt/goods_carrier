@@ -105,6 +105,8 @@ class _CustomerProfileTabState extends ConsumerState<CustomerProfileTab>
                 title: l10n.settingsLogout,
                 body: l10n.settingsLogoutConfirm,
                 confirmLabel: l10n.actionYes,
+                cancelLabel: l10n.actionNo,
+                headerIcon: Icons.logout_rounded,
                 isDangerous: true,
               );
               if (confirmed == true && context.mounted) {

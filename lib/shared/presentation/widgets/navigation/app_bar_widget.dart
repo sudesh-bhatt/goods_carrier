@@ -119,7 +119,7 @@ class FlowScreenAppBar extends StatelessWidget implements PreferredSizeWidget {
         child: SizedBox(
           height: 64.h,
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24.w),
+            padding: EdgeInsets.symmetric(horizontal: 8.w),
             child: Row(
               children: [
                 if (showBack)

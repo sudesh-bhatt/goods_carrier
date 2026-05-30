@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../core/extensions/size_ext.dart';
+import '../../../../../core/services/google_places_service.dart';
 import '../../../../../res/font_res.dart';
 import 'shipment_form_card.dart';
 import 'shipment_form_field.dart';
 import 'shipment_form_icons.dart';
+import 'shipment_form_places_autocomplete.dart';
 import 'shipment_form_tokens.dart';
 
 class ShipmentFormRouteCard extends StatelessWidget {
@@ -14,6 +16,8 @@ class ShipmentFormRouteCard extends StatelessWidget {
     required this.toController,
     required this.fromHint,
     required this.toHint,
+    required this.onFromPlaceSelected,
+    required this.onToPlaceSelected,
     this.fromValidator,
     this.toValidator,
   });
@@ -22,6 +26,8 @@ class ShipmentFormRouteCard extends StatelessWidget {
   final TextEditingController toController;
   final String fromHint;
   final String toHint;
+  final ValueChanged<PlaceAddressDetails> onFromPlaceSelected;
+  final ValueChanged<PlaceAddressDetails> onToPlaceSelected;
   final String? Function(String?)? fromValidator;
   final String? Function(String?)? toValidator;
 
@@ -34,11 +40,12 @@ class ShipmentFormRouteCard extends StatelessWidget {
         children: [
           const ShipmentFormFieldLabel(text: 'From'),
           SizedBox(height: 8.h),
-          ShipmentFormInputRow(
+          ShipmentFormPlacesAutocomplete(
             leading: const ShipmentFormLocationIcon(),
             controller: fromController,
             hint: fromHint,
             validator: fromValidator,
+            onPlaceSelected: onFromPlaceSelected,
           ),
           Padding(
             padding: EdgeInsets.only(left: 30.w, top: 1.h, bottom: 1.h),
@@ -50,11 +57,12 @@ class ShipmentFormRouteCard extends StatelessWidget {
           ),
           const ShipmentFormFieldLabel(text: 'To'),
           SizedBox(height: 8.h),
-          ShipmentFormInputRow(
+          ShipmentFormPlacesAutocomplete(
             leading: const ShipmentFormNavigationIcon(),
             controller: toController,
             hint: toHint,
             validator: toValidator,
+            onPlaceSelected: onToPlaceSelected,
           ),
         ],
       ),

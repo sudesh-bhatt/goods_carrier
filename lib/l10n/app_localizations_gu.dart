@@ -860,6 +860,153 @@ class AppLocalizationsGu extends AppLocalizations {
   String get shipmentDetailsTitle => 'શિપમેન્ટ વિગતો';
 
   @override
+  String get customerTripDetailsTitle => 'ટ્રિપ વિગતો';
+
+  @override
+  String get customerReportTripQuestion => 'ટ્રિપની રિપોર્ટ કરો?';
+
+  @override
+  String get customerReportIssueTitle => 'સમસ્યા રિપોર્ટ કરો';
+
+  @override
+  String get reportTripHeadline => 'આ પોસ્ટની રિપોર્ટ કરો';
+
+  @override
+  String get reportTripDescription =>
+      'કૃપા કરીને કારણ પસંદ કરીને સમસ્યા સમજવામાં અમારી મદદ કરો';
+
+  @override
+  String get reportReasonSpam => 'સ્પામ અથવા misleading માહિતી';
+
+  @override
+  String get reportReasonIncorrect => 'ખોટી વિગતો';
+
+  @override
+  String get reportReasonFraud => 'છેતરપિંડી અથવા suspicious પ્રવૃત્તિ';
+
+  @override
+  String get reportReasonInappropriate => 'અનુચિત સામગ્રી';
+
+  @override
+  String get reportReasonNotAvailable => 'પહેલેથી પૂર્ણ / ઉપલબ્ધ નથી';
+
+  @override
+  String get reportReasonOther => 'અન્ય';
+
+  @override
+  String get reportTripDetailsHint => 'સમસ્યાનું વર્ણન કરો';
+
+  @override
+  String get reportTripSubmit => 'રિપોર્ટ કરો';
+
+  @override
+  String get reportTripStatusTitle => 'રિપોર્ટ સ્થિતિ';
+
+  @override
+  String get reportTripSuccessTitle => 'રિપોર્ટ સબમિટ થઈ';
+
+  @override
+  String get reportTripSuccessBody =>
+      'પ્લેટફોર્મ સુધારવામાં મદદ કરવા બદલ આભાર. અમારી ટીમ ટૂંક સમયમાં આ રિપોર્ટની સમીક્ષા કરશે.';
+
+  @override
+  String get reportIdLabel => 'રિપોર્ટ ID';
+
+  @override
+  String get reportDateLabel => 'તારીખ';
+
+  @override
+  String get reportReviewTimeInfo => 'સરેરાશ review સમય: 24 કલાક';
+
+  @override
+  String get customerTripEstimatedStartDate => 'અંદાજિત શરૂઆત તારીખ';
+
+  @override
+  String get customerTripEstimatedEndDate => 'અંદાજિત સમાપ્તિ તારીખ';
+
+  @override
+  String get customerTripEstimatedPrice => 'અંદાજિત કિંમત';
+
+  @override
+  String get customerExpertDriver => 'નિષ્ણાત ડ્રાઇવર';
+
+  @override
+  String get actionRequest => 'વિનંતી';
+
+  @override
+  String get customerShipmentPublishBadge => 'પ્રકાશિત';
+
+  @override
+  String get customerPaymentSummary => 'ચુકવણી સારાંશ';
+
+  @override
+  String get customerBaseFare => 'બેઝ ભાડું';
+
+  @override
+  String get customerTotalAmount => 'કુલ રકમ';
+
+  @override
+  String get customerCancelShipment => 'શિપમેન્ટ રદ કરો';
+
+  @override
+  String get shipmentRemoveTitle => 'શિપમેન્ટ દૂર કરો?';
+
+  @override
+  String shipmentRemoveBody(String shipmentId) {
+    return 'આ $shipmentId શિપમેન્ટ દૂર કરશે. આ ક્રિયા પૂર્વવત કરી શકાતી નથી.';
+  }
+
+  @override
+  String get cancelShipmentHeadline => 'ચોક્કસ સમીક્ષા જરૂરી';
+
+  @override
+  String get cancelShipmentDescription =>
+      'કૃપા કરીને રદ કરવાનું કારણ પસંદ કરો. આ ડેટા ભવિષ્યના લોજિસ્ટિક્સ માર્ગોને ઑપ્ટિમાઇઝ કરવામાં મદદ કરે છે.';
+
+  @override
+  String get cancelShipmentReasonLegend => 'રદ કરવાનું કારણ';
+
+  @override
+  String get cancelReasonChangeOfPlans => 'યોજનામાં ફેરફાર';
+
+  @override
+  String get cancelReasonBetterPrice => 'વધુ સારી કિંમત મળી';
+
+  @override
+  String get cancelReasonDriverDelayed => 'ડ્રાઇવર મોડું';
+
+  @override
+  String get cancelReasonIncorrectDetails => 'ખોટી વિગતો દાખલ';
+
+  @override
+  String get cancelReasonOther => 'અન્ય';
+
+  @override
+  String get cancelShipmentCommentsLabel => 'વધારાની ટિપ્પણી (વૈકલ્પિક)';
+
+  @override
+  String get cancelShipmentCommentsHint =>
+      'કૃપા કરીને આ રદ્દીકરણ અંગે વધારાની માહિતી આપો...';
+
+  @override
+  String get cancelShipmentNoticeTitle => 'નોટિસ';
+
+  @override
+  String get cancelShipmentNoticeBody =>
+      '2 કલાકની વિન્ડો પછીની રદ્દીઓ પર હેન્ડલિંગ ફી લાગી શકે છે.';
+
+  @override
+  String get cancelShipmentKeep => 'શિપમેન્ટ રાખો';
+
+  @override
+  String get shipmentCancelSuccessTitle => 'શિપમેન્ટ સફળતાપૂર્વક રદ';
+
+  @override
+  String shipmentCancelSuccessBody(String shipmentId) {
+    return 'તમારી શિપમેન્ટ સફળતાપૂર્વક રદ થઈ ગઈ છે. તમારી શિપમેન્ટ આઈડી #$shipmentId છે';
+  }
+
+  @override
   String get notificationNewBadge => 'નવું';
 
   @override
@@ -926,6 +1073,14 @@ class AppLocalizationsGu extends AppLocalizations {
 
   @override
   String get emptyHistory => 'કોઈ ઇતિહાસ મળ્યો નહીં';
+
+  @override
+  String get customerHomeNoMatchingShipments =>
+      'તમારા ફિલ્ટર સાથે કોઈ શિપમેન્ટ મેળ ખાતું નથી';
+
+  @override
+  String get customerHomeNoMatchingShipmentsHint =>
+      'બીજો વાહન પ્રકાર અજમાવો અથવા બધી ટ્રિપ જોવા ફિલ્ટર સાફ કરો';
 
   @override
   String get errorGeneric => 'કંઈક ખોટું થઈ ગયું. કૃપા કરી ફરી પ્રયાસ કરો.';

@@ -9,7 +9,7 @@ import '../../../../core/mixins/safe_set_state_mixin.dart';
 import '../../../../res/font_res.dart';
 import '../../../domain/enums/vehicle_type.dart';
 import '../../../domain/models/shipment_filter.dart';
-import '../buttons/app_button.dart';
+import '../sheets/app_bottom_sheet.dart';
 import '../sheets/app_modal_bottom_sheet.dart';
 
 /// Figma filter bottom sheet (`2013:1268` / Filter Search).
@@ -129,6 +129,7 @@ class _FilterSearchSheetState extends State<FilterSearchSheet>
       _filter.copyWith(
         fromCity: _fromCtrl.text.trim().isEmpty ? null : _fromCtrl.text.trim(),
         toCity: _toCtrl.text.trim().isEmpty ? null : _toCtrl.text.trim(),
+        restrictCapacity: true,
       ),
     );
   }
@@ -150,81 +151,32 @@ class _FilterSearchSheetState extends State<FilterSearchSheet>
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final colors = context.colors;
-    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
+    final screenHeight = MediaQuery.sizeOf(context).height;
+    final maxHeight = screenHeight * AppBottomSheetTokens.maxHeightFraction;
 
-    return Padding(
-      padding: EdgeInsets.only(bottom: bottomInset),
-      child: Container(
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.sizeOf(context).height * 0.92,
-        ),
-        decoration: BoxDecoration(
-          color: _kSheetBackground,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(32.r)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.15),
-              blurRadius: 48,
-              offset: const Offset(0, -12),
+    return AppBottomSheetContainer(
+      backgroundColor: _kSheetBackground,
+      maxHeight: maxHeight,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            l10n.filterSearchTitle,
+            style: TextStyle(
+              fontFamily: FontRes.MANROPE_EXTRABOLD,
+              fontSize: 24.sp,
+              fontWeight: FontWeight.w800,
+              letterSpacing: -0.6,
+              color: _kTitleColor,
             ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(height: 16.h),
-            Container(
-              width: 48.w,
-              height: 6.h,
-              decoration: BoxDecoration(
-                color: const Color(0xFFC3C6D7).withValues(alpha: 0.4),
-                borderRadius: BorderRadius.circular(999),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(32.w, 20.h, 32.w, 8.h),
-              child: Row(
+          ),
+          SizedBox(height: AppBottomSheetTokens.sectionGap.h),
+          Flexible(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.zero,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Text(
-                      l10n.filterSearchTitle,
-                      style: TextStyle(
-                        fontFamily: FontRes.MANROPE_EXTRABOLD,
-                        fontSize: 24.sp,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: -0.6,
-                        color: _kTitleColor,
-                      ),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: _clearAll,
-                    style: TextButton.styleFrom(
-                      foregroundColor: colors.primary,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 16.w,
-                        vertical: 8.h,
-                      ),
-                    ),
-                    child: Text(
-                      l10n.filterClearAll,
-                      style: TextStyle(
-                        fontFamily: FontRes.MANROPE_BOLD,
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.35,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Flexible(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.fromLTRB(32.w, 8.h, 32.w, 24.h),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
                     _SectionLabel(text: l10n.filterRouteDetails),
                     SizedBox(height: 16.h),
                     _RouteField(
@@ -415,33 +367,18 @@ class _FilterSearchSheetState extends State<FilterSearchSheet>
                         }),
                       ),
                     ),
-                  ],
-                ),
+                ],
               ),
             ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(72.w, 8.h, 72.w, 24.h),
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12.r),
-                  boxShadow: [
-                    BoxShadow(
-                      color: colors.primary.withValues(alpha: 0.3),
-                      blurRadius: 24,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
-                ),
-                child: AppButton(
-                  label: l10n.filterApply,
-                  onPressed: _apply,
-                  height: 56,
-                  borderRadius: 12,
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+          SizedBox(height: AppBottomSheetTokens.sectionGap.h),
+          AppBottomSheetActionRow(
+            secondaryLabel: l10n.filterClearAll,
+            primaryLabel: l10n.filterApply,
+            onSecondary: _clearAll,
+            onPrimary: _apply,
+          ),
+        ],
       ),
     );
   }

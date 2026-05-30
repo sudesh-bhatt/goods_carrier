@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/constants/app_dimensions.dart';
+import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/mixins/safe_set_state_mixin.dart';
 import '../../../../core/utils/media_permission_helper.dart';
@@ -13,6 +13,7 @@ import '../../../../res/font_res.dart';
 import '../../../../features/customer/presentation/widgets/customer_profile_form_widgets.dart';
 import '../../../../shared/presentation/widgets/inputs/address_autocomplete_field.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
+import '../../../../shared/presentation/widgets/sheets/app_bottom_sheet.dart';
 import '../../../../shared/presentation/widgets/sheets/app_modal_bottom_sheet.dart';
 import '../providers/auth_provider.dart';
 
@@ -79,50 +80,37 @@ class _CustomerProfileSetupScreenState
 
     final source = await AppModalBottomSheet.show<ImageSource>(
       context: context,
-      isScrollControlled: false,
-      backgroundColor: context.colors.surface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(AppDimensions.radiusLg.r),
-        ),
-      ),
       builder: (sheetContext) {
         final colors = sheetContext.colors;
-        return SafeArea(
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(8.w, 8.h, 8.w, 8.h),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8.h),
-                  child: Text(
-                    l10n.profilePhotoPickerTitle,
-                    style: sheetContext.textTheme.titleMedium?.copyWith(
-                      fontFamily: FontRes.MANROPE_BOLD,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ),
-                ListTile(
-                  leading: Icon(Icons.photo_camera_outlined, color: colors.primary),
-                  title: Text(l10n.profilePhotoTakePhoto),
-                  onTap: () =>
-                      Navigator.pop(sheetContext, ImageSource.camera),
-                ),
-                ListTile(
-                  leading: Icon(Icons.photo_library_outlined, color: colors.primary),
-                  title: Text(l10n.profilePhotoChooseGallery),
-                  onTap: () =>
-                      Navigator.pop(sheetContext, ImageSource.gallery),
-                ),
-                ListTile(
-                  leading: Icon(Icons.close, color: colors.textSecondary),
-                  title: Text(l10n.actionCancel),
-                  onTap: () => Navigator.pop(sheetContext),
-                ),
-              ],
-            ),
+        return AppBottomSheetContainer(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              AppBottomSheetHeaderIcon(icon: Icons.camera_alt_outlined),
+              SizedBox(height: AppBottomSheetTokens.sectionGap.h),
+              AppBottomSheetTitle(text: l10n.profilePhotoPickerTitle),
+              SizedBox(height: AppBottomSheetTokens.sectionGap.h),
+              ListTile(
+                leading:
+                    Icon(Icons.photo_camera_outlined, color: colors.primary),
+                title: Text(l10n.profilePhotoTakePhoto),
+                onTap: () =>
+                    Navigator.pop(sheetContext, ImageSource.camera),
+              ),
+              ListTile(
+                leading:
+                    Icon(Icons.photo_library_outlined, color: colors.primary),
+                title: Text(l10n.profilePhotoChooseGallery),
+                onTap: () =>
+                    Navigator.pop(sheetContext, ImageSource.gallery),
+              ),
+              SizedBox(height: AppBottomSheetTokens.sectionGap.h),
+              AppBottomSheetSecondaryButton(
+                label: l10n.actionNo,
+                onPressed: () => Navigator.pop(sheetContext),
+              ),
+            ],
           ),
         );
       },

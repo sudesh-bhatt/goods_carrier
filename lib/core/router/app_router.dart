@@ -22,6 +22,14 @@ import '../../features/customer/presentation/widgets/customer_tab_slide_containe
 import '../../features/customer/presentation/screens/shipment_form_screen.dart';
 import '../../features/customer/presentation/screens/shipment_post_confirmation_screen.dart';
 import '../../features/customer/presentation/models/shipment_post_confirmation_args.dart';
+import '../../features/customer/presentation/screens/cancel_shipment_screen.dart';
+import '../../features/customer/presentation/models/report_trip_confirmation_args.dart';
+import '../../features/customer/presentation/models/report_trip_screen_args.dart';
+import '../../features/customer/presentation/screens/customer_trip_detail_screen.dart';
+import '../../features/customer/presentation/screens/report_trip_screen.dart';
+import '../../features/customer/presentation/screens/report_trip_success_screen.dart';
+import '../../features/customer/presentation/models/shipment_cancel_confirmation_args.dart';
+import '../../features/customer/presentation/screens/shipment_cancel_success_screen.dart';
 import '../../features/customer/presentation/screens/shipment_detail_screen.dart';
 import '../../features/customer/presentation/screens/tracking_screen.dart';
 import '../../features/customer/presentation/tabs/customer_home_tab.dart';
@@ -225,8 +233,52 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
+        path: AppRoutes.cancelShipment,
+        builder: (_, state) => CancelShipmentScreen(
+          shipmentId: state.pathParameters['id']!,
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.shipmentCancelSuccess,
+        builder: (_, state) {
+          final extra = state.extra;
+          if (extra is! ShipmentCancelConfirmationArgs) {
+            return const SizedBox.shrink();
+          }
+          return ShipmentCancelSuccessScreen(args: extra);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.reportTripSuccess,
+        builder: (_, state) {
+          final extra = state.extra;
+          if (extra is! ReportTripConfirmationArgs) {
+            return const SizedBox.shrink();
+          }
+          return ReportTripSuccessScreen(args: extra);
+        },
+      ),
+      GoRoute(
         path: AppRoutes.shipmentDetail,
         builder: (_, state) => ShipmentDetailScreen(
+          shipmentId: state.pathParameters['id']!,
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.reportTrip,
+        builder: (_, state) {
+          final extra = state.extra;
+          if (extra is ReportTripScreenArgs) {
+            return ReportTripScreen(shipment: extra.shipment);
+          }
+          return ReportTripScreen(
+            shipmentId: state.pathParameters['id']!,
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.customerTripDetail,
+        builder: (_, state) => CustomerTripDetailScreen(
           shipmentId: state.pathParameters['id']!,
         ),
       ),

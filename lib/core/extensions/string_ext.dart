@@ -27,6 +27,13 @@ extension DateTimeExt on DateTime {
   /// "15 April 2026 09:00 AM"
   String get displayDateTime => '$displayDate $displayTime';
 
+  /// "15 April 2026 | 09:00AM" — Figma trip details (`1:2117`).
+  String get figmaTripDetailDateTime {
+    final time = DateFormat('hh:mm').format(this) +
+        DateFormat('a').format(this).toUpperCase();
+    return '$displayDate | $time';
+  }
+
   bool get isToday {
     final now = DateTime.now();
     return day == now.day && month == now.month && year == now.year;

@@ -7,35 +7,44 @@ import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../res/font_res.dart';
-import '../../../../shared/presentation/widgets/buttons/app_button.dart';
-import '../models/shipment_post_confirmation_args.dart';
-import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
+import '../models/shipment_cancel_confirmation_args.dart';
 import '../providers/customer_shipments_provider.dart';
+import '../widgets/cancel_shipment/cancel_shipment_tokens.dart';
 import '../widgets/customer_light_chrome.dart';
 import '../widgets/shipment_form/shipment_form_tokens.dart';
 
-/// Figma Confirmation — Shipment Post (`1:4465`).
-class ShipmentPostConfirmationScreen extends ConsumerWidget {
-  const ShipmentPostConfirmationScreen({
-    super.key,
-    required this.args,
-  });
+/// Shipment cancelled success — Figma cancel confirmation.
+class ShipmentCancelSuccessScreen extends ConsumerWidget {
+  const ShipmentCancelSuccessScreen({super.key, required this.args});
 
-  final ShipmentPostConfirmationArgs args;
+  final ShipmentCancelConfirmationArgs args;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final locale = Localizations.localeOf(context).toString();
-    final dateLabel = DateFormat('d MMMM yyyy', locale).format(args.pickupDate);
+    final dateLabel =
+        DateFormat('d MMMM yyyy', locale).format(args.pickupDate);
     final priceLabel = '₹${args.totalPrice.toStringAsFixed(0)}';
 
     return CustomerLightChrome(
       child: Scaffold(
-        backgroundColor: ShipmentFormTokens.background,
-        appBar: FlowScreenAppBar(
-          title: l10n.shipmentPostConfirmationTitle,
-          showBack: false,
+        backgroundColor: CancelShipmentTokens.screenBg,
+        appBar: AppBar(
+          backgroundColor: Colors.white.withValues(alpha: 0.8),
+          elevation: 0,
+          shadowColor: ShipmentFormTokens.primary.withValues(alpha: 0.05),
+          title: Text(
+            l10n.customerCancelShipment,
+            style: TextStyle(
+              fontFamily: FontRes.MANROPE_BOLD,
+              fontSize: 18.sp,
+              fontWeight: FontWeight.w700,
+              letterSpacing: -0.45,
+              color: const Color(0xFF191C1D),
+            ),
+          ),
+          automaticallyImplyLeading: false,
         ),
         body: SafeArea(
           top: false,
@@ -46,10 +55,10 @@ class ShipmentPostConfirmationScreen extends ConsumerWidget {
                   padding: EdgeInsets.fromLTRB(24.w, 32.h, 24.w, 24.h),
                   child: Column(
                     children: [
-                      const _SuccessIcon(),
+                      const _CancelSuccessIcon(),
                       SizedBox(height: 32.h),
                       Text(
-                        l10n.shipmentPostSuccessTitle,
+                        l10n.shipmentCancelSuccessTitle,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontFamily: FontRes.MANROPE_EXTRABOLD,
@@ -57,12 +66,12 @@ class ShipmentPostConfirmationScreen extends ConsumerWidget {
                           fontWeight: FontWeight.w800,
                           height: 36 / 30,
                           letterSpacing: -0.6,
-                          color: ShipmentFormTokens.heading,
+                          color: CancelShipmentTokens.bodyDark,
                         ),
                       ),
                       SizedBox(height: 8.h),
                       Text(
-                        l10n.shipmentPostSuccessBody(args.shipmentId),
+                        l10n.shipmentCancelSuccessBody(args.shipmentId),
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontFamily: FontRes.MANROPE_REGULAR,
@@ -72,7 +81,7 @@ class ShipmentPostConfirmationScreen extends ConsumerWidget {
                         ),
                       ),
                       SizedBox(height: 32.h),
-                      _ConfirmationDetailCard(
+                      _CancelSummaryCard(
                         fromCity: args.fromCity,
                         toCity: args.toCity,
                         dateLabel: dateLabel,
@@ -88,32 +97,31 @@ class ShipmentPostConfirmationScreen extends ConsumerWidget {
               ),
               Padding(
                 padding: EdgeInsets.fromLTRB(58.w, 0, 58.w, 24.h),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 56.h,
+                  child: Material(
+                    color: CancelShipmentTokens.primaryOrange,
                     borderRadius: BorderRadius.circular(12.r),
-                    boxShadow: [
-                      BoxShadow(
-                        color: ShipmentFormTokens.primary.withValues(alpha: 0.3),
-                        blurRadius: 24,
-                        offset: const Offset(0, 8),
+                    child: InkWell(
+                      onTap: () {
+                        ref
+                            .read(customerShipmentsProvider.notifier)
+                            .refresh();
+                        context.go(AppRoutes.customerHome);
+                      },
+                      borderRadius: BorderRadius.circular(12.r),
+                      child: Center(
+                        child: Text(
+                          l10n.shipmentPostBackToHome,
+                          style: TextStyle(
+                            fontFamily: FontRes.MANROPE_BOLD,
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
-                    ],
-                  ),
-                  child: AppButton(
-                    label: l10n.shipmentPostBackToHome,
-                    onPressed: () {
-                      ref
-                          .read(customerShipmentsProvider.notifier)
-                          .refresh();
-                      context.go(AppRoutes.customerHome);
-                    },
-                    height: 56.h,
-                    borderRadius: 12.r,
-                    textStyle: TextStyle(
-                      fontFamily: FontRes.MANROPE_BOLD,
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
                     ),
                   ),
                 ),
@@ -126,8 +134,8 @@ class ShipmentPostConfirmationScreen extends ConsumerWidget {
   }
 }
 
-class _SuccessIcon extends StatelessWidget {
-  const _SuccessIcon();
+class _CancelSuccessIcon extends StatelessWidget {
+  const _CancelSuccessIcon();
 
   @override
   Widget build(BuildContext context) {
@@ -136,66 +144,23 @@ class _SuccessIcon extends StatelessWidget {
       height: 96.w,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF22C55E), Color(0xFF4ADE80)],
-        ),
+        color: CancelShipmentTokens.cancelRed,
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF22C55E).withValues(alpha: 0.2),
+            color: CancelShipmentTokens.cancelRed.withValues(alpha: 0.2),
             blurRadius: 40,
             offset: const Offset(0, 20),
           ),
         ],
       ),
       alignment: Alignment.center,
-      child: /*_RoundedCheckIcon(size: 40.w)*/Icon(Icons.check_circle_rounded,color: Colors.white,size: 40.w,),
+      child: Icon(Icons.close_rounded, color: Colors.white, size: 40.w),
     );
   }
 }
 
-/// Thick rounded stroke check — Figma success icon.
-class _RoundedCheckIcon extends StatelessWidget {
-  const _RoundedCheckIcon({required this.size});
-
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomPaint(
-      size: Size.square(size),
-      painter: const _RoundedCheckPainter(),
-    );
-  }
-}
-
-class _RoundedCheckPainter extends CustomPainter {
-  const _RoundedCheckPainter();
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.white
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = size.width * 0.13
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-
-    final path = Path()
-      ..moveTo(size.width * 0.22, size.height * 0.54)
-      ..lineTo(size.width * 0.44, size.height * 0.76)
-      ..lineTo(size.width * 0.78, size.height * 0.3);
-
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
-class _ConfirmationDetailCard extends StatelessWidget {
-  const _ConfirmationDetailCard({
+class _CancelSummaryCard extends StatelessWidget {
+  const _CancelSummaryCard({
     required this.fromCity,
     required this.toCity,
     required this.dateLabel,
@@ -221,7 +186,7 @@ class _ConfirmationDetailCard extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsets.fromLTRB(24.w, 48.h, 24.w, 24.h),
       decoration: BoxDecoration(
-        color: ShipmentFormTokens.cardFill,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(20.r),
         boxShadow: const [
           BoxShadow(
@@ -237,7 +202,26 @@ class _ConfirmationDetailCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _RouteTimelineColumn(),
+              Padding(
+                padding: EdgeInsets.only(top: 4.h),
+                child: Column(
+                  children: [
+                    _TimelineDot(
+                      fill: const Color(0xFF9F4200),
+                      halo: const Color(0xFFFFDBCB),
+                    ),
+                    Container(
+                      width: 2.w,
+                      height: 40.h,
+                      color: const Color(0xFFDDE3E9),
+                    ),
+                    _TimelineDot(
+                      fill: const Color(0xFF00629E),
+                      halo: const Color(0xFFCFE5FF),
+                    ),
+                  ],
+                ),
+              ),
               SizedBox(width: 16.w),
               Expanded(
                 child: Column(
@@ -272,7 +256,7 @@ class _ConfirmationDetailCard extends StatelessWidget {
                             fontFamily: FontRes.MANROPE_BOLD,
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w700,
-                            color: ShipmentFormTokens.heading,
+                            color: CancelShipmentTokens.bodyDark,
                           ),
                         ),
                       ),
@@ -290,38 +274,12 @@ class _ConfirmationDetailCard extends StatelessWidget {
                       fontFamily: FontRes.MANROPE_EXTRABOLD,
                       fontSize: 20.sp,
                       fontWeight: FontWeight.w800,
-                      color: ShipmentFormTokens.primary,
+                      color: CancelShipmentTokens.primaryOrange,
                     ),
                   ),
                 ),
               ),
             ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _RouteTimelineColumn extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(top: 4.h),
-      child: Column(
-        children: [
-          const _TimelineDot(
-            fill: Color(0xFF9F4200),
-            halo: Color(0xFFFFDBCB),
-          ),
-          Container(
-            width: 2.w,
-            height: 40.h,
-            color: const Color(0xFFDDE3E9),
-          ),
-          const _TimelineDot(
-            fill: Color(0xFF00629E),
-            halo: Color(0xFFCFE5FF),
           ),
         ],
       ),
@@ -343,13 +301,7 @@ class _TimelineDot extends StatelessWidget {
       decoration: BoxDecoration(
         color: fill,
         shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: halo,
-            blurRadius: 0,
-            spreadRadius: 4,
-          ),
-        ],
+        boxShadow: [BoxShadow(color: halo, blurRadius: 0, spreadRadius: 4)],
       ),
     );
   }
@@ -372,9 +324,8 @@ class _RouteStop extends StatelessWidget {
             fontFamily: FontRes.MANROPE_BOLD,
             fontSize: 10.sp,
             fontWeight: FontWeight.w700,
-            height: 15 / 10,
             letterSpacing: 1,
-            color: ShipmentFormTokens.label,
+            color: CancelShipmentTokens.labelBrown,
           ),
         ),
         SizedBox(height: 4.h),
@@ -384,8 +335,7 @@ class _RouteStop extends StatelessWidget {
             fontFamily: FontRes.MANROPE_BOLD,
             fontSize: 16.sp,
             fontWeight: FontWeight.w700,
-            height: 24 / 16,
-            color: ShipmentFormTokens.heading,
+            color: CancelShipmentTokens.bodyDark,
           ),
         ),
       ],
@@ -404,7 +354,7 @@ class _MetaTile extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: ShipmentFormTokens.fieldFill,
+        color: CancelShipmentTokens.cardFill,
         borderRadius: BorderRadius.circular(12.r),
       ),
       child: Column(
@@ -416,9 +366,8 @@ class _MetaTile extends StatelessWidget {
               fontFamily: FontRes.MANROPE_BOLD,
               fontSize: 10.sp,
               fontWeight: FontWeight.w700,
-              height: 15 / 10,
               letterSpacing: 1,
-              color: ShipmentFormTokens.label,
+              color: CancelShipmentTokens.labelBrown,
             ),
           ),
           SizedBox(height: 4.h),

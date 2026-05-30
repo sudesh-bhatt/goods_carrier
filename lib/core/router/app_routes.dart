@@ -19,6 +19,12 @@ abstract final class AppRoutes {
       '/customer/post-shipment/confirmation';
   static const String editShipment         = '/customer/shipment/:id/edit';
   static const String shipmentDetail       = '/customer/shipment/:id';
+  static const String cancelShipment       = '/customer/shipment/:id/cancel';
+  static const String shipmentCancelSuccess =
+      '/customer/shipment/cancel-success';
+  static const String customerTripDetail   = '/customer/trip/:id';
+  static const String reportTrip           = '/customer/trip/:id/report';
+  static const String reportTripSuccess    = '/customer/report-trip/success';
   static const String tracking             = '/customer/tracking/:id';
   static const String customerNotifications= '/customer/notifications';
   static const String customerProfile      = '/customer/profile';
@@ -43,6 +49,9 @@ abstract final class AppRoutes {
 
   /// Build `/customer/shipment/:id` → `/customer/shipment/TRK-0001`
   static String shipmentDetailOf(String id) => '/customer/shipment/$id';
+  static String cancelShipmentOf(String id) => '/customer/shipment/$id/cancel';
+  static String tripDetailOf(String id) => '/customer/trip/$id';
+  static String reportTripOf(String id) => '/customer/trip/$id/report';
   static String editShipmentOf(String id) => '/customer/shipment/$id/edit';
   static String trackingOf(String id)        => '/customer/tracking/$id';
   static String driverTripDetailOf(String id)=> '/driver/trip/$id';

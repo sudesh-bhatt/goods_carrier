@@ -1732,6 +1732,282 @@ abstract class AppLocalizations {
   /// **'Shipment Details'**
   String get shipmentDetailsTitle;
 
+  /// No description provided for @customerTripDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip Details'**
+  String get customerTripDetailsTitle;
+
+  /// No description provided for @customerReportTripQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Report a trip?'**
+  String get customerReportTripQuestion;
+
+  /// No description provided for @customerReportIssueTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Issue'**
+  String get customerReportIssueTitle;
+
+  /// No description provided for @reportTripHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Report this post'**
+  String get reportTripHeadline;
+
+  /// No description provided for @reportTripDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Help us understand the issue by selecting a reason'**
+  String get reportTripDescription;
+
+  /// No description provided for @reportReasonSpam.
+  ///
+  /// In en, this message translates to:
+  /// **'Spam or misleading information'**
+  String get reportReasonSpam;
+
+  /// No description provided for @reportReasonIncorrect.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect details'**
+  String get reportReasonIncorrect;
+
+  /// No description provided for @reportReasonFraud.
+  ///
+  /// In en, this message translates to:
+  /// **'Fraud or suspicious activity'**
+  String get reportReasonFraud;
+
+  /// No description provided for @reportReasonInappropriate.
+  ///
+  /// In en, this message translates to:
+  /// **'Inappropriate content'**
+  String get reportReasonInappropriate;
+
+  /// No description provided for @reportReasonNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Already completed / not available'**
+  String get reportReasonNotAvailable;
+
+  /// No description provided for @reportReasonOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get reportReasonOther;
+
+  /// No description provided for @reportTripDetailsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe the issue'**
+  String get reportTripDetailsHint;
+
+  /// No description provided for @reportTripSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Report'**
+  String get reportTripSubmit;
+
+  /// No description provided for @reportTripStatusTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Status'**
+  String get reportTripStatusTitle;
+
+  /// No description provided for @reportTripSuccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Submitted'**
+  String get reportTripSuccessTitle;
+
+  /// No description provided for @reportTripSuccessBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank you for helping us improve the platform. Our team will review this report shortly.'**
+  String get reportTripSuccessBody;
+
+  /// No description provided for @reportIdLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'REPORT ID'**
+  String get reportIdLabel;
+
+  /// No description provided for @reportDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'DATE'**
+  String get reportDateLabel;
+
+  /// No description provided for @reportReviewTimeInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Average review time: 24 hours'**
+  String get reportReviewTimeInfo;
+
+  /// No description provided for @customerTripEstimatedStartDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated start date'**
+  String get customerTripEstimatedStartDate;
+
+  /// No description provided for @customerTripEstimatedEndDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated end date'**
+  String get customerTripEstimatedEndDate;
+
+  /// No description provided for @customerTripEstimatedPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated price'**
+  String get customerTripEstimatedPrice;
+
+  /// No description provided for @customerExpertDriver.
+  ///
+  /// In en, this message translates to:
+  /// **'Expert Driver'**
+  String get customerExpertDriver;
+
+  /// No description provided for @actionRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Request'**
+  String get actionRequest;
+
+  /// No description provided for @customerShipmentPublishBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish'**
+  String get customerShipmentPublishBadge;
+
+  /// No description provided for @customerPaymentSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment summary'**
+  String get customerPaymentSummary;
+
+  /// No description provided for @customerBaseFare.
+  ///
+  /// In en, this message translates to:
+  /// **'Base Fare'**
+  String get customerBaseFare;
+
+  /// No description provided for @customerTotalAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Amount'**
+  String get customerTotalAmount;
+
+  /// No description provided for @customerCancelShipment.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Shipment'**
+  String get customerCancelShipment;
+
+  /// No description provided for @shipmentRemoveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Shipment?'**
+  String get shipmentRemoveTitle;
+
+  /// No description provided for @shipmentRemoveBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This will remove shipment {shipmentId}. This action cannot be undone.'**
+  String shipmentRemoveBody(String shipmentId);
+
+  /// No description provided for @cancelShipmentHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Precision Review Required'**
+  String get cancelShipmentHeadline;
+
+  /// No description provided for @cancelShipmentDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a reason for cancellation. This data helps our kinetic ledger optimize future logistics routes.'**
+  String get cancelShipmentDescription;
+
+  /// No description provided for @cancelShipmentReasonLegend.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason for cancellation'**
+  String get cancelShipmentReasonLegend;
+
+  /// No description provided for @cancelReasonChangeOfPlans.
+  ///
+  /// In en, this message translates to:
+  /// **'Change of plans'**
+  String get cancelReasonChangeOfPlans;
+
+  /// No description provided for @cancelReasonBetterPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Found a better price'**
+  String get cancelReasonBetterPrice;
+
+  /// No description provided for @cancelReasonDriverDelayed.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver delayed'**
+  String get cancelReasonDriverDelayed;
+
+  /// No description provided for @cancelReasonIncorrectDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect details entered'**
+  String get cancelReasonIncorrectDetails;
+
+  /// No description provided for @cancelReasonOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get cancelReasonOther;
+
+  /// No description provided for @cancelShipmentCommentsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Additional comments (optional)'**
+  String get cancelShipmentCommentsLabel;
+
+  /// No description provided for @cancelShipmentCommentsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Please provide any additional context regarding this cancellation...'**
+  String get cancelShipmentCommentsHint;
+
+  /// No description provided for @cancelShipmentNoticeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notice'**
+  String get cancelShipmentNoticeTitle;
+
+  /// No description provided for @cancelShipmentNoticeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellations processed after the 2-hour window may incur a handling fee. Review the Ledger Policies for more information.'**
+  String get cancelShipmentNoticeBody;
+
+  /// No description provided for @cancelShipmentKeep.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep Shipment'**
+  String get cancelShipmentKeep;
+
+  /// No description provided for @shipmentCancelSuccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shipment Cancel Successfully'**
+  String get shipmentCancelSuccessTitle;
+
+  /// No description provided for @shipmentCancelSuccessBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your shipment has been cancel successfully your shipment id is #{shipmentId}'**
+  String shipmentCancelSuccessBody(String shipmentId);
+
   /// No description provided for @notificationNewBadge.
   ///
   /// In en, this message translates to:
@@ -1863,6 +2139,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No history found'**
   String get emptyHistory;
+
+  /// No description provided for @customerHomeNoMatchingShipments.
+  ///
+  /// In en, this message translates to:
+  /// **'No shipments match your filters'**
+  String get customerHomeNoMatchingShipments;
+
+  /// No description provided for @customerHomeNoMatchingShipmentsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a different vehicle type or clear filters to see all trips'**
+  String get customerHomeNoMatchingShipmentsHint;
 
   /// No description provided for @errorGeneric.
   ///

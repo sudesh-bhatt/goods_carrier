@@ -862,6 +862,153 @@ class AppLocalizationsHi extends AppLocalizations {
   String get shipmentDetailsTitle => 'शिपमेंट विवरण';
 
   @override
+  String get customerTripDetailsTitle => 'यात्रा विवरण';
+
+  @override
+  String get customerReportTripQuestion => 'यात्रा की रिपोर्ट करें?';
+
+  @override
+  String get customerReportIssueTitle => 'समस्या रिपोर्ट करें';
+
+  @override
+  String get reportTripHeadline => 'इस पोस्ट की रिपोर्ट करें';
+
+  @override
+  String get reportTripDescription =>
+      'कृपया कारण चुनकर समस्या समझने में हमारी मदद करें';
+
+  @override
+  String get reportReasonSpam => 'स्पैम या भ्रामक जानकारी';
+
+  @override
+  String get reportReasonIncorrect => 'गलत विवरण';
+
+  @override
+  String get reportReasonFraud => 'धोखाधड़ी या संदिग्ध गतिविधि';
+
+  @override
+  String get reportReasonInappropriate => 'अनुचित सामग्री';
+
+  @override
+  String get reportReasonNotAvailable => 'पहले से पूर्ण / उपलब्ध नहीं';
+
+  @override
+  String get reportReasonOther => 'अन्य';
+
+  @override
+  String get reportTripDetailsHint => 'समस्या का वर्णन करें';
+
+  @override
+  String get reportTripSubmit => 'रिपोर्ट करें';
+
+  @override
+  String get reportTripStatusTitle => 'रिपोर्ट स्थिति';
+
+  @override
+  String get reportTripSuccessTitle => 'रिपोर्ट सबमिट हो गई';
+
+  @override
+  String get reportTripSuccessBody =>
+      'प्लेटफ़ॉर्म को बेहतर बनाने में मदद करने के लिए धन्यवाद। हमारी टीम जल्द ही इस रिपोर्ट की समीक्षा करेगी।';
+
+  @override
+  String get reportIdLabel => 'रिपोर्ट आईडी';
+
+  @override
+  String get reportDateLabel => 'तारीख';
+
+  @override
+  String get reportReviewTimeInfo => 'औसत समीक्षा समय: 24 घंटे';
+
+  @override
+  String get customerTripEstimatedStartDate => 'अनुमानित प्रारंभ तिथि';
+
+  @override
+  String get customerTripEstimatedEndDate => 'अनुमानित समाप्ति तिथि';
+
+  @override
+  String get customerTripEstimatedPrice => 'अनुमानित कीमत';
+
+  @override
+  String get customerExpertDriver => 'विशेषज्ञ ड्राइवर';
+
+  @override
+  String get actionRequest => 'अनुरोध';
+
+  @override
+  String get customerShipmentPublishBadge => 'प्रकाशित';
+
+  @override
+  String get customerPaymentSummary => 'भुगतान सारांश';
+
+  @override
+  String get customerBaseFare => 'आधार किराया';
+
+  @override
+  String get customerTotalAmount => 'कुल राशि';
+
+  @override
+  String get customerCancelShipment => 'शिपमेंट रद्द करें';
+
+  @override
+  String get shipmentRemoveTitle => 'शिपमेंट हटाएं?';
+
+  @override
+  String shipmentRemoveBody(String shipmentId) {
+    return 'यह शिपमेंट $shipmentId हटा देगा। यह क्रिया पूर्ववत नहीं की जा सकती।';
+  }
+
+  @override
+  String get cancelShipmentHeadline => 'सटीक समीक्षा आवश्यक';
+
+  @override
+  String get cancelShipmentDescription =>
+      'कृपया रद्दीकरण का कारण चुनें। यह डेटा भविष्य के लॉजिस्टिक्स मार्गों को अनुकूलित करने में मदद करता है।';
+
+  @override
+  String get cancelShipmentReasonLegend => 'रद्दीकरण का कारण';
+
+  @override
+  String get cancelReasonChangeOfPlans => 'योजना में बदलाव';
+
+  @override
+  String get cancelReasonBetterPrice => 'बेहतर कीमत मिली';
+
+  @override
+  String get cancelReasonDriverDelayed => 'ड्राइवर में देरी';
+
+  @override
+  String get cancelReasonIncorrectDetails => 'गलत विवरण दर्ज';
+
+  @override
+  String get cancelReasonOther => 'अन्य';
+
+  @override
+  String get cancelShipmentCommentsLabel => 'अतिरिक्त टिप्पणी (वैकल्पिक)';
+
+  @override
+  String get cancelShipmentCommentsHint =>
+      'कृपया इस रद्दीकरण के संबंध में कोई अतिरिक्त जानकारी दें...';
+
+  @override
+  String get cancelShipmentNoticeTitle => 'सूचना';
+
+  @override
+  String get cancelShipmentNoticeBody =>
+      '2 घंटे की अवधि के बाद किए गए रद्दीकरण पर हैंडलिंग शुल्क लग सकता है।';
+
+  @override
+  String get cancelShipmentKeep => 'शिपमेंट रखें';
+
+  @override
+  String get shipmentCancelSuccessTitle => 'शिपमेंट सफलतापूर्वक रद्द';
+
+  @override
+  String shipmentCancelSuccessBody(String shipmentId) {
+    return 'आपकी शिपमेंट सफलतापूर्वक रद्द हो गई है। आपकी शिपमेंट आईडी #$shipmentId है';
+  }
+
+  @override
   String get notificationNewBadge => 'नया';
 
   @override
@@ -929,6 +1076,14 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get emptyHistory => 'कोई इतिहास नहीं मिला';
+
+  @override
+  String get customerHomeNoMatchingShipments =>
+      'आपके फ़िल्टर से कोई शिपमेंट मेल नहीं खाता';
+
+  @override
+  String get customerHomeNoMatchingShipmentsHint =>
+      'दूसरा वाहन प्रकार आज़माएं या सभी ट्रिप देखने के लिए फ़िल्टर साफ़ करें';
 
   @override
   String get errorGeneric => 'कुछ गलत हुआ। कृपया पुनः प्रयास करें।';
