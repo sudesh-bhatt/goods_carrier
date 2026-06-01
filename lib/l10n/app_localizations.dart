@@ -1348,6 +1348,138 @@ abstract class AppLocalizations {
   /// **'My Trip'**
   String get driverMyTripTitle;
 
+  /// No description provided for @driverMyTripsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My Trips'**
+  String get driverMyTripsTitle;
+
+  /// No description provided for @driverTripDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip Details'**
+  String get driverTripDetailsTitle;
+
+  /// No description provided for @driverCancelTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Trip'**
+  String get driverCancelTrip;
+
+  /// No description provided for @driverViewRequestCount.
+  ///
+  /// In en, this message translates to:
+  /// **'View Request ({count})'**
+  String driverViewRequestCount(int count);
+
+  /// No description provided for @driverTripPickupLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'PICKUP'**
+  String get driverTripPickupLabel;
+
+  /// No description provided for @driverTripDropLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'DROP'**
+  String get driverTripDropLabel;
+
+  /// No description provided for @driverTripCapacityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'CAPACITY'**
+  String get driverTripCapacityLabel;
+
+  /// No description provided for @driverTripBadgePublished.
+  ///
+  /// In en, this message translates to:
+  /// **'PUBLISHED'**
+  String get driverTripBadgePublished;
+
+  /// No description provided for @driverTripBadgePublish.
+  ///
+  /// In en, this message translates to:
+  /// **'PUBLISH'**
+  String get driverTripBadgePublish;
+
+  /// No description provided for @driverTripBadgeExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'EXPIRED'**
+  String get driverTripBadgeExpired;
+
+  /// No description provided for @driverTripBadgeDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'DRAFT'**
+  String get driverTripBadgeDraft;
+
+  /// No description provided for @driverExpertDriverLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Expert Driver'**
+  String get driverExpertDriverLabel;
+
+  /// No description provided for @driverDeleteTripTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete trip?'**
+  String get driverDeleteTripTitle;
+
+  /// No description provided for @driverDeleteTripBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This will remove the trip from your list. You can publish a new trip anytime.'**
+  String get driverDeleteTripBody;
+
+  /// No description provided for @cancelTripReasonRouteChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Route no longer viable'**
+  String get cancelTripReasonRouteChanged;
+
+  /// No description provided for @cancelTripReasonVehicleUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle not available'**
+  String get cancelTripReasonVehicleUnavailable;
+
+  /// No description provided for @cancelTripReasonBetterLoad.
+  ///
+  /// In en, this message translates to:
+  /// **'Found a better load'**
+  String get cancelTripReasonBetterLoad;
+
+  /// No description provided for @cancelTripReasonIncorrectDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect details entered'**
+  String get cancelTripReasonIncorrectDetails;
+
+  /// No description provided for @cancelTripReasonOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get cancelTripReasonOther;
+
+  /// No description provided for @cancelTripKeep.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep Trip'**
+  String get cancelTripKeep;
+
+  /// No description provided for @tripCancelSuccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Trip Cancel Successfully'**
+  String get tripCancelSuccessTitle;
+
+  /// No description provided for @tripCancelSuccessBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your trip has been cancel successfully your trip id is {tripId}'**
+  String tripCancelSuccessBody(String tripId);
+
   /// No description provided for @driverHomeShipmentId.
   ///
   /// In en, this message translates to:
@@ -2224,11 +2356,23 @@ abstract class AppLocalizations {
   /// **'Add Trip'**
   String get driverAddTripTitle;
 
+  /// No description provided for @driverUpdateTripTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Trip'**
+  String get driverUpdateTripTitle;
+
   /// No description provided for @driverPublishTrip.
   ///
   /// In en, this message translates to:
   /// **'Publish Trip'**
   String get driverPublishTrip;
+
+  /// No description provided for @driverUpdateTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Trip'**
+  String get driverUpdateTrip;
 
   /// No description provided for @driverTripFormContext.
   ///

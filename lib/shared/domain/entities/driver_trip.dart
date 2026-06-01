@@ -15,6 +15,7 @@ class DriverTrip {
     required this.loadCapacityTons,
     required this.estimatedPrice,
     required this.status,
+    this.interestRequestCount = 0,
   });
 
   final String id;              // VB-XXXX
@@ -29,18 +30,40 @@ class DriverTrip {
   final double loadCapacityTons;
   final double estimatedPrice;
   final TripStatus status;
+  /// Customer interest count shown on "View Request (n)" CTA.
+  final int interestRequestCount;
 
   bool get isActive => status == TripStatus.active;
 
-  DriverTrip copyWith({TripStatus? status, double? estimatedPrice}) => DriverTrip(
-    id: id, driverId: driverId, driverName: driverName,
-    fromCity: fromCity, toCity: toCity,
-    estimatedStartDate: estimatedStartDate, estimatedEndDate: estimatedEndDate,
-    vehicleCategory: vehicleCategory, vehicleNumber: vehicleNumber,
-    loadCapacityTons: loadCapacityTons,
-    estimatedPrice: estimatedPrice ?? this.estimatedPrice,
-    status: status ?? this.status,
-  );
+  DriverTrip copyWith({
+    String? driverName,
+    String? fromCity,
+    String? toCity,
+    DateTime? estimatedStartDate,
+    DateTime? estimatedEndDate,
+    VehicleType? vehicleCategory,
+    String? vehicleNumber,
+    double? loadCapacityTons,
+    double? estimatedPrice,
+    TripStatus? status,
+    int? interestRequestCount,
+  }) =>
+      DriverTrip(
+        id: id,
+        driverId: driverId,
+        driverName: driverName ?? this.driverName,
+        fromCity: fromCity ?? this.fromCity,
+        toCity: toCity ?? this.toCity,
+        estimatedStartDate: estimatedStartDate ?? this.estimatedStartDate,
+        estimatedEndDate: estimatedEndDate ?? this.estimatedEndDate,
+        vehicleCategory: vehicleCategory ?? this.vehicleCategory,
+        vehicleNumber: vehicleNumber ?? this.vehicleNumber,
+        loadCapacityTons: loadCapacityTons ?? this.loadCapacityTons,
+        estimatedPrice: estimatedPrice ?? this.estimatedPrice,
+        status: status ?? this.status,
+        interestRequestCount:
+            interestRequestCount ?? this.interestRequestCount,
+      );
 
   // ── JSON ────────────────────────────────────────────────────────────────
 
@@ -57,6 +80,8 @@ class DriverTrip {
         loadCapacityTons:   (j['load_capacity_tons'] as num).toDouble(),
         estimatedPrice:     (j['estimated_price']    as num).toDouble(),
         status:             TripStatus.values.byName(j['status']  as String),
+        interestRequestCount:
+            (j['interest_request_count'] as num?)?.toInt() ?? 0,
       );
 
   Map<String, dynamic> toJson() => {
@@ -72,6 +97,7 @@ class DriverTrip {
         'load_capacity_tons': loadCapacityTons,
         'estimated_price':    estimatedPrice,
         'status':             status.name,
+        'interest_request_count': interestRequestCount,
       };
 
   @override

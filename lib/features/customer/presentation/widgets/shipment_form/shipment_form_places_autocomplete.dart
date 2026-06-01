@@ -22,6 +22,12 @@ class ShipmentFormPlacesAutocomplete extends ConsumerStatefulWidget {
     required this.hint,
     required this.onPlaceSelected,
     this.validator,
+    this.externalLeading = false,
+    this.fieldFillColor,
+    this.fieldHintColor,
+    this.fieldTextColor,
+    this.fieldHeight,
+    this.fieldRadius,
   });
 
   final Widget leading;
@@ -29,6 +35,13 @@ class ShipmentFormPlacesAutocomplete extends ConsumerStatefulWidget {
   final String hint;
   final ValueChanged<PlaceAddressDetails> onPlaceSelected;
   final String? Function(String?)? validator;
+  /// When true, [leading] is omitted from the field row (parent renders it).
+  final bool externalLeading;
+  final Color? fieldFillColor;
+  final Color? fieldHintColor;
+  final Color? fieldTextColor;
+  final double? fieldHeight;
+  final double? fieldRadius;
 
   @override
   ConsumerState<ShipmentFormPlacesAutocomplete> createState() =>
@@ -157,6 +170,9 @@ class _ShipmentFormPlacesAutocompleteState
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final fill = widget.fieldFillColor ?? ShipmentFormTokens.fieldFill;
+    final hintColor = widget.fieldHintColor ?? ShipmentFormTokens.hint;
+    final textColor = widget.fieldTextColor ?? ShipmentFormTokens.heading;
 
     return FormField<String>(
       initialValue: widget.controller.text,
@@ -166,11 +182,11 @@ class _ShipmentFormPlacesAutocompleteState
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Container(
-              height: 54.h,
+              height: widget.fieldHeight ?? 54.h,
               padding: EdgeInsets.symmetric(horizontal: 16.w),
               decoration: BoxDecoration(
-                color: ShipmentFormTokens.fieldFill,
-                borderRadius: BorderRadius.circular(12.r),
+                color: fill,
+                borderRadius: BorderRadius.circular(widget.fieldRadius ?? 12.r),
                 border: field.hasError
                     ? Border.all(color: colors.error, width: 1.5)
                     : null,
@@ -178,40 +194,47 @@ class _ShipmentFormPlacesAutocompleteState
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  widget.leading,
-                  SizedBox(width: 12.w),
+                  if (!widget.externalLeading) ...[
+                    widget.leading,
+                    SizedBox(width: 12.w),
+                  ],
                   Expanded(
-                    child: TextFormField(
+                    child: TextField(
                       controller: widget.controller,
                       focusNode: _focusNode,
                       onChanged: (v) => _onQueryChanged(v, field),
                       maxLines: 1,
                       textAlignVertical: TextAlignVertical.center,
                       style: TextStyle(
-                        fontFamily: FontRes.MANROPE_MEDIUM,
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w500,
-                        color: ShipmentFormTokens.heading,
+                        fontFamily: widget.externalLeading
+                            ? FontRes.MANROPE_REGULAR
+                            : FontRes.MANROPE_MEDIUM,
+                        fontSize: widget.externalLeading ? 14.sp : 16.sp,
+                        fontWeight: widget.externalLeading
+                            ? FontWeight.w400
+                            : FontWeight.w500,
+                        height: widget.externalLeading ? 19 / 14 : null,
+                        color: textColor,
                       ),
                       cursorColor: colors.primary,
                       decoration: InputDecoration(
+                        filled: true,
+                        fillColor: fill,
                         hintText: widget.hint,
                         hintStyle: TextStyle(
                           fontFamily: FontRes.MANROPE_REGULAR,
-                          fontSize: 16.sp,
-                          color: ShipmentFormTokens.hint,
+                          fontSize: widget.externalLeading ? 14.sp : 16.sp,
+                          height: widget.externalLeading ? 19 / 14 : null,
+                          color: hintColor,
                         ),
                         border: InputBorder.none,
                         enabledBorder: InputBorder.none,
                         focusedBorder: InputBorder.none,
-                        errorBorder: InputBorder.none,
                         focusedErrorBorder: InputBorder.none,
-                        filled: false,
-                        fillColor: Colors.transparent,
+                        errorBorder: InputBorder.none,
                         isDense: true,
                         isCollapsed: true,
                         contentPadding: EdgeInsets.zero,
-                        errorStyle: const TextStyle(height: 0, fontSize: 0),
                       ),
                     ),
                   ),

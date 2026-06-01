@@ -11,6 +11,14 @@ enum VehicleType {
         VehicleType.heavyDuty   => 'Heavy Duty (10–20T)',
       };
 
+  /// Driver publish / update trip form — Figma `1:3634`.
+  String get formLabel => switch (this) {
+        VehicleType.mini        => 'Mini Truck',
+        VehicleType.pickupTruck => 'Pickup Truck (1T)',
+        VehicleType.truck       => 'Truck (5T)',
+        VehicleType.heavyDuty   => 'Heavy Duty Truck (10-20T)',
+      };
+
   String get capacityLabel => switch (this) {
         VehicleType.mini        => 'Cap: 500 KG',
         VehicleType.pickupTruck => 'Cap: 1 Ton',

@@ -1,4 +1,5 @@
-// Syncs root `.env` → iOS Secrets.xcconfig and android/local.properties.
+// Syncs root `.env` → iOS Secrets.xcconfig and android/local.properties,
+// and regenerates lib/res/*.dart (fixes iFlutter asset codegen bugs).
 //
 // Usage from project root:
 //   dart run tool/sync_env.dart
@@ -31,7 +32,22 @@ void main() {
 
   _writeIosSecrets(apiKey);
   _mergeAndroidLocalProperties(apiKey);
-  stdout.writeln('Synced .env → ios/Flutter/Secrets.xcconfig & android/local.properties');
+  _regenerateResFiles();
+  stdout.writeln(
+    'Synced .env → ios/Flutter/Secrets.xcconfig & android/local.properties',
+  );
+}
+
+void _regenerateResFiles() {
+  final result = Process.runSync(
+    Platform.executable,
+    ['run', 'tool/generate_res.dart'],
+    workingDirectory: Directory.current.path,
+  );
+  if (result.exitCode != 0) {
+    stderr.writeln(result.stderr);
+    stderr.writeln('Warning: tool/generate_res.dart failed');
+  }
 }
 
 Map<String, String> _parseDotEnv(String contents) {

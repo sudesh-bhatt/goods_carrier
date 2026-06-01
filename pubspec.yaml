@@ -96,8 +96,10 @@ flutter:
     - assets/svg/ic_radio_unselected.svg
     - assets/svg/ic_role_customer.svg
     - assets/svg/ic_role_driver.svg
+    - assets/svg/ic_route_info.svg
     - assets/svg/ic_secure_payment.svg
     - assets/svg/ic_verified_carriers.svg
+    - assets/svg/ic_whatsapp.svg
   fonts:
     - family: Manrope-Bold
       fonts:

@@ -661,6 +661,76 @@ class AppLocalizationsHi extends AppLocalizations {
   String get driverMyTripTitle => 'मेरी यात्रा';
 
   @override
+  String get driverMyTripsTitle => 'मेरी यात्राएं';
+
+  @override
+  String get driverTripDetailsTitle => 'यात्रा विवरण';
+
+  @override
+  String get driverCancelTrip => 'यात्रा रद्द करें';
+
+  @override
+  String driverViewRequestCount(int count) {
+    return 'अनुरोध देखें ($count)';
+  }
+
+  @override
+  String get driverTripPickupLabel => 'PICKUP';
+
+  @override
+  String get driverTripDropLabel => 'DROP';
+
+  @override
+  String get driverTripCapacityLabel => 'CAPACITY';
+
+  @override
+  String get driverTripBadgePublished => 'PUBLISHED';
+
+  @override
+  String get driverTripBadgePublish => 'PUBLISH';
+
+  @override
+  String get driverTripBadgeExpired => 'EXPIRED';
+
+  @override
+  String get driverTripBadgeDraft => 'DRAFT';
+
+  @override
+  String get driverExpertDriverLabel => 'विशेषज्ञ ड्राइवर';
+
+  @override
+  String get driverDeleteTripTitle => 'यात्रा हटाएं?';
+
+  @override
+  String get driverDeleteTripBody => 'यह यात्रा आपकी सूची से हट जाएगी।';
+
+  @override
+  String get cancelTripReasonRouteChanged => 'मार्ग अब संभव नहीं';
+
+  @override
+  String get cancelTripReasonVehicleUnavailable => 'वाहन उपलब्ध नहीं';
+
+  @override
+  String get cancelTripReasonBetterLoad => 'बेहतर लोड मिला';
+
+  @override
+  String get cancelTripReasonIncorrectDetails => 'गलत विवरण दर्ज किए';
+
+  @override
+  String get cancelTripReasonOther => 'अन्य';
+
+  @override
+  String get cancelTripKeep => 'यात्रा रखें';
+
+  @override
+  String get tripCancelSuccessTitle => 'आपकी यात्रा सफलतापूर्वक रद्द हुई';
+
+  @override
+  String tripCancelSuccessBody(String tripId) {
+    return 'आपकी यात्रा सफलतापूर्वक रद्द हो गई है। यात्रा आईडी $tripId है';
+  }
+
+  @override
   String get driverHomeShipmentId => 'शिपमेंट ID';
 
   @override
@@ -1119,7 +1189,13 @@ class AppLocalizationsHi extends AppLocalizations {
   String get driverAddTripTitle => 'ट्रिप जोड़ें';
 
   @override
+  String get driverUpdateTripTitle => 'ट्रिप अपडेट करें';
+
+  @override
   String get driverPublishTrip => 'ट्रिप प्रकाशित करें';
+
+  @override
+  String get driverUpdateTrip => 'ट्रिप अपडेट करें';
 
   @override
   String get driverTripFormContext => 'ट्रिप विवरण';

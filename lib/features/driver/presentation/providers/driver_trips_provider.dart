@@ -32,6 +32,11 @@ class DriverTripsState {
         error:     error,
       );
 
+  /// All trips for My Trips tab (excludes cancelled).
+  List<DriverTrip> get myTripsList => trips
+      .where((t) => t.status != TripStatus.cancelled)
+      .toList();
+
   List<DriverTrip> get active    => trips.where((t) =>
       t.status == TripStatus.active || t.status == TripStatus.confirmed).toList();
   List<DriverTrip> get pending   => trips.where((t) =>
@@ -133,6 +138,28 @@ class DriverTripsNotifier extends StateNotifier<DriverTripsState> {
       state = state.copyWith(
         isLoading: false,
         trips: state.trips.where((t) => t.id != tempId).toList(),
+        error: e.toString(),
+      );
+    }
+  }
+
+  /// Updates an existing trip — optimistic replace with rollback on error.
+  Future<void> updateTrip(DriverTrip updated) async {
+    final prev = state.trips;
+    state = state.copyWith(
+      isLoading: true,
+      trips: prev.map((t) => t.id == updated.id ? updated : t).toList(),
+    );
+    try {
+      final saved = await _repo.updateTrip(updated);
+      state = state.copyWith(
+        isLoading: false,
+        trips: state.trips.map((t) => t.id == saved.id ? saved : t).toList(),
+      );
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        trips: prev,
         error: e.toString(),
       );
     }

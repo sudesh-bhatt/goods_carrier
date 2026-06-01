@@ -9,6 +9,9 @@ abstract class ITripRepository {
   /// server-assigned VB-XXXX ID.
   Future<DriverTrip> postTrip(DriverTrip trip);
 
+  /// Updates an existing trip. Returns the persisted entity.
+  Future<DriverTrip> updateTrip(DriverTrip trip);
+
   /// Cancels an active trip. Throws [AppException] if the trip is not
   /// in a cancellable state.
   Future<void> cancelTrip(String tripId);

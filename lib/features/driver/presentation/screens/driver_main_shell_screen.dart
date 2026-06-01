@@ -38,7 +38,7 @@ class DriverMainShellScreen extends ConsumerWidget {
   String _titleForTab(DriverMainTab tab, AppLocalizations l10n) =>
       switch (tab) {
         DriverMainTab.home => l10n.customerHomeBrandTitle,
-        DriverMainTab.myTrips => l10n.driverMyTripTitle,
+        DriverMainTab.myTrips => l10n.driverMyTripsTitle,
         DriverMainTab.notifications => l10n.notificationsTitle,
         DriverMainTab.profile => l10n.customerMyProfile,
       };
@@ -52,9 +52,10 @@ class DriverMainShellScreen extends ConsumerWidget {
     final notifications = ref.watch(driverNotificationsProvider);
     final hasUnread = notifications.any((n) => !n.isRead);
     final requestsState = ref.watch(driverShipmentRequestsProvider);
-    final showFab = tab == DriverMainTab.home &&
-        !requestsState.isLoading &&
-        requestsState.all.isNotEmpty;
+    final showFab = tab == DriverMainTab.myTrips ||
+        (tab == DriverMainTab.home &&
+            !requestsState.isLoading &&
+            requestsState.all.isNotEmpty);
 
     return CustomerLightChrome(
       child: Scaffold(

@@ -30,6 +30,15 @@ class RemoteTripRepository implements ITripRepository {
   }
 
   @override
+  Future<DriverTrip> updateTrip(DriverTrip trip) async {
+    final response = await _dio.put(
+      '${ApiConstants.driverTrips}/${trip.id}',
+      data: trip.toJson(),
+    );
+    return DriverTrip.fromJson(response.data['data'] as Map<String, dynamic>);
+  }
+
+  @override
   Future<void> cancelTrip(String tripId) =>
       _dio.patch(ApiConstants.cancelTrip(tripId));
 }

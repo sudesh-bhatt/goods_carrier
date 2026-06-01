@@ -41,7 +41,10 @@ abstract final class AppRoutes {
   static const String driverHome           = '/driver/home';
   static const String driverMyTrips        = '/driver/my-trips';
   static const String postTrip             = '/driver/post-trip';
+  static const String editTrip             = '/driver/trip/:id/edit';
   static const String driverTripDetail     = '/driver/trip/:id';
+  static const String cancelTrip           = '/driver/trip/:id/cancel';
+  static const String tripCancelSuccess    = '/driver/trip/cancel-success';
   static const String driverShipmentDetail = '/driver/shipment/:id';
   static const String driverInterestSuccess = '/driver/shipment/interest-success';
   static const String driverNotifications  = '/driver/notifications';
@@ -58,6 +61,8 @@ abstract final class AppRoutes {
   static String editShipmentOf(String id) => '/customer/shipment/$id/edit';
   static String trackingOf(String id)        => '/customer/tracking/$id';
   static String driverTripDetailOf(String id)=> '/driver/trip/$id';
+  static String cancelTripOf(String id) => '/driver/trip/$id/cancel';
+  static String editTripOf(String id) => '/driver/trip/$id/edit';
   static String driverShipmentDetailOf(String id) => '/driver/shipment/$id';
   static String customerEditAddressOf(String id) =>
       '/customer/profile/addresses/$id/edit';

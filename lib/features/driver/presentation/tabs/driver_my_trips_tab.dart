@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/router/app_routes.dart';
-import '../../../../shared/presentation/widgets/cards/driver_trip_card.dart';
-import '../widgets/driver_trips_empty_view.dart';
+import '../../../../shared/presentation/widgets/navigation/confirmation_bottom_sheet.dart';
 import '../providers/driver_trips_provider.dart';
+import '../widgets/driver_trips_empty_view.dart';
+import '../widgets/my_trips/driver_my_trip_card.dart';
+import '../widgets/my_trips/driver_my_trip_tokens.dart';
 
-/// Driver "My Trip" tab — active trips posted by the driver.
+/// Driver My Trips tab — Figma `1:3967`.
 class DriverMyTripsTab extends ConsumerStatefulWidget {
   const DriverMyTripsTab({super.key});
 
@@ -23,43 +24,58 @@ class _DriverMyTripsTabState extends ConsumerState<DriverMyTripsTab>
   @override
   bool get wantKeepAlive => true;
 
+  Future<void> _confirmDelete(BuildContext context, String tripId) async {
+    final l10n = context.l10n;
+    final confirmed = await ConfirmationBottomSheet.show(
+      context,
+      title: l10n.driverDeleteTripTitle,
+      body: l10n.driverDeleteTripBody,
+      confirmLabel: l10n.actionDelete,
+      isDangerous: true,
+    );
+    if (confirmed == true && context.mounted) {
+      await ref.read(driverTripsProvider.notifier).cancelTrip(tripId);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
 
-    final l10n = context.l10n;
-    final colors = context.colors;
     final tripsState = ref.watch(driverTripsProvider);
-    final activeTrips = tripsState.active;
+    final trips = tripsState.myTripsList;
 
-    if (tripsState.isLoading && tripsState.trips.isEmpty) {
+    if (tripsState.isLoading && trips.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (activeTrips.isEmpty) {
+    if (trips.isEmpty) {
       return DriverTripsEmptyView(
         onPostTrip: () => context.push(AppRoutes.postTrip),
       );
     }
 
-    return RefreshIndicator(
-      color: colors.primary,
-      onRefresh: () => ref.read(driverTripsProvider.notifier).refresh(),
-      child: ListView.separated(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: EdgeInsets.fromLTRB(25.w, 20.h, 25.w, 24.h),
-        itemCount: activeTrips.length,
-        separatorBuilder: (_, __) => SizedBox(height: AppDimensions.base.h),
-        itemBuilder: (context, index) {
-          final trip = activeTrips[index];
-          return DriverTripCard(
-            trip: trip,
-            showDriverInfo: false,
-            actionLabel: l10n.actionViewDetails,
-            onAction: () => context.push(AppRoutes.driverTripDetailOf(trip.id)),
-            onTap: () => context.push(AppRoutes.driverTripDetailOf(trip.id)),
-          );
-        },
+    return ColoredBox(
+      color: DriverMyTripTokens.screenBg,
+      child: RefreshIndicator(
+        color: context.colors.primary,
+        onRefresh: () => ref.read(driverTripsProvider.notifier).refresh(),
+        child: ListView.separated(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: EdgeInsets.fromLTRB(25.w, 20.h, 25.w, 100.h),
+          itemCount: trips.length,
+          separatorBuilder: (_, __) => SizedBox(height: 24.h),
+          itemBuilder: (context, index) {
+            final trip = trips[index];
+            return DriverMyTripListCard(
+              trip: trip,
+              onViewRequests: () =>
+                  context.push(AppRoutes.driverTripDetailOf(trip.id)),
+              onEdit: () => context.push(AppRoutes.editTripOf(trip.id)),
+              onDelete: () => _confirmDelete(context, trip.id),
+            );
+          },
+        ),
       ),
     );
   }

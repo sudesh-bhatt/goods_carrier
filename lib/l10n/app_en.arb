@@ -269,6 +269,38 @@
   "customerNavProfile": "Profile",
   "driverNavMyTrip": "My Trip",
   "driverMyTripTitle": "My Trip",
+  "driverMyTripsTitle": "My Trips",
+  "driverTripDetailsTitle": "Trip Details",
+  "driverCancelTrip": "Cancel Trip",
+  "driverViewRequestCount": "View Request ({count})",
+  "@driverViewRequestCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "driverTripPickupLabel": "PICKUP",
+  "driverTripDropLabel": "DROP",
+  "driverTripCapacityLabel": "CAPACITY",
+  "driverTripBadgePublished": "PUBLISHED",
+  "driverTripBadgePublish": "PUBLISH",
+  "driverTripBadgeExpired": "EXPIRED",
+  "driverTripBadgeDraft": "DRAFT",
+  "driverExpertDriverLabel": "Expert Driver",
+  "driverDeleteTripTitle": "Delete trip?",
+  "driverDeleteTripBody": "This will remove the trip from your list. You can publish a new trip anytime.",
+  "cancelTripReasonRouteChanged": "Route no longer viable",
+  "cancelTripReasonVehicleUnavailable": "Vehicle not available",
+  "cancelTripReasonBetterLoad": "Found a better load",
+  "cancelTripReasonIncorrectDetails": "Incorrect details entered",
+  "cancelTripReasonOther": "Other",
+  "cancelTripKeep": "Keep Trip",
+  "tripCancelSuccessTitle": "Your Trip Cancel Successfully",
+  "tripCancelSuccessBody": "Your trip has been cancel successfully your trip id is {tripId}",
+  "@tripCancelSuccessBody": {
+    "placeholders": {
+      "tripId": { "type": "String" }
+    }
+  },
   "driverHomeShipmentId": "Shipment ID",
   "driverShipmentDetailsTitle": "Shipment Details",
   "driverAddRequest": "Add Request",
@@ -431,7 +463,9 @@
 
   "tripPostNew": "Post Trip",
   "driverAddTripTitle": "Add Trip",
+  "driverUpdateTripTitle": "Update Trip",
   "driverPublishTrip": "Publish Trip",
+  "driverUpdateTrip": "Update Trip",
   "driverTripFormContext": "Trip Details",
   "driverTripFormHero": "Set your route & load",
   "driverTripFormRouteInfo": "Route Information",

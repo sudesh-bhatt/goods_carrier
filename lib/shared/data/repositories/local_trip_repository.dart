@@ -24,6 +24,15 @@ class LocalTripRepository implements ITripRepository {
   }
 
   @override
+  Future<DriverTrip> updateTrip(DriverTrip trip) async {
+    await _delay();
+    final idx = _trips.indexWhere((t) => t.id == trip.id);
+    if (idx == -1) throw StateError('Trip not found');
+    _trips[idx] = trip;
+    return trip;
+  }
+
+  @override
   Future<void> cancelTrip(String tripId) async {
     await _delay();
     final idx = _trips.indexWhere((t) => t.id == tripId);

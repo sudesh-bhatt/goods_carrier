@@ -41,7 +41,10 @@ import '../../features/driver/presentation/screens/driver_earnings_screen.dart';
 import '../../features/driver/presentation/screens/driver_main_shell_screen.dart';
 import '../../features/driver/presentation/screens/driver_interest_success_screen.dart';
 import '../../features/driver/presentation/models/driver_interest_success_args.dart';
+import '../../features/driver/presentation/screens/cancel_trip_screen.dart';
 import '../../features/driver/presentation/screens/driver_trip_detail_screen.dart';
+import '../../features/driver/presentation/screens/trip_cancel_success_screen.dart';
+import '../../features/driver/presentation/models/trip_cancel_confirmation_args.dart';
 import '../../features/driver/presentation/screens/post_trip_screen.dart';
 import '../../features/driver/presentation/tabs/driver_home_tab.dart';
 import '../../features/driver/presentation/tabs/driver_my_trips_tab.dart';
@@ -342,21 +345,40 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
 
       // ── Driver full-screen flows (outside shell) ─────────────────────
+      // Static paths like `/driver/trip/cancel-success` must be registered
+      // before `/driver/trip/:id` or GoRouter treats `cancel-success` as an id.
       GoRoute(
         path: AppRoutes.postTrip,
         builder: (_, __) => const PostTripScreen(),
       ),
       GoRoute(
-        path: AppRoutes.driverTripDetail,
-        builder: (_, state) => DriverTripDetailScreen(
+        path: AppRoutes.editTrip,
+        builder: (_, state) => PostTripScreen(
+          tripId: state.pathParameters['id'],
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.tripCancelSuccess,
+        builder: (_, state) {
+          final extra = state.extra;
+          if (extra is! TripCancelConfirmationArgs) {
+            return const _RouterErrorPage(
+              error: FormatException('Missing trip cancel success args'),
+            );
+          }
+          return TripCancelSuccessScreen(args: extra);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.cancelTrip,
+        builder: (_, state) => CancelTripScreen(
           tripId: state.pathParameters['id']!,
         ),
       ),
       GoRoute(
-        path: AppRoutes.driverShipmentDetail,
-        builder: (_, state) => CustomerTripDetailScreen(
-          shipmentId: state.pathParameters['id']!,
-          audience: TripDetailAudience.driver,
+        path: AppRoutes.driverTripDetail,
+        builder: (_, state) => DriverTripDetailScreen(
+          tripId: state.pathParameters['id']!,
         ),
       ),
       GoRoute(
@@ -370,6 +392,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           }
           return DriverInterestSuccessScreen(args: extra);
         },
+      ),
+      GoRoute(
+        path: AppRoutes.driverShipmentDetail,
+        builder: (_, state) => CustomerTripDetailScreen(
+          shipmentId: state.pathParameters['id']!,
+          audience: TripDetailAudience.driver,
+        ),
       ),
       GoRoute(
         path: AppRoutes.driverEarnings,

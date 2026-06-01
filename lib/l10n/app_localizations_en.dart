@@ -664,6 +664,77 @@ class AppLocalizationsEn extends AppLocalizations {
   String get driverMyTripTitle => 'My Trip';
 
   @override
+  String get driverMyTripsTitle => 'My Trips';
+
+  @override
+  String get driverTripDetailsTitle => 'Trip Details';
+
+  @override
+  String get driverCancelTrip => 'Cancel Trip';
+
+  @override
+  String driverViewRequestCount(int count) {
+    return 'View Request ($count)';
+  }
+
+  @override
+  String get driverTripPickupLabel => 'PICKUP';
+
+  @override
+  String get driverTripDropLabel => 'DROP';
+
+  @override
+  String get driverTripCapacityLabel => 'CAPACITY';
+
+  @override
+  String get driverTripBadgePublished => 'PUBLISHED';
+
+  @override
+  String get driverTripBadgePublish => 'PUBLISH';
+
+  @override
+  String get driverTripBadgeExpired => 'EXPIRED';
+
+  @override
+  String get driverTripBadgeDraft => 'DRAFT';
+
+  @override
+  String get driverExpertDriverLabel => 'Expert Driver';
+
+  @override
+  String get driverDeleteTripTitle => 'Delete trip?';
+
+  @override
+  String get driverDeleteTripBody =>
+      'This will remove the trip from your list. You can publish a new trip anytime.';
+
+  @override
+  String get cancelTripReasonRouteChanged => 'Route no longer viable';
+
+  @override
+  String get cancelTripReasonVehicleUnavailable => 'Vehicle not available';
+
+  @override
+  String get cancelTripReasonBetterLoad => 'Found a better load';
+
+  @override
+  String get cancelTripReasonIncorrectDetails => 'Incorrect details entered';
+
+  @override
+  String get cancelTripReasonOther => 'Other';
+
+  @override
+  String get cancelTripKeep => 'Keep Trip';
+
+  @override
+  String get tripCancelSuccessTitle => 'Your Trip Cancel Successfully';
+
+  @override
+  String tripCancelSuccessBody(String tripId) {
+    return 'Your trip has been cancel successfully your trip id is $tripId';
+  }
+
+  @override
   String get driverHomeShipmentId => 'Shipment ID';
 
   @override
@@ -1122,7 +1193,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get driverAddTripTitle => 'Add Trip';
 
   @override
+  String get driverUpdateTripTitle => 'Update Trip';
+
+  @override
   String get driverPublishTrip => 'Publish Trip';
+
+  @override
+  String get driverUpdateTrip => 'Update Trip';
 
   @override
   String get driverTripFormContext => 'Trip Details';
