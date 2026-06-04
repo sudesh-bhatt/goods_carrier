@@ -850,6 +850,36 @@ class AppLocalizationsHi extends AppLocalizations {
   String get customerRoleLabel => 'ग्राहक';
 
   @override
+  String get driverRoleLabel => 'ड्राइवर';
+
+  @override
+  String get profileVehicleManagement => 'वाहन प्रबंधन';
+
+  @override
+  String get profileVehicleManagementSub => 'सभी वाहन विवरण';
+
+  @override
+  String get profileManageSubscription => 'सदस्यता प्रबंधित करें';
+
+  @override
+  String get profileManageSubscriptionSub => 'प्रोफेशनल प्लान';
+
+  @override
+  String get profilePaymentHistory => 'भुगतान इतिहास';
+
+  @override
+  String get profilePaymentHistorySub => 'आपका सारा भुगतान इतिहास';
+
+  @override
+  String get driverReportedShipments => 'रिपोर्ट की गई शिपमेंट';
+
+  @override
+  String get driverReportedShipmentsSub => 'रिपोर्ट की गई शिपमेंट देखें';
+
+  @override
+  String get profileComingSoon => 'जल्द आ रहा है';
+
+  @override
   String get customerAccountSettings => 'खाता सेटिंग्स';
 
   @override

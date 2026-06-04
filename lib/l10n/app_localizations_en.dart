@@ -854,6 +854,36 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customerRoleLabel => 'Customer';
 
   @override
+  String get driverRoleLabel => 'Driver';
+
+  @override
+  String get profileVehicleManagement => 'Vehicle Management';
+
+  @override
+  String get profileVehicleManagementSub => 'All Vehicle Details';
+
+  @override
+  String get profileManageSubscription => 'Manage Subscription';
+
+  @override
+  String get profileManageSubscriptionSub => 'Professional Plan';
+
+  @override
+  String get profilePaymentHistory => 'Payment History';
+
+  @override
+  String get profilePaymentHistorySub => 'Your all Payment history';
+
+  @override
+  String get driverReportedShipments => 'Reported Shipments';
+
+  @override
+  String get driverReportedShipmentsSub => 'show reported shipments';
+
+  @override
+  String get profileComingSoon => 'Coming soon';
+
+  @override
   String get customerAccountSettings => 'Account Settings';
 
   @override

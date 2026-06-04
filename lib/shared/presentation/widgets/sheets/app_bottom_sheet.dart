@@ -66,7 +66,6 @@ class AppBottomSheetContainer extends StatelessWidget {
         ),
         child: SafeArea(
           top: false,
-          bottom: false,
           child: ConstrainedBox(
             constraints: isBounded
                 ? BoxConstraints(maxHeight: maxHeight!)

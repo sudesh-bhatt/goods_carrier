@@ -29,32 +29,53 @@ class DummyNotifications {
 
   static final List<NotificationItem> driver = [
     NotificationItem(
-      id: 'N-101', type: NotificationType.tripRequestAccepted,
+      id: 'N-101',
+      type: NotificationType.tripRequestAccepted,
       title: 'Trip Request Accepted',
-      body: 'Your request #VB-9928 has been accepted by the Customer',
+      body:
+          'Your Request #VB-9928 has been accepteed by the Customer',
       createdAt: DateTime.now().subtract(const Duration(minutes: 2)),
       referenceId: 'VB-9928',
     ),
     NotificationItem(
-      id: 'N-102', type: NotificationType.tripCancelled,
-      title: 'Trip Cancelled',
-      body: 'Your trip #VB-9928 has been picked up and is en route to Ahmedabad',
+      id: 'N-102',
+      type: NotificationType.tripCancelled,
+      title: 'Trip Cancel Successfully',
+      body:
+          'Your trip #VB-9928 has been picked up by the driver and is en route to Ahmedabad',
       createdAt: DateTime.now().subtract(const Duration(minutes: 12)),
-      referenceId: 'VB-9928', isRead: true,
+      referenceId: 'VB-9928',
+      isRead: true,
     ),
     NotificationItem(
-      id: 'N-103', type: NotificationType.subscriptionPurchase,
+      id: 'N-103',
+      type: NotificationType.subscriptionPurchase,
       title: 'Subscription Purchase',
-      body: 'Payment for invoice #INV-7721 was successful. Funds will arrive in 2–3 days.',
+      body:
+          'Payment for invoice #INV-7721 was successful. Funds will arrive in 2-3 days.',
       createdAt: DateTime.now().subtract(const Duration(hours: 3)),
-      referenceId: 'INV-7721', isRead: true,
+      referenceId: 'INV-7721',
+      isRead: true,
     ),
     NotificationItem(
-      id: 'N-104', type: NotificationType.paymentSuccess,
+      id: 'N-104',
+      type: NotificationType.shipmentDropSuccess,
+      title: 'Shipment Drop Successfully',
+      body:
+          'Your shipment #VB-9928 has been picked up by the driver and is en route to Ahmedabad',
+      createdAt: DateTime.now().subtract(const Duration(minutes: 12)),
+      referenceId: 'VB-9928',
+      isRead: true,
+    ),
+    NotificationItem(
+      id: 'N-105',
+      type: NotificationType.paymentSuccess,
       title: 'Payment Success',
-      body: 'Payment for invoice #INV-7721 was successful. Funds will arrive in 2–3 days.',
-      createdAt: DateTime.now().subtract(const Duration(days: 1)),
-      referenceId: 'INV-7721', isRead: true,
+      body:
+          'Payment for invoice #INV-7721 was successful. Funds will arrive in 2-3 days.',
+      createdAt: DateTime.now().subtract(const Duration(days: 1, hours: 4)),
+      referenceId: 'INV-7721',
+      isRead: true,
     ),
   ];
 }

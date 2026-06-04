@@ -115,7 +115,6 @@ class FlowScreenAppBar extends StatelessWidget implements PreferredSizeWidget {
             : null,
       ),
       child: SafeArea(
-        bottom: false,
         child: SizedBox(
           height: 64.h,
           child: Padding(

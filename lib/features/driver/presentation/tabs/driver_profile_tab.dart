@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../screens/driver_profile_screen.dart';
+import '../../../../shared/presentation/profile/app_profile_tab.dart';
 
-/// Driver profile tab body — reuses profile content without duplicate app bar.
-class DriverProfileTab extends ConsumerWidget {
+/// Driver profile tab — shared [AppProfileTab] (role-based menu from auth).
+class DriverProfileTab extends StatelessWidget {
   const DriverProfileTab({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return const DriverProfileScreen(embedded: true);
+  Widget build(BuildContext context) {
+    return const AppProfileTab();
   }
 }

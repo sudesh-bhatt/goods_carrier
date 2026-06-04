@@ -1714,6 +1714,66 @@ abstract class AppLocalizations {
   /// **'Customer'**
   String get customerRoleLabel;
 
+  /// No description provided for @driverRoleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver'**
+  String get driverRoleLabel;
+
+  /// No description provided for @profileVehicleManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle Management'**
+  String get profileVehicleManagement;
+
+  /// No description provided for @profileVehicleManagementSub.
+  ///
+  /// In en, this message translates to:
+  /// **'All Vehicle Details'**
+  String get profileVehicleManagementSub;
+
+  /// No description provided for @profileManageSubscription.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Subscription'**
+  String get profileManageSubscription;
+
+  /// No description provided for @profileManageSubscriptionSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Professional Plan'**
+  String get profileManageSubscriptionSub;
+
+  /// No description provided for @profilePaymentHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment History'**
+  String get profilePaymentHistory;
+
+  /// No description provided for @profilePaymentHistorySub.
+  ///
+  /// In en, this message translates to:
+  /// **'Your all Payment history'**
+  String get profilePaymentHistorySub;
+
+  /// No description provided for @driverReportedShipments.
+  ///
+  /// In en, this message translates to:
+  /// **'Reported Shipments'**
+  String get driverReportedShipments;
+
+  /// No description provided for @driverReportedShipmentsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'show reported shipments'**
+  String get driverReportedShipmentsSub;
+
+  /// No description provided for @profileComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get profileComingSoon;
+
   /// No description provided for @customerAccountSettings.
   ///
   /// In en, this message translates to:

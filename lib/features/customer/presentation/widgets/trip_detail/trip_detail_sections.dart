@@ -465,7 +465,6 @@ class TripDetailRequestFooter extends StatelessWidget {
         ),
         child: SafeArea(
           top: false,
-          bottom: false,
           child: Padding(
             padding: EdgeInsets.all(24.w),
             child: Material(

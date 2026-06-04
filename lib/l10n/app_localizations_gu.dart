@@ -849,6 +849,36 @@ class AppLocalizationsGu extends AppLocalizations {
   String get customerRoleLabel => 'ગ્રાહક';
 
   @override
+  String get driverRoleLabel => 'ડ્રાઇવર';
+
+  @override
+  String get profileVehicleManagement => 'વાહન મેનેજમેન્ટ';
+
+  @override
+  String get profileVehicleManagementSub => 'બધી વાહન વિગતો';
+
+  @override
+  String get profileManageSubscription => 'સબ્સ્ક્રિપ્શન મેનેજ કરો';
+
+  @override
+  String get profileManageSubscriptionSub => 'પ્રોફેશનલ પ્લાન';
+
+  @override
+  String get profilePaymentHistory => 'ચુકવણી ઇતિહાસ';
+
+  @override
+  String get profilePaymentHistorySub => 'તમારો બધો ચુકવણી ઇતિહાસ';
+
+  @override
+  String get driverReportedShipments => 'રિપોર્ટ કરેલી શિપમેન્ટ';
+
+  @override
+  String get driverReportedShipmentsSub => 'રિપોર્ટ કરેલી શિપમેન્ટ જુઓ';
+
+  @override
+  String get profileComingSoon => 'ટૂંક સમયમાં';
+
+  @override
   String get customerAccountSettings => 'એકાઉન્ટ સેટિંગ્સ';
 
   @override

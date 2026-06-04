@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-/// Horizontal slide transition between customer bottom-nav tabs.
+/// Horizontal slide transition between main-shell bottom-nav tabs.
 ///
 /// Used as [StatefulShellRoute.navigatorContainerBuilder] so branch state is
 /// preserved while switching tabs with a left/right page shift.
-class CustomerTabSlideContainer extends StatefulWidget {
-  const CustomerTabSlideContainer({
+class AppTabSlideContainer extends StatefulWidget {
+  const AppTabSlideContainer({
     super.key,
     required this.currentIndex,
     required this.children,
@@ -15,11 +15,10 @@ class CustomerTabSlideContainer extends StatefulWidget {
   final List<Widget> children;
 
   @override
-  State<CustomerTabSlideContainer> createState() =>
-      _CustomerTabSlideContainerState();
+  State<AppTabSlideContainer> createState() => _AppTabSlideContainerState();
 }
 
-class _CustomerTabSlideContainerState extends State<CustomerTabSlideContainer>
+class _AppTabSlideContainerState extends State<AppTabSlideContainer>
     with SingleTickerProviderStateMixin {
   static const _duration = Duration(milliseconds: 300);
 
@@ -50,7 +49,7 @@ class _CustomerTabSlideContainerState extends State<CustomerTabSlideContainer>
   }
 
   @override
-  void didUpdateWidget(CustomerTabSlideContainer oldWidget) {
+  void didUpdateWidget(AppTabSlideContainer oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.currentIndex != widget.currentIndex) {
       _fromIndex = oldWidget.currentIndex;

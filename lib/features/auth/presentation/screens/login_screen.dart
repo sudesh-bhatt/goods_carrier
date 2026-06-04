@@ -172,7 +172,6 @@ class _LoginHeroBanner extends StatelessWidget {
             ),
           ),
           SafeArea(
-            bottom: false,
             child: Center(
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 24.w),

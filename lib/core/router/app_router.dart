@@ -17,8 +17,6 @@ import '../../features/customer/presentation/screens/customer_settings_screen.da
 import '../../features/customer/presentation/screens/support_center_screen.dart';
 import '../../features/customer/presentation/screens/reported_trips_screen.dart';
 import '../../features/customer/presentation/screens/saved_addresses_screen.dart';
-import '../../features/customer/presentation/screens/customer_main_shell_screen.dart';
-import '../../features/customer/presentation/widgets/customer_tab_slide_container.dart';
 import '../../features/customer/presentation/screens/shipment_form_screen.dart';
 import '../../features/customer/presentation/screens/shipment_post_confirmation_screen.dart';
 import '../../features/customer/presentation/models/shipment_post_confirmation_args.dart';
@@ -38,7 +36,9 @@ import '../../features/customer/presentation/tabs/customer_notifications_tab.dar
 import '../../features/customer/presentation/tabs/customer_profile_tab.dart';
 import '../../features/customer/presentation/tabs/customer_shipments_tab.dart';
 import '../../features/driver/presentation/screens/driver_earnings_screen.dart';
-import '../../features/driver/presentation/screens/driver_main_shell_screen.dart';
+import '../../shared/domain/enums/user_role.dart';
+import '../../shared/presentation/screens/app_main_shell_screen.dart';
+import '../../shared/presentation/widgets/navigation/app_tab_slide_container.dart';
 import '../../features/driver/presentation/screens/driver_interest_success_screen.dart';
 import '../../features/driver/presentation/models/driver_interest_success_args.dart';
 import '../../features/driver/presentation/screens/cancel_trip_screen.dart';
@@ -145,10 +145,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       // ── Customer main shell (single scaffold, tab bodies only) ─────────
       StatefulShellRoute(
         builder: (context, state, navigationShell) {
-          return CustomerMainShellScreen(navigationShell: navigationShell);
+          return AppMainShellScreen(
+            role: UserRole.customer,
+            navigationShell: navigationShell,
+          );
         },
         navigatorContainerBuilder: (context, navigationShell, children) {
-          return CustomerTabSlideContainer(
+          return AppTabSlideContainer(
             currentIndex: navigationShell.currentIndex,
             children: children,
           );
@@ -300,10 +303,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       // ── Driver main shell (single scaffold, tab bodies only) ─────────
       StatefulShellRoute(
         builder: (context, state, navigationShell) {
-          return DriverMainShellScreen(navigationShell: navigationShell);
+          return AppMainShellScreen(
+            role: UserRole.driver,
+            navigationShell: navigationShell,
+          );
         },
         navigatorContainerBuilder: (context, navigationShell, children) {
-          return CustomerTabSlideContainer(
+          return AppTabSlideContainer(
             currentIndex: navigationShell.currentIndex,
             children: children,
           );

@@ -29,7 +29,6 @@ class CustomerMainHeader extends StatelessWidget {
     return ColoredBox(
       color: colors.surface,
       child: SafeArea(
-        bottom: false,
         child: Container(
           height: 56.h,
           padding: EdgeInsets.symmetric(horizontal: 25.w),
