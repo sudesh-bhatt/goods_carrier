@@ -3,17 +3,19 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import '../../features/settings/presentation/providers/locale_provider.dart';
+import '../providers/session_expired_provider.dart';
+import '../providers/shared_preferences_provider.dart';
 import 'api_constants.dart';
+import 'device_info_service.dart';
 import 'interceptors/auth_interceptor.dart';
 import 'interceptors/error_interceptor.dart';
+import 'interceptors/headers_interceptor.dart';
 import 'interceptors/logging_interceptor.dart';
+import 'interceptors/response_interceptor.dart';
 
 // ─── Secure Storage provider ──────────────────────────────────────────────────
 
-/// Single [FlutterSecureStorage] instance shared across the app.
-///
-/// Android: uses EncryptedSharedPreferences (API 23+).
-/// iOS: uses Keychain with accessible-when-unlocked policy.
 final secureStorageProvider = Provider<FlutterSecureStorage>((ref) {
   return const FlutterSecureStorage(
     aOptions: AndroidOptions(encryptedSharedPreferences: true),
@@ -25,31 +27,36 @@ final secureStorageProvider = Provider<FlutterSecureStorage>((ref) {
 
 // ─── Dio provider ─────────────────────────────────────────────────────────────
 
-/// Fully configured [Dio] instance with:
-///   - [AuthInterceptor]    — Bearer token + silent refresh
-///   - [ErrorInterceptor]   — DioException → AppException mapping
-///   - [LoggingInterceptor] — console output in debug mode only
-///
-/// Consume via `ref.read(dioProvider)` inside repositories.
 final dioProvider = Provider<Dio>((ref) {
   final storage = ref.read(secureStorageProvider);
+  final deviceInfo = ref.read(deviceInfoServiceProvider);
 
   final dio = Dio(
     BaseOptions(
-      baseUrl:        ApiConstants.baseUrl,
+      baseUrl: ApiConstants.baseUrl,
       connectTimeout: ApiConstants.connectTimeout,
       receiveTimeout: ApiConstants.receiveTimeout,
-      sendTimeout:    ApiConstants.sendTimeout,
+      sendTimeout: ApiConstants.sendTimeout,
       headers: const {
+        'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'Accept':       'application/json',
-        'X-Platform':   'flutter',
       },
     ),
   );
 
   dio.interceptors.addAll([
-    AuthInterceptor(dio: dio, storage: storage),
+    HeadersInterceptor(
+      deviceInfo: deviceInfo,
+      languageCode: () => ref.read(localeProvider).languageCode,
+    ),
+    AuthInterceptor(
+      storage: storage,
+      prefs: ref.read(sharedPreferencesProvider),
+      onSessionExpired: () {
+        Future.microtask(() => signalSessionExpiredFromRef(ref));
+      },
+    ),
+    ResponseInterceptor(),
     ErrorInterceptor(),
     if (kDebugMode) LoggingInterceptor(),
   ]);

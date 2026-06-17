@@ -1,9 +1,12 @@
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
+import '../../../../core/utils/validators.dart';
 import '../../../../res/font_res.dart';
+import '../../../../shared/presentation/widgets/inputs/app_phone_field.dart';
 
 /// Figma driver profile setup screen background (node 1-661).
 const kDriverProfileBackground = Color(0xFFF5FAFF);
@@ -314,90 +317,40 @@ class DriverProfileAddressField extends StatelessWidget {
   }
 }
 
-/// Business phone row with +91 prefix box.
+/// Business phone — country code + local number via [AppPhoneField].
 class DriverProfileBusinessPhoneField extends StatelessWidget {
   const DriverProfileBusinessPhoneField({
     super.key,
     required this.label,
     required this.controller,
+    required this.dialCode,
+    required this.onDialCodeChanged,
     this.hint,
     this.validator,
-    this.textInputAction = TextInputAction.done,
   });
 
   final String label;
   final String? hint;
   final TextEditingController controller;
+  final String dialCode;
+  final ValueChanged<CountryCode> onDialCodeChanged;
   final FormFieldValidator<String>? validator;
-  final TextInputAction textInputAction;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.only(left: 4.w),
-          child: Text(
-            label,
-            style: TextStyle(
-              fontFamily: FontRes.MANROPE_SEMIBOLD,
-              fontSize: 12.sp,
-              fontWeight: FontWeight.w600,
-              height: 16 / 12,
-              color: _kLabelColor,
-            ),
-          ),
-        ),
-        SizedBox(height: 6.h),
-        SizedBox(
-          height: 44.h,
-          child: Row(
-            children: [
-              Container(
-                width: 47.w,
-                height: 44.h,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: kDriverProfileFieldFill,
-                  borderRadius: BorderRadius.circular(12.r),
-                ),
-                child: Text(
-                  '+91',
-                  style: TextStyle(
-                    fontFamily: FontRes.MANROPE_MEDIUM,
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w500,
-                    height: 20 / 14,
-                    color: const Color(0xFF161C20),
-                  ),
-                ),
-              ),
-              SizedBox(width: 8.w),
-              Expanded(
-                child: TextFormField(
-                  controller: controller,
-                  validator: validator,
-                  keyboardType: TextInputType.phone,
-                  textInputAction: textInputAction,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    LengthLimitingTextInputFormatter(10),
-                  ],
-                  style: TextStyle(
-                    fontFamily: FontRes.MANROPE_REGULAR,
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w400,
-                    height: 19 / 14,
-                    color: const Color(0xFF161C20),
-                  ),
-                  decoration: _inputDecoration(hint: hint),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
+    return AppPhoneField(
+      label: label,
+      labelStyle: AppPhoneFieldLabelStyle.profileBusiness,
+      size: AppPhoneFieldSize.compact,
+      controller: controller,
+      dialCode: dialCode,
+      onDialCodeChanged: onDialCodeChanged,
+      hint: hint,
+      validator: validator ??
+          (v) {
+            if (v == null || v.trim().isEmpty) return null;
+            return Validators.phoneForCountry(dialCode, v);
+          },
     );
   }
 }

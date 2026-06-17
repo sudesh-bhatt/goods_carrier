@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -13,8 +12,9 @@ import '../../../../core/mixins/safe_set_state_mixin.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_color_scheme.dart';
 import '../../../../core/theme/app_text_styles.dart';
-import '../../../../core/utils/validators.dart';
+import '../../../../core/utils/phone_utils.dart';
 import '../../../../generated/assets.dart';
+import '../../../../shared/presentation/widgets/inputs/app_phone_field.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../res/font_res.dart';
 import '../providers/auth_provider.dart';
@@ -23,9 +23,6 @@ const _kLoginBannerAsset = 'assets/images/login_screen_banner.png';
 
 /// Figma Login card headline fill (node 2013-1652).
 const _kLoginHeadlineColor = Color(0xFF1A1C1E);
-
-/// Figma login input field fill (lighter than global [AppColorScheme.inputFill]).
-const _kLoginInputFill = Color(0xFFF0F2F5);
 
 /// Figma social-proof tiles (node 1-837).
 const _kFeatureTileHeight = 122.4;
@@ -59,7 +56,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     safeSetState(() => _submitted = true);
     if (!(_formKey.currentState?.validate() ?? false)) return;
     // Full E.164-style number sent to the backend: e.g. +919876543210
-    final fullNumber = '$_dialCode${_phoneCtrl.text.trim()}';
+    final fullNumber =
+        PhoneUtils.buildE164(_dialCode, _phoneCtrl.text.trim());
     await ref.read(authProvider.notifier).sendOtp(fullNumber);
     if (mounted) context.push(AppRoutes.otpVerification);
   }
@@ -172,20 +170,24 @@ class _LoginHeroBanner extends StatelessWidget {
             ),
           ),
           SafeArea(
-            child: Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24.w),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Assets.appLogo.image(
-                      height: 150.h,
-                      fit: BoxFit.contain,
+            bottom: false,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 8.h),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return Align(
+                    alignment: Alignment.center,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: SizedBox(
+                        height: 150.h,
+                        child: Assets.appLogo.image(
+                          fit: BoxFit.contain,
+                        ),
+                      ),
                     ),
-                    SizedBox(height: 10.h),
-
-                  ],
-                ),
+                  );
+                },
               ),
             ),
           ),
@@ -227,12 +229,6 @@ class _FormCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final radius = BorderRadius.circular(AppDimensions.radiusLoginCard.r);
-    final fieldRadius = BorderRadius.circular(AppDimensions.radiusMd.r);
-    const phoneDigitsColor = Color(0xFF333333);
-    final orangeFieldBorder = BorderSide(
-      color: colors.primary.withValues(alpha: 0.42),
-      width: 1,
-    );
 
     return Container(
       width: double.infinity,
@@ -291,76 +287,13 @@ class _FormCard extends StatelessWidget {
               ),
             ),
             SizedBox(height: 8.h),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // ── 30 % — country code picker ────────────────────────
-                _CountryBox(
-                  colors:    colors,
-                  textTheme: textTheme,
-                  l10n:      l10n,
-                  onChanged: onCountryChanged,
-                ),
-                SizedBox(width: 8.w),
-                // ── 70 % — phone number input ─────────────────────────
-                Expanded(
-                  flex: 7,
-                  child: TextFormField(
-                    controller: phoneCtrl,
-                    keyboardType: TextInputType.phone,
-                    textInputAction: TextInputAction.done,
-                    autofocus: true,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      // India: 10 digits; ITU-T E.164 max for all others: 15.
-                      LengthLimitingTextInputFormatter(
-                        dialCode == '+91' ? 10 : 15,
-                      ),
-                    ],
-                    validator: (v) => Validators.phoneForCountry(dialCode, v),
-                    onFieldSubmitted: (_) => onSendOtp(),
-                    style: textTheme.bodyLarge?.copyWith(
-                      color: phoneDigitsColor,
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w400,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: l10n.authPhoneDigitsPlaceholder,
-                      hintStyle: textTheme.bodyMedium?.copyWith(
-                        color: colors.textHint,
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w400,
-                      ),
-                      filled: true,
-                      fillColor: _kLoginInputFill,
-                      border: OutlineInputBorder(
-                        borderRadius: fieldRadius,
-                        borderSide: orangeFieldBorder,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: fieldRadius,
-                        borderSide: orangeFieldBorder,
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: fieldRadius,
-                        borderSide: BorderSide(color: colors.primary, width: 1.5),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderRadius: fieldRadius,
-                        borderSide: BorderSide(color: colors.error, width: 1.5),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderRadius: fieldRadius,
-                        borderSide: BorderSide(color: colors.error, width: 1.5),
-                      ),
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 14.w,
-                        vertical: 14.h,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+            AppPhoneField(
+              controller: phoneCtrl,
+              dialCode: dialCode,
+              onDialCodeChanged: onCountryChanged,
+              size: AppPhoneFieldSize.login,
+              autofocus: true,
+              onFieldSubmitted: (_) => onSendOtp(),
             ),
             SizedBox(height: 20.h),
             DecoratedBox(
@@ -449,196 +382,6 @@ class _FormCard extends StatelessWidget {
               ],
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _CountryBox extends StatelessWidget {
-  const _CountryBox({
-    required this.colors,
-    required this.textTheme,
-    required this.l10n,
-    required this.onChanged,
-  });
-
-  final AppColorScheme            colors;
-  final TextTheme                 textTheme;
-  final AppLocalizations          l10n;
-  final ValueChanged<CountryCode> onChanged;
-
-  /// ISO 3166-1 alpha-3 lookup — covers countries most relevant to an India-
-  /// focused logistics app. Unmapped codes fall back to the alpha-2 value.
-  static String _alpha3(String? alpha2) {
-    const _map = {
-      'IN': 'IND', 'US': 'USA', 'GB': 'GBR', 'CN': 'CHN', 'JP': 'JPN',
-      'DE': 'DEU', 'FR': 'FRA', 'AU': 'AUS', 'CA': 'CAN', 'SG': 'SGP',
-      'AE': 'ARE', 'SA': 'SAU', 'PK': 'PAK', 'BD': 'BGD', 'NP': 'NPL',
-      'LK': 'LKA', 'MY': 'MYS', 'TH': 'THA', 'ID': 'IDN', 'PH': 'PHL',
-      'ZA': 'ZAF', 'NG': 'NGA', 'KE': 'KEN', 'BR': 'BRA', 'MX': 'MEX',
-      'RU': 'RUS', 'KR': 'KOR', 'IT': 'ITA', 'ES': 'ESP', 'NL': 'NLD',
-      'NZ': 'NZL', 'QA': 'QAT', 'KW': 'KWT', 'BH': 'BHR', 'OM': 'OMN',
-      'IR': 'IRN', 'IQ': 'IRQ', 'EG': 'EGY', 'ET': 'ETH', 'GH': 'GHA',
-      'TZ': 'TZA', 'UG': 'UGA', 'MM': 'MMR', 'VN': 'VNM', 'TR': 'TUR',
-    };
-    final key = alpha2?.toUpperCase();
-    return _map[key] ?? (key ?? 'IND');
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // Force English country names in the dialog right now.
-    // TODO: swap `const Locale('en')` → `Localizations.localeOf(context)`
-    // once the app's locale switcher is wired through the ancestor tree.
-    return Localizations.override(
-      context: context,
-      locale: const Locale('en'),
-      child: SizedBox(
-        height: 52.h,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: _kLoginInputFill,
-            borderRadius: BorderRadius.circular(AppDimensions.radiusMd.r),
-            border: Border.all(
-              color: colors.primary.withValues(alpha: 0.42),
-              width: 1,
-            ),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(AppDimensions.radiusMd.r),
-            // Theme override propagates into the picker's internal ListTiles,
-            // giving us control over dialog item spacing and divider visibility.
-            child: Theme(
-              data: Theme.of(context).copyWith(
-                listTileTheme: ListTileThemeData(
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 20.w,
-                    vertical:   2.h,
-                  ),
-                  minVerticalPadding: 12.h,
-                  dense: false,
-                  titleTextStyle: TextStyle(
-                    fontFamily: 'Manrope',
-                    fontSize:   14.sp,
-                    fontWeight: FontWeight.w500,
-                    color:      colors.textPrimary,
-                    height:     1.4,
-                  ),
-                ),
-                // Remove the hairline dividers between rows — cleaner look.
-                dividerColor: Colors.transparent,
-              ),
-              child: CountryCodePicker(
-                onChanged: onChanged,
-                initialSelection:          'IN',
-                favorite:                  const ['IN'],
-                showCountryOnly:           false,
-                showOnlyCountryWhenClosed: false,
-                alignLeft:                 false,
-                showDropDownButton:        false,
-                hideMainText:              true,
-                showFlagMain:              false,
-                showFlag:                  true,   // flags shown in the dialog list
-                flagWidth:                 22.w,
-                padding:                   EdgeInsets.zero,
-
-                // ── Closed-state: "IND  +91  ▾" ─────────────────────────────
-                builder: (CountryCode? code) => Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10.w),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Flexible(
-                        child: Text(
-                          '${_alpha3(code?.code)}  ${code?.dialCode ?? '+91'}',
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontFamily: FontRes.MANROPE_REGULAR,
-                            fontSize:   13.sp,
-                            fontWeight: FontWeight.w500,
-                            color:      const Color(0xFF333333),
-                            height:     20 / 13,
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 2.w),
-                      Icon(
-                        Icons.keyboard_arrow_down_rounded,
-                        size:  16.w,
-                        color: colors.textSecondary,
-                      ),
-                    ],
-                  ),
-                ),
-
-                // ── Dialog row text ───────────────────────────────────────────
-                // Fallback style; primary control is via listTileTheme above.
-                dialogTextStyle: TextStyle(
-                  fontFamily: 'Manrope',
-                  fontSize:   14.sp,
-                  fontWeight: FontWeight.w500,
-                  color:      colors.textPrimary,
-                  height:     1.4,
-                ),
-
-                // ── Dialog chrome ─────────────────────────────────────────────
-                dialogBackgroundColor: colors.surface,
-                barrierColor:          Colors.black.withOpacity(0.45),
-                closeIcon: Icon(
-                  Icons.close_rounded,
-                  size:  22.w,
-                  color: colors.textPrimary,
-                ),
-
-                // ── Search field ──────────────────────────────────────────────
-                searchStyle: TextStyle(
-                  fontFamily: 'Manrope',
-                  fontSize:   14.sp,
-                  fontWeight: FontWeight.w400,
-                  color:      colors.textPrimary,
-                ),
-                searchDecoration: InputDecoration(
-                  hintText: l10n.actionSearch,
-                  hintStyle: TextStyle(
-                    fontFamily: 'Manrope',
-                    fontSize:   14.sp,
-                    fontWeight: FontWeight.w400,
-                    color:      colors.textHint,
-                  ),
-                  prefixIcon: Icon(
-                    Icons.search_rounded,
-                    color: colors.textSecondary,
-                    size:  20.w,
-                  ),
-                  filled:    true,
-                  fillColor: _kLoginInputFill,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
-                    borderSide:   BorderSide.none,
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
-                    borderSide:   BorderSide.none,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
-                    borderSide:   BorderSide(color: colors.primary, width: 1.5),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical:   12,
-                  ),
-                ),
-
-                dialogSize: Size(
-                  MediaQuery.of(context).size.width * 0.90,
-                  600.h,
-                ),
-              ),
-            ),
-          ),
         ),
       ),
     );

@@ -1,38 +1,92 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../../../core/network/api_constants.dart';
+import '../../../core/utils/auth_token_utils.dart';
+import '../../domain/entities/auth_result.dart';
+import '../../domain/entities/otp_session.dart';
 import '../../domain/entities/user.dart';
+import '../../domain/enums/onboarding_next_step.dart';
 import '../../domain/enums/user_role.dart';
 import '../../domain/repositories/i_auth_repository.dart';
+import '../local/auth_preferences_store.dart';
 
-/// Dummy auth repository.
-///
-/// OTP: accepts any 4-digit code.
-/// Profile: builds a [User] from the submitted data; no network call.
-/// Tokens: reads/writes from [FlutterSecureStorage].
+/// Dummy auth repository for offline dev when [USE_REMOTE_API=false].
 class LocalAuthRepository implements IAuthRepository {
-  LocalAuthRepository(this._storage);
+  LocalAuthRepository(
+    this._storage, {
+    required AuthPreferencesStore prefsStore,
+  }) : _prefsStore = prefsStore;
 
   final FlutterSecureStorage _storage;
+  final AuthPreferencesStore _prefsStore;
+
+  String? _otpReferenceId;
+  int _resendRemaining = 0;
 
   static Future<void> _delay([int ms = 700]) =>
       Future.delayed(Duration(milliseconds: ms));
 
   @override
-  Future<void> sendOtp(String phoneNumber) => _delay(800);
+  Future<OtpSession> sendOtp({
+    required String countryCode,
+    required String phone,
+  }) async {
+    await _delay(800);
+    _otpReferenceId = 'LOCAL-OTP-${DateTime.now().millisecondsSinceEpoch}';
+    _resendRemaining = 3;
+    await saveOtpReferenceId(_otpReferenceId!);
+    return OtpSession(
+      referenceId: _otpReferenceId!,
+      otpExpiresIn: 300,
+      resendRemaining: _resendRemaining,
+    );
+  }
 
   @override
-  Future<Map<String, String>> verifyOtp(
-      String phoneNumber, String otp) async {
+  Future<AuthResult> verifyOtp({
+    required String referenceId,
+    required String otp,
+  }) async {
     await _delay(600);
-    // Dummy: any 4-digit code succeeds
     if (otp.length != 4) throw Exception('Invalid OTP');
-    // Return fake tokens — stored by caller
-    return {
-      'access_token':  'dummy_access_${DateTime.now().millisecondsSinceEpoch}',
-      'refresh_token': 'dummy_refresh_${DateTime.now().millisecondsSinceEpoch}',
-    };
+    const token = 'local_dummy_token';
+    await saveToken(token);
+    return AuthResult(
+      token: token,
+      user: User(
+        id: 'local-1',
+        phone: '9876543210',
+        countryCode: '+91',
+      ),
+      nextStep: OnboardingNextStep.selectRole,
+    );
   }
+
+  @override
+  Future<OtpSession> resendOtp({required String referenceId}) async {
+    if (_resendRemaining <= 0) {
+      throw Exception('Resend limit reached');
+    }
+    await _delay(400);
+    _resendRemaining--;
+    return OtpSession(
+      referenceId: referenceId,
+      otpExpiresIn: 300,
+      resendRemaining: _resendRemaining,
+    );
+  }
+
+  @override
+  Future<AuthResult> fetchMe() async {
+    await _delay(300);
+    return AuthResult(
+      user: User(id: 'local-1', phone: '9876543210', countryCode: '+91'),
+      nextStep: OnboardingNextStep.selectRole,
+    );
+  }
+
+  @override
+  Future<void> logout() => clearSession();
 
   @override
   Future<User> createCustomerProfile({
@@ -40,21 +94,45 @@ class LocalAuthRepository implements IAuthRepository {
     required String phone,
     required String address,
     String? email,
+    String? profileImageUrl,
   }) async {
     await _delay();
     return User(
-      id:      'USR-${DateTime.now().millisecondsSinceEpoch % 9999}',
-      name:    name,
-      phone:   phone,
-      email:   email ?? '',
-      role:    UserRole.customer,
+      id: 'USR-${DateTime.now().millisecondsSinceEpoch % 9999}',
+      name: name,
+      phone: phone,
+      email: email ?? '',
+      role: UserRole.customer,
       address: address,
+      profileImageUrl: profileImageUrl,
+      profileCompleted: true,
+    );
+  }
+
+  @override
+  Future<User> updateCustomerProfile({
+    required String name,
+    required String address,
+    String? email,
+    String? profileImageUrl,
+  }) async {
+    await _delay();
+    return User(
+      id: 'local-1',
+      name: name,
+      phone: '9876543210',
+      email: email ?? '',
+      role: UserRole.customer,
+      address: address,
+      profileImageUrl: profileImageUrl,
+      profileCompleted: true,
     );
   }
 
   @override
   Future<User> createDriverProfile({
     required String name,
+    required String phone,
     String? email,
     String? address,
     String? companyName,
@@ -62,41 +140,55 @@ class LocalAuthRepository implements IAuthRepository {
     String? gstNumber,
     String? businessEmail,
     String? businessPhone,
+    String? profileImageUrl,
   }) async {
     await _delay();
     return User(
-      id:    'USR-${DateTime.now().millisecondsSinceEpoch % 9999}',
-      name:  name,
-      phone: await _storage.read(key: 'otp_phone') ?? '',
+      id: 'USR-${DateTime.now().millisecondsSinceEpoch % 9999}',
+      name: name,
+      phone: phone,
       email: email ?? '',
-      role:  UserRole.driver,
+      role: UserRole.driver,
       address: address,
       companyName: companyName,
       gstName: gstName,
       gstNumber: gstNumber,
       businessEmail: businessEmail,
       businessPhone: businessPhone,
+      profileImageUrl: profileImageUrl,
+      profileCompleted: true,
     );
   }
 
   @override
-  Future<void> saveTokens({
-    required String accessToken,
-    required String refreshToken,
-  }) =>
-      Future.wait([
-        _storage.write(key: ApiConstants.kAccessToken,  value: accessToken),
-        _storage.write(key: ApiConstants.kRefreshToken, value: refreshToken),
-      ]);
+  Future<void> saveToken(String token) async {
+    final bearer = AuthTokenUtils.bearerValue(token);
+    if (bearer.isEmpty) return;
+    await _storage.write(key: ApiConstants.kAuthToken, value: bearer);
+    await _prefsStore.saveAuthBearerToken(bearer);
+  }
 
   @override
-  Future<void> clearTokens() =>
-      Future.wait([
+  Future<void> saveOtpReferenceId(String referenceId) =>
+      _storage.write(key: ApiConstants.kOtpReferenceId, value: referenceId);
+
+  @override
+  Future<String?> getToken() async {
+    final fromSecure = await _storage.read(key: ApiConstants.kAuthToken);
+    if (fromSecure != null && fromSecure.isNotEmpty) return fromSecure;
+    return _prefsStore.loadAuthBearerToken();
+  }
+
+  @override
+  Future<String?> getOtpReferenceId() =>
+      _storage.read(key: ApiConstants.kOtpReferenceId);
+
+  @override
+  Future<void> clearSession() => Future.wait([
+        _storage.delete(key: ApiConstants.kAuthToken),
         _storage.delete(key: ApiConstants.kAccessToken),
         _storage.delete(key: ApiConstants.kRefreshToken),
+        _storage.delete(key: ApiConstants.kOtpReferenceId),
+        _prefsStore.clearAuthBearerToken(),
       ]);
-
-  @override
-  Future<String?> getAccessToken() =>
-      _storage.read(key: ApiConstants.kAccessToken);
 }

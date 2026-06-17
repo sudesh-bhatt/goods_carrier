@@ -6,18 +6,13 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../generated/assets.dart';
-import '../../../../shared/domain/enums/user_role.dart';
+import '../../../../shared/domain/enums/session_phase.dart';
 import '../providers/auth_provider.dart';
-
-// ─── Timing constants ─────────────────────────────────────────────────────────
 
 const _kProgressDuration = Duration(milliseconds: 1800);
 const _kNavigateDelay = Duration(milliseconds: 2600);
 
-/// Splash screen — matches the Figma design.
-///
-/// Navigates to home when a profile is saved in preferences; otherwise
-/// continues the onboarding flow at role selection.
+/// Splash — restores session via API, then routes to login or onboarding/home.
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
@@ -29,36 +24,46 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _ctrl;
   late final Animation<double> _progress;
+  var _navigated = false;
 
   @override
   void initState() {
     super.initState();
 
     _ctrl = AnimationController(vsync: this, duration: _kProgressDuration);
-
     _progress = CurvedAnimation(
       parent: _ctrl,
       curve: const Interval(0.15, 1.0, curve: Curves.easeInOut),
     );
-
     _ctrl.forward();
 
-    Future.delayed(_kNavigateDelay, _navigateNext);
+    Future.microtask(() async {
+      await ref.read(authProvider.notifier).restoreSession();
+      Future.delayed(_kNavigateDelay, _navigateNext);
+    });
   }
 
   void _navigateNext() {
-    if (!mounted) return;
+    if (!mounted || _navigated) return;
+    _navigated = true;
 
     final auth = ref.read(authProvider);
-    if (auth.isAuthenticated && auth.user != null) {
-      final home = auth.user!.role == UserRole.customer
+    if (auth.sessionPhase == SessionPhase.authenticated) {
+      final home = auth.user?.isCustomer == true
           ? AppRoutes.customerHome
           : AppRoutes.driverHome;
       context.go(home);
       return;
     }
 
-    context.go(AppRoutes.roleSelection);
+    final onboardingRoute = auth.routeForCurrentStep;
+    if (auth.sessionPhase == SessionPhase.onboarding &&
+        onboardingRoute != null) {
+      context.go(onboardingRoute);
+      return;
+    }
+
+    context.go(AppRoutes.loginScreen);
   }
 
   @override
@@ -78,61 +83,42 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       body: SafeArea(
         child: Column(
           children: [
-            Expanded(
-              child: Center(
-                child: Padding(
-                  padding: EdgeInsets.all(20.w),
-                  child: Assets.splashScreenLogo.image(),
-                ),
-              ),
-            ),
+            const Spacer(flex: 2),
             Padding(
-              padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 36.h),
+              padding: EdgeInsets.symmetric(horizontal: 48.w),
+              child: Assets.splashScreenLogo.image(),
+            ),
+            const Spacer(flex: 3),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 48.w),
               child: AnimatedBuilder(
                 animation: _progress,
-                builder: (_, __) {
-                  final pct = (_progress.value * 100).round();
-
+                builder: (context, _) {
                   return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
                     children: [
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(2.r),
+                        borderRadius: BorderRadius.circular(4.r),
                         child: LinearProgressIndicator(
                           value: _progress.value,
-                          minHeight: 3.5.h,
-                          backgroundColor: colors.divider,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            colors.primary,
-                          ),
+                          minHeight: 4.h,
+                          backgroundColor: colors.borderColor,
+                          color: colors.primary,
                         ),
                       ),
-                      SizedBox(height: 10.h),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            l10n.splashInitializing,
-                            style: textTheme.bodySmall?.copyWith(
-                              letterSpacing: 1.5,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          Text(
-                            '$pct%',
-                            style: textTheme.bodySmall?.copyWith(
-                              color: colors.primary,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ],
+                      SizedBox(height: 12.h),
+                      Text(
+                        l10n.splashInitializing,
+                        style: textTheme.labelSmall?.copyWith(
+                          color: colors.textHint,
+                          letterSpacing: 1.2,
+                        ),
                       ),
                     ],
                   );
                 },
               ),
             ),
+            SizedBox(height: 48.h),
           ],
         ),
       ),

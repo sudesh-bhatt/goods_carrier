@@ -194,6 +194,8 @@ class GooglePlacesService {
     final pincode = component('postal_code') ?? '';
 
     final streetParts = [
+      component('establishment'),
+      component('point_of_interest'),
       component('premise'),
       component('subpremise'),
       component('street_number'),
@@ -203,10 +205,13 @@ class GooglePlacesService {
       component('neighborhood'),
     ].whereType<String>().where((part) => part.trim().isNotEmpty);
 
-    var fullAddressLine = streetParts.join(', ');
-    if (fullAddressLine.isEmpty) {
-      fullAddressLine = _stripCountryAndPincode(formatted, city, pincode);
-    }
+    final formattedLine = _stripCountryOnly(formatted);
+    final streetLine = streetParts.join(', ');
+
+    // Prefer Google's formatted line — street-only extraction often drops POI names.
+    final fullAddressLine = formattedLine.isNotEmpty
+        ? formattedLine
+        : (streetLine.isNotEmpty ? streetLine : formatted);
 
     final geometry = result['geometry'] as Map<String, dynamic>? ?? {};
     final location = geometry['location'] as Map<String, dynamic>? ?? {};
@@ -222,23 +227,14 @@ class GooglePlacesService {
     );
   }
 
-  static String _stripCountryAndPincode(
-    String formatted,
-    String city,
-    String pincode,
-  ) {
-    var line = formatted;
-    if (pincode.isNotEmpty) {
-      line = line.replaceAll(RegExp('\\b$pincode\\b'), '').trim();
-    }
-    if (city.isNotEmpty) {
-      line = line.replaceAll('$city,', '').replaceAll(city, '').trim();
-    }
-    line = line.replaceAll(', India', '').replaceAll('India', '').trim();
+  static String _stripCountryOnly(String formatted) {
+    var line = formatted
+        .replaceAll(RegExp(r',?\s*India$', caseSensitive: false), '')
+        .trim();
     while (line.endsWith(',')) {
       line = line.substring(0, line.length - 1).trim();
     }
-    return line.isNotEmpty ? line : formatted;
+    return line;
   }
 
   static void _logRequest({

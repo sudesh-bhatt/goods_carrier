@@ -7,7 +7,7 @@ import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/mixins/safe_set_state_mixin.dart';
 import '../../../../core/extensions/theme_ext.dart';
-import '../../../../core/router/app_routes.dart';
+import '../../../../shared/domain/enums/session_phase.dart';
 import '../../../../shared/presentation/widgets/buttons/app_button.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
 import '../providers/auth_provider.dart';
@@ -34,8 +34,10 @@ class _TermsScreenState extends ConsumerState<TermsScreen>
   Widget build(BuildContext context) {
     final colors = context.colors;
     final l10n = context.l10n;
-    final isAuthenticated = ref.watch(authProvider).isAuthenticated;
-    final showOnboardingFooter = !isAuthenticated;
+    final auth = ref.watch(authProvider);
+    final showOnboardingFooter =
+        auth.sessionPhase == SessionPhase.onboarding &&
+            widget.document == LegalDocument.terms;
 
     final title = switch (widget.document) {
       LegalDocument.privacy => l10n.authPrivacyPolicy,
@@ -201,8 +203,15 @@ class _TermsScreenState extends ConsumerState<TermsScreen>
                   SizedBox(height: AppDimensions.base.h),
                   AppButton(
                     label: l10n.actionContinue,
-                    onPressed: _accepted
-                        ? () => context.push(AppRoutes.loginScreen)
+                    isLoading: auth.isLoading,
+                    onPressed: _accepted && !auth.isLoading
+                        ? () async {
+                            final route = await ref
+                                .read(authProvider.notifier)
+                                .acceptOnboardingAgreement();
+                            if (!context.mounted) return;
+                            if (route != null) context.go(route);
+                          }
                         : null,
                   ),
                 ],

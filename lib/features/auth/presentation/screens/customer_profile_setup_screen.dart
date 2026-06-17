@@ -8,7 +8,10 @@ import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/mixins/safe_set_state_mixin.dart';
 import '../../../../core/utils/media_permission_helper.dart';
+import '../../../../core/utils/phone_utils.dart';
+import '../../../../core/utils/profile_image_utils.dart';
 import '../../../../core/utils/validators.dart';
+import '../../../../shared/presentation/widgets/inputs/app_phone_field.dart';
 import '../../../../res/font_res.dart';
 import '../../../../features/customer/presentation/widgets/customer_profile_form_widgets.dart';
 import '../../../../shared/presentation/widgets/inputs/address_autocomplete_field.dart';
@@ -40,12 +43,22 @@ class _CustomerProfileSetupScreenState
   final _imagePicker = ImagePicker();
   bool _submitted = false;
   XFile? _profileImage;
+  String? _savedImagePath;
+  String _dialCode = '+91';
 
   @override
   void initState() {
     super.initState();
-    final raw = ref.read(authProvider).phoneNumber;
-    _phoneCtrl.text = _formatPhoneDisplay(raw);
+    final auth = ref.read(authProvider);
+    _applyPhone(auth.phoneNumber);
+    _savedImagePath = auth.pendingProfileImageUrl;
+  }
+
+  void _applyPhone(String? raw) {
+    if (raw == null || raw.isEmpty) return;
+    final split = PhoneUtils.splitE164(raw);
+    _dialCode = split.dialCode;
+    _phoneCtrl.text = split.localNumber;
   }
 
   @override
@@ -57,22 +70,18 @@ class _CustomerProfileSetupScreenState
     super.dispose();
   }
 
-  String _formatPhoneDisplay(String? raw) {
-    if (raw == null || raw.isEmpty) return '';
-    final digits = raw.replaceAll(RegExp(r'\D'), '');
-    if (digits.length >= 10 && digits.startsWith('91')) {
-      final local = digits.substring(2);
-      if (local.length == 10) return '+91 $local';
-    }
-    if (raw.startsWith('+')) return raw;
-    return '+91 $raw';
+  String _resolvedPhone() {
+    final built = PhoneUtils.buildE164(_dialCode, _phoneCtrl.text);
+    final digits = built.replaceAll(RegExp(r'\D'), '');
+    if (digits.length > 2) return built;
+    return ref.read(authProvider).phoneNumber ?? built;
   }
 
-  String _phoneForSubmit() {
-    final raw = ref.read(authProvider).phoneNumber;
-    if (raw != null && raw.isNotEmpty) return raw;
-    return _phoneCtrl.text.replaceAll(RegExp(r'\s'), '');
-  }
+  String? _resolvedProfileImagePath() =>
+      ProfileImageUtils.resolveForApiSubmission(
+        pickedPath: _profileImage?.path,
+        savedReference: _savedImagePath,
+      );
 
   Future<void> _pickProfileImage() async {
     HapticFeedback.lightImpact();
@@ -129,7 +138,11 @@ class _CustomerProfileSetupScreenState
         imageQuality: 85,
       );
       if (picked != null && mounted) {
-        safeSetState(() => _profileImage = picked);
+        safeSetState(() {
+          _profileImage = picked;
+          _savedImagePath = picked.path;
+        });
+        await ref.read(authProvider.notifier).stageProfileImage(picked.path);
       }
     } catch (e) {
       if (!mounted) return;
@@ -245,9 +258,10 @@ class _CustomerProfileSetupScreenState
 
     await ref.read(authProvider.notifier).submitCustomerProfile(
           name: _nameCtrl.text.trim(),
-          phone: _phoneForSubmit(),
+          phone: _resolvedPhone(),
           address: _addressCtrl.text.trim(),
           email: _emailCtrl.text.trim().isEmpty ? null : _emailCtrl.text.trim(),
+          profileImageUrl: _resolvedProfileImagePath(),
         );
   }
 
@@ -284,6 +298,7 @@ class _CustomerProfileSetupScreenState
                     child: CustomerProfileAvatar(
                       colors: colors,
                       image: _profileImage,
+                      savedImagePath: _savedImagePath,
                       onTap: _pickProfileImage,
                     ),
                   ),
@@ -311,11 +326,15 @@ class _CustomerProfileSetupScreenState
                     validator: (v) => Validators.required(v, l10n.profileName),
                   ),
                   SizedBox(height: 16.h),
-                  CustomerProfileFormField(
+                  AppPhoneField(
                     label: l10n.profilePhone,
+                    labelStyle: AppPhoneFieldLabelStyle.profilePersonal,
+                    size: AppPhoneFieldSize.compact,
                     controller: _phoneCtrl,
-                    readOnly: true,
-                    suffixIcon: Icons.phone_outlined,
+                    dialCode: _dialCode,
+                    onDialCodeChanged: (code) => safeSetState(
+                      () => _dialCode = code.dialCode ?? '+91',
+                    ),
                   ),
                   SizedBox(height: 16.h),
                   CustomerProfileFormField(

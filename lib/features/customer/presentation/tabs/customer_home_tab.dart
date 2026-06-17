@@ -12,6 +12,7 @@ import '../../../../shared/domain/entities/shipment.dart';
 import '../../../../shared/domain/models/shipment_filter.dart';
 import '../../../../shared/presentation/widgets/filters/filter_search_sheet.dart';
 import '../../../../shared/presentation/widgets/feedback/empty_state.dart';
+import '../../../../shared/presentation/widgets/navigation/app_bottom_nav_bar.dart';
 import '../../../../shared/presentation/widgets/feedback/skeleton_card.dart';
 import '../providers/customer_shipments_provider.dart';
 import '../widgets/customer_home_search_section.dart';
@@ -173,7 +174,8 @@ class _CustomerHomeTabState extends ConsumerState<CustomerHomeTab>
                 child: EmptyState(
                   headline: l10n.customerHomeNoMatchingShipments,
                   subtitle: l10n.customerHomeNoMatchingShipmentsHint,
-                  fallbackIcon: Icons.filter_list_off_rounded,
+                  fallbackIcon: Icons.local_shipping_outlined,
+                  fallbackIconColor: kBottomNavInactive,
                   actionLabel:
                       _hasLocalFilters ? l10n.filterClearAll : null,
                   onAction: _hasLocalFilters ? _resetFilters : null,

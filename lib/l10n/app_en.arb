@@ -99,6 +99,7 @@
   "authResendOtp": "Resend OTP",
   "authResendSms": "Resend SMS",
   "authResendCodeIn": "Resend code in",
+  "authResendLimitReached": "Resend limit reached",
   "authResendIn": "Resend in {seconds}s",
   "@authResendIn": {
     "placeholders": {
@@ -175,6 +176,7 @@
   "profileSetupSubtitle": "Let's get started",
   "profileCreateButton": "Create Profile",
   "driverProfileCompleteTitle": "Complete Profile",
+  "driverProfileEditTitle": "Edit Profile",
   "driverProfilePersonalDetails": "Personal Details",
   "driverProfileBusinessDetails": "Business Details",
   "driverProfileCompleteButton": "Complete Profile",

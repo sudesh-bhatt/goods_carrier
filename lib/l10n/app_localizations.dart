@@ -580,6 +580,12 @@ abstract class AppLocalizations {
   /// **'Resend code in'**
   String get authResendCodeIn;
 
+  /// No description provided for @authResendLimitReached.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend limit reached'**
+  String get authResendLimitReached;
+
   /// No description provided for @authResendIn.
   ///
   /// In en, this message translates to:
@@ -879,6 +885,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Complete Profile'**
   String get driverProfileCompleteTitle;
+
+  /// No description provided for @driverProfileEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Profile'**
+  String get driverProfileEditTitle;
 
   /// No description provided for @driverProfilePersonalDetails.
   ///

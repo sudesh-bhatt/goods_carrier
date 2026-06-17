@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -8,6 +6,7 @@ import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/theme/app_color_scheme.dart';
 import '../../../../generated/assets.dart';
 import '../../../../res/font_res.dart';
+import '../../../../shared/presentation/widgets/profile/profile_image_content.dart';
 
 /// Shared profile form field fill — create & edit profile screens.
 const kCustomerProfileFieldFill = Color(0xFFF0F2F5);
@@ -19,15 +18,26 @@ class CustomerProfileAvatar extends StatelessWidget {
     required this.colors,
     required this.onTap,
     this.image,
+    this.savedImagePath,
   });
 
   final AppColorScheme colors;
   final VoidCallback onTap;
   final XFile? image;
 
+  /// Local path or remote URL from [User.profileImageUrl] (edit flows).
+  final String? savedImagePath;
+
   @override
   Widget build(BuildContext context) {
-    final hasImage = image != null;
+    final placeholder = ColoredBox(
+      color: colors.primary.withValues(alpha: 0.12),
+      child: Icon(
+        Icons.person_outline_rounded,
+        size: 44.w,
+        color: colors.primary,
+      ),
+    );
 
     return SizedBox(
       width: 104.w,
@@ -57,22 +67,11 @@ class CustomerProfileAvatar extends StatelessWidget {
                 child: SizedBox(
                   width: double.infinity,
                   height: double.infinity,
-                  child: hasImage
-                      ? Image.file(
-                          File(image!.path),
-                          fit: BoxFit.cover,
-                          alignment: Alignment.center,
-                          width: double.infinity,
-                          height: double.infinity,
-                        )
-                      : ColoredBox(
-                          color: colors.primary.withValues(alpha: 0.12),
-                          child: Icon(
-                            Icons.person_outline_rounded,
-                            size: 44.w,
-                            color: colors.primary,
-                          ),
-                        ),
+                  child: ProfileImageContent(
+                    pickedPath: image?.path,
+                    imageReference: savedImagePath,
+                    placeholder: placeholder,
+                  ),
                 ),
               ),
             ),

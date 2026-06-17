@@ -4,12 +4,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../../../core/constants/app_dimensions.dart';
+import '../../../../core/router/app_routes.dart';
 import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/mixins/safe_set_state_mixin.dart';
 import '../../../../core/utils/media_permission_helper.dart';
+import '../../../../core/utils/phone_utils.dart';
+import '../../../../core/utils/profile_image_utils.dart';
 import '../../../../core/utils/validators.dart';
+import '../../../../shared/presentation/widgets/inputs/app_phone_field.dart';
 import '../../../../res/font_res.dart';
 import '../../../../shared/presentation/widgets/inputs/address_autocomplete_field.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
@@ -38,6 +41,8 @@ class _CustomerEditProfileScreenState extends ConsumerState<CustomerEditProfileS
   final _imagePicker = ImagePicker();
   bool _submitted = false;
   XFile? _profileImage;
+  String? _savedImagePath;
+  String _dialCode = '+91';
 
   static const _kNameHint = 'Johnathan Sterling';
   static const _kEmailHint = 'j.sterling@logistics.com';
@@ -49,13 +54,30 @@ class _CustomerEditProfileScreenState extends ConsumerState<CustomerEditProfileS
     final user = ref.read(authProvider).user;
     if (user != null) {
       if (user.name.trim().isNotEmpty) _nameCtrl.text = user.name;
-      _phoneCtrl.text = _formatPhoneDisplay(user.phone);
+      _applyPhone(user.phone);
       if (user.email.trim().isNotEmpty) _emailCtrl.text = user.email;
       if ((user.address ?? '').trim().isNotEmpty) {
         _addressCtrl.text = user.address!.trim();
       }
+      _savedImagePath = user.profileImageUrl;
     }
   }
+
+  void _applyPhone(String? raw) {
+    if (raw == null || raw.isEmpty) return;
+    final split = PhoneUtils.splitE164(raw);
+    _dialCode = split.dialCode;
+    _phoneCtrl.text = split.localNumber;
+  }
+
+  String _resolvedPhone() =>
+      PhoneUtils.buildE164(_dialCode, _phoneCtrl.text);
+
+  String? _resolvedProfileImagePath() =>
+      ProfileImageUtils.resolveForApiSubmission(
+        pickedPath: _profileImage?.path,
+        savedReference: _savedImagePath,
+      );
 
   @override
   void dispose() {
@@ -64,16 +86,6 @@ class _CustomerEditProfileScreenState extends ConsumerState<CustomerEditProfileS
     _emailCtrl.dispose();
     _addressCtrl.dispose();
     super.dispose();
-  }
-
-  String _formatPhoneDisplay(String raw) {
-    final digits = raw.replaceAll(RegExp(r'\D'), '');
-    if (digits.length >= 10 && digits.startsWith('91')) {
-      final local = digits.substring(2);
-      if (local.length == 10) return '+91 $local';
-    }
-    if (raw.startsWith('+')) return raw;
-    return raw.isEmpty ? raw : '+91 $raw';
   }
 
   Future<bool> _ensureMediaPermission(ImageSource source) async {
@@ -138,7 +150,11 @@ class _CustomerEditProfileScreenState extends ConsumerState<CustomerEditProfileS
         imageQuality: 85,
       );
       if (picked != null && mounted) {
-        safeSetState(() => _profileImage = picked);
+        safeSetState(() {
+          _profileImage = picked;
+          _savedImagePath = picked.path;
+        });
+        await ref.read(authProvider.notifier).stageProfileImage(picked.path);
       }
     } catch (e) {
       if (!mounted) return;
@@ -176,23 +192,26 @@ class _CustomerEditProfileScreenState extends ConsumerState<CustomerEditProfileS
     final user = ref.read(authProvider).user;
     if (user == null) return;
 
-    await ref.read(authProvider.notifier).updateCustomerProfile(
+    final saved = await ref.read(authProvider.notifier).updateCustomerProfile(
           name: _nameCtrl.text.trim(),
-          phone: user.phone,
+          phone: _resolvedPhone(),
           address: _addressCtrl.text.trim(),
           email: _emailCtrl.text.trim().isEmpty ? null : _emailCtrl.text.trim(),
+          profileImageUrl: _resolvedProfileImagePath(),
         );
 
     if (!mounted) return;
-    final error = ref.read(authProvider).error;
-    if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error)),
-      );
+    if (!saved) {
+      final error = ref.read(authProvider).error;
+      if (error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error)),
+        );
+      }
       return;
     }
 
-    context.pop();
+    context.go(AppRoutes.customerProfile);
   }
 
   @override
@@ -224,6 +243,7 @@ class _CustomerEditProfileScreenState extends ConsumerState<CustomerEditProfileS
                     child: CustomerProfileAvatar(
                       colors: colors,
                       image: _profileImage,
+                      savedImagePath: _savedImagePath,
                       onTap: _pickProfileImage,
                     ),
                   ),
@@ -240,12 +260,16 @@ class _CustomerEditProfileScreenState extends ConsumerState<CustomerEditProfileS
                     validator: (v) => Validators.required(v, l10n.profileName),
                   ),
                   SizedBox(height: 24.h),
-                  CustomerProfileFormField(
+                  AppPhoneField(
                     label: l10n.profilePhone,
+                    labelStyle: AppPhoneFieldLabelStyle.profilePersonal,
+                    size: AppPhoneFieldSize.compact,
                     controller: _phoneCtrl,
-                    readOnly: true,
-                    suffixIcon: Icons.phone_outlined,
+                    dialCode: _dialCode,
                     fillColor: const Color(0xFFEFF4FA),
+                    onDialCodeChanged: (code) => safeSetState(
+                      () => _dialCode = code.dialCode ?? '+91',
+                    ),
                   ),
                   SizedBox(height: 24.h),
                   CustomerProfileFormField(

@@ -1,30 +1,43 @@
+import '../entities/auth_result.dart';
+import '../entities/otp_session.dart';
 import '../entities/user.dart';
 
-/// Contract for authentication and profile operations.
+/// Contract for authentication and token operations.
 abstract class IAuthRepository {
-  // ── OTP flow ──────────────────────────────────────────────────────────────
+  Future<OtpSession> sendOtp({
+    required String countryCode,
+    required String phone,
+  });
 
-  /// Triggers an OTP SMS to [phoneNumber] (E.164 format: +91XXXXXXXXXX).
-  Future<void> sendOtp(String phoneNumber);
+  Future<AuthResult> verifyOtp({
+    required String referenceId,
+    required String otp,
+  });
 
-  /// Validates [otp] for [phoneNumber]. On success returns a map containing
-  /// `access_token` and `refresh_token`. Throws [UnauthorisedException] on
-  /// mismatch.
-  Future<Map<String, String>> verifyOtp(String phoneNumber, String otp);
+  Future<OtpSession> resendOtp({required String referenceId});
 
-  // ── Profile setup ─────────────────────────────────────────────────────────
+  Future<AuthResult> fetchMe();
 
-  /// Creates a customer profile on the server and returns the [User].
+  Future<void> logout();
+
   Future<User> createCustomerProfile({
     required String name,
     required String phone,
     required String address,
     String? email,
+    String? profileImageUrl,
   });
 
-  /// Creates a driver profile on the server and returns the [User].
+  Future<User> updateCustomerProfile({
+    required String name,
+    required String address,
+    String? email,
+    String? profileImageUrl,
+  });
+
   Future<User> createDriverProfile({
     required String name,
+    required String phone,
     String? email,
     String? address,
     String? companyName,
@@ -32,19 +45,16 @@ abstract class IAuthRepository {
     String? gstNumber,
     String? businessEmail,
     String? businessPhone,
+    String? profileImageUrl,
   });
 
-  // ── Token management ──────────────────────────────────────────────────────
+  Future<void> saveToken(String token);
 
-  /// Persists [accessToken] and [refreshToken] in secure storage.
-  Future<void> saveTokens({
-    required String accessToken,
-    required String refreshToken,
-  });
+  Future<void> saveOtpReferenceId(String referenceId);
 
-  /// Deletes all stored tokens. Called on logout.
-  Future<void> clearTokens();
+  Future<String?> getToken();
 
-  /// Returns the stored access token, or `null` if unauthenticated.
-  Future<String?> getAccessToken();
+  Future<String?> getOtpReferenceId();
+
+  Future<void> clearSession();
 }

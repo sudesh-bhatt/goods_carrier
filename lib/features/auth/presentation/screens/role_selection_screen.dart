@@ -9,7 +9,6 @@ import 'package:goods_carrier/generated/assets.dart';
 import '../../../../core/extensions/svg_gen_image_extension.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/mixins/safe_set_state_mixin.dart';
-import '../../../../core/router/app_routes.dart';
 import '../../../../shared/domain/enums/user_role.dart';
 import '../providers/auth_provider.dart';
 
@@ -58,10 +57,12 @@ class _RoleSelectionScreenState
   // Customer is pre-selected, matching the Figma default state.
   UserRole _selected = UserRole.customer;
 
-  void _onContinue() {
+  Future<void> _onContinue() async {
     HapticFeedback.lightImpact();
-    ref.read(authProvider.notifier).selectRole(_selected);
-    context.push(AppRoutes.languageSelection);
+    final route =
+        await ref.read(authProvider.notifier).submitOnboardingRole(_selected);
+    if (!mounted) return;
+    if (route != null) context.go(route);
   }
 
   @override

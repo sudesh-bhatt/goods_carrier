@@ -3,10 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:goods_carrier/core/theme/app_color_scheme.dart';
 
 import '../../../../core/mixins/safe_set_state_mixin.dart';
 import '../../../../core/extensions/theme_ext.dart';
-import '../../../../core/router/app_routes.dart';
+import '../../../../features/auth/presentation/providers/auth_provider.dart';
 import '../../../../features/settings/presentation/providers/locale_provider.dart';
 
 // ─── Screen ───────────────────────────────────────────────────────────────────
@@ -32,7 +33,11 @@ class _LanguageSelectionScreenState
   Future<void> _onContinue() async {
     HapticFeedback.lightImpact();
     await ref.read(localeProvider.notifier).setLocale(Locale(_selectedCode));
-    if (mounted) context.push(AppRoutes.terms);
+    final route = await ref
+        .read(authProvider.notifier)
+        .submitOnboardingLanguage(_selectedCode);
+    if (!mounted) return;
+    if (route != null) context.go(route);
   }
 
   @override
@@ -176,7 +181,7 @@ class _LangTile extends StatelessWidget {
           border: Border.all(
             color: isSelected
                 ? colors.primary
-                : colors.languageTileBorderUnselected.withOpacity(0.30),
+                : colors.languageTileBorderUnselected.setOpacity(0.30),
             width: isSelected ? 2.0 : 1.0,
           ),
           boxShadow: isSelected

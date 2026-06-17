@@ -26,6 +26,7 @@ class EmptyState extends StatelessWidget {
     this.subtitle,
     this.imagePath,
     this.fallbackIcon = Icons.inbox_outlined,
+    this.fallbackIconColor,
     this.actionLabel,
     this.onAction,
     this.imageHeight,
@@ -39,6 +40,9 @@ class EmptyState extends StatelessWidget {
 
   /// Shown when [imagePath] is null.
   final IconData fallbackIcon;
+
+  /// Icon tint when using [fallbackIcon]; defaults to theme text hint.
+  final Color? fallbackIconColor;
 
   final String? actionLabel;
   final VoidCallback? onAction;
@@ -65,11 +69,14 @@ class EmptyState extends StatelessWidget {
                 fit: BoxFit.contain,
                 errorBuilder: (_, __, ___) => _FallbackIcon(
                   icon: fallbackIcon,
-                  color: colors.textHint,
+                  color: fallbackIconColor ?? colors.textHint,
                 ),
               )
             else
-              _FallbackIcon(icon: fallbackIcon, color: colors.textHint),
+              _FallbackIcon(
+                icon: fallbackIcon,
+                color: fallbackIconColor ?? colors.textHint,
+              ),
 
             SizedBox(height: AppDimensions.xl.h),
 

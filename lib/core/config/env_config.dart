@@ -3,9 +3,11 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Central access to secrets from the root `.env` file.
 ///
-/// Setup: `cp .env.example .env` → set [googleApiKey] → `dart run tool/sync_env.dart`
+/// Setup: `cp .env.example .env` → set values → `dart run tool/sync_env.dart`
 abstract final class EnvConfig {
   static var _loaded = false;
+
+  static const _defaultApiBaseUrl = 'https://goodscarrier.ajonetech.com';
 
   /// Loads `.env` from assets. Call once in [main] before [runApp].
   static Future<void> load() async {
@@ -20,6 +22,34 @@ abstract final class EnvConfig {
       }
     }
     _loaded = true;
+  }
+
+  /// Goods Carrier REST API base URL (no trailing slash).
+  static String get apiBaseUrl {
+    const fromDefine = String.fromEnvironment('API_BASE_URL');
+    if (fromDefine.isNotEmpty) return fromDefine.replaceAll(RegExp(r'/+$'), '');
+
+    final fromFile = dotenv.env['API_BASE_URL']?.trim();
+    if (fromFile != null && fromFile.isNotEmpty) {
+      return fromFile.replaceAll(RegExp(r'/+$'), '');
+    }
+
+    return _defaultApiBaseUrl;
+  }
+
+  /// When `false`, local dummy repositories are used (dev without backend).
+  static bool get useRemoteApi {
+    const fromDefine = String.fromEnvironment('USE_REMOTE_API');
+    if (fromDefine.isNotEmpty) {
+      return fromDefine.toLowerCase() == 'true';
+    }
+
+    final fromFile = dotenv.env['USE_REMOTE_API']?.trim().toLowerCase();
+    if (fromFile != null && fromFile.isNotEmpty) {
+      return fromFile == 'true';
+    }
+
+    return true;
   }
 
   /// Google Maps + Places (single key for native SDKs and Places REST).

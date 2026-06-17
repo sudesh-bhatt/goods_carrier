@@ -253,6 +253,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authResendCodeIn => 'Resend code in';
 
   @override
+  String get authResendLimitReached => 'Resend limit reached';
+
+  @override
   String authResendIn(int seconds) {
     return 'Resend in ${seconds}s';
   }
@@ -412,6 +415,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get driverProfileCompleteTitle => 'Complete Profile';
+
+  @override
+  String get driverProfileEditTitle => 'Edit Profile';
 
   @override
   String get driverProfilePersonalDetails => 'Personal Details';

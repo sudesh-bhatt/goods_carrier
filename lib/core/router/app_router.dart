@@ -50,7 +50,6 @@ import '../../features/driver/presentation/tabs/driver_home_tab.dart';
 import '../../features/driver/presentation/tabs/driver_my_trips_tab.dart';
 import '../../features/driver/presentation/tabs/driver_notifications_tab.dart';
 import '../../features/driver/presentation/tabs/driver_profile_tab.dart';
-import '../../shared/domain/enums/user_role.dart';
 import 'app_routes.dart';
 
 // ─── Router notifier ──────────────────────────────────────────────────────────
@@ -76,31 +75,41 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       final auth = ref.read(authProvider);
       final loc = state.matchedLocation;
 
-      if (auth.isAuthenticated) {
-        // Allow in-app legal screens (e.g. Settings → Privacy Policy).
-        if (loc == AppRoutes.terms) return null;
+      if (loc == AppRoutes.splash) return null;
 
-        final isOnAuthPath = _isAuthOnboardingPath(loc);
-        if (isOnAuthPath && loc != AppRoutes.splash) {
-          return auth.user!.role == UserRole.customer
-              ? AppRoutes.customerHome
-              : AppRoutes.driverHome;
+      if (auth.isAuthenticated) {
+        if (loc == AppRoutes.terms) {
+          return auth.user?.role == UserRole.driver
+              ? AppRoutes.driverHome
+              : AppRoutes.customerHome;
+        }
+        if (_isAuthFlowPath(loc)) {
+          return auth.user?.role == UserRole.driver
+              ? AppRoutes.driverHome
+              : AppRoutes.customerHome;
         }
         return null;
       }
 
       if (auth.needsProfileSetup) {
-        final setupPath = auth.selectedRole == UserRole.customer
-            ? AppRoutes.customerProfileSetup
-            : AppRoutes.driverProfileSetup;
-        if (loc != setupPath) return setupPath;
+        final target = auth.routeForCurrentStep;
+        if (target != null && loc != target) return target;
+        if (loc == AppRoutes.loginScreen || loc == AppRoutes.otpVerification) {
+          return target ?? AppRoutes.roleSelection;
+        }
         return null;
       }
 
       if (loc.startsWith('/customer') || loc.startsWith('/driver')) {
-        return AppRoutes.splash;
+        return AppRoutes.loginScreen;
       }
-      return null;
+      if (_isOnboardingOnlyPath(loc)) {
+        return AppRoutes.loginScreen;
+      }
+      if (loc == AppRoutes.loginScreen || loc == AppRoutes.otpVerification) {
+        return null;
+      }
+      return AppRoutes.loginScreen;
     },
 
     routes: [
@@ -407,6 +416,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
+        path: AppRoutes.driverEditProfile,
+        builder: (_, __) => const DriverProfilePage(isEditMode: true),
+      ),
+      GoRoute(
         path: AppRoutes.driverEarnings,
         builder: (_, __) => const DriverEarningsScreen(),
       ),
@@ -416,13 +429,20 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   );
 });
 
-/// Onboarding-only paths — authenticated users are sent to their home shell.
-bool _isAuthOnboardingPath(String loc) =>
-    loc == AppRoutes.splash ||
+/// Auth/onboarding paths — authenticated users are sent to their home shell.
+bool _isAuthFlowPath(String loc) =>
     loc == AppRoutes.roleSelection ||
     loc == AppRoutes.languageSelection ||
     loc == AppRoutes.loginScreen ||
     loc == AppRoutes.otpVerification ||
+    loc == AppRoutes.customerProfileSetup ||
+    loc == AppRoutes.driverProfileSetup;
+
+/// Onboarding paths that require a token (block when unauthenticated).
+bool _isOnboardingOnlyPath(String loc) =>
+    loc == AppRoutes.roleSelection ||
+    loc == AppRoutes.languageSelection ||
+    loc == AppRoutes.terms ||
     loc == AppRoutes.customerProfileSetup ||
     loc == AppRoutes.driverProfileSetup;
 

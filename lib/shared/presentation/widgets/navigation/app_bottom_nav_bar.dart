@@ -13,7 +13,7 @@ import '../../../domain/enums/user_role.dart';
 import 'app_main_tab.dart';
 
 /// Figma bottom nav inactive label/icon — `1:4690`.
-const _navInactive = Color(0xFF64748B);
+const kBottomNavInactive = Color(0xFF64748B);
 
 /// Shared bottom nav for customer and driver main shells (`1:406` / `1:4690`).
 class AppBottomNavBar extends StatelessWidget {
@@ -150,7 +150,7 @@ class _NavTab extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   _buildIcon(
-                    selected ? colors.onPrimary : _navInactive,
+                    selected ? colors.onPrimary : kBottomNavInactive,
                   ),
                   SizedBox(height: 4.h),
                   FittedBox(
@@ -164,7 +164,7 @@ class _NavTab extends StatelessWidget {
                         fontSize: 11.sp,
                         fontWeight: FontWeight.w600,
                         height: 16 / 11,
-                        color: selected ? colors.onPrimary : _navInactive,
+                        color: selected ? colors.onPrimary : kBottomNavInactive,
                       ),
                     ),
                   ),

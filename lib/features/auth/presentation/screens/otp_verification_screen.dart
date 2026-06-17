@@ -7,7 +7,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_dimensions.dart';
-import '../../../../core/extensions/svg_gen_image_extension.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/mixins/safe_set_state_mixin.dart';
 import '../../../../core/theme/app_color_scheme.dart';
@@ -38,17 +37,23 @@ class OtpVerificationScreen extends ConsumerStatefulWidget {
 
 class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen>
     with SafeSetStateMixin {
-  static const _totalSeconds = 60;
+  static const _kDefaultOtpExpiresIn = 300;
 
-  int _remaining = _totalSeconds;
+  int _remaining = _kDefaultOtpExpiresIn;
   Timer? _timer;
   bool _hasError = false;
   String _otp = '';
 
+  int _otpExpiresSeconds(AuthState auth) {
+    final seconds = auth.otpSession?.otpExpiresIn;
+    if (seconds != null && seconds > 0) return seconds;
+    return _kDefaultOtpExpiresIn;
+  }
+
   @override
   void initState() {
     super.initState();
-    _startTimer();
+    _startTimer(_otpExpiresSeconds(ref.read(authProvider)));
   }
 
   @override
@@ -57,9 +62,10 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen>
     super.dispose();
   }
 
-  void _startTimer() {
+  void _startTimer(int totalSeconds) {
     _timer?.cancel();
-    safeSetState(() => _remaining = _totalSeconds);
+    final duration = totalSeconds > 0 ? totalSeconds : _kDefaultOtpExpiresIn;
+    safeSetState(() => _remaining = duration);
     _timer = Timer.periodic(const Duration(seconds: 1), (t) {
       if (_remaining <= 0) {
         t.cancel();
@@ -70,21 +76,32 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen>
   }
 
   Future<void> _resendOtp() async {
+    final auth = ref.read(authProvider);
     if (_remaining > 0) return;
-    final phone = ref.read(authProvider).phoneNumber ?? '';
-    await ref.read(authProvider.notifier).sendOtp(phone);
+    if ((auth.otpSession?.resendRemaining ?? 0) <= 0) return;
+
+    await ref.read(authProvider.notifier).resendOtp();
+    if (!mounted) return;
+
+    final updated = ref.read(authProvider);
     safeSetState(() => _hasError = false);
-    _startTimer();
+    if (updated.error == null) {
+      _startTimer(_otpExpiresSeconds(updated));
+    }
   }
 
   Future<void> _verify() async {
     if (_otp.length != 4) return;
     safeSetState(() => _hasError = false);
-    await ref.read(authProvider.notifier).verifyOtp(_otp);
+    final route = await ref.read(authProvider.notifier).verifyOtp(_otp);
 
     if (!mounted) return;
     if (ref.read(authProvider).error != null) {
       safeSetState(() => _hasError = true);
+      return;
+    }
+    if (route != null) {
+      context.go(route);
     }
   }
 
@@ -114,9 +131,24 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen>
     final textTheme = context.textTheme;
     final appStyles = context.appTextStyles;
     final authState = ref.watch(authProvider);
+
+    ref.listen<AuthState>(authProvider, (previous, next) {
+      final prevSession = previous?.otpSession;
+      final nextSession = next.otpSession;
+      if (nextSession == null) return;
+      if (prevSession?.otpExpiresIn != nextSession.otpExpiresIn ||
+          prevSession?.referenceId != nextSession.referenceId ||
+          prevSession?.resendRemaining != nextSession.resendRemaining) {
+        _startTimer(nextSession.otpExpiresIn);
+      }
+    });
+
     final phoneDisplay = _formatPhoneDisplay(authState.phoneNumber);
     final isLoading = authState.isLoading;
     final canVerify = _otp.length == 4 && !isLoading;
+    final resendRemaining = authState.otpSession?.resendRemaining ?? 0;
+    final hasResendsLeft = resendRemaining > 0;
+    final canResend = _remaining <= 0 && hasResendsLeft;
 
     return Scaffold(
       backgroundColor: colors.background,
@@ -199,6 +231,8 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen>
                             remaining: _remaining,
                             isLoading: isLoading,
                             canVerify: canVerify,
+                            canResend: canResend,
+                            hasResendsLeft: hasResendsLeft,
                             countdown: _formatCountdown(_remaining),
                             onResend: _resendOtp,
                             onVerify: _verify,
@@ -228,6 +262,8 @@ class _OtpActionBlock extends StatelessWidget {
     required this.remaining,
     required this.isLoading,
     required this.canVerify,
+    required this.canResend,
+    required this.hasResendsLeft,
     required this.countdown,
     required this.onResend,
     required this.onVerify,
@@ -239,16 +275,22 @@ class _OtpActionBlock extends StatelessWidget {
   final int remaining;
   final bool isLoading;
   final bool canVerify;
+  final bool canResend;
+  final bool hasResendsLeft;
   final String countdown;
   final VoidCallback onResend;
   final VoidCallback onVerify;
 
   @override
   Widget build(BuildContext context) {
+    final resendLabel = !hasResendsLeft
+        ? l10n.authResendLimitReached
+        : l10n.authResendSms;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (remaining > 0) ...[
+        if (remaining > 0 && hasResendsLeft) ...[
           _ResendTimerPill(
             colors: colors,
             label: l10n.authResendCodeIn,
@@ -257,17 +299,17 @@ class _OtpActionBlock extends StatelessWidget {
           SizedBox(height: 10.h),
         ],
         GestureDetector(
-          onTap: remaining > 0 || isLoading ? null : onResend,
+          onTap: canResend && !isLoading ? onResend : null,
           behavior: HitTestBehavior.opaque,
           child: Padding(
             padding: EdgeInsets.symmetric(vertical: 4.h),
             child: Text(
-              l10n.authResendSms,
+              resendLabel,
               textAlign: TextAlign.center,
               style: textTheme.bodyMedium?.copyWith(
-                color: remaining > 0
-                    ? colors.textHint
-                    : colors.textSecondary,
+                color: canResend && !isLoading
+                    ? colors.textSecondary
+                    : colors.textHint,
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w500,
               ),

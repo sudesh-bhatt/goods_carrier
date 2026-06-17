@@ -6,10 +6,19 @@ import 'package:flutter_svg/flutter_svg.dart';
 class Assets {
   Assets._();
 
+  static const AssetGenImage appIconPng =
+      AssetGenImage('assets/images/app_icon.png');
+  static const SvgGenImage appIconSvg = SvgGenImage('assets/svg/app_icon.svg');
   static const AssetGenImage appLogo =
       AssetGenImage('assets/images/app_logo.png');
   static const SvgGenImage ctaRightArrow =
       SvgGenImage('assets/svg/cta_right_arrow.svg');
+  static const AssetGenImage emptyTripPlaceholder =
+      AssetGenImage('assets/images/empty_trip_placeholder.png');
+  static const SvgGenImage icOtpLock =
+      SvgGenImage('assets/svg/ic_otp_lock.svg');
+  static const SvgGenImage icProfileCamera =
+      SvgGenImage('assets/svg/ic_profile_camera.svg');
   static const SvgGenImage icRadioSelected =
       SvgGenImage('assets/svg/ic_radio_selected.svg');
   static const SvgGenImage icRadioUnselected =
@@ -18,12 +27,17 @@ class Assets {
       SvgGenImage('assets/svg/ic_role_customer.svg');
   static const SvgGenImage icRoleDriver =
       SvgGenImage('assets/svg/ic_role_driver.svg');
+  static const SvgGenImage icRouteInfo =
+      SvgGenImage('assets/svg/ic_route_info.svg');
   static const SvgGenImage icSecurePayment =
       SvgGenImage('assets/svg/ic_secure_payment.svg');
   static const SvgGenImage icVerifiedCarriers =
       SvgGenImage('assets/svg/ic_verified_carriers.svg');
+  static const SvgGenImage icWhatsapp =
+      SvgGenImage('assets/svg/ic_whatsapp.svg');
   static const AssetGenImage loginScreenBanner =
       AssetGenImage('assets/images/login_screen_banner.png');
+  static const SvgGenImage navHome = SvgGenImage('assets/svg/nav_home.svg');
   static const AssetGenImage splashScreenLogo =
       AssetGenImage('assets/images/splash_screen_logo.png');
   static const $AssetsAssetsGen assets = $AssetsAssetsGen();
@@ -38,8 +52,12 @@ class $AssetsAssetsGen {
 class $AssetsImagesGen {
   const $AssetsImagesGen();
 
+  final AssetGenImage appIcon =
+      const AssetGenImage('assets/images/app_icon.png');
   final AssetGenImage appLogo =
       const AssetGenImage('assets/images/app_logo.png');
+  final AssetGenImage emptyTripPlaceholder =
+      const AssetGenImage('assets/images/empty_trip_placeholder.png');
   final AssetGenImage loginScreenBanner =
       const AssetGenImage('assets/images/login_screen_banner.png');
   final AssetGenImage splashScreenLogo =
@@ -152,7 +170,6 @@ class SvgGenImage {
     String? semanticsLabel,
     bool excludeFromSemantics = false,
     SvgTheme? theme,
-    ColorFilter? colorFilter,
     Clip clipBehavior = Clip.hardEdge,
   }) {
     return SvgPicture.asset(
@@ -170,7 +187,6 @@ class SvgGenImage {
       semanticsLabel: semanticsLabel,
       excludeFromSemantics: excludeFromSemantics,
       theme: theme,
-      colorFilter: colorFilter,
       clipBehavior: clipBehavior,
     );
   }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/extensions/size_ext.dart';
+import '../../../core/utils/phone_utils.dart';
 import '../../../core/extensions/theme_ext.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../features/auth/presentation/providers/auth_provider.dart';
@@ -12,6 +13,7 @@ import '../../domain/entities/user.dart';
 import '../../domain/enums/user_role.dart';
 import '../widgets/navigation/confirmation_bottom_sheet.dart';
 import 'widgets/app_profile_menu_row.dart';
+import 'widgets/profile_avatar_display.dart';
 
 /// Figma profile screen tokens — [My Profile](https://www.figma.com/design/YxnNResvDQnbkcPhGejtxa/Mobile-App-UI--Developer-?node-id=1-1055).
 abstract final class _ProfileTokens {
@@ -61,7 +63,7 @@ class _AppProfileTabState extends ConsumerState<AppProfileTab>
           SizedBox(height: 32.h),
           _ProfileSection(
             label: l10n.customerAccountSettings,
-            children: _accountMenuRows(context, l10n, user.role),
+            children: _accountMenuRows(context, l10n, user.role ?? UserRole.customer),
           ),
           SizedBox(height: 32.h),
           _ProfileSection(
@@ -81,7 +83,7 @@ class _AppProfileTabState extends ConsumerState<AppProfileTab>
                 isDangerous: true,
               );
               if (confirmed == true && context.mounted) {
-                context.go(AppRoutes.splash);
+                context.go(AppRoutes.loginScreen);
                 await ref.read(authProvider.notifier).logout();
               }
             },
@@ -102,7 +104,11 @@ class _AppProfileTabState extends ConsumerState<AppProfileTab>
         iconStyle: ProfileMenuIconStyle.accent,
         title: l10n.customerEditPersonalInfo,
         subtitle: l10n.customerEditPersonalInfoSub,
-        onTap: () => context.push(AppRoutes.customerEditProfile),
+        onTap: () => context.push(
+          role == UserRole.driver
+              ? AppRoutes.driverEditProfile
+              : AppRoutes.customerEditProfile,
+        ),
       ),
       AppProfileMenuRow(
         icon: Icons.location_on_outlined,
@@ -229,6 +235,7 @@ class _ProfileHeroCard extends StatelessWidget {
   String _roleLabel(AppLocalizations l10n) => switch (user.role) {
         UserRole.customer => l10n.customerRoleLabel,
         UserRole.driver => l10n.driverRoleLabel,
+        null => l10n.customerRoleLabel,
       };
 
   @override
@@ -273,37 +280,10 @@ class _ProfileHeroCard extends StatelessWidget {
                       clipBehavior: Clip.none,
                       alignment: Alignment.center,
                       children: [
-                        Container(
-                          width: 96.w,
-                          height: 96.w,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: _ProfileTokens.avatarBorder,
-                              width: 4,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.05),
-                                blurRadius: 2,
-                                offset: const Offset(0, 1),
-                              ),
-                            ],
-                          ),
-                          child: CircleAvatar(
-                            radius: 44.w,
-                            backgroundColor:
-                                colors.primary.withValues(alpha: 0.12),
-                            child: Text(
-                              user.initials,
-                              style: TextStyle(
-                                fontFamily: FontRes.MANROPE_EXTRABOLD,
-                                fontSize: 28.sp,
-                                fontWeight: FontWeight.w800,
-                                color: colors.primaryDark,
-                              ),
-                            ),
-                          ),
+                        ProfileAvatarDisplay(
+                          user: user,
+                          size: 96.w,
+                          borderColor: _ProfileTokens.avatarBorder,
                         ),
                         Positioned(
                           right: 4.w,
@@ -361,36 +341,40 @@ class _ProfileHeroCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    SizedBox(height: 16.h),
-                    Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                      decoration: BoxDecoration(
-                        color: _ProfileTokens.avatarBorder,
-                        borderRadius: BorderRadius.circular(9999),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.phone_outlined,
-                            size: 10.5.w,
-                            color: colors.primaryDark,
-                          ),
-                          SizedBox(width: 8.w),
-                          Text(
-                            user.phone,
-                            style: TextStyle(
-                              fontFamily: FontRes.MANROPE_MEDIUM,
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w500,
-                              height: 20 / 14,
-                              color: _ProfileTokens.nameColor,
+                    if (user.phone.trim().isNotEmpty) ...[
+                      SizedBox(height: 16.h),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16.w,
+                          vertical: 8.h,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _ProfileTokens.avatarBorder,
+                          borderRadius: BorderRadius.circular(9999),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.phone_outlined,
+                              size: 10.5.w,
+                              color: colors.primaryDark,
                             ),
-                          ),
-                        ],
+                            SizedBox(width: 8.w),
+                            Text(
+                              PhoneUtils.formatDisplay(user.phone),
+                              style: TextStyle(
+                                fontFamily: FontRes.MANROPE_MEDIUM,
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w500,
+                                height: 20 / 14,
+                                color: _ProfileTokens.nameColor,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
+                    ],
                   ],
                 ),
               ),

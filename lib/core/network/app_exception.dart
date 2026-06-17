@@ -24,7 +24,7 @@ sealed class AppException implements Exception {
       case DioExceptionType.badResponse:
         final code = e.response?.statusCode ?? 0;
         final body = e.response?.data;
-        final msg  = (body is Map ? body['message'] : null) as String?;
+        final msg = _extractMessage(body);
         return switch (code) {
           400 => BadRequestException(msg ?? 'Bad request'),
           401 => const UnauthorisedException(),
@@ -45,6 +45,24 @@ sealed class AppException implements Exception {
       case DioExceptionType.badCertificate:
         return UnknownException(e.message ?? 'Unknown error occurred');
     }
+  }
+
+  static String? _extractMessage(dynamic body) {
+    if (body is! Map) return null;
+    final message = body['message'];
+    if (message is String && message.isNotEmpty) return message;
+
+    final errors = body['errors'];
+    if (errors is Map) {
+      for (final value in errors.values) {
+        if (value is List && value.isNotEmpty) {
+          final first = value.first;
+          if (first is String && first.isNotEmpty) return first;
+        }
+        if (value is String && value.isNotEmpty) return value;
+      }
+    }
+    return null;
   }
 
   @override

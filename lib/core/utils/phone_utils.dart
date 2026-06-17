@@ -31,4 +31,19 @@ abstract final class PhoneUtils {
   }
 
   static int maxLocalLength(String dialCode) => dialCode == '+91' ? 10 : 15;
+
+  /// Builds E.164-style number: `+91` + `9876543210` → `+919876543210`.
+  static String buildE164(String dialCode, String localNumber) {
+    final dc = dialCode.startsWith('+') ? dialCode : '+$dialCode';
+    final digits = localNumber.replaceAll(RegExp(r'\D'), '');
+    return '$dc$digits';
+  }
+
+  /// Display with space after dial code — `+919876543210` → `+91 9876543210`.
+  static String formatDisplay(String phone) {
+    if (phone.trim().isEmpty) return phone;
+    final split = splitE164(phone);
+    if (split.localNumber.isEmpty) return phone;
+    return '${split.dialCode} ${split.localNumber}';
+  }
 }

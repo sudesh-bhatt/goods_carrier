@@ -253,6 +253,9 @@ class AppLocalizationsGu extends AppLocalizations {
   String get authResendCodeIn => 'કોડ ફરી મોકલો';
 
   @override
+  String get authResendLimitReached => 'ફરી મોકલવાની મર્યાદા પૂરી થઈ';
+
+  @override
   String authResendIn(int seconds) {
     return '$seconds સેકન્ડમાં ફરી મોકલો';
   }
@@ -411,6 +414,9 @@ class AppLocalizationsGu extends AppLocalizations {
 
   @override
   String get driverProfileCompleteTitle => 'પ્રોફાઇલ પૂર્ણ કરો';
+
+  @override
+  String get driverProfileEditTitle => 'પ્રોફાઇલ સંપાદિત કરો';
 
   @override
   String get driverProfilePersonalDetails => 'વ્યક્તિગત વિગતો';
