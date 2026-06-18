@@ -117,31 +117,83 @@ class RemoteAuthRepository implements IAuthRepository {
     return _api.uploadCustomerAvatar(localPath);
   }
 
+  Future<String?> _resolveDriverProfileImageUrl(String? imageRef) async {
+    if (imageRef == null || imageRef.isEmpty) return null;
+    if (ProfileImageUtils.isRemoteUrl(imageRef)) return imageRef;
+    if (ProfileImageUtils.isServerRelativePath(imageRef)) return imageRef;
+    if (!ProfileImageUtils.isLocalFileAvailable(imageRef)) return null;
+
+    final localPath = ProfileImageUtils.normalizePath(imageRef)!;
+    return _api.uploadDriverAvatar(localPath);
+  }
+
   @override
   Future<User> createDriverProfile({
-    required String name,
-    required String phone,
+    required String fullName,
+    required String city,
+    required String postalCode,
+    required String fullAddress,
     String? email,
-    String? address,
     String? companyName,
     String? gstName,
     String? gstNumber,
     String? businessEmail,
+    String? businessCountryCode,
     String? businessPhone,
     String? profileImageUrl,
-  }) =>
-      _api.createDriverProfile(
-        name: name,
-        phone: phone,
-        email: email,
-        address: address,
-        companyName: companyName,
-        gstName: gstName,
-        gstNumber: gstNumber,
-        businessEmail: businessEmail,
-        businessPhone: businessPhone,
-        profileImageUrl: profileImageUrl,
-      );
+  }) async {
+    final resolvedImageUrl = await _resolveDriverProfileImageUrl(
+      profileImageUrl,
+    );
+    return _api.createDriverProfile(
+      fullName: fullName,
+      city: city,
+      postalCode: postalCode,
+      fullAddress: fullAddress,
+      email: email,
+      companyName: companyName,
+      gstName: gstName,
+      gstNumber: gstNumber,
+      businessEmail: businessEmail,
+      businessCountryCode: businessCountryCode,
+      businessPhone: businessPhone,
+      profileImageUrl: resolvedImageUrl,
+    );
+  }
+
+  @override
+  Future<User> updateDriverProfile({
+    required String fullName,
+    required String city,
+    required String postalCode,
+    required String fullAddress,
+    String? email,
+    String? companyName,
+    String? gstName,
+    String? gstNumber,
+    String? businessEmail,
+    String? businessCountryCode,
+    String? businessPhone,
+    String? profileImageUrl,
+  }) async {
+    final resolvedImageUrl = await _resolveDriverProfileImageUrl(
+      profileImageUrl,
+    );
+    return _api.updateDriverProfile(
+      fullName: fullName,
+      city: city,
+      postalCode: postalCode,
+      fullAddress: fullAddress,
+      email: email,
+      companyName: companyName,
+      gstName: gstName,
+      gstNumber: gstNumber,
+      businessEmail: businessEmail,
+      businessCountryCode: businessCountryCode,
+      businessPhone: businessPhone,
+      profileImageUrl: resolvedImageUrl,
+    );
+  }
 
   @override
   Future<void> saveToken(String token) async {

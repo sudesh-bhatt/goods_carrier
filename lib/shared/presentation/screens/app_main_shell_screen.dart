@@ -88,7 +88,8 @@ class AppMainShellScreen extends ConsumerWidget {
             else
               CustomerMainHeader(
                 title: _titleForTab(tab, l10n),
-                userName: user?.name,
+                userInitials: user?.initials ?? '?',
+                profileImageUrl: user?.profileImageUrl,
                 onProfile: tab == AppMainTab.profile
                     ? null
                     : () => _onTabSelected(context, AppMainTab.profile),

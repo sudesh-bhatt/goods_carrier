@@ -419,34 +419,43 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<String?> submitDriverProfile({
-    required String name,
+    required String fullName,
     required String phone,
+    required String city,
+    required String postalCode,
+    required String fullAddress,
     String? email,
-    String? address,
     String? companyName,
     String? gstName,
     String? gstNumber,
     String? businessEmail,
+    String? businessCountryCode,
     String? businessPhone,
     String? profileImageUrl,
   }) async {
     state = state.copyWith(isLoading: true, clearError: true);
     try {
+      final imageUrl = ProfileImageUtils.resolveForApiSubmission(
+        savedReference: profileImageUrl ?? state.pendingProfileImageUrl,
+      );
       final user = await _authRepo.createDriverProfile(
-        name: name,
-        phone: phone,
+        fullName: fullName,
+        city: city,
+        postalCode: postalCode,
+        fullAddress: fullAddress,
         email: email,
-        address: address,
         companyName: companyName,
         gstName: gstName,
         gstNumber: gstNumber,
         businessEmail: businessEmail,
+        businessCountryCode: businessCountryCode,
         businessPhone: businessPhone,
-        profileImageUrl: profileImageUrl,
+        profileImageUrl: imageUrl,
       );
       final completed = user.copyWith(
         role: UserRole.driver,
         profileCompleted: true,
+        phone: user.phone.isNotEmpty ? user.phone : phone,
       );
       await _persistSession(user: completed, nextStep: OnboardingNextStep.home);
       await _prefsStore.clearPendingProfileImage();
@@ -506,14 +515,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<bool> updateDriverProfile({
-    required String name,
+    required String fullName,
     required String phone,
+    required String city,
+    required String postalCode,
+    required String fullAddress,
     String? email,
-    String? address,
     String? companyName,
     String? gstName,
     String? gstNumber,
     String? businessEmail,
+    String? businessCountryCode,
     String? businessPhone,
     String? profileImageUrl,
   }) async {
@@ -525,22 +537,30 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
     state = state.copyWith(isLoading: true, clearError: true);
     try {
-      final updated = current.copyWith(
-        name: name,
-        phone: phone,
-        email: email ?? '',
-        address: address,
+      final imageUrl = ProfileImageUtils.resolveForApiSubmission(
+        savedReference: profileImageUrl ?? current.profileImageUrl,
+      );
+      final updated = await _authRepo.updateDriverProfile(
+        fullName: fullName,
+        city: city,
+        postalCode: postalCode,
+        fullAddress: fullAddress,
+        email: email,
         companyName: companyName,
         gstName: gstName,
         gstNumber: gstNumber,
         businessEmail: businessEmail,
+        businessCountryCode: businessCountryCode,
         businessPhone: businessPhone,
-        profileImageUrl: profileImageUrl ?? current.profileImageUrl,
+        profileImageUrl: imageUrl,
       );
-      await _persistSession(user: updated, nextStep: state.nextStep);
+      final merged = updated.copyWith(
+        phone: updated.phone.isNotEmpty ? updated.phone : phone,
+      );
+      await _persistSession(user: merged, nextStep: state.nextStep);
       state = state.copyWith(
-        user: updated,
-        phoneNumber: updated.displayPhone,
+        user: merged,
+        phoneNumber: merged.displayPhone,
         isLoading: false,
       );
       return true;

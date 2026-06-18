@@ -80,9 +80,16 @@ class AuthApiClient {
   }
 
   /// Uploads a local avatar file; returns the server URL for profile APIs.
-  Future<String> uploadCustomerAvatar(String localFilePath) async {
+  Future<String> uploadCustomerAvatar(String localFilePath) =>
+      _uploadAvatar(ApiConstants.customerProfileAvatar, localFilePath);
+
+  /// Uploads a local driver avatar file; returns the server URL for profile APIs.
+  Future<String> uploadDriverAvatar(String localFilePath) =>
+      _uploadAvatar(ApiConstants.driverProfileAvatar, localFilePath);
+
+  Future<String> _uploadAvatar(String endpoint, String localFilePath) async {
     final response = await _dio.post<Map<String, dynamic>>(
-      ApiConstants.customerProfileAvatar,
+      endpoint,
       data: FormData.fromMap({
         'avatar': await MultipartFile.fromFile(
           localFilePath,
@@ -130,36 +137,104 @@ class AuthApiClient {
   }
 
   Future<User> createDriverProfile({
-    required String name,
-    required String phone,
+    required String fullName,
+    required String city,
+    required String postalCode,
+    required String fullAddress,
     String? email,
-    String? address,
     String? companyName,
     String? gstName,
     String? gstNumber,
     String? businessEmail,
+    String? businessCountryCode,
     String? businessPhone,
     String? profileImageUrl,
   }) async {
     final response = await _dio.post<Map<String, dynamic>>(
       ApiConstants.driverProfile,
-      data: {
-        'name': name,
-        'phone': phone,
+      data: _driverProfileBody(
+        fullName: fullName,
+        city: city,
+        postalCode: postalCode,
+        fullAddress: fullAddress,
+        email: email,
+        companyName: companyName,
+        gstName: gstName,
+        gstNumber: gstNumber,
+        businessEmail: businessEmail,
+        businessCountryCode: businessCountryCode,
+        businessPhone: businessPhone,
+        profileImageUrl: profileImageUrl,
+      ),
+    );
+    return User.fromJson(ApiEnvelope.parseData(response.data));
+  }
+
+  Future<User> updateDriverProfile({
+    required String fullName,
+    required String city,
+    required String postalCode,
+    required String fullAddress,
+    String? email,
+    String? companyName,
+    String? gstName,
+    String? gstNumber,
+    String? businessEmail,
+    String? businessCountryCode,
+    String? businessPhone,
+    String? profileImageUrl,
+  }) async {
+    final response = await _dio.put<Map<String, dynamic>>(
+      ApiConstants.driverProfile,
+      data: _driverProfileBody(
+        fullName: fullName,
+        city: city,
+        postalCode: postalCode,
+        fullAddress: fullAddress,
+        email: email,
+        companyName: companyName,
+        gstName: gstName,
+        gstNumber: gstNumber,
+        businessEmail: businessEmail,
+        businessCountryCode: businessCountryCode,
+        businessPhone: businessPhone,
+        profileImageUrl: profileImageUrl,
+      ),
+    );
+    return User.fromJson(ApiEnvelope.parseData(response.data));
+  }
+
+  static Map<String, dynamic> _driverProfileBody({
+    required String fullName,
+    required String city,
+    required String postalCode,
+    required String fullAddress,
+    String? email,
+    String? companyName,
+    String? gstName,
+    String? gstNumber,
+    String? businessEmail,
+    String? businessCountryCode,
+    String? businessPhone,
+    String? profileImageUrl,
+  }) =>
+      {
+        'full_name': fullName,
         if (email != null && email.isNotEmpty) 'email': email,
-        if (address != null && address.isNotEmpty) 'address': address,
+        'city': city,
+        'postal_code': postalCode,
+        'full_address': fullAddress,
         if (companyName != null && companyName.isNotEmpty)
           'company_name': companyName,
         if (gstName != null && gstName.isNotEmpty) 'gst_name': gstName,
         if (gstNumber != null && gstNumber.isNotEmpty) 'gst_number': gstNumber,
         if (businessEmail != null && businessEmail.isNotEmpty)
           'business_email': businessEmail,
+        if (businessCountryCode != null && businessCountryCode.isNotEmpty)
+          'business_country_code': businessCountryCode,
         if (businessPhone != null && businessPhone.isNotEmpty)
           'business_phone': businessPhone,
         if (profileImageUrl != null && profileImageUrl.isNotEmpty)
           'profile_image_url': profileImageUrl,
-      },
-    );
-    return User.fromJson(ApiEnvelope.parseData(response.data));
-  }
+      };
 }

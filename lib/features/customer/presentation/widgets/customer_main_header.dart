@@ -3,28 +3,29 @@ import 'package:flutter/material.dart';
 import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../res/font_res.dart';
+import '../../../../shared/presentation/widgets/profile/profile_image_content.dart';
 
 /// Shared app bar for the customer main shell — title + optional trailing.
 class CustomerMainHeader extends StatelessWidget {
   const CustomerMainHeader({
     super.key,
     required this.title,
-    this.userName,
+    this.userInitials = '?',
+    this.profileImageUrl,
     this.trailing,
     this.onProfile,
   });
 
   final String title;
-  final String? userName;
+  final String userInitials;
+  final String? profileImageUrl;
   final Widget? trailing;
   final VoidCallback? onProfile;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final initial = (userName?.trim().isNotEmpty == true)
-        ? userName!.trim()[0].toUpperCase()
-        : '?';
+    final avatarSize = 34.w;
 
     return ColoredBox(
       color: colors.surface,
@@ -73,17 +74,27 @@ class CustomerMainHeader extends StatelessWidget {
                 SizedBox(width: 8.w),
                 GestureDetector(
                   onTap: onProfile,
-                  child: CircleAvatar(
-                    radius: 17.w,
-                    backgroundColor:
-                        colors.primary.withValues(alpha: 0.12),
-                    child: Text(
-                      initial,
-                      style: TextStyle(
-                        fontFamily: FontRes.MANROPE_BOLD,
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w700,
-                        color: colors.primaryDark,
+                  child: ClipOval(
+                    child: SizedBox(
+                      width: avatarSize,
+                      height: avatarSize,
+                      child: ProfileImageContent(
+                        imageReference: profileImageUrl,
+                        placeholder: ColoredBox(
+                          color: colors.primary.withValues(alpha: 0.12),
+                          child: Center(
+                            child: Text(
+                              userInitials,
+                              style: TextStyle(
+                                fontFamily: FontRes.MANROPE_BOLD,
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w700,
+                                color: colors.primaryDark,
+                              ),
+                            ),
+                          ),
+                        ),
+                        fit: BoxFit.cover,
                       ),
                     ),
                   ),

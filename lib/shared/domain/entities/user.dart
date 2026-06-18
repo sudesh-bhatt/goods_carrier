@@ -11,10 +11,14 @@ class User {
     this.language,
     this.profileImageUrl,
     this.address,
+    this.city,
+    this.postalCode,
+    this.fullAddress,
     this.companyName,
     this.gstName,
     this.gstNumber,
     this.businessEmail,
+    this.businessCountryCode,
     this.businessPhone,
     this.profileCompleted = false,
     this.agreementAccepted = false,
@@ -30,10 +34,14 @@ class User {
   final String? language;
   final String? profileImageUrl;
   final String? address;
+  final String? city;
+  final String? postalCode;
+  final String? fullAddress;
   final String? companyName;
   final String? gstName;
   final String? gstNumber;
   final String? businessEmail;
+  final String? businessCountryCode;
   final String? businessPhone;
   final bool profileCompleted;
   final bool agreementAccepted;
@@ -68,10 +76,14 @@ class User {
     String? language,
     String? profileImageUrl,
     String? address,
+    String? city,
+    String? postalCode,
+    String? fullAddress,
     String? companyName,
     String? gstName,
     String? gstNumber,
     String? businessEmail,
+    String? businessCountryCode,
     String? businessPhone,
     bool? profileCompleted,
     bool? agreementAccepted,
@@ -88,10 +100,14 @@ class User {
         language: language ?? this.language,
         profileImageUrl: profileImageUrl ?? this.profileImageUrl,
         address: address ?? this.address,
+        city: city ?? this.city,
+        postalCode: postalCode ?? this.postalCode,
+        fullAddress: fullAddress ?? this.fullAddress,
         companyName: companyName ?? this.companyName,
         gstName: gstName ?? this.gstName,
         gstNumber: gstNumber ?? this.gstNumber,
         businessEmail: businessEmail ?? this.businessEmail,
+        businessCountryCode: businessCountryCode ?? this.businessCountryCode,
         businessPhone: businessPhone ?? this.businessPhone,
         profileCompleted: profileCompleted ?? this.profileCompleted,
         agreementAccepted: agreementAccepted ?? this.agreementAccepted,
@@ -117,7 +133,52 @@ class User {
     return null;
   }
 
+  static String? _parseDriverAddress(Map<String, dynamic> json) {
+    final fullAddress = json['full_address'] as String?;
+    final city = json['city'] as String?;
+    final postal = json['postal_code'] as String?;
+    if ((fullAddress == null || fullAddress.isEmpty) &&
+        (city == null || city.isEmpty) &&
+        (postal == null || postal.isEmpty)) {
+      return null;
+    }
+
+    final parts = <String>[];
+    if (fullAddress != null && fullAddress.isNotEmpty) parts.add(fullAddress);
+    final cityPostal = [
+      if (city != null && city.isNotEmpty) city,
+      if (postal != null && postal.isNotEmpty) postal,
+    ].join(', ');
+    if (cityPostal.isNotEmpty) parts.add(cityPostal);
+    return parts.join('\n');
+  }
+
+  static Map<String, dynamic> _mergeDriverProfile(Map<String, dynamic> json) {
+    final driverProfile = json['driver_profile'];
+    if (driverProfile is! Map<String, dynamic>) return json;
+    return {...json, ...driverProfile};
+  }
+
+  static String? _parseBusinessPhone(Map<String, dynamic> json) {
+    final phone = json['business_phone'] as String?;
+    if (phone == null || phone.isEmpty) return null;
+    if (json['business_country_code'] != null) {
+      return phone.replaceAll(RegExp(r'\D'), '');
+    }
+    if (phone.startsWith('+')) return phone;
+
+    final code = json['business_country_code'] as String? ?? '';
+    if (code.isNotEmpty) return '$code$phone';
+    return phone;
+  }
+
   factory User.fromJson(Map<String, dynamic> j) {
+    final nested = j['user'];
+    if (nested is Map<String, dynamic>) {
+      return User.fromJson(nested);
+    }
+
+    final profile = _mergeDriverProfile(j);
     final rawId = j['id'];
     final id = rawId is int ? rawId.toString() : rawId as String? ?? '';
 
@@ -132,19 +193,23 @@ class User {
 
     return User(
       id: id,
-      name: j['name'] as String? ?? '',
+      name: j['name'] as String? ?? j['full_name'] as String? ?? '',
       phone: rawPhone,
       countryCode: countryCode,
       email: j['email'] as String? ?? '',
       role: role,
       language: j['language'] as String?,
       profileImageUrl: j['profile_image_url'] as String? ?? j['avatar'] as String?,
-      address: _parsePrimaryAddress(j),
-      companyName: j['company_name'] as String?,
-      gstName: j['gst_name'] as String?,
-      gstNumber: j['gst_number'] as String?,
-      businessEmail: j['business_email'] as String?,
-      businessPhone: j['business_phone'] as String?,
+      address: _parsePrimaryAddress(j) ?? _parseDriverAddress(profile),
+      city: profile['city'] as String?,
+      postalCode: profile['postal_code'] as String?,
+      fullAddress: profile['full_address'] as String?,
+      companyName: profile['company_name'] as String?,
+      gstName: profile['gst_name'] as String?,
+      gstNumber: profile['gst_number'] as String?,
+      businessEmail: profile['business_email'] as String?,
+      businessCountryCode: profile['business_country_code'] as String?,
+      businessPhone: _parseBusinessPhone(profile),
       profileCompleted: j['profile_completed'] as bool? ?? false,
       agreementAccepted: j['agreement_accepted'] as bool? ?? false,
       status: j['status'] as String? ?? 'active',
@@ -161,10 +226,14 @@ class User {
         'language': language,
         'profile_image_url': profileImageUrl,
         'address': address,
+        'city': city,
+        'postal_code': postalCode,
+        'full_address': fullAddress,
         'company_name': companyName,
         'gst_name': gstName,
         'gst_number': gstNumber,
         'business_email': businessEmail,
+        'business_country_code': businessCountryCode,
         'business_phone': businessPhone,
         'profile_completed': profileCompleted,
         'agreement_accepted': agreementAccepted,

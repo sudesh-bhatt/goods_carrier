@@ -131,34 +131,72 @@ class LocalAuthRepository implements IAuthRepository {
 
   @override
   Future<User> createDriverProfile({
-    required String name,
-    required String phone,
+    required String fullName,
+    required String city,
+    required String postalCode,
+    required String fullAddress,
     String? email,
-    String? address,
     String? companyName,
     String? gstName,
     String? gstNumber,
     String? businessEmail,
+    String? businessCountryCode,
     String? businessPhone,
     String? profileImageUrl,
   }) async {
     await _delay();
     return User(
       id: 'USR-${DateTime.now().millisecondsSinceEpoch % 9999}',
-      name: name,
-      phone: phone,
+      name: fullName,
+      phone: '9876543210',
       email: email ?? '',
       role: UserRole.driver,
-      address: address,
+      address: [fullAddress, '$city, $postalCode']
+          .where((part) => part.trim().isNotEmpty)
+          .join('\n'),
+      city: city,
+      postalCode: postalCode,
+      fullAddress: fullAddress,
       companyName: companyName,
       gstName: gstName,
       gstNumber: gstNumber,
       businessEmail: businessEmail,
+      businessCountryCode: businessCountryCode,
       businessPhone: businessPhone,
       profileImageUrl: profileImageUrl,
       profileCompleted: true,
     );
   }
+
+  @override
+  Future<User> updateDriverProfile({
+    required String fullName,
+    required String city,
+    required String postalCode,
+    required String fullAddress,
+    String? email,
+    String? companyName,
+    String? gstName,
+    String? gstNumber,
+    String? businessEmail,
+    String? businessCountryCode,
+    String? businessPhone,
+    String? profileImageUrl,
+  }) =>
+      createDriverProfile(
+        fullName: fullName,
+        city: city,
+        postalCode: postalCode,
+        fullAddress: fullAddress,
+        email: email,
+        companyName: companyName,
+        gstName: gstName,
+        gstNumber: gstNumber,
+        businessEmail: businessEmail,
+        businessCountryCode: businessCountryCode,
+        businessPhone: businessPhone,
+        profileImageUrl: profileImageUrl,
+      );
 
   @override
   Future<void> saveToken(String token) async {

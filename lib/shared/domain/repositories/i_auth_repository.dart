@@ -36,14 +36,31 @@ abstract class IAuthRepository {
   });
 
   Future<User> createDriverProfile({
-    required String name,
-    required String phone,
+    required String fullName,
+    required String city,
+    required String postalCode,
+    required String fullAddress,
     String? email,
-    String? address,
     String? companyName,
     String? gstName,
     String? gstNumber,
     String? businessEmail,
+    String? businessCountryCode,
+    String? businessPhone,
+    String? profileImageUrl,
+  });
+
+  Future<User> updateDriverProfile({
+    required String fullName,
+    required String city,
+    required String postalCode,
+    required String fullAddress,
+    String? email,
+    String? companyName,
+    String? gstName,
+    String? gstNumber,
+    String? businessEmail,
+    String? businessCountryCode,
     String? businessPhone,
     String? profileImageUrl,
   });

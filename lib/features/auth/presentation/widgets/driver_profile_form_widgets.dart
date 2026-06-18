@@ -163,26 +163,23 @@ class DriverProfilePersonalField extends StatelessWidget {
           ),
         ),
         SizedBox(height: 4.h),
-        SizedBox(
-          height: 44.h,
-          child: TextFormField(
-            controller: controller,
-            validator: validator,
-            keyboardType: keyboardType,
-            textCapitalization: textCapitalization,
-            textInputAction: textInputAction,
-            autofocus: autofocus,
-            readOnly: readOnly,
-            inputFormatters: inputFormatters,
-            style: TextStyle(
-              fontFamily: FontRes.MANROPE_REGULAR,
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w400,
-              height: 20 / 14,
-              color: readOnly ? _kInputTextColor : const Color(0xFF161C20),
-            ),
-            decoration: _inputDecoration(hint: hint, suffix: suffix),
+        TextFormField(
+          controller: controller,
+          validator: validator,
+          keyboardType: keyboardType,
+          textCapitalization: textCapitalization,
+          textInputAction: textInputAction,
+          autofocus: autofocus,
+          readOnly: readOnly,
+          inputFormatters: inputFormatters,
+          style: TextStyle(
+            fontFamily: FontRes.MANROPE_REGULAR,
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w400,
+            height: 20 / 14,
+            color: readOnly ? _kInputTextColor : const Color(0xFF161C20),
           ),
+          decoration: _inputDecoration(hint: hint, suffix: suffix),
         ),
       ],
     );
@@ -231,24 +228,21 @@ class DriverProfileBusinessField extends StatelessWidget {
           ),
         ),
         SizedBox(height: 6.h),
-        SizedBox(
-          height: 44.h,
-          child: TextFormField(
-            controller: controller,
-            validator: validator,
-            keyboardType: keyboardType,
-            textCapitalization: textCapitalization,
-            textInputAction: textInputAction,
-            inputFormatters: inputFormatters,
-            style: TextStyle(
-              fontFamily: FontRes.MANROPE_REGULAR,
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w400,
-              height: 19 / 14,
-              color: const Color(0xFF161C20),
-            ),
-            decoration: _inputDecoration(hint: hint),
+        TextFormField(
+          controller: controller,
+          validator: validator,
+          keyboardType: keyboardType,
+          textCapitalization: textCapitalization,
+          textInputAction: textInputAction,
+          inputFormatters: inputFormatters,
+          style: TextStyle(
+            fontFamily: FontRes.MANROPE_REGULAR,
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w400,
+            height: 19 / 14,
+            color: const Color(0xFF161C20),
           ),
+          decoration: _inputDecoration(hint: hint),
         ),
       ],
     );
@@ -291,26 +285,22 @@ class DriverProfileAddressField extends StatelessWidget {
           ),
         ),
         SizedBox(height: 4.h),
-        SizedBox(
-          height: 64.h,
-          child: TextFormField(
-            controller: controller,
-            validator: validator,
-            textInputAction: textInputAction,
-            keyboardType: TextInputType.multiline,
-            expands: true,
-            minLines: null,
-            maxLines: null,
-            textAlignVertical: TextAlignVertical.top,
-            style: TextStyle(
-              fontFamily: FontRes.MANROPE_REGULAR,
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w400,
-              height: 20 / 14,
-              color: const Color(0xFF161C20),
-            ),
-            decoration: _inputDecoration(hint: hint),
+        TextFormField(
+          controller: controller,
+          validator: validator,
+          textInputAction: textInputAction,
+          keyboardType: TextInputType.multiline,
+          minLines: 3,
+          maxLines: 3,
+          textAlignVertical: TextAlignVertical.top,
+          style: TextStyle(
+            fontFamily: FontRes.MANROPE_REGULAR,
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w400,
+            height: 20 / 14,
+            color: const Color(0xFF161C20),
           ),
+          decoration: _inputDecoration(hint: hint, minHeight: 64),
         ),
       ],
     );
@@ -355,7 +345,11 @@ class DriverProfileBusinessPhoneField extends StatelessWidget {
   }
 }
 
-InputDecoration _inputDecoration({String? hint, Widget? suffix}) {
+InputDecoration _inputDecoration({
+  String? hint,
+  Widget? suffix,
+  double minHeight = 44,
+}) {
   final radius = BorderRadius.circular(12.r);
   return InputDecoration(
     hintText: hint,
@@ -369,6 +363,14 @@ InputDecoration _inputDecoration({String? hint, Widget? suffix}) {
     filled: true,
     fillColor: kDriverProfileFieldFill,
     contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+    constraints: BoxConstraints(minHeight: minHeight.h),
+    errorMaxLines: 2,
+    errorStyle: TextStyle(
+      fontFamily: FontRes.MANROPE_REGULAR,
+      fontSize: 12.sp,
+      height: 16 / 12,
+      color: const Color(0xFFD32F2F),
+    ),
     suffixIcon: suffix,
     suffixIconConstraints: BoxConstraints(minWidth: 24.w, minHeight: 24.h),
     border: OutlineInputBorder(borderRadius: radius, borderSide: BorderSide.none),

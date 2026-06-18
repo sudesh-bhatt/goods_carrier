@@ -88,32 +88,70 @@ class _DriverProfilePageState extends ConsumerState<DriverProfilePage>
     if (user.email.trim().isNotEmpty) _emailCtrl.text = user.email;
     _savedImagePath = user.profileImageUrl;
 
-    final addr = user.address?.trim();
-    if (addr != null && addr.isNotEmpty) {
-      final lines = addr.split('\n');
-      if (lines.length >= 2) {
-        _addressCtrl.text = lines.first.trim();
-        final cityPostal = lines.sublist(1).join(' ').trim();
-        final comma = cityPostal.lastIndexOf(',');
-        if (comma >= 0) {
-          _cityCtrl.text = cityPostal.substring(0, comma).trim();
-          _postalCtrl.text = cityPostal.substring(comma + 1).trim();
+    if (user.fullAddress != null && user.fullAddress!.trim().isNotEmpty) {
+      _addressCtrl.text = user.fullAddress!.trim();
+    } else {
+      final addr = user.address?.trim();
+      if (addr != null && addr.isNotEmpty) {
+        final lines = addr.split('\n');
+        if (lines.length >= 2) {
+          _addressCtrl.text = lines.first.trim();
         } else {
           _addressCtrl.text = addr;
         }
-      } else {
-        _addressCtrl.text = addr;
       }
     }
 
-    if (user.companyName != null) _companyCtrl.text = user.companyName!;
-    if (user.gstName != null) _gstNameCtrl.text = user.gstName!;
-    if (user.gstNumber != null) _gstNumberCtrl.text = user.gstNumber!;
-    if (user.businessEmail != null) _businessEmailCtrl.text = user.businessEmail!;
+    if (user.city != null && user.city!.trim().isNotEmpty) {
+      _cityCtrl.text = user.city!.trim();
+    } else {
+      final addr = user.address?.trim();
+      if (addr != null && addr.contains('\n')) {
+        final cityPostal = addr.split('\n').sublist(1).join(' ').trim();
+        final comma = cityPostal.lastIndexOf(',');
+        if (comma >= 0) {
+          _cityCtrl.text = cityPostal.substring(0, comma).trim();
+        }
+      }
+    }
+
+    if (user.postalCode != null && user.postalCode!.trim().isNotEmpty) {
+      _postalCtrl.text = user.postalCode!.trim();
+    } else {
+      final addr = user.address?.trim();
+      if (addr != null && addr.contains('\n')) {
+        final cityPostal = addr.split('\n').sublist(1).join(' ').trim();
+        final comma = cityPostal.lastIndexOf(',');
+        if (comma >= 0) {
+          _postalCtrl.text = cityPostal.substring(comma + 1).trim();
+        }
+      }
+    }
+
+    if (user.companyName != null && user.companyName!.isNotEmpty) {
+      _companyCtrl.text = user.companyName!;
+    }
+    if (user.gstName != null && user.gstName!.isNotEmpty) {
+      _gstNameCtrl.text = user.gstName!;
+    }
+    if (user.gstNumber != null && user.gstNumber!.isNotEmpty) {
+      _gstNumberCtrl.text = user.gstNumber!;
+    }
+    if (user.businessEmail != null && user.businessEmail!.isNotEmpty) {
+      _businessEmailCtrl.text = user.businessEmail!;
+    }
+    if (user.businessCountryCode != null && user.businessCountryCode!.isNotEmpty) {
+      _businessDialCode = user.businessCountryCode!;
+    }
     if (user.businessPhone != null && user.businessPhone!.isNotEmpty) {
-      final split = PhoneUtils.splitE164(user.businessPhone!);
-      _businessDialCode = split.dialCode;
-      _businessPhoneCtrl.text = split.localNumber;
+      final raw = user.businessPhone!;
+      if (raw.startsWith('+')) {
+        final split = PhoneUtils.splitE164(raw);
+        _businessDialCode = split.dialCode;
+        _businessPhoneCtrl.text = split.localNumber;
+      } else {
+        _businessPhoneCtrl.text = raw.replaceAll(RegExp(r'\D'), '');
+      }
     }
   }
 
@@ -134,17 +172,6 @@ class _DriverProfilePageState extends ConsumerState<DriverProfilePage>
     super.dispose();
   }
 
-  String _buildFullAddress() {
-    final parts = <String>[];
-    final street = _addressCtrl.text.trim();
-    final city = _cityCtrl.text.trim();
-    final postal = _postalCtrl.text.trim();
-    if (street.isNotEmpty) parts.add(street);
-    if (city.isNotEmpty || postal.isNotEmpty) {
-      parts.add([city, postal].where((s) => s.isNotEmpty).join(', '));
-    }
-    return parts.join('\n');
-  }
 
   String? _optionalGst(String? value) {
     if (value == null || value.trim().isEmpty) return null;
@@ -247,29 +274,48 @@ class _DriverProfilePageState extends ConsumerState<DriverProfilePage>
     final businessPhoneRaw = _businessPhoneCtrl.text.trim();
     final businessPhone = businessPhoneRaw.isEmpty
         ? null
-        : PhoneUtils.buildE164(_businessDialCode, businessPhoneRaw);
+        : businessPhoneRaw.replaceAll(RegExp(r'\D'), '');
     final profileImageUrl = _resolvedProfileImagePath();
     final phone = _resolvedPhone();
     final notifier = ref.read(authProvider.notifier);
+    final profileArgs = (
+      fullName: _nameCtrl.text.trim(),
+      phone: phone,
+      city: _cityCtrl.text.trim(),
+      postalCode: _postalCtrl.text.trim(),
+      fullAddress: _addressCtrl.text.trim(),
+      email: _emailCtrl.text.trim().isEmpty ? null : _emailCtrl.text.trim(),
+      companyName:
+          _companyCtrl.text.trim().isEmpty ? null : _companyCtrl.text.trim(),
+      gstName:
+          _gstNameCtrl.text.trim().isEmpty ? null : _gstNameCtrl.text.trim(),
+      gstNumber: _gstNumberCtrl.text.trim().isEmpty
+          ? null
+          : _gstNumberCtrl.text.trim(),
+      businessEmail: _businessEmailCtrl.text.trim().isEmpty
+          ? null
+          : _businessEmailCtrl.text.trim(),
+      businessCountryCode:
+          businessPhone == null ? null : _businessDialCode,
+      businessPhone: businessPhone,
+      profileImageUrl: profileImageUrl,
+    );
 
     if (widget.isEditMode) {
       final saved = await notifier.updateDriverProfile(
-        name: _nameCtrl.text.trim(),
-        phone: phone,
-        email: _emailCtrl.text.trim().isEmpty ? null : _emailCtrl.text.trim(),
-        address: _buildFullAddress(),
-        companyName:
-            _companyCtrl.text.trim().isEmpty ? null : _companyCtrl.text.trim(),
-        gstName:
-            _gstNameCtrl.text.trim().isEmpty ? null : _gstNameCtrl.text.trim(),
-        gstNumber: _gstNumberCtrl.text.trim().isEmpty
-            ? null
-            : _gstNumberCtrl.text.trim(),
-        businessEmail: _businessEmailCtrl.text.trim().isEmpty
-            ? null
-            : _businessEmailCtrl.text.trim(),
-        businessPhone: businessPhone,
-        profileImageUrl: profileImageUrl,
+        fullName: profileArgs.fullName,
+        phone: profileArgs.phone,
+        city: profileArgs.city,
+        postalCode: profileArgs.postalCode,
+        fullAddress: profileArgs.fullAddress,
+        email: profileArgs.email,
+        companyName: profileArgs.companyName,
+        gstName: profileArgs.gstName,
+        gstNumber: profileArgs.gstNumber,
+        businessEmail: profileArgs.businessEmail,
+        businessCountryCode: profileArgs.businessCountryCode,
+        businessPhone: profileArgs.businessPhone,
+        profileImageUrl: profileArgs.profileImageUrl,
       );
       if (!mounted) return;
       if (!saved) {
@@ -286,22 +332,19 @@ class _DriverProfilePageState extends ConsumerState<DriverProfilePage>
     }
 
     await notifier.submitDriverProfile(
-      name: _nameCtrl.text.trim(),
-      phone: phone,
-      email: _emailCtrl.text.trim().isEmpty ? null : _emailCtrl.text.trim(),
-      address: _buildFullAddress(),
-      companyName:
-          _companyCtrl.text.trim().isEmpty ? null : _companyCtrl.text.trim(),
-      gstName:
-          _gstNameCtrl.text.trim().isEmpty ? null : _gstNameCtrl.text.trim(),
-      gstNumber: _gstNumberCtrl.text.trim().isEmpty
-          ? null
-          : _gstNumberCtrl.text.trim(),
-      businessEmail: _businessEmailCtrl.text.trim().isEmpty
-          ? null
-          : _businessEmailCtrl.text.trim(),
-      businessPhone: businessPhone,
-      profileImageUrl: profileImageUrl,
+      fullName: profileArgs.fullName,
+      phone: profileArgs.phone,
+      city: profileArgs.city,
+      postalCode: profileArgs.postalCode,
+      fullAddress: profileArgs.fullAddress,
+      email: profileArgs.email,
+      companyName: profileArgs.companyName,
+      gstName: profileArgs.gstName,
+      gstNumber: profileArgs.gstNumber,
+      businessEmail: profileArgs.businessEmail,
+      businessCountryCode: profileArgs.businessCountryCode,
+      businessPhone: profileArgs.businessPhone,
+      profileImageUrl: profileArgs.profileImageUrl,
     );
     if (!mounted) return;
     if (ref.read(authProvider).error != null) {
@@ -404,6 +447,7 @@ class _DriverProfilePageState extends ConsumerState<DriverProfilePage>
                               hint: 'Ahmedabad',
                               controller: _cityCtrl,
                               textInputAction: TextInputAction.next,
+                              validator: (v) => Validators.required(v, l10n.profileCity),
                             ),
                           ),
                           SizedBox(width: 12.w),
@@ -414,6 +458,8 @@ class _DriverProfilePageState extends ConsumerState<DriverProfilePage>
                               controller: _postalCtrl,
                               keyboardType: TextInputType.number,
                               textInputAction: TextInputAction.next,
+                              validator: (v) =>
+                                  Validators.required(v, l10n.profilePostalCode),
                             ),
                           ),
                         ],

@@ -33,7 +33,8 @@ abstract final class ApiConstants {
   static String assignDriver(String id) => '/api/customer/shipments/$id/assign';
 
   // ── Driver ───────────────────────────────────────────────────────────────
-  static const String driverProfile = '/api/driver/profile';
+  static const String driverProfile       = '/api/driver/profile';
+  static const String driverProfileAvatar = '/api/driver/profile/avatar';
   static const String driverTrips   = '/api/driver/trips';
   static const String driverRequests = '/api/driver/requests';
   static String expressInterest(String id) => '/api/driver/requests/$id/interest';
