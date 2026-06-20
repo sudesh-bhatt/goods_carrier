@@ -4,6 +4,30 @@ enum VehicleType {
   truck,
   heavyDuty;
 
+  /// API snake_case value (shipment-masters / Postman).
+  String get apiValue => switch (this) {
+        VehicleType.mini        => 'mini',
+        VehicleType.pickupTruck => 'pickup_truck',
+        VehicleType.truck       => 'truck',
+        VehicleType.heavyDuty   => 'heavy_duty',
+      };
+
+  static VehicleType fromApi(String? raw) {
+    if (raw == null || raw.isEmpty) return VehicleType.mini;
+    final normalized = raw.toLowerCase().replaceAll('-', '_').trim();
+    final slug = normalized.replaceAll(' ', '_');
+    for (final type in VehicleType.values) {
+      if (type.apiValue == slug || type.name == slug) {
+        return type;
+      }
+    }
+    if (slug.contains('pickup')) return VehicleType.pickupTruck;
+    if (slug.contains('mini')) return VehicleType.mini;
+    if (slug.contains('heavy')) return VehicleType.heavyDuty;
+    if (slug.contains('truck')) return VehicleType.truck;
+    return VehicleType.mini;
+  }
+
   String get label => switch (this) {
         VehicleType.mini        => 'Mini',
         VehicleType.pickupTruck => 'Pickup Truck',

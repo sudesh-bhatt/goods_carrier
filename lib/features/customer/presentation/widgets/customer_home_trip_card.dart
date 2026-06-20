@@ -5,18 +5,19 @@ import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/string_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../res/font_res.dart';
-import '../../../../shared/domain/entities/shipment.dart';
-import '../../../../shared/domain/enums/shipment_status.dart';
+import '../../../../shared/domain/entities/driver_trip.dart';
+import '../../../../shared/domain/entities/driver_trip_display.dart';
+
 /// Home feed trip card — Figma Customer Home (`1:1439`).
 class CustomerHomeTripCard extends StatelessWidget {
   const CustomerHomeTripCard({
     super.key,
-    required this.shipment,
+    required this.trip,
     required this.onTap,
     required this.onViewDetails,
   });
 
-  final Shipment shipment;
+  final DriverTrip trip;
   final VoidCallback onTap;
   final VoidCallback onViewDetails;
 
@@ -24,9 +25,7 @@ class CustomerHomeTripCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final l10n = context.l10n;
-    final showInterestBadge =
-        shipment.status == ShipmentStatus.interestReceived ||
-            shipment.interestedDriverIds.isNotEmpty;
+    final showInterestBadge = trip.showInterestBadge;
 
     return GestureDetector(
       onTap: onTap,
@@ -71,9 +70,9 @@ class CustomerHomeTripCard extends StatelessWidget {
             ],
             _RouteBlock(
               fromLabel: l10n.tripFrom.toLowerCase(),
-              fromCity: shipment.pickup.city,
+              fromCity: trip.fromDisplayLabel,
               toLabel: l10n.tripTo.toLowerCase(),
-              toCity: shipment.drop.city,
+              toCity: trip.toDisplayLabel,
             ),
             SizedBox(height: 16.h),
             Container(
@@ -89,14 +88,14 @@ class CustomerHomeTripCard extends StatelessWidget {
                       Expanded(
                         child: _MetaCell(
                           label: l10n.customerHomeEstStartDate,
-                          value: shipment.pickupDateTime.displayDateTime,
+                          value: trip.estimatedStartLabel,
                         ),
                       ),
                       SizedBox(width: 12.w),
                       Expanded(
                         child: _MetaCell(
                           label: l10n.customerHomeEstEndDate,
-                          value: shipment.dropDateTime.displayDateTime,
+                          value: trip.estimatedEndLabel,
                         ),
                       ),
                     ],
@@ -108,15 +107,14 @@ class CustomerHomeTripCard extends StatelessWidget {
                       Expanded(
                         child: _MetaCell(
                           label: l10n.tripVehicle,
-                          value: shipment.vehicleType.label,
+                          value: trip.vehicleCategory.label,
                         ),
                       ),
                       SizedBox(width: 12.w),
                       Expanded(
                         child: _MetaCell(
                           label: l10n.tripCapacity,
-                          value: shipment.vehicleType.capacityLabel
-                              .replaceFirst('Cap: ', ''),
+                          value: trip.loadCapacityLabel,
                         ),
                       ),
                     ],
@@ -142,7 +140,7 @@ class CustomerHomeTripCard extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        shipment.estimatedPrice.inr,
+                        trip.estimatedPrice.inr,
                         style: TextStyle(
                           fontFamily: FontRes.MANROPE_EXTRABOLD,
                           fontSize: 21.sp,

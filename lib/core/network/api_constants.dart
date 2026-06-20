@@ -29,8 +29,12 @@ abstract final class ApiConstants {
   static const String customerProfile       = '/api/customer/profile';
   static const String customerProfileAvatar = '/api/customer/profile/avatar';
   static const String customerShipments = '/api/customer/shipments';
+  static const String customerDashboard = '/api/customer/dashboard';
+  static const String customerShipmentMasters = '/api/customer/shipment-masters';
+  static String customerShipment(String id) => '/api/customer/shipments/$id';
+  static String customerShipmentEdit(String id) =>
+      '/api/customer/shipments/$id/edit';
   static String cancelShipment(String id) => '/api/customer/shipments/$id/cancel';
-  static String assignDriver(String id) => '/api/customer/shipments/$id/assign';
 
   // ── Driver ───────────────────────────────────────────────────────────────
   static const String driverProfile       = '/api/driver/profile';

@@ -470,16 +470,20 @@ class PublishPaymentSummaryCard extends StatelessWidget {
     required this.baseFareLabel,
     required this.totalLabel,
     required this.amount,
+    this.baseFare,
   });
 
   final String headerLabel;
   final String baseFareLabel;
   final String totalLabel;
   final double amount;
+  final double? baseFare;
 
   @override
   Widget build(BuildContext context) {
-    final formatted = amount.inrDetailed;
+    final baseAmount = baseFare ?? amount;
+    final baseFormatted = baseAmount.inrDetailed;
+    final totalFormatted = amount.inrDetailed;
 
     return Container(
       width: double.infinity,
@@ -525,7 +529,7 @@ class PublishPaymentSummaryCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      formatted,
+                      baseFormatted,
                       style: TextStyle(
                         fontFamily: FontRes.MANROPE_SEMIBOLD,
                         fontSize: 14.sp,
@@ -559,7 +563,7 @@ class PublishPaymentSummaryCard extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            formatted,
+                            totalFormatted,
                             style: TextStyle(
                               fontFamily: FontRes.MANROPE_EXTRABOLD,
                               fontSize: 20.sp,

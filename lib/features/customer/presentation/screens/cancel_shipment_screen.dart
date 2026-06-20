@@ -31,6 +31,7 @@ class _CancelShipmentScreenState extends ConsumerState<CancelShipmentScreen>
   String? _selectedReason;
   final _commentsController = TextEditingController();
   bool _isSubmitting = false;
+  String? _submitError;
 
   @override
   void dispose() {
@@ -49,27 +50,51 @@ class _CancelShipmentScreenState extends ConsumerState<CancelShipmentScreen>
   Future<void> _submitCancellation() async {
     if (_selectedReason == null || _isSubmitting) return;
 
+    final l10n = context.l10n;
     final state = ref.read(customerShipmentsProvider);
     final shipment =
         state.shipments.where((s) => s.id == widget.shipmentId).firstOrNull;
     if (shipment == null) return;
 
-    safeSetState(() => _isSubmitting = true);
-    await ref
+    final selected = _reasons(l10n).firstWhere((r) => r.id == _selectedReason);
+    final comments = _commentsController.text.trim();
+    final otherReason =
+        _selectedReason == 'other' && comments.isNotEmpty ? comments : null;
+
+    safeSetState(() {
+      _isSubmitting = true;
+      _submitError = null;
+    });
+    final cancelled = await ref
         .read(customerShipmentsProvider.notifier)
-        .cancelShipment(shipment.id);
+        .cancelShipment(
+          shipment.id,
+          reason: selected.label,
+          otherReason: otherReason,
+        );
     if (!mounted) return;
 
+    if (cancelled == null) {
+      final error =
+          ref.read(customerShipmentsProvider).error ?? l10n.errorGeneric;
+      safeSetState(() {
+        _isSubmitting = false;
+        _submitError = error;
+      });
+      return;
+    }
+
     final displayId =
-        shipment.id.startsWith('#') ? shipment.id : '#${shipment.id}';
+        cancelled.id.startsWith('#') ? cancelled.id : '#${cancelled.id}';
     final args = ShipmentCancelConfirmationArgs(
       shipmentId: displayId,
-      fromCity: shipment.pickup.city,
-      toCity: shipment.drop.city,
-      pickupDate: shipment.pickupDateTime,
-      totalPrice: shipment.estimatedPrice,
+      fromCity: cancelled.pickup.city,
+      toCity: cancelled.drop.city,
+      pickupDate: cancelled.pickupDateTime,
+      totalPrice: cancelled.estimatedPrice,
     );
 
+    if (!mounted) return;
     context.pushReplacement(AppRoutes.shipmentCancelSuccess, extra: args);
   }
 
@@ -106,6 +131,10 @@ class _CancelShipmentScreenState extends ConsumerState<CancelShipmentScreen>
               child: ListView(
                 padding: EdgeInsets.fromLTRB(24.w, 16.h, 24.w, 24.h),
                 children: [
+                  if (_submitError != null) ...[
+                    ErrorView.inline(message: _submitError!),
+                    SizedBox(height: 16.h),
+                  ],
                   Text(
                     l10n.cancelShipmentHeadline,
                     style: TextStyle(
@@ -159,8 +188,10 @@ class _CancelShipmentScreenState extends ConsumerState<CancelShipmentScreen>
                             child: _ReasonTile(
                               label: r.label,
                               selected: _selectedReason == r.id,
-                              onTap: () =>
-                                  safeSetState(() => _selectedReason = r.id),
+                              onTap: () => safeSetState(() {
+                                _selectedReason = r.id;
+                                _submitError = null;
+                              }),
                             ),
                           ),
                         ),

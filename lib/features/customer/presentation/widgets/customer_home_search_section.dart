@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/extensions/size_ext.dart';
+import '../../../../core/extensions/svg_gen_image_extension.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/theme/app_color_scheme.dart';
+import '../../../../generated/assets.dart';
 import '../../../../res/font_res.dart';
-import '../../../../shared/domain/enums/vehicle_type.dart';
+import '../../../../shared/domain/entities/shipment_masters.dart';
 
 /// Search + filter row on the customer home tab.
 class CustomerHomeSearchRow extends StatelessWidget {
@@ -108,43 +110,47 @@ class CustomerHomeSearchRow extends StatelessWidget {
   }
 }
 
-/// Vehicle filter chips on the customer home tab.
+/// Vehicle filter chips — labels/ids from dashboard `vehicle_types` API.
 class CustomerHomeVehicleChips extends StatelessWidget {
   const CustomerHomeVehicleChips({
     super.key,
-    required this.selected,
+    required this.vehicleTypes,
+    required this.selectedVehicleTypeId,
     required this.onSelected,
   });
 
-  final VehicleType? selected;
-  final ValueChanged<VehicleType> onSelected;
-
-  static const _chips = [
-    (VehicleType.mini, 'Mini', Icons.local_shipping_outlined),
-    (VehicleType.pickupTruck, 'Pickup', Icons.fire_truck_outlined),
-    (VehicleType.truck, 'Truck', Icons.local_shipping_rounded),
-  ];
+  final List<ShipmentMasterOption> vehicleTypes;
+  final int? selectedVehicleTypeId;
+  final ValueChanged<int> onSelected;
 
   @override
   Widget build(BuildContext context) {
+    if (vehicleTypes.isEmpty) return const SizedBox.shrink();
+
     return SizedBox(
       height: 44.h,
-      child: Row(
-        children: [
-          for (var i = 0; i < _chips.length; i++) ...[
-            if (i > 0) SizedBox(width: 10.w),
-            Expanded(
-              child: _VehicleChip(
-                label: _chips[i].$2,
-                icon: _chips[i].$3,
-                selected: selected == _chips[i].$1,
-                onTap: () => onSelected(_chips[i].$1),
-              ),
-            ),
-          ],
-        ],
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: vehicleTypes.length,
+        separatorBuilder: (_, __) => SizedBox(width: 10.w),
+        itemBuilder: (context, index) {
+          final option = vehicleTypes[index];
+          return _VehicleChip(
+            label: option.name,
+            icon: _assetForOption(option),
+            selected: selectedVehicleTypeId == option.id,
+            onTap: () => onSelected(option.id),
+          );
+        },
       ),
     );
+  }
+
+  static SvgGenImage _assetForOption(ShipmentMasterOption option) {
+    final slug = (option.slug ?? option.name).toLowerCase();
+    if (slug.contains('pickup')) return Assets.pickupVehicle;
+    if (slug.contains('truck')) return Assets.truckVehicle;
+    return Assets.miniVehicle;
   }
 }
 
@@ -157,7 +163,7 @@ class _VehicleChip extends StatelessWidget {
   });
 
   final String label;
-  final IconData icon;
+  final SvgGenImage icon;
   final bool selected;
   final VoidCallback onTap;
 
@@ -175,23 +181,26 @@ class _VehicleChip extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(22.r),
-        child: SizedBox(
-          height: 44.h,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 16.w, color: fg),
-              SizedBox(width: 6.w),
-              Text(
-                label,
-                style: TextStyle(
-                  fontFamily: FontRes.MANROPE_SEMIBOLD,
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w600,
-                  color: fg,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          child: SizedBox(
+            height: 44.h,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                icon.svgTint(width: 16.w, height: 16.w, color: fg),
+                SizedBox(width: 6.w),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontFamily: FontRes.MANROPE_SEMIBOLD,
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                    color: fg,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

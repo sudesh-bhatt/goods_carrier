@@ -2,10 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/config/env_config.dart';
 import '../../../../core/extensions/num_ext.dart';
 import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
+import '../../../../core/mixins/safe_set_state_mixin.dart';
+import '../../../../core/network/api_exception_mapper.dart';
+import '../../../../core/providers/repository_providers.dart';
 import '../../../../core/router/app_routes.dart';
+import '../../../../shared/domain/entities/driver_trip.dart';
+import '../../../../shared/domain/entities/driver_trip_display.dart';
 import '../../../../shared/domain/entities/shipment.dart';
 import '../../../../shared/presentation/widgets/feedback/error_view.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
@@ -13,6 +19,7 @@ import '../../../driver/presentation/models/driver_interest_success_args.dart';
 import '../../../driver/presentation/providers/driver_shipment_requests_provider.dart';
 import '../../../driver/presentation/widgets/confirm_request_bottom_sheet.dart';
 import '../models/report_trip_screen_args.dart';
+import '../providers/customer_dashboard_provider.dart';
 import '../providers/customer_shipments_provider.dart';
 import '../widgets/customer_light_chrome.dart';
 import '../widgets/driver_detail_sheet.dart';
@@ -40,13 +47,81 @@ class CustomerTripDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _CustomerTripDetailScreenState
-    extends ConsumerState<CustomerTripDetailScreen> {
+    extends ConsumerState<CustomerTripDetailScreen> with SafeSetStateMixin {
   bool _isSubmittingInterest = false;
+  Shipment? _detail;
+  bool _isLoadingDetail = false;
+  String? _loadError;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadDetail());
+  }
+
+  Future<void> _loadDetail() async {
+    if (widget.isDriver) return;
+
+    final cachedDriverTrip = _resolveCachedDriverTrip();
+    if (cachedDriverTrip != null) {
+      safeSetState(() {
+        _isLoadingDetail = false;
+        _loadError = null;
+      });
+      return;
+    }
+
+    final cached = _resolveCachedShipment();
+    if (cached != null) {
+      safeSetState(() => _detail = cached);
+    }
+
+    if (!EnvConfig.useRemoteApi) return;
+
+    safeSetState(() {
+      _isLoadingDetail = cached == null;
+      _loadError = null;
+    });
+
+    try {
+      final apiId = cached?.apiResourceId ?? widget.shipmentId;
+      final fetched =
+          await ref.read(shipmentRepositoryProvider).getShipment(apiId);
+      if (!mounted) return;
+      safeSetState(() {
+        _detail = fetched;
+        _isLoadingDetail = false;
+      });
+      ref.read(customerShipmentsProvider.notifier).upsertShipment(fetched);
+    } catch (e) {
+      if (!mounted) return;
+      safeSetState(() {
+        _isLoadingDetail = false;
+        _loadError = cached == null ? ApiExceptionMapper.userMessage(e) : null;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final driverTrip = _resolveDriverTrip();
+    if (!widget.isDriver && driverTrip != null) {
+      return _buildDriverTripDetail(context, driverTrip, l10n);
+    }
+
     final shipment = _resolveShipment();
+
+    if (_isLoadingDetail && shipment == null) {
+      return Scaffold(
+        backgroundColor: TripDetailTokens.screenBg,
+        appBar: FlowScreenAppBar(
+          title: _screenTitle(l10n),
+          fallbackRoute: _fallbackRoute,
+        ),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
 
     if (shipment == null) {
       return Scaffold(
@@ -55,7 +130,7 @@ class _CustomerTripDetailScreenState
           title: _screenTitle(l10n),
           fallbackRoute: _fallbackRoute,
         ),
-        body: const ErrorView(message: 'Shipment not found.'),
+        body: ErrorView(message: _loadError ?? 'Shipment not found.'),
       );
     }
 
@@ -99,6 +174,100 @@ class _CustomerTripDetailScreenState
       ? l10n.driverShipmentDetailsTitle
       : l10n.customerTripDetailsTitle;
 
+  Shipment? _resolveCachedShipment() {
+    if (widget.isDriver) {
+      final driverState = ref.read(driverShipmentRequestsProvider);
+      return driverState.all
+          .where((s) => s.id == widget.shipmentId)
+          .firstOrNull;
+    }
+    return ref.read(customerShipmentsProvider.notifier).byId(widget.shipmentId);
+  }
+
+  DriverTrip? _resolveCachedDriverTrip() {
+    if (widget.isDriver) return null;
+    return ref.read(customerDashboardProvider.notifier).byId(widget.shipmentId);
+  }
+
+  DriverTrip? _resolveDriverTrip() {
+    if (widget.isDriver) return null;
+    return ref
+        .watch(customerDashboardProvider)
+        .trips
+        .where((t) => t.id == widget.shipmentId)
+        .firstOrNull;
+  }
+
+  Widget _buildDriverTripDetail(
+    BuildContext context,
+    DriverTrip trip,
+    dynamic l10n,
+  ) {
+    final vehicleNumber =
+        trip.vehicleNumber.isNotEmpty ? trip.vehicleNumber : '—';
+
+    return CustomerLightChrome(
+      child: Scaffold(
+        backgroundColor: TripDetailTokens.screenBg,
+        appBar: FlowScreenAppBar(
+          title: _screenTitle(l10n),
+          fallbackRoute: _fallbackRoute,
+          backgroundColor: Colors.white.withValues(alpha: 0.8),
+        ),
+        body: ListView(
+          padding: EdgeInsets.fromLTRB(24.w, 16.h, 24.w, 120.h),
+          children: [
+            TripDetailRouteSection(
+              fromCity: trip.fromDisplayLabel,
+              toCity: trip.toDisplayLabel,
+              fromLabel: l10n.tripFrom.toUpperCase(),
+              toLabel: l10n.tripTo.toUpperCase(),
+            ),
+            SizedBox(height: 24.h),
+            TripDetailScheduleSection(
+              startDateTime: trip.estimatedStartDate,
+              endDateTime: trip.estimatedEndDate,
+              vehicleLabel: trip.vehicleCategory.label,
+              vehicleNumber: vehicleNumber,
+              capacityLabel: trip.loadCapacityLabel,
+              startDateLabel: l10n.customerTripEstimatedStartDate,
+              endDateLabel: l10n.customerTripEstimatedEndDate,
+              vehicleTypeLabel: l10n.tripVehicle,
+              vehicleNumberLabel: l10n.profileVehicleNumber,
+              capacityTitle: l10n.tripCapacity,
+            ),
+            if (trip.driverName.isNotEmpty) ...[
+              SizedBox(height: 24.h),
+              TripDetailDriverCard.fromDummy(
+                subtitle: trip.driverName,
+                onTap: trip.driverId.isEmpty
+                    ? () {}
+                    : () => DriverDetailSheet.show(
+                          context,
+                          driverId: trip.driverId,
+                          shipmentId: trip.id,
+                        ),
+              ),
+            ],
+            SizedBox(height: 24.h),
+            TripDetailPriceSection(
+              label: l10n.customerTripEstimatedPrice,
+              priceText: trip.estimatedPrice.inr,
+            ),
+          ],
+        ),
+        bottomNavigationBar: TripDetailRequestFooter(
+          label: l10n.actionRequest,
+          onPressed: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(l10n.customerHomeFilterSoon)),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
   Shipment? _resolveShipment() {
     if (widget.isDriver) {
       final driverState = ref.watch(driverShipmentRequestsProvider);
@@ -106,10 +275,7 @@ class _CustomerTripDetailScreenState
           .where((s) => s.id == widget.shipmentId)
           .firstOrNull;
     }
-    final customerState = ref.watch(customerShipmentsProvider);
-    return customerState.shipments
-        .where((s) => s.id == widget.shipmentId)
-        .firstOrNull;
+    return _detail ?? _resolveCachedShipment();
   }
 
   List<Widget> _customerBody(
@@ -118,13 +284,13 @@ class _CustomerTripDetailScreenState
     dynamic l10n,
   ) {
     final showDriverCard = shipment.assignedDriverId != null ||
-        shipment.interestedDriverIds.isNotEmpty;
+        shipment.resolvedInterestCount > 0;
     final vehicleNumber = _vehicleNumberFor(shipment);
 
     return [
       TripDetailRouteSection(
-        fromCity: shipment.pickup.city,
-        toCity: shipment.drop.city,
+        fromCity: shipment.pickup.displayLabel,
+        toCity: shipment.drop.displayLabel,
         fromLabel: l10n.tripFrom.toUpperCase(),
         toLabel: l10n.tripTo.toUpperCase(),
       ),
@@ -134,7 +300,7 @@ class _CustomerTripDetailScreenState
         endDateTime: shipment.dropDateTime,
         vehicleLabel: shipment.vehicleType.label,
         vehicleNumber: vehicleNumber,
-        capacityLabel: shipment.vehicleType.capacityDisplay,
+        capacityLabel: shipment.loadCapacityLabel,
         startDateLabel: l10n.customerTripEstimatedStartDate,
         endDateLabel: l10n.customerTripEstimatedEndDate,
         vehicleTypeLabel: l10n.tripVehicle,

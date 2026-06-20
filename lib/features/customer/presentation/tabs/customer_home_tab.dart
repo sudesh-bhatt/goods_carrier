@@ -2,24 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/config/env_config.dart';
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/mixins/safe_set_state_mixin.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../res/font_res.dart';
-import '../../../../shared/domain/entities/shipment.dart';
+import '../../../../shared/domain/entities/driver_trip.dart';
 import '../../../../shared/domain/models/shipment_filter.dart';
 import '../../../../shared/presentation/widgets/filters/filter_search_sheet.dart';
 import '../../../../shared/presentation/widgets/feedback/empty_state.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bottom_nav_bar.dart';
 import '../../../../shared/presentation/widgets/feedback/skeleton_card.dart';
-import '../providers/customer_shipments_provider.dart';
+import '../providers/customer_dashboard_provider.dart';
 import '../widgets/customer_home_search_section.dart';
 import '../widgets/customer_home_trip_card.dart';
-import '../widgets/customer_shipments_empty_view.dart';
 
-/// Home tab body — driver trips feed (no shell chrome).
+/// Home tab body — available driver trips from dashboard API.
 class CustomerHomeTab extends ConsumerStatefulWidget {
   const CustomerHomeTab({super.key});
 
@@ -46,25 +46,64 @@ class _CustomerHomeTabState extends ConsumerState<CustomerHomeTab>
       _shipmentFilter = const ShipmentFilter();
       _searchCtrl.clear();
     });
+    ref.read(customerDashboardProvider.notifier).applyFilters(
+          search: '',
+          filter: const ShipmentFilter(),
+          clearVehicleTypeId: true,
+        );
   }
 
   bool get _hasLocalFilters =>
       _searchCtrl.text.trim().isNotEmpty ||
-      _shipmentFilter.vehicleClass != null ||
+      ref.read(customerDashboardProvider).selectedVehicleTypeId != null ||
       _shipmentFilter.hasActiveFilters;
 
-  List<Shipment> _filterShipments(List<Shipment> source) {
+  Future<void> _reloadDashboard() async {
+    final dashboard = ref.read(customerDashboardProvider);
+    await ref.read(customerDashboardProvider.notifier).applyFilters(
+          search: _searchCtrl.text,
+          filter: _shipmentFilter,
+          vehicleTypeId: dashboard.selectedVehicleTypeId,
+        );
+  }
+
+  List<DriverTrip> _filterTripsLocally(List<DriverTrip> source) {
     final query = _searchCtrl.text.trim().toLowerCase();
-    return source.where((s) {
-      if (!_shipmentFilter.matches(s)) return false;
+    final selectedId =
+        ref.read(customerDashboardProvider).selectedVehicleTypeId;
+    return source.where((trip) {
+      if (_shipmentFilter.fromCity != null &&
+          _shipmentFilter.fromCity!.trim().isNotEmpty &&
+          !trip.fromCity
+              .toLowerCase()
+              .contains(_shipmentFilter.fromCity!.trim().toLowerCase())) {
+        return false;
+      }
+      if (_shipmentFilter.toCity != null &&
+          _shipmentFilter.toCity!.trim().isNotEmpty &&
+          !trip.toCity
+              .toLowerCase()
+              .contains(_shipmentFilter.toCity!.trim().toLowerCase())) {
+        return false;
+      }
+      if (_shipmentFilter.pickupDate != null) {
+        final d = trip.estimatedStartDate;
+        if (d.year != _shipmentFilter.pickupDate!.year ||
+            d.month != _shipmentFilter.pickupDate!.month ||
+            d.day != _shipmentFilter.pickupDate!.day) {
+          return false;
+        }
+      }
+      if (selectedId != null) {
+        // Local dummy mode only — remote uses API vehicle_type_id filter.
+      }
       if (query.isEmpty) return true;
       final haystack = [
-        s.id,
-        s.pickup.city,
-        s.drop.city,
-        s.pickup.fullAddress,
-        s.drop.fullAddress,
-        s.vehicleType.label,
+        trip.id,
+        trip.fromCity,
+        trip.toCity,
+        trip.vehicleCategory.label,
+        trip.driverName,
       ].join(' ').toLowerCase();
       return haystack.contains(query);
     }).toList();
@@ -74,35 +113,20 @@ class _CustomerHomeTabState extends ConsumerState<CustomerHomeTab>
   Widget build(BuildContext context) {
     super.build(context);
 
-    ref.listen<CustomerShipmentsState>(customerShipmentsProvider, (prev, next) {
-      if (prev == null) return;
-      if (next.active.length > prev.active.length) {
-        _resetFilters();
-      }
-    });
-
     final colors = context.colors;
     final l10n = context.l10n;
-    final state = ref.watch(customerShipmentsProvider);
-    final activeList = _filterShipments(state.active);
+    final state = ref.watch(customerDashboardProvider);
+    final trips = EnvConfig.useRemoteApi
+        ? state.trips
+        : _filterTripsLocally(state.trips);
 
-    if (state.isLoading && state.active.isEmpty) {
+    if (state.isLoading && state.trips.isEmpty) {
       return const Center(child: CircularProgressIndicator());
-    }
-
-    if (state.active.isEmpty) {
-      return CustomerShipmentsEmptyView(
-        title: l10n.customerEmptyShipmentsTitle,
-        description: l10n.customerEmptyShipmentsDescription,
-        actionLabel: l10n.shipmentPostNew,
-        onAction: () => context.push(AppRoutes.postShipment),
-      );
     }
 
     return RefreshIndicator(
       color: colors.primary,
-      onRefresh: () =>
-          ref.read(customerShipmentsProvider.notifier).refresh(),
+      onRefresh: () => ref.read(customerDashboardProvider.notifier).refresh(),
       child: CustomScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
@@ -115,7 +139,10 @@ class _CustomerHomeTabState extends ConsumerState<CustomerHomeTab>
                   CustomerHomeSearchRow(
                     controller: _searchCtrl,
                     hint: l10n.customerHomeSearchHint,
-                    onChanged: (_) => safeSetState(() {}),
+                    onChanged: (_) {
+                      safeSetState(() {});
+                      if (EnvConfig.useRemoteApi) _reloadDashboard();
+                    },
                     onFilterTap: () async {
                       final result = await FilterSearchSheet.show(
                         context,
@@ -123,6 +150,7 @@ class _CustomerHomeTabState extends ConsumerState<CustomerHomeTab>
                       );
                       if (result != null) {
                         safeSetState(() => _shipmentFilter = result);
+                        await _reloadDashboard();
                       }
                     },
                   ),
@@ -139,12 +167,11 @@ class _CustomerHomeTabState extends ConsumerState<CustomerHomeTab>
                   ),
                   SizedBox(height: 16.h),
                   CustomerHomeVehicleChips(
-                    selected: _shipmentFilter.vehicleClass,
-                    onSelected: (type) => safeSetState(() {
-                      _shipmentFilter = _shipmentFilter.vehicleClass == type
-                          ? _shipmentFilter.copyWith(clearVehicleClass: true)
-                          : _shipmentFilter.copyWith(vehicleClass: type);
-                    }),
+                    vehicleTypes: state.vehicleTypes,
+                    selectedVehicleTypeId: state.selectedVehicleTypeId,
+                    onSelected: (id) => ref
+                        .read(customerDashboardProvider.notifier)
+                        .selectVehicleType(id),
                   ),
                   SizedBox(height: 20.h),
                 ],
@@ -166,13 +193,15 @@ class _CustomerHomeTabState extends ConsumerState<CustomerHomeTab>
                 childCount: 3,
               ),
             )
-          else if (activeList.isEmpty)
+          else if (trips.isEmpty)
             SliverFillRemaining(
               hasScrollBody: false,
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 25.w),
                 child: EmptyState(
-                  headline: l10n.customerHomeNoMatchingShipments,
+                  headline: _hasLocalFilters
+                      ? l10n.customerHomeNoMatchingShipments
+                      : l10n.customerHomeDriverTrips,
                   subtitle: l10n.customerHomeNoMatchingShipmentsHint,
                   fallbackIcon: Icons.local_shipping_outlined,
                   fallbackIconColor: kBottomNavInactive,
@@ -188,23 +217,23 @@ class _CustomerHomeTabState extends ConsumerState<CustomerHomeTab>
               sliver: SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
-                    final shipment = activeList[index];
+                    final trip = trips[index];
                     return Padding(
                       padding: EdgeInsets.only(
                         bottom: AppDimensions.base.h,
                       ),
                       child: CustomerHomeTripCard(
-                        shipment: shipment,
+                        trip: trip,
                         onTap: () => context.push(
-                          AppRoutes.tripDetailOf(shipment.id),
+                          AppRoutes.tripDetailOf(trip.id),
                         ),
                         onViewDetails: () => context.push(
-                          AppRoutes.tripDetailOf(shipment.id),
+                          AppRoutes.tripDetailOf(trip.id),
                         ),
                       ),
                     );
                   },
-                  childCount: activeList.length,
+                  childCount: trips.length,
                 ),
               ),
             ),

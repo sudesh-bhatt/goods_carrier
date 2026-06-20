@@ -3,6 +3,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/dummy/dummy_shipments.dart';
 import '../../domain/entities/shipment.dart';
 import '../../domain/enums/shipment_status.dart';
+import '../../domain/models/customer_shipment_detail.dart';
+import '../../domain/models/shipment_form_prefill.dart';
+import '../../domain/models/shipment_submit_options.dart';
 import '../../domain/repositories/i_shipment_repository.dart';
 import '../local/shipment_preferences_store.dart';
 
@@ -60,7 +63,56 @@ class LocalShipmentRepository implements IShipmentRepository {
   }
 
   @override
-  Future<Shipment> createShipment(Shipment shipment) async {
+  Future<Shipment> getShipment(String id) async {
+    await _ensureLoaded();
+    await _delay();
+    final shipment = _shipments
+        .where((s) => s.id == id || s.apiId == id || s.apiResourceId == id)
+        .firstOrNull;
+    if (shipment == null) {
+      throw StateError('Shipment not found: $id');
+    }
+    return shipment;
+  }
+
+  @override
+  Future<CustomerShipmentDetail> getCustomerShipmentDetail(String id) async {
+    final shipment = await getShipment(id);
+    return CustomerShipmentDetail(
+      shipment: shipment,
+      paymentSummary: ShipmentPaymentSummary(
+        baseFare: shipment.estimatedPrice,
+        totalAmount: shipment.estimatedPrice,
+      ),
+      interestedDrivers: const [],
+    );
+  }
+
+  @override
+  Future<ShipmentFormPrefill> getShipmentForEdit(String id) async {
+    await _ensureLoaded();
+    await _delay();
+    final shipment = _shipments.where((s) => s.id == id).firstOrNull;
+    if (shipment == null) {
+      throw StateError('Shipment not found: $id');
+    }
+    return ShipmentFormPrefill(
+      shipment: shipment,
+      options: ShipmentSubmitOptions(
+        goodsTypeId: 1,
+        vehicleTypeId: 1,
+        estimatedWeight: shipment.goods.weightKg,
+        weightUnit: 'kg',
+        termsAccepted: true,
+      ),
+    );
+  }
+
+  @override
+  Future<Shipment> createShipment(
+    Shipment shipment, {
+    ShipmentSubmitOptions? options,
+  }) async {
     await _ensureLoaded();
     await _delay();
     _shipments.removeWhere((s) => s.id == shipment.id);
@@ -70,7 +122,10 @@ class LocalShipmentRepository implements IShipmentRepository {
   }
 
   @override
-  Future<Shipment> updateShipment(Shipment shipment) async {
+  Future<Shipment> updateShipment(
+    Shipment shipment, {
+    ShipmentSubmitOptions? options,
+  }) async {
     await _ensureLoaded();
     await _delay();
     final idx = _shipments.indexWhere((s) => s.id == shipment.id);
@@ -83,16 +138,23 @@ class LocalShipmentRepository implements IShipmentRepository {
   }
 
   @override
-  Future<void> cancelShipment(String shipmentId) async {
+  Future<Shipment> cancelShipment(
+    String shipmentId, {
+    required String reason,
+    String? otherReason,
+  }) async {
     await _ensureLoaded();
     await _delay();
     final idx = _shipments.indexWhere((s) => s.id == shipmentId);
-    if (idx == -1) return;
+    if (idx == -1) {
+      throw StateError('Shipment not found: $shipmentId');
+    }
     _shipments[idx] =
         _shipments[idx].copyWith(status: ShipmentStatus.cancelled);
     if (!_dummyIds.contains(shipmentId)) {
       await _persistUserShipments();
     }
+    return _shipments[idx];
   }
 
   @override

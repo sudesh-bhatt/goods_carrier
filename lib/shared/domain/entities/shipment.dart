@@ -47,6 +47,10 @@ class ShipmentLocation {
   final String fullAddress;
   final double lat;
   final double lng;
+
+  /// City when present; otherwise the flat address from list/detail APIs.
+  String get displayLabel =>
+      city.isNotEmpty ? city : fullAddress;
 }
 
 class GoodsDetail {
@@ -79,8 +83,10 @@ class Shipment {
     required this.vehicleType,
     required this.status,
     required this.estimatedPrice,
+    this.apiId,
     this.assignedDriverId,
     this.interestedDriverIds = const [],
+    this.interestCount = 0,
   });
 
   final String id;                        // TRK-XXXX
@@ -93,61 +99,123 @@ class Shipment {
   final VehicleType vehicleType;
   final ShipmentStatus status;
   final double estimatedPrice;
+
+  /// Numeric backend id when [id] is a display code such as `TRK-8829`.
+  final String? apiId;
+
+  /// Id to use in `/api/customer/shipments/{id}` paths.
+  String get apiResourceId => apiId ?? id;
+
   final String? assignedDriverId;
   final List<String> interestedDriverIds;
+
+  /// From list API `interest_count` when driver IDs are not included.
+  final int interestCount;
 
   bool get isActive    => status == ShipmentStatus.assigned || status == ShipmentStatus.inTransit;
   bool get isPending   => status == ShipmentStatus.pending || status == ShipmentStatus.interestReceived;
   bool get isCompleted => status == ShipmentStatus.delivered;
   bool get isCancelled => status == ShipmentStatus.cancelled;
 
+  int get resolvedInterestCount =>
+      interestedDriverIds.isNotEmpty ? interestedDriverIds.length : interestCount;
+
+  String get loadCapacityLabel => goods.weightKg > 0
+      ? goods.weightLabel
+      : vehicleType.capacityDisplay;
+
   Shipment copyWith({
     ShipmentStatus? status,
     String? assignedDriverId,
     List<String>? interestedDriverIds,
+    int? interestCount,
     double? estimatedPrice,
   }) => Shipment(
     id: id, customerId: customerId, pickup: pickup, drop: drop,
     pickupDateTime: pickupDateTime, dropDateTime: dropDateTime,
     goods: goods, vehicleType: vehicleType,
+    apiId: apiId,
     status: status ?? this.status,
     estimatedPrice: estimatedPrice ?? this.estimatedPrice,
     assignedDriverId: assignedDriverId ?? this.assignedDriverId,
     interestedDriverIds: interestedDriverIds ?? this.interestedDriverIds,
+    interestCount: interestCount ?? this.interestCount,
   );
 
   // ── JSON ────────────────────────────────────────────────────────────────
 
   factory Shipment.fromJson(Map<String, dynamic> j) => Shipment(
-        id:                  j['id']           as String,
-        customerId:          j['customer_id']  as String,
+        id:                  _stringId(j['shipment_id'] ?? j['id']),
+        apiId:               j['shipment_id'] != null
+            ? _nullableStringId(j['id'])
+            : null,
+        customerId:          _stringId(j['customer_id']),
         pickup:              ShipmentLocationJson.fromJson(
-                               j['pickup'] as Map<String, dynamic>),
+                               j['pickup'] as Map<String, dynamic>? ??
+                                   _flatPickupJson(j)),
         drop:                ShipmentLocationJson.fromJson(
-                               j['drop'] as Map<String, dynamic>),
-        pickupDateTime:      DateTime.parse(j['pickup_datetime'] as String),
-        dropDateTime:        DateTime.parse(j['drop_datetime']   as String),
-        goods:               GoodsDetailJson.fromJson(
-                               j['goods'] as Map<String, dynamic>),
-        vehicleType:         VehicleType.values.byName(j['vehicle_type'] as String),
-        status:              ShipmentStatus.values.byName(j['status']    as String),
-        estimatedPrice:      (j['estimated_price'] as num).toDouble(),
-        assignedDriverId:    j['assigned_driver_id'] as String?,
+                               j['drop'] as Map<String, dynamic>? ??
+                                   _flatDropJson(j)),
+        pickupDateTime:      DateTime.parse(
+                               (j['pickup_datetime'] as String?) ??
+                                   DateTime.now().toIso8601String()),
+        dropDateTime:        DateTime.parse(
+                               (j['drop_datetime'] as String?) ??
+                                   DateTime.now().toIso8601String()),
+        goods:               j['goods'] is Map<String, dynamic>
+            ? GoodsDetailJson.fromJson(j['goods'] as Map<String, dynamic>)
+            : GoodsDetail(
+                type: j['goods_type'] as String? ?? '',
+                weightKg: (j['weight_kg'] as num?)?.toDouble() ?? 0,
+                isFragile: j['is_fragile'] as bool? ?? false,
+                specialInstructions: j['special_instructions'] as String?,
+              ),
+        vehicleType:         VehicleType.fromApi(j['vehicle_type'] as String?),
+        status:              ShipmentStatus.fromApi(j['status'] as String?),
+        estimatedPrice:      (j['estimated_price'] as num?)?.toDouble() ?? 0,
+        assignedDriverId:    _nullableStringId(j['assigned_driver_id']),
         interestedDriverIds: (j['interested_driver_ids'] as List<dynamic>?)
-                                 ?.cast<String>() ??
+                                 ?.map((e) => e.toString())
+                                 .toList() ??
                              const [],
       );
 
+  static String _stringId(dynamic raw) {
+    if (raw == null) return '';
+    if (raw is int) return raw.toString();
+    return raw as String;
+  }
+
+  static String? _nullableStringId(dynamic raw) {
+    if (raw == null) return null;
+    return _stringId(raw);
+  }
+
+  static Map<String, dynamic> _flatPickupJson(Map<String, dynamic> j) => {
+        'city': j['pickup_city'] ?? '',
+        'full_address': j['pickup_address'] ?? '',
+        'lat': j['pickup_latitude'] ?? j['pickup_lat'] ?? 0,
+        'lng': j['pickup_longitude'] ?? j['pickup_lng'] ?? 0,
+      };
+
+  static Map<String, dynamic> _flatDropJson(Map<String, dynamic> j) => {
+        'city': j['drop_city'] ?? '',
+        'full_address': j['drop_address'] ?? '',
+        'lat': j['drop_latitude'] ?? j['drop_lat'] ?? 0,
+        'lng': j['drop_longitude'] ?? j['drop_lng'] ?? 0,
+      };
+
   Map<String, dynamic> toJson() => {
         'id':                    id,
+        if (apiId != null) 'api_id': apiId,
         'customer_id':           customerId,
         'pickup':                pickup.toJson(),
         'drop':                  drop.toJson(),
         'pickup_datetime':       pickupDateTime.toIso8601String(),
         'drop_datetime':         dropDateTime.toIso8601String(),
         'goods':                 goods.toJson(),
-        'vehicle_type':          vehicleType.name,
-        'status':                status.name,
+        'vehicle_type':          vehicleType.apiValue,
+        'status':                status.apiValue,
         'estimated_price':       estimatedPrice,
         'assigned_driver_id':    assignedDriverId,
         'interested_driver_ids': interestedDriverIds,

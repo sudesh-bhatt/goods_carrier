@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../../core/config/env_config.dart';
 import '../../../../core/constants/id_prefixes.dart';
 import '../../../../core/router/app_routes.dart';
 import '../models/shipment_post_confirmation_args.dart';
@@ -16,8 +17,13 @@ import '../../../../core/utils/map_location_helper.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../res/font_res.dart';
 import '../../../../shared/domain/entities/shipment.dart';
+import '../../../../shared/domain/entities/shipment_masters.dart';
 import '../../../../shared/domain/enums/shipment_status.dart';
 import '../../../../shared/domain/enums/vehicle_type.dart';
+import '../../../../core/providers/repository_providers.dart';
+import '../../../../shared/domain/models/shipment_form_prefill.dart';
+import '../../../../shared/domain/models/shipment_submit_options.dart';
+import '../providers/shipment_masters_provider.dart';
 import '../../../../shared/presentation/widgets/buttons/app_button.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
 import '../../../../shared/presentation/widgets/sheets/app_picker_bottom_sheet.dart';
@@ -63,6 +69,7 @@ class _ShipmentFormScreenState extends ConsumerState<ShipmentFormScreen>
   bool _termsAccepted = false;
   bool _submitted = false;
   Shipment? _existing;
+  ShipmentSubmitOptions? _editOptions;
 
   String? _fromCity;
   String? _toCity;
@@ -81,6 +88,41 @@ class _ShipmentFormScreenState extends ConsumerState<ShipmentFormScreen>
     'Other',
   ];
 
+  List<String> _goodsPickerOptions(WidgetRef ref) {
+    if (!EnvConfig.useRemoteApi) return _goodsOptions;
+    final masters = ref.watch(shipmentMastersProvider).valueOrNull;
+    if (masters == null || masters.goodsTypeNames.isEmpty) {
+      return _goodsOptions;
+    }
+    return masters.goodsTypeNames;
+  }
+
+  ShipmentSubmitOptions? _buildSubmitOptions(ShipmentMasters masters) {
+    final vehicle = _vehicleType;
+    if (vehicle == null) return null;
+
+    final goodsTypeId =
+        masters.goodsTypeIdForName(_goodsTypeCtrl.text.trim()) ??
+            _editOptions?.goodsTypeId;
+    final vehicleTypeId =
+        masters.vehicleTypeIdFor(vehicle) ?? _editOptions?.vehicleTypeId;
+    final estimatedWeight = double.tryParse(_weightCtrl.text.trim());
+    if (goodsTypeId == null ||
+        vehicleTypeId == null ||
+        estimatedWeight == null ||
+        estimatedWeight <= 0) {
+      return null;
+    }
+
+    return ShipmentSubmitOptions(
+      goodsTypeId: goodsTypeId,
+      vehicleTypeId: vehicleTypeId,
+      estimatedWeight: estimatedWeight,
+      weightUnit: masters.apiWeightUnitForUi(_weightUnit),
+      termsAccepted: widget.isEditing || _termsAccepted,
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -89,17 +131,56 @@ class _ShipmentFormScreenState extends ConsumerState<ShipmentFormScreen>
       _pickupDate = DateTime(now.year, now.month, now.day);
       _pickupTime = const TimeOfDay(hour: 9, minute: 0);
     }
-    WidgetsBinding.instance.addPostFrameCallback((_) => _loadExisting());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadExisting();
+      if (EnvConfig.useRemoteApi) {
+        ref.read(shipmentMastersProvider.future);
+      }
+    });
   }
 
-  void _loadExisting() {
+  Future<void> _loadExisting() async {
     if (!widget.isEditing) return;
+
+    if (EnvConfig.useRemoteApi) {
+      try {
+        final apiId = ref
+            .read(customerShipmentsProvider.notifier)
+            .apiResourceIdFor(widget.shipmentId!);
+        final prefill = await ref
+            .read(shipmentRepositoryProvider)
+            .getShipmentForEdit(apiId);
+        _applyPrefill(prefill);
+        return;
+      } catch (_) {
+        // Fall back to cached list item below.
+      }
+    }
+
     final shipment = ref.read(customerShipmentsProvider.notifier).byId(
           widget.shipmentId!,
         );
     if (shipment == null) return;
+    _applyPrefill(
+      ShipmentFormPrefill(
+        shipment: shipment,
+        options: ShipmentSubmitOptions(
+          goodsTypeId: 0,
+          vehicleTypeId: 0,
+          estimatedWeight: shipment.goods.weightKg,
+          weightUnit: 'KG',
+          termsAccepted: true,
+        ),
+      ),
+    );
+  }
+
+  void _applyPrefill(ShipmentFormPrefill prefill) {
+    final shipment = prefill.shipment;
+    final masters = ref.read(shipmentMastersProvider).valueOrNull;
 
     _existing = shipment;
+    _editOptions = prefill.options.goodsTypeId > 0 ? prefill.options : null;
     _fromCtrl.text = shipment.pickup.fullAddress.isNotEmpty
         ? shipment.pickup.fullAddress
         : shipment.pickup.city;
@@ -115,10 +196,11 @@ class _ShipmentFormScreenState extends ConsumerState<ShipmentFormScreen>
     _goodsTypeCtrl.text = shipment.goods.type;
     _vehicleType = shipment.vehicleType;
     _vehicleCtrl.text = shipment.vehicleType.label;
-    _weightCtrl.text = shipment.goods.weightKg.toStringAsFixed(
-      shipment.goods.weightKg % 1 == 0 ? 0 : 2,
+    _weightCtrl.text = prefill.options.estimatedWeight.toStringAsFixed(
+      prefill.options.estimatedWeight % 1 == 0 ? 0 : 2,
     );
-    _weightUnit = shipment.goods.weightKg >= 1000 ? 'Ton' : 'KG';
+    _weightUnit = masters?.uiWeightUnitForApi(prefill.options.weightUnit) ??
+        (prefill.options.weightUnit.toLowerCase() == 'ton' ? 'Ton' : 'KG');
     _pickupDate = DateTime(
       shipment.pickupDateTime.year,
       shipment.pickupDateTime.month,
@@ -253,6 +335,7 @@ class _ShipmentFormScreenState extends ConsumerState<ShipmentFormScreen>
 
     return Shipment(
       id: id,
+      apiId: _existing?.apiId,
       customerId: customerId,
       pickup: ShipmentLocation(
         city: _cityFromField(_fromCtrl.text.trim(), _fromCity),
@@ -310,27 +393,56 @@ class _ShipmentFormScreenState extends ConsumerState<ShipmentFormScreen>
     final user = ref.read(authProvider).user!;
     final notifier = ref.read(customerShipmentsProvider.notifier);
 
+    ShipmentSubmitOptions? submitOptions;
+    if (EnvConfig.useRemoteApi) {
+      final masters = ref.read(shipmentMastersProvider).valueOrNull;
+      if (masters == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Loading shipment options. Please try again.'),
+          ),
+        );
+        return;
+      }
+      submitOptions = _buildSubmitOptions(masters);
+      if (submitOptions == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Could not match goods or vehicle type. '
+              'Pick options from the list and try again.',
+            ),
+          ),
+        );
+        return;
+      }
+    }
+
     if (widget.isEditing && _existing != null) {
       final updated = _buildShipment(
         id: _existing!.id,
         customerId: _existing!.customerId,
       );
-      await notifier.updateShipment(updated);
+      await notifier.updateShipment(updated, options: submitOptions);
     } else {
-      final now = DateTime.now();
-      final newId =
-          '${IdPrefixes.shipment}${now.millisecondsSinceEpoch % 9000 + 1000}';
-      final created = _buildShipment(id: newId, customerId: user.id);
-      await notifier.addShipment(created);
+      final optimisticId = EnvConfig.useRemoteApi
+          ? 'pending'
+          : '${IdPrefixes.shipment}${DateTime.now().millisecondsSinceEpoch % 9000 + 1000}';
+      final created = _buildShipment(id: optimisticId, customerId: user.id);
+      final saved = await notifier.addShipment(
+        created,
+        options: submitOptions,
+      );
       if (!mounted) return;
+      if (saved == null) return;
       context.go(
         AppRoutes.shipmentPostConfirmation,
         extra: ShipmentPostConfirmationArgs(
-          shipmentId: created.id,
-          fromCity: created.pickup.city,
-          toCity: created.drop.city,
-          pickupDate: created.pickupDateTime,
-          totalPrice: created.estimatedPrice,
+          shipmentId: saved.id,
+          fromCity: saved.pickup.city,
+          toCity: saved.drop.city,
+          pickupDate: saved.pickupDateTime,
+          totalPrice: saved.estimatedPrice,
         ),
       );
       return;
@@ -433,7 +545,7 @@ class _ShipmentFormScreenState extends ConsumerState<ShipmentFormScreen>
                             readOnly: true,
                             onTap: () => _pickOption(
                               title: l10n.shipmentGoodsType,
-                              options: _goodsOptions,
+                              options: _goodsPickerOptions(ref),
                               controller: _goodsTypeCtrl,
                             ),
                             validator: (v) =>

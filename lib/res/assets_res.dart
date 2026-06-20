@@ -27,5 +27,8 @@ class AssetsRes {
   static const String SVG_IC_SECURE_PAYMENT = 'assets/svg/ic_secure_payment.svg';
   static const String SVG_IC_VERIFIED_CARRIERS = 'assets/svg/ic_verified_carriers.svg';
   static const String SVG_IC_WHATSAPP = 'assets/svg/ic_whatsapp.svg';
+  static const String SVG_MINI_VEHICLE = 'assets/svg/mini_vehicle.svg';
   static const String SVG_NAV_HOME = 'assets/svg/nav_home.svg';
+  static const String SVG_PICKUP_VEHICLE = 'assets/svg/pickup_vehicle.svg';
+  static const String SVG_TRUCK_VEHICLE = 'assets/svg/truck_vehicle.svg';
 }

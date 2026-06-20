@@ -100,7 +100,10 @@ flutter:
     - assets/svg/ic_secure_payment.svg
     - assets/svg/ic_verified_carriers.svg
     - assets/svg/ic_whatsapp.svg
+    - assets/svg/mini_vehicle.svg
     - assets/svg/nav_home.svg
+    - assets/svg/pickup_vehicle.svg
+    - assets/svg/truck_vehicle.svg
   fonts:
     - family: Manrope-Bold
       fonts:

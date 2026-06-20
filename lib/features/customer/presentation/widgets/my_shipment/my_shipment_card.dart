@@ -67,15 +67,15 @@ class MyShipmentListCard extends StatelessWidget {
           _CompactRouteRow(
             fromLabel: fromLabel,
             toLabel: toLabel,
-            fromCity: shipment.pickup.city,
-            toCity: shipment.drop.city,
+            fromCity: shipment.pickup.displayLabel,
+            toCity: shipment.drop.displayLabel,
           ),
           SizedBox(height: 24.h),
           _MetaDividerRow(
             dateLine: shipment.pickupDateTime.displayDate,
             timeLine: shipment.pickupDateTime.displayTime,
             vehicleLine: shipment.vehicleType.label,
-            capacityLine: shipment.vehicleType.capacityLabel,
+            capacityLine: shipment.loadCapacityLabel,
           ),
           SizedBox(height: 24.h),
           _ActionRow(

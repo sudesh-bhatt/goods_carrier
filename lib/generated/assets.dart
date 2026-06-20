@@ -37,9 +37,15 @@ class Assets {
       SvgGenImage('assets/svg/ic_whatsapp.svg');
   static const AssetGenImage loginScreenBanner =
       AssetGenImage('assets/images/login_screen_banner.png');
+  static const SvgGenImage miniVehicle =
+      SvgGenImage('assets/svg/mini_vehicle.svg');
   static const SvgGenImage navHome = SvgGenImage('assets/svg/nav_home.svg');
+  static const SvgGenImage pickupVehicle =
+      SvgGenImage('assets/svg/pickup_vehicle.svg');
   static const AssetGenImage splashScreenLogo =
       AssetGenImage('assets/images/splash_screen_logo.png');
+  static const SvgGenImage truckVehicle =
+      SvgGenImage('assets/svg/truck_vehicle.svg');
   static const $AssetsAssetsGen assets = $AssetsAssetsGen();
 }
 

@@ -2,10 +2,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/config/env_config.dart';
 import '../../shared/data/api/auth/auth_api_client.dart';
+import '../../shared/data/api/customer/customer_dashboard_api_client.dart';
+import '../../shared/data/api/customer/customer_shipment_api_client.dart';
 import '../../shared/data/api/onboarding/onboarding_api_client.dart';
 import '../../shared/data/repositories/local_auth_repository.dart';
 import '../../shared/data/repositories/local_onboarding_repository.dart';
 import '../../shared/data/repositories/remote/auth/remote_auth_repository.dart';
+import '../../shared/data/repositories/remote/customer/remote_customer_shipment_repository.dart';
 import '../../shared/data/repositories/remote/onboarding/remote_onboarding_repository.dart';
 import '../../shared/data/local/auth_preferences_store.dart';
 import '../../shared/domain/repositories/i_auth_repository.dart';
@@ -23,6 +26,16 @@ final authApiClientProvider = Provider<AuthApiClient>((ref) {
 
 final onboardingApiClientProvider = Provider<OnboardingApiClient>((ref) {
   return OnboardingApiClient(ref.read(dioProvider));
+});
+
+final customerShipmentApiClientProvider =
+    Provider<CustomerShipmentApiClient>((ref) {
+  return CustomerShipmentApiClient(ref.read(dioProvider));
+});
+
+final customerDashboardApiClientProvider =
+    Provider<CustomerDashboardApiClient>((ref) {
+  return CustomerDashboardApiClient(ref.read(dioProvider));
 });
 
 final authRepositoryProvider = Provider<IAuthRepository>((ref) {
@@ -46,7 +59,14 @@ final onboardingRepositoryProvider = Provider<IOnboardingRepository>((ref) {
 });
 
 final shipmentRepositoryProvider = Provider<IShipmentRepository>((ref) {
-  return LocalShipmentRepository(ref.read(sharedPreferencesProvider));
+  final local = LocalShipmentRepository(ref.read(sharedPreferencesProvider));
+  if (EnvConfig.useRemoteApi) {
+    return RemoteCustomerShipmentRepository(
+      apiClient: ref.read(customerShipmentApiClientProvider),
+      driverFallback: local,
+    );
+  }
+  return local;
 });
 
 final tripRepositoryProvider = Provider<ITripRepository>((ref) {

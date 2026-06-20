@@ -16,6 +16,7 @@ class DriverTrip {
     required this.estimatedPrice,
     required this.status,
     this.interestRequestCount = 0,
+    this.isInterested = false,
   });
 
   final String id;              // VB-XXXX
@@ -32,6 +33,8 @@ class DriverTrip {
   final TripStatus status;
   /// Customer interest count shown on "View Request (n)" CTA.
   final int interestRequestCount;
+  /// Whether the logged-in customer already expressed interest.
+  final bool isInterested;
 
   bool get isActive => status == TripStatus.active;
 
@@ -47,6 +50,7 @@ class DriverTrip {
     double? estimatedPrice,
     TripStatus? status,
     int? interestRequestCount,
+    bool? isInterested,
   }) =>
       DriverTrip(
         id: id,
@@ -63,6 +67,7 @@ class DriverTrip {
         status: status ?? this.status,
         interestRequestCount:
             interestRequestCount ?? this.interestRequestCount,
+        isInterested: isInterested ?? this.isInterested,
       );
 
   // ── JSON ────────────────────────────────────────────────────────────────
@@ -82,6 +87,7 @@ class DriverTrip {
         status:             TripStatus.values.byName(j['status']  as String),
         interestRequestCount:
             (j['interest_request_count'] as num?)?.toInt() ?? 0,
+        isInterested: j['is_interested'] as bool? ?? false,
       );
 
   Map<String, dynamic> toJson() => {
@@ -98,6 +104,7 @@ class DriverTrip {
         'estimated_price':    estimatedPrice,
         'status':             status.name,
         'interest_request_count': interestRequestCount,
+        'is_interested': isInterested,
       };
 
   @override

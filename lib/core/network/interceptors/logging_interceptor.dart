@@ -10,12 +10,15 @@ class LoggingInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     if (kDebugMode) {
+      final requestUrl = _requestUrlWithoutQuery(options);
       final buffer = StringBuffer()
         ..writeln('[$_tag] ── REQUEST ──────────────────────────────')
-        ..writeln('[$_tag] ${options.method} ${options.uri}');
+        ..writeln('[$_tag] ${options.method} $requestUrl');
 
       if (options.queryParameters.isNotEmpty) {
-        buffer.writeln('[$_tag] Query: ${options.queryParameters}');
+        buffer.writeln(
+          '[$_tag] Query: ${_formatJson(options.queryParameters)}',
+        );
       }
 
       buffer.writeln('[$_tag] Headers:\n${_formatJson(_redactHeaders(options.headers))}');
@@ -33,11 +36,13 @@ class LoggingInterceptor extends Interceptor {
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
     if (kDebugMode) {
+      final options = response.requestOptions;
+      final requestUrl = _requestUrlWithoutQuery(options);
       final buffer = StringBuffer()
         ..writeln('[$_tag] ── RESPONSE ─────────────────────────────')
         ..writeln(
           '[$_tag] ${response.statusCode} '
-          '${response.requestOptions.method} ${response.requestOptions.uri}',
+          '${options.method} $requestUrl',
         )
         ..writeln('[$_tag] Body:\n${_formatBody(response.data)}');
 
@@ -50,11 +55,13 @@ class LoggingInterceptor extends Interceptor {
   void onError(DioException err, ErrorInterceptorHandler handler) {
     if (kDebugMode) {
       final status = err.response?.statusCode;
+      final options = err.requestOptions;
+      final requestUrl = _requestUrlWithoutQuery(options);
       final buffer = StringBuffer()
         ..writeln('[$_tag] ── ERROR ────────────────────────────────')
         ..writeln(
           '[$_tag] ${status ?? '–'} '
-          '${err.requestOptions.method} ${err.requestOptions.uri}',
+          '${options.method} $requestUrl',
         )
         ..writeln('[$_tag] Type: ${err.type}')
         ..writeln('[$_tag] Message: ${err.message}');
@@ -67,6 +74,15 @@ class LoggingInterceptor extends Interceptor {
       debugPrint(buffer.toString().trimRight());
     }
     handler.next(err);
+  }
+
+  /// Logs path-only URL; query params are printed separately from [RequestOptions.queryParameters].
+  static String _requestUrlWithoutQuery(RequestOptions options) {
+    final base = options.baseUrl.endsWith('/')
+        ? options.baseUrl.substring(0, options.baseUrl.length - 1)
+        : options.baseUrl;
+    final path = options.path.startsWith('/') ? options.path : '/${options.path}';
+    return '$base$path';
   }
 
   static Map<String, dynamic> _redactHeaders(Map<String, dynamic> headers) {

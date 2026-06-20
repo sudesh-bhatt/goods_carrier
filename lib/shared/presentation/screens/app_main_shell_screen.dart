@@ -34,13 +34,16 @@ class AppMainShellScreen extends ConsumerWidget {
   AppMainTab get _currentTab =>
       AppMainTab.values[navigationShell.currentIndex];
 
-  void _onTabSelected(BuildContext context, AppMainTab tab) {
+  void _onTabSelected(BuildContext context, WidgetRef ref, AppMainTab tab) {
     if (tab == _currentTab) return;
     HapticFeedback.selectionClick();
     navigationShell.goBranch(
       tab.index,
       initialLocation: tab.index == navigationShell.currentIndex,
     );
+    if (role == UserRole.customer && tab == AppMainTab.listings) {
+      ref.read(customerShipmentsProvider.notifier).loadForTab();
+    }
   }
 
   String _titleForTab(AppMainTab tab, AppLocalizations l10n) => switch (tab) {
@@ -92,7 +95,7 @@ class AppMainShellScreen extends ConsumerWidget {
                 profileImageUrl: user?.profileImageUrl,
                 onProfile: tab == AppMainTab.profile
                     ? null
-                    : () => _onTabSelected(context, AppMainTab.profile),
+                    : () => _onTabSelected(context, ref, AppMainTab.profile),
               ),
             Expanded(child: navigationShell),
           ],
@@ -125,7 +128,7 @@ class AppMainShellScreen extends ConsumerWidget {
         bottomNavigationBar: AppBottomNavBar(
           role: role,
           currentTab: tab,
-          onTabSelected: (t) => _onTabSelected(context, t),
+          onTabSelected: (t) => _onTabSelected(context, ref, t),
         ),
       ),
     );

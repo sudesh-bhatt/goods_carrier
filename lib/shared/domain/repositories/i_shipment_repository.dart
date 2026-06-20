@@ -1,4 +1,7 @@
 import '../entities/shipment.dart';
+import '../models/customer_shipment_detail.dart';
+import '../models/shipment_form_prefill.dart';
+import '../models/shipment_submit_options.dart';
 
 /// Contract for all shipment data operations.
 ///
@@ -13,16 +16,35 @@ abstract class IShipmentRepository {
   /// Returns all shipments belonging to [customerId].
   Future<List<Shipment>> getCustomerShipments(String customerId);
 
+  /// Loads a single shipment (`GET .../shipments/{id}`).
+  Future<Shipment> getShipment(String id);
+
+  /// Loads shipment detail including payment summary and interested drivers.
+  Future<CustomerShipmentDetail> getCustomerShipmentDetail(String id);
+
+  /// Loads a shipment for the edit form (`GET .../edit`).
+  Future<ShipmentFormPrefill> getShipmentForEdit(String id);
+
   /// Posts a new shipment request. Returns the server-echoed entity with
   /// the server-assigned ID (may differ from the optimistic local ID).
-  Future<Shipment> createShipment(Shipment shipment);
+  Future<Shipment> createShipment(
+    Shipment shipment, {
+    ShipmentSubmitOptions? options,
+  });
 
   /// Updates an existing shipment (edit flow).
-  Future<Shipment> updateShipment(Shipment shipment);
+  Future<Shipment> updateShipment(
+    Shipment shipment, {
+    ShipmentSubmitOptions? options,
+  });
 
   /// Cancels a pending shipment. Throws [AppException] if the shipment is
   /// not in a cancellable state (i.e., already assigned or in transit).
-  Future<void> cancelShipment(String shipmentId);
+  Future<Shipment> cancelShipment(
+    String shipmentId, {
+    required String reason,
+    String? otherReason,
+  });
 
   /// Locks in [driverId] as the selected driver for [shipmentId].
   Future<void> assignDriver(String shipmentId, String driverId);

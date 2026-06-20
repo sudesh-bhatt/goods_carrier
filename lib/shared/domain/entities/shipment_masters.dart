@@ -1,0 +1,177 @@
+import '../enums/vehicle_type.dart';
+
+class ShipmentMasterOption {
+  const ShipmentMasterOption({
+    required this.id,
+    required this.name,
+    this.slug,
+  });
+
+  final int id;
+  final String name;
+  final String? slug;
+
+  factory ShipmentMasterOption.fromJson(Map<String, dynamic> json) {
+    final rawId = json['id'];
+    return ShipmentMasterOption(
+      id: rawId is int ? rawId : int.parse(rawId.toString()),
+      name: json['name'] as String? ??
+          json['label'] as String? ??
+          json['title'] as String? ??
+          '',
+      slug: json['slug'] as String? ??
+          json['code'] as String? ??
+          json['value'] as String?,
+    );
+  }
+
+  /// Hidden from customer home vehicle chips (e.g. backend-only types).
+  bool get showsOnCustomerHomeChips {
+    final key = (slug ?? name).trim().toLowerCase();
+    return key != 'tempo' && !key.contains('tempo');
+  }
+}
+
+List<ShipmentMasterOption> homeDashboardVehicleTypes(
+  Iterable<ShipmentMasterOption> types,
+) =>
+    types.where((t) => t.showsOnCustomerHomeChips).toList(growable: false);
+
+class WeightUnitOption {
+  const WeightUnitOption({required this.value, required this.label});
+
+  final String value;
+  final String label;
+
+  factory WeightUnitOption.fromJson(Map<String, dynamic> json) {
+    final rawValue =
+        json['value'] as String? ?? json['code'] as String? ?? 'KG';
+    final label =
+        json['label'] as String? ?? json['name'] as String? ?? rawValue;
+    return WeightUnitOption(
+      value: _apiWeightUnitValue(rawValue),
+      label: label,
+    );
+  }
+
+  factory WeightUnitOption.fromString(String raw) {
+    return WeightUnitOption(
+      value: _apiWeightUnitValue(raw),
+      label: raw.toLowerCase() == 'ton' ? 'Ton' : 'KG',
+    );
+  }
+
+  static String _apiWeightUnitValue(String raw) {
+    return raw.toLowerCase() == 'ton' ? 'TON' : 'KG';
+  }
+}
+
+/// Dropdown data from `GET /api/customer/shipment-masters`.
+class ShipmentMasters {
+  const ShipmentMasters({
+    required this.goodsTypes,
+    required this.vehicleTypes,
+    this.weightUnits = const [
+      WeightUnitOption(value: 'KG', label: 'KG'),
+      WeightUnitOption(value: 'TON', label: 'Ton'),
+    ],
+  });
+
+  final List<ShipmentMasterOption> goodsTypes;
+  final List<ShipmentMasterOption> vehicleTypes;
+  final List<WeightUnitOption> weightUnits;
+
+  List<String> get goodsTypeNames =>
+      goodsTypes.map((g) => g.name).where((n) => n.isNotEmpty).toList();
+
+  List<ShipmentMasterOption> get vehicleOptions => vehicleTypes;
+
+  int? goodsTypeIdForName(String name) {
+    final normalized = name.trim().toLowerCase();
+    for (final item in goodsTypes) {
+      if (item.name.toLowerCase() == normalized) return item.id;
+    }
+    return null;
+  }
+
+  int? vehicleTypeIdFor(VehicleType type) {
+    final slug = type.apiValue;
+    for (final item in vehicleTypes) {
+      if (item.slug?.toLowerCase() == slug) return item.id;
+      if (item.name.toLowerCase().contains(type.label.toLowerCase())) {
+        return item.id;
+      }
+    }
+    return null;
+  }
+
+  int? vehicleTypeIdForMasterName(String name) {
+    final normalized = name.trim().toLowerCase();
+    for (final item in vehicleTypes) {
+      if (item.name.toLowerCase() == normalized) return item.id;
+    }
+    return null;
+  }
+
+  String uiWeightUnitForApi(String apiUnit) {
+    final normalized = apiUnit.toLowerCase();
+    for (final unit in weightUnits) {
+      if (unit.value.toLowerCase() == normalized) return unit.label;
+    }
+    return normalized == 'ton' ? 'TON' : 'KG';
+  }
+
+  String apiWeightUnitForUi(String uiUnit) {
+    final normalized = uiUnit.toLowerCase();
+    for (final unit in weightUnits) {
+      if (unit.label.toLowerCase() == normalized ||
+          unit.value.toLowerCase() == normalized) {
+        return unit.value;
+      }
+    }
+    return normalized == 'ton' ? 'TON' : 'KG';
+  }
+
+  factory ShipmentMasters.fromJson(Map<String, dynamic> json) {
+    final nested = json['masters'];
+    final source = nested is Map<String, dynamic> ? nested : json;
+
+    return ShipmentMasters(
+      goodsTypes: _parseOptions(
+        source['goods_types'] ?? source['goods_type'] ?? source['goodsTypes'],
+      ),
+      vehicleTypes: _parseOptions(
+        source['vehicle_types'] ??
+            source['vehicle_type'] ??
+            source['vehicleTypes'],
+      ),
+      weightUnits: _parseWeightUnits(source['weight_units']),
+    );
+  }
+
+  static List<ShipmentMasterOption> _parseOptions(dynamic raw) {
+    if (raw is! List) return const [];
+    return raw
+        .whereType<Map<String, dynamic>>()
+        .map(ShipmentMasterOption.fromJson)
+        .toList();
+  }
+
+  static List<WeightUnitOption> _parseWeightUnits(dynamic raw) {
+    if (raw is List && raw.isNotEmpty) {
+      if (raw.first is Map<String, dynamic>) {
+        return raw
+            .whereType<Map<String, dynamic>>()
+            .map(WeightUnitOption.fromJson)
+            .toList();
+      }
+      return raw
+          .map((e) => WeightUnitOption.fromString(e.toString()))
+          .toList();
+    }
+    return const [
+      WeightUnitOption(value: 'KG', label: 'KG'),
+      WeightUnitOption(value: 'TON', label: 'Ton'),
+    ];
+  }
+}

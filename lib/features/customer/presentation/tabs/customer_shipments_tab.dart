@@ -7,7 +7,6 @@ import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../shared/domain/entities/shipment.dart';
 import '../../../../shared/domain/enums/shipment_status.dart';
-import '../../../../shared/presentation/widgets/navigation/confirmation_bottom_sheet.dart';
 import '../providers/customer_shipments_provider.dart';
 import '../widgets/customer_shipments_empty_view.dart';
 import '../widgets/my_shipment/my_shipment_card.dart';
@@ -26,29 +25,17 @@ class _CustomerShipmentsTabState extends ConsumerState<CustomerShipmentsTab>
   @override
   bool get wantKeepAlive => true;
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(customerShipmentsProvider.notifier).loadForTab();
+    });
+  }
+
   bool _canEditDelete(Shipment shipment) =>
       shipment.status == ShipmentStatus.pending ||
       shipment.status == ShipmentStatus.interestReceived;
-
-  Future<void> _confirmRemove(BuildContext context, Shipment shipment) async {
-    final l10n = context.l10n;
-    final displayId =
-        shipment.id.startsWith('#') ? shipment.id : '#${shipment.id}';
-    final confirmed = await ConfirmationBottomSheet.show(
-      context,
-      title: l10n.shipmentRemoveTitle,
-      body: l10n.shipmentRemoveBody(displayId),
-      confirmLabel: l10n.actionRemove,
-      cancelLabel: l10n.actionNo,
-      headerIcon: Icons.delete_outline_rounded,
-      isDangerous: true,
-    );
-    if (confirmed == true && context.mounted) {
-      await ref
-          .read(customerShipmentsProvider.notifier)
-          .cancelShipment(shipment.id);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,8 +43,9 @@ class _CustomerShipmentsTabState extends ConsumerState<CustomerShipmentsTab>
     final colors = context.colors;
     final l10n = context.l10n;
     final state = ref.watch(customerShipmentsProvider);
-    final shipments = List<Shipment>.from(state.shipments)
-      ..sort((a, b) => b.pickupDateTime.compareTo(a.pickupDateTime));
+    final shipments = List<Shipment>.from(
+      state.shipments.where((s) => !s.isCancelled),
+    )..sort((a, b) => b.pickupDateTime.compareTo(a.pickupDateTime));
 
     if (state.isLoading) {
       return const Center(child: CircularProgressIndicator());
@@ -81,7 +69,7 @@ class _CustomerShipmentsTabState extends ConsumerState<CustomerShipmentsTab>
         itemCount: shipments.length,
         itemBuilder: (context, index) {
           final shipment = shipments[index];
-          final interestCount = shipment.interestedDriverIds.length;
+          final interestCount = shipment.resolvedInterestCount;
           final showInterest = shipment.status ==
                   ShipmentStatus.interestReceived ||
               interestCount > 0;
@@ -105,7 +93,9 @@ class _CustomerShipmentsTabState extends ConsumerState<CustomerShipmentsTab>
                   ? () => context.push(AppRoutes.editShipmentOf(shipment.id))
                   : null,
               onDelete: editable
-                  ? () => _confirmRemove(context, shipment)
+                  ? () => context.push(
+                        AppRoutes.cancelShipmentOf(shipment.id),
+                      )
                   : null,
             ),
           );
