@@ -39,10 +39,23 @@ abstract final class ApiConstants {
   // ── Driver ───────────────────────────────────────────────────────────────
   static const String driverProfile       = '/api/driver/profile';
   static const String driverProfileAvatar = '/api/driver/profile/avatar';
-  static const String driverTrips   = '/api/driver/trips';
-  static const String driverRequests = '/api/driver/requests';
-  static String expressInterest(String id) => '/api/driver/requests/$id/interest';
+  static const String driverTrips         = '/api/driver/trips';
+  static const String driverDashboard     = '/api/driver/dashboard';
+  static String driverTrip(String id) => '/api/driver/trips/$id';
+  static String driverTripEdit(String id) => '/api/driver/trips/$id/edit';
+  static String driverTripRequests(String tripId) =>
+      '/api/driver/trips/$tripId/requests';
+  static String acceptDriverTripRequest(String tripId, String requestId) =>
+      '/api/driver/trips/$tripId/requests/$requestId/accept';
+  static String rejectDriverTripRequest(String tripId, String requestId) =>
+      '/api/driver/trips/$tripId/requests/$requestId/reject';
   static String cancelTrip(String id) => '/api/driver/trips/$id/cancel';
+  static String driverShipment(String id) => '/api/driver/shipments/$id';
+  static String driverShipmentRequest(String id) =>
+      '/api/driver/shipments/$id/requests';
+  static const String driverVehicles = '/api/driver/vehicles';
+  static const String driverVehicleMasters = '/api/driver/vehicle-masters';
+  static String driverVehicle(int id) => '/api/driver/vehicles/$id';
 
   // ── Notifications ──────────────────────────────────────────────────────────
   static const String notifications = '/api/notifications';

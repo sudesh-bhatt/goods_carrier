@@ -65,6 +65,8 @@ abstract class IAuthRepository {
     String? profileImageUrl,
   });
 
+  Future<User> getDriverProfile();
+
   Future<void> saveToken(String token);
 
   Future<void> saveOtpReferenceId(String referenceId);

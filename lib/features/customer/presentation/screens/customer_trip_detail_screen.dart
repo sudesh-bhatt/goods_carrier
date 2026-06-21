@@ -12,12 +12,11 @@ import '../../../../core/providers/repository_providers.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../shared/domain/entities/driver_trip.dart';
 import '../../../../shared/domain/entities/driver_trip_display.dart';
+import '../../../../shared/domain/models/driver_shipment_detail.dart';
 import '../../../../shared/domain/entities/shipment.dart';
 import '../../../../shared/presentation/widgets/feedback/error_view.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
-import '../../../driver/presentation/models/driver_interest_success_args.dart';
 import '../../../driver/presentation/providers/driver_shipment_requests_provider.dart';
-import '../../../driver/presentation/widgets/confirm_request_bottom_sheet.dart';
 import '../models/report_trip_screen_args.dart';
 import '../providers/customer_dashboard_provider.dart';
 import '../providers/customer_shipments_provider.dart';
@@ -48,8 +47,8 @@ class CustomerTripDetailScreen extends ConsumerStatefulWidget {
 
 class _CustomerTripDetailScreenState
     extends ConsumerState<CustomerTripDetailScreen> with SafeSetStateMixin {
-  bool _isSubmittingInterest = false;
   Shipment? _detail;
+  DriverShipmentDetail? _driverDetail;
   bool _isLoadingDetail = false;
   String? _loadError;
 
@@ -60,7 +59,10 @@ class _CustomerTripDetailScreenState
   }
 
   Future<void> _loadDetail() async {
-    if (widget.isDriver) return;
+    if (widget.isDriver) {
+      await _loadDriverDetail();
+      return;
+    }
 
     final cachedDriverTrip = _resolveCachedDriverTrip();
     if (cachedDriverTrip != null) {
@@ -98,6 +100,55 @@ class _CustomerTripDetailScreenState
       safeSetState(() {
         _isLoadingDetail = false;
         _loadError = cached == null ? ApiExceptionMapper.userMessage(e) : null;
+      });
+    }
+  }
+
+  Future<void> _loadDriverDetail() async {
+    final cached = _resolveCachedShipment();
+    if (cached != null) {
+      safeSetState(() {
+        _driverDetail = DriverShipmentDetail(shipment: cached);
+      });
+    }
+
+    safeSetState(() {
+      _isLoadingDetail = cached == null || EnvConfig.useRemoteApi;
+      _loadError = null;
+    });
+
+    if (!EnvConfig.useRemoteApi) {
+      safeSetState(() => _isLoadingDetail = false);
+      return;
+    }
+
+    try {
+      final apiId = ref
+          .read(driverShipmentRequestsProvider.notifier)
+          .apiResourceIdFor(widget.shipmentId);
+      final fetched = await ref
+          .read(shipmentRepositoryProvider)
+          .getDriverShipmentDetail(apiId);
+      if (!mounted) return;
+      safeSetState(() {
+        _driverDetail = fetched;
+        _isLoadingDetail = false;
+      });
+      ref
+          .read(driverShipmentRequestsProvider.notifier)
+          .upsertShipment(fetched.shipment);
+      if (fetched.alreadyRequested) {
+        ref
+            .read(driverShipmentRequestsProvider.notifier)
+            .markExpressed(fetched.shipment.id);
+      }
+    } catch (e) {
+      if (!mounted) return;
+      safeSetState(() {
+        _isLoadingDetail = false;
+        _loadError = _driverDetail == null
+            ? ApiExceptionMapper.userMessage(e)
+            : null;
       });
     }
   }
@@ -270,13 +321,16 @@ class _CustomerTripDetailScreenState
 
   Shipment? _resolveShipment() {
     if (widget.isDriver) {
-      final driverState = ref.watch(driverShipmentRequestsProvider);
-      return driverState.all
-          .where((s) => s.id == widget.shipmentId)
-          .firstOrNull;
+      return _driverDetail?.shipment ?? _resolveCachedShipment();
     }
     return _detail ?? _resolveCachedShipment();
   }
+
+  DriverShipmentDetail? get _activeDriverDetail =>
+      _driverDetail ??
+      (_resolveCachedShipment() != null
+          ? DriverShipmentDetail(shipment: _resolveCachedShipment()!)
+          : null);
 
   List<Widget> _customerBody(
     BuildContext context,
@@ -327,6 +381,11 @@ class _CustomerTripDetailScreenState
     Shipment shipment,
     dynamic l10n,
   ) {
+    final detail = _activeDriverDetail;
+    final capacitySecondary = detail?.vehicleCapacityLabel != null
+        ? 'Cap: ${detail!.vehicleCapacityLabel}'
+        : null;
+
     return [
       TripDetailDriverSummaryCard(
         shipment: shipment,
@@ -334,6 +393,7 @@ class _CustomerTripDetailScreenState
         estimatedPayLabel: l10n.shipmentEstimatedPay,
         fromLabel: l10n.tripFrom.toUpperCase(),
         toLabel: l10n.tripTo.toUpperCase(),
+        capacitySecondary: capacitySecondary,
       ),
       SizedBox(height: 24.h),
       TripDetailGoodsSection(
@@ -348,12 +408,15 @@ class _CustomerTripDetailScreenState
         shipment: shipment,
         pickupLabel: l10n.driverPickupLocation,
         dropLabel: l10n.driverDropLocation,
+        pickupScheduleLabel: detail?.pickupScheduleLabel,
       ),
       SizedBox(height: 24.h),
       TripDetailVehicleMatchSection(
         shipment: shipment,
         sectionLabel: l10n.driverVehicleRequirement,
         matchLabel: l10n.driverMatchesYourVehicle,
+        showMatchBadge: detail?.matchesDriverVehicle ?? true,
+        capacityLabel: detail?.vehicleCapacityLabel,
       ),
     ];
   }
@@ -364,13 +427,14 @@ class _CustomerTripDetailScreenState
     dynamic l10n,
   ) {
     final requestsState = ref.watch(driverShipmentRequestsProvider);
-    final alreadyExpressed = requestsState.hasExpressed(shipment.id);
+    final alreadyExpressed = _activeDriverDetail?.alreadyRequested == true ||
+        requestsState.hasExpressed(shipment.id);
 
     return Opacity(
-      opacity: alreadyExpressed || _isSubmittingInterest ? 0.5 : 1,
+      opacity: alreadyExpressed ? 0.5 : 1,
       child: TripDetailRequestFooter(
         label: alreadyExpressed ? l10n.driverRequestSent : l10n.driverAddRequest,
-        onPressed: alreadyExpressed || _isSubmittingInterest
+        onPressed: alreadyExpressed
             ? () {}
             : () => _onAddRequestTap(context, shipment),
       ),
@@ -405,28 +469,7 @@ class _CustomerTripDetailScreenState
     BuildContext context,
     Shipment shipment,
   ) async {
-    final confirmed = await ConfirmRequestBottomSheet.show(
-      context,
-      shipment: shipment,
-    );
-    if (!confirmed || !mounted) return;
-
-    setState(() => _isSubmittingInterest = true);
-    await ref
-        .read(driverShipmentRequestsProvider.notifier)
-        .expressInterest(shipment.id);
-    if (!context.mounted) return;
-    setState(() => _isSubmittingInterest = false);
-
-    context.push(
-      AppRoutes.driverInterestSuccess,
-      extra: DriverInterestSuccessArgs(
-        fromCity: shipment.pickup.city,
-        toCity: shipment.drop.city,
-        pickupDateTime: shipment.pickupDateTime,
-        estimatedPrice: shipment.estimatedPrice,
-      ),
-    );
+    context.push(AppRoutes.driverAddShipmentRequestOf(shipment.id));
   }
 
   Future<void> _openDriverFlow(BuildContext context, Shipment shipment) async {

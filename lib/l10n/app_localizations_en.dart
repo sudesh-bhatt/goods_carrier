@@ -679,6 +679,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get driverCancelTrip => 'Cancel Trip';
 
   @override
+  String get driverTripRequestAccept => 'Accept';
+
+  @override
+  String get driverTripRequestReject => 'Reject';
+
+  @override
+  String get driverTripNoRequestsTitle => 'No requests yet';
+
+  @override
+  String get driverTripNoRequestsMessage =>
+      'Customer interest on this trip will appear here.';
+
+  @override
   String driverViewRequestCount(int count) {
     return 'View Request ($count)';
   }
@@ -748,6 +761,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get driverAddRequest => 'Add Request';
+
+  @override
+  String get driverAddRequestTitle => 'Add Request';
+
+  @override
+  String get driverOfferedPrice => 'Offered Price';
+
+  @override
+  String get driverOfferedPriceHint => '2100';
+
+  @override
+  String get driverOfferedPriceInvalid => 'Enter a valid price';
+
+  @override
+  String get driverRequestNote => 'Additional Note';
+
+  @override
+  String get driverRequestNoteHint => 'I can pick up on time.';
+
+  @override
+  String get driverSelectVehicle => 'Select Vehicle';
+
+  @override
+  String get driverNoVehiclesMessage =>
+      'Add a vehicle to your profile before sending requests.';
+
+  @override
+  String get driverSubmitRequest => 'Submit Request';
 
   @override
   String get driverRequestSent => 'Request Sent';
@@ -867,6 +908,91 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileVehicleManagementSub => 'All Vehicle Details';
+
+  @override
+  String get driverMyVehiclesTitle => 'My Vehicles';
+
+  @override
+  String get driverVehiclesSectionLabel => 'Vehicles Details';
+
+  @override
+  String get driverFleetOverviewTitle => 'Fleet Overview';
+
+  @override
+  String get driverFleetTotalActive => 'Total Active';
+
+  @override
+  String get driverFleetInTransit => 'In Transit';
+
+  @override
+  String get driverVehicleCapacityLabel => 'Capacity';
+
+  @override
+  String get driverVehicleDetailsTitle => 'Vehicle Details';
+
+  @override
+  String get driverEditVehicle => 'Edit Vehicle';
+
+  @override
+  String get driverEditVehicleTitle => 'Edit Vehicle Details';
+
+  @override
+  String get driverVehicleLoadFailed => 'Could not load vehicle details.';
+
+  @override
+  String get driverPhoneCopied => 'Phone number copied';
+
+  @override
+  String get driverVehicleSpecifications => 'Specifications';
+
+  @override
+  String get driverVehicleTypeLabel => 'Vehicle Type';
+
+  @override
+  String get driverVehicleRegistrationLabel => 'Registration Number';
+
+  @override
+  String get driverAddVehicleTitle => 'Add Vehicle Details';
+
+  @override
+  String get driverTechnicalSpecifications => 'Technical Specifications';
+
+  @override
+  String get driverVerificationSection => 'Driver Verification';
+
+  @override
+  String get driverLicenseUploadTitle => 'Driving License (Front & Back)';
+
+  @override
+  String get driverLicenseFront => 'Front';
+
+  @override
+  String get driverLicenseBack => 'Back';
+
+  @override
+  String get driverProfilePhotoTitle => 'Profile Photo';
+
+  @override
+  String get driverProfilePhotoHint => 'Upload a clear selfie';
+
+  @override
+  String get driverProfilePhotoBody =>
+      'Face must be visible without sunglasses or hats for verification.';
+
+  @override
+  String get driverPrimaryFleetBadge => 'Primary Fleet';
+
+  @override
+  String get driverAddVehicle => 'Add Vehicle';
+
+  @override
+  String get driverUpdateVehicle => 'Update Vehicle';
+
+  @override
+  String get driverVehicleAdded => 'Vehicle added successfully';
+
+  @override
+  String get driverVehicleUpdated => 'Vehicle updated successfully';
 
   @override
   String get profileManageSubscription => 'Manage Subscription';

@@ -1378,6 +1378,30 @@ abstract class AppLocalizations {
   /// **'Cancel Trip'**
   String get driverCancelTrip;
 
+  /// No description provided for @driverTripRequestAccept.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get driverTripRequestAccept;
+
+  /// No description provided for @driverTripRequestReject.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get driverTripRequestReject;
+
+  /// No description provided for @driverTripNoRequestsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No requests yet'**
+  String get driverTripNoRequestsTitle;
+
+  /// No description provided for @driverTripNoRequestsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer interest on this trip will appear here.'**
+  String get driverTripNoRequestsMessage;
+
   /// No description provided for @driverViewRequestCount.
   ///
   /// In en, this message translates to:
@@ -1509,6 +1533,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add Request'**
   String get driverAddRequest;
+
+  /// No description provided for @driverAddRequestTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Request'**
+  String get driverAddRequestTitle;
+
+  /// No description provided for @driverOfferedPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Offered Price'**
+  String get driverOfferedPrice;
+
+  /// No description provided for @driverOfferedPriceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'2100'**
+  String get driverOfferedPriceHint;
+
+  /// No description provided for @driverOfferedPriceInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid price'**
+  String get driverOfferedPriceInvalid;
+
+  /// No description provided for @driverRequestNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Additional Note'**
+  String get driverRequestNote;
+
+  /// No description provided for @driverRequestNoteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'I can pick up on time.'**
+  String get driverRequestNoteHint;
+
+  /// No description provided for @driverSelectVehicle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Vehicle'**
+  String get driverSelectVehicle;
+
+  /// No description provided for @driverNoVehiclesMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a vehicle to your profile before sending requests.'**
+  String get driverNoVehiclesMessage;
+
+  /// No description provided for @driverSubmitRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Request'**
+  String get driverSubmitRequest;
 
   /// No description provided for @driverRequestSent.
   ///
@@ -1743,6 +1821,174 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All Vehicle Details'**
   String get profileVehicleManagementSub;
+
+  /// No description provided for @driverMyVehiclesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My Vehicles'**
+  String get driverMyVehiclesTitle;
+
+  /// No description provided for @driverVehiclesSectionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicles Details'**
+  String get driverVehiclesSectionLabel;
+
+  /// No description provided for @driverFleetOverviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Fleet Overview'**
+  String get driverFleetOverviewTitle;
+
+  /// No description provided for @driverFleetTotalActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Active'**
+  String get driverFleetTotalActive;
+
+  /// No description provided for @driverFleetInTransit.
+  ///
+  /// In en, this message translates to:
+  /// **'In Transit'**
+  String get driverFleetInTransit;
+
+  /// No description provided for @driverVehicleCapacityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Capacity'**
+  String get driverVehicleCapacityLabel;
+
+  /// No description provided for @driverVehicleDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle Details'**
+  String get driverVehicleDetailsTitle;
+
+  /// No description provided for @driverEditVehicle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Vehicle'**
+  String get driverEditVehicle;
+
+  /// No description provided for @driverEditVehicleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Vehicle Details'**
+  String get driverEditVehicleTitle;
+
+  /// No description provided for @driverVehicleLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load vehicle details.'**
+  String get driverVehicleLoadFailed;
+
+  /// No description provided for @driverPhoneCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number copied'**
+  String get driverPhoneCopied;
+
+  /// No description provided for @driverVehicleSpecifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Specifications'**
+  String get driverVehicleSpecifications;
+
+  /// No description provided for @driverVehicleTypeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle Type'**
+  String get driverVehicleTypeLabel;
+
+  /// No description provided for @driverVehicleRegistrationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration Number'**
+  String get driverVehicleRegistrationLabel;
+
+  /// No description provided for @driverAddVehicleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Vehicle Details'**
+  String get driverAddVehicleTitle;
+
+  /// No description provided for @driverTechnicalSpecifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Technical Specifications'**
+  String get driverTechnicalSpecifications;
+
+  /// No description provided for @driverVerificationSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver Verification'**
+  String get driverVerificationSection;
+
+  /// No description provided for @driverLicenseUploadTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Driving License (Front & Back)'**
+  String get driverLicenseUploadTitle;
+
+  /// No description provided for @driverLicenseFront.
+  ///
+  /// In en, this message translates to:
+  /// **'Front'**
+  String get driverLicenseFront;
+
+  /// No description provided for @driverLicenseBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get driverLicenseBack;
+
+  /// No description provided for @driverProfilePhotoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile Photo'**
+  String get driverProfilePhotoTitle;
+
+  /// No description provided for @driverProfilePhotoHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload a clear selfie'**
+  String get driverProfilePhotoHint;
+
+  /// No description provided for @driverProfilePhotoBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Face must be visible without sunglasses or hats for verification.'**
+  String get driverProfilePhotoBody;
+
+  /// No description provided for @driverPrimaryFleetBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary Fleet'**
+  String get driverPrimaryFleetBadge;
+
+  /// No description provided for @driverAddVehicle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Vehicle'**
+  String get driverAddVehicle;
+
+  /// No description provided for @driverUpdateVehicle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Vehicle'**
+  String get driverUpdateVehicle;
+
+  /// No description provided for @driverVehicleAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle added successfully'**
+  String get driverVehicleAdded;
+
+  /// No description provided for @driverVehicleUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle updated successfully'**
+  String get driverVehicleUpdated;
 
   /// No description provided for @profileManageSubscription.
   ///

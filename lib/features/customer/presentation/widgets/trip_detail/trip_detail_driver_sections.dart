@@ -16,6 +16,7 @@ class TripDetailDriverSummaryCard extends StatelessWidget {
     required this.estimatedPayLabel,
     required this.fromLabel,
     required this.toLabel,
+    this.capacitySecondary,
   });
 
   final Shipment shipment;
@@ -23,6 +24,7 @@ class TripDetailDriverSummaryCard extends StatelessWidget {
   final String estimatedPayLabel;
   final String fromLabel;
   final String toLabel;
+  final String? capacitySecondary;
 
   String get _displayId =>
       shipment.id.startsWith('#') ? shipment.id : '#${shipment.id}';
@@ -128,7 +130,8 @@ class TripDetailDriverSummaryCard extends StatelessWidget {
                   child: _MetaColumn(
                     icon: Icons.local_shipping_outlined,
                     primary: shipment.vehicleType.label,
-                    secondary: shipment.vehicleType.capacityLabel,
+                    secondary: capacitySecondary ??
+                        shipment.vehicleType.capacityLabel,
                   ),
                 ),
               ],
@@ -254,11 +257,13 @@ class TripDetailDriverLocationSection extends StatelessWidget {
     required this.shipment,
     required this.pickupLabel,
     required this.dropLabel,
+    this.pickupScheduleLabel,
   });
 
   final Shipment shipment;
   final String pickupLabel;
   final String dropLabel;
+  final String? pickupScheduleLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -297,7 +302,8 @@ class TripDetailDriverLocationSection extends StatelessWidget {
                 iconColor: TripDetailTokens.estimatedPayBrown,
                 label: pickupLabel,
                 address: shipment.pickup.fullAddress,
-                schedule: shipment.pickupDateTime.locationScheduleLabel,
+                schedule: pickupScheduleLabel ??
+                    shipment.pickupDateTime.locationScheduleLabel,
               ),
               SizedBox(height: 32.h),
               _LocationRow(
@@ -322,11 +328,15 @@ class TripDetailVehicleMatchSection extends StatelessWidget {
     required this.shipment,
     required this.sectionLabel,
     required this.matchLabel,
+    this.showMatchBadge = true,
+    this.capacityLabel,
   });
 
   final Shipment shipment;
   final String sectionLabel;
   final String matchLabel;
+  final bool showMatchBadge;
+  final String? capacityLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -375,7 +385,7 @@ class TripDetailVehicleMatchSection extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      'Capacity: ${shipment.vehicleType.capacityDisplay}',
+                      'Capacity: ${capacityLabel ?? shipment.vehicleType.capacityDisplay}',
                       style: TextStyle(
                         fontFamily: FontRes.MANROPE_REGULAR,
                         fontSize: 12.sp,
@@ -388,36 +398,38 @@ class TripDetailVehicleMatchSection extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 16.h),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-            decoration: BoxDecoration(
-              color: TripDetailTokens.matchBadgeBlue.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(9999),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.check_circle,
-                  size: 12.w,
-                  color: TripDetailTokens.matchBadgeBlue,
-                ),
-                SizedBox(width: 8.w),
-                Text(
-                  matchLabel.toUpperCase(),
-                  style: TextStyle(
-                    fontFamily: FontRes.MANROPE_BOLD,
-                    fontSize: 10.sp,
-                    fontWeight: FontWeight.w700,
-                    height: 1.5,
-                    letterSpacing: 0.5,
+          if (showMatchBadge) ...[
+            SizedBox(height: 16.h),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+              decoration: BoxDecoration(
+                color: TripDetailTokens.matchBadgeBlue.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(9999),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.check_circle,
+                    size: 12.w,
                     color: TripDetailTokens.matchBadgeBlue,
                   ),
-                ),
-              ],
+                  SizedBox(width: 8.w),
+                  Text(
+                    matchLabel.toUpperCase(),
+                    style: TextStyle(
+                      fontFamily: FontRes.MANROPE_BOLD,
+                      fontSize: 10.sp,
+                      fontWeight: FontWeight.w700,
+                      height: 1.5,
+                      letterSpacing: 0.5,
+                      color: TripDetailTokens.matchBadgeBlue,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
+          ],
         ],
       ),
     );

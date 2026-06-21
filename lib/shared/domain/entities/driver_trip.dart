@@ -15,11 +15,13 @@ class DriverTrip {
     required this.loadCapacityTons,
     required this.estimatedPrice,
     required this.status,
+    this.apiId,
     this.interestRequestCount = 0,
     this.isInterested = false,
   });
 
-  final String id;              // VB-XXXX
+  final String id;              // VB-XXXX or numeric string
+  final String? apiId;
   final String driverId;
   final String driverName;
   final String fromCity;
@@ -36,9 +38,14 @@ class DriverTrip {
   /// Whether the logged-in customer already expressed interest.
   final bool isInterested;
 
+  /// Numeric backend id when [id] is a display code such as `VB-9928`.
+  String get apiResourceId => apiId ?? id;
+
   bool get isActive => status == TripStatus.active;
 
   DriverTrip copyWith({
+    String? id,
+    String? apiId,
     String? driverName,
     String? fromCity,
     String? toCity,
@@ -51,9 +58,10 @@ class DriverTrip {
     TripStatus? status,
     int? interestRequestCount,
     bool? isInterested,
-  }) =>
+      }) =>
       DriverTrip(
-        id: id,
+        id: id ?? this.id,
+        apiId: apiId ?? this.apiId,
         driverId: driverId,
         driverName: driverName ?? this.driverName,
         fromCity: fromCity ?? this.fromCity,

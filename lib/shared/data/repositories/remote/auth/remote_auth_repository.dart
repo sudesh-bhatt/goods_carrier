@@ -196,6 +196,9 @@ class RemoteAuthRepository implements IAuthRepository {
   }
 
   @override
+  Future<User> getDriverProfile() => _api.getDriverProfile();
+
+  @override
   Future<void> saveToken(String token) async {
     final bearer = AuthTokenUtils.bearerValue(token);
     if (bearer.isEmpty) return;

@@ -30,6 +30,7 @@ class _CancelTripScreenState extends ConsumerState<CancelTripScreen>
   String? _selectedReason;
   final _commentsController = TextEditingController();
   bool _isSubmitting = false;
+  String? _submitError;
 
   @override
   void dispose() {
@@ -48,20 +49,44 @@ class _CancelTripScreenState extends ConsumerState<CancelTripScreen>
   Future<void> _submit() async {
     if (_selectedReason == null || _isSubmitting) return;
 
+    final l10n = context.l10n;
     final trip = ref.read(driverTripsProvider).byId(widget.tripId);
     if (trip == null) return;
 
-    safeSetState(() => _isSubmitting = true);
-    await ref.read(driverTripsProvider.notifier).cancelTrip(trip.id);
+    final selected = _reasons(l10n).firstWhere((r) => r.id == _selectedReason);
+    final comments = _commentsController.text.trim();
+    final otherReason =
+        _selectedReason == 'other' && comments.isNotEmpty ? comments : null;
+
+    safeSetState(() {
+      _isSubmitting = true;
+      _submitError = null;
+    });
+    final cancelled = await ref.read(driverTripsProvider.notifier).cancelTrip(
+          trip.id,
+          reason: selected.label,
+          otherReason: otherReason,
+        );
     if (!mounted) return;
 
-    final displayId = trip.id.startsWith('#') ? trip.id : '#${trip.id}';
+    if (cancelled == null) {
+      final error =
+          ref.read(driverTripsProvider).error ?? l10n.errorGeneric;
+      safeSetState(() {
+        _isSubmitting = false;
+        _submitError = error;
+      });
+      return;
+    }
+
+    final displayId =
+        cancelled.id.startsWith('#') ? cancelled.id : '#${cancelled.id}';
     final args = TripCancelConfirmationArgs(
       tripId: displayId,
-      fromCity: trip.fromCity,
-      toCity: trip.toCity,
-      startDate: trip.estimatedStartDate,
-      totalPrice: trip.estimatedPrice,
+      fromCity: cancelled.fromCity,
+      toCity: cancelled.toCity,
+      startDate: cancelled.estimatedStartDate,
+      totalPrice: cancelled.estimatedPrice,
     );
 
     context.go(AppRoutes.tripCancelSuccess, extra: args);
@@ -98,6 +123,10 @@ class _CancelTripScreenState extends ConsumerState<CancelTripScreen>
               child: ListView(
                 padding: EdgeInsets.fromLTRB(24.w, 16.h, 24.w, 24.h),
                 children: [
+                  if (_submitError != null) ...[
+                    ErrorView.inline(message: _submitError!),
+                    SizedBox(height: 16.h),
+                  ],
                   Text(
                     l10n.cancelShipmentHeadline,
                     style: TextStyle(
@@ -151,8 +180,10 @@ class _CancelTripScreenState extends ConsumerState<CancelTripScreen>
                             child: _ReasonTile(
                               label: r.label,
                               selected: _selectedReason == r.id,
-                              onTap: () =>
-                                  safeSetState(() => _selectedReason = r.id),
+                              onTap: () => safeSetState(() {
+                                _selectedReason = r.id;
+                                _submitError = null;
+                              }),
                             ),
                           ),
                         ),

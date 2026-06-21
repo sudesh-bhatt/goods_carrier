@@ -675,6 +675,19 @@ class AppLocalizationsGu extends AppLocalizations {
   String get driverCancelTrip => 'ટ્રિપ રદ કરો';
 
   @override
+  String get driverTripRequestAccept => 'સ્વીકારો';
+
+  @override
+  String get driverTripRequestReject => 'નકારો';
+
+  @override
+  String get driverTripNoRequestsTitle => 'હજી કોઈ વિનંતી નથી';
+
+  @override
+  String get driverTripNoRequestsMessage =>
+      'આ ટ્રિપ પર ગ્રાહકની રુચિ અહીં દેખાશે.';
+
+  @override
   String driverViewRequestCount(int count) {
     return 'વિનંતી જુઓ ($count)';
   }
@@ -743,6 +756,34 @@ class AppLocalizationsGu extends AppLocalizations {
 
   @override
   String get driverAddRequest => 'વિનંતી ઉમેરો';
+
+  @override
+  String get driverAddRequestTitle => 'વિનંતી ઉમેરો';
+
+  @override
+  String get driverOfferedPrice => 'ઑફર કરેલી કિંમત';
+
+  @override
+  String get driverOfferedPriceHint => '2100';
+
+  @override
+  String get driverOfferedPriceInvalid => 'માન્ય કિંમત દાખલ કરો';
+
+  @override
+  String get driverRequestNote => 'વધારાની નોંધ';
+
+  @override
+  String get driverRequestNoteHint => 'હું સમયસર પિકઅપ કરી શકું.';
+
+  @override
+  String get driverSelectVehicle => 'વાહન પસંદ કરો';
+
+  @override
+  String get driverNoVehiclesMessage =>
+      'વિનંતી મોકલતા પહેલાં તમારી પ્રોફાઇલમાં વાહન ઉમેરો.';
+
+  @override
+  String get driverSubmitRequest => 'વિનંતી સબમિટ કરો';
 
   @override
   String get driverRequestSent => 'વિનંતી મોકલાઈ';
@@ -862,6 +903,91 @@ class AppLocalizationsGu extends AppLocalizations {
 
   @override
   String get profileVehicleManagementSub => 'બધી વાહન વિગતો';
+
+  @override
+  String get driverMyVehiclesTitle => 'મારા વાહનો';
+
+  @override
+  String get driverVehiclesSectionLabel => 'વાહન વિગતો';
+
+  @override
+  String get driverFleetOverviewTitle => 'ફ્લીટ ઓવરવ્યૂ';
+
+  @override
+  String get driverFleetTotalActive => 'કુલ સક્રિય';
+
+  @override
+  String get driverFleetInTransit => 'ટ્રાન્ઝિટમાં';
+
+  @override
+  String get driverVehicleCapacityLabel => 'ક્ષમતા';
+
+  @override
+  String get driverVehicleDetailsTitle => 'વાહન વિગતો';
+
+  @override
+  String get driverEditVehicle => 'વાહન સંપાદિત કરો';
+
+  @override
+  String get driverEditVehicleTitle => 'વાહન વિગતો સંપાદિત કરો';
+
+  @override
+  String get driverVehicleLoadFailed => 'વાહન વિગતો લોડ થઈ શકી નહીં.';
+
+  @override
+  String get driverPhoneCopied => 'ફોન નંબર કોપી થયો';
+
+  @override
+  String get driverVehicleSpecifications => 'સ્પેસિફિકેશન્સ';
+
+  @override
+  String get driverVehicleTypeLabel => 'વાહન પ્રકાર';
+
+  @override
+  String get driverVehicleRegistrationLabel => 'નોંધણી નંબર';
+
+  @override
+  String get driverAddVehicleTitle => 'વાહન વિગતો ઉમેરો';
+
+  @override
+  String get driverTechnicalSpecifications => 'ટેકનિકલ સ્પેસિફિકેશન્સ';
+
+  @override
+  String get driverVerificationSection => 'ડ્રાઇવર ચકાસણી';
+
+  @override
+  String get driverLicenseUploadTitle => 'ડ્રાઇવિંગ લાઇસન્સ (આગળ અને પાછળ)';
+
+  @override
+  String get driverLicenseFront => 'આગળ';
+
+  @override
+  String get driverLicenseBack => 'પાછળ';
+
+  @override
+  String get driverProfilePhotoTitle => 'પ્રોફાઇલ ફોટો';
+
+  @override
+  String get driverProfilePhotoHint => 'સ્પષ્ટ સેલ્ફી અપલોડ કરો';
+
+  @override
+  String get driverProfilePhotoBody =>
+      'ચકાસણી માટે ચહેરો ધૂપના ચશ્મા અથવા ટોપી વગર દેખાવો જોઈએ.';
+
+  @override
+  String get driverPrimaryFleetBadge => 'પ્રાથમિક ફ્લીટ';
+
+  @override
+  String get driverAddVehicle => 'વાહન ઉમેરો';
+
+  @override
+  String get driverUpdateVehicle => 'વાહન અપડેટ કરો';
+
+  @override
+  String get driverVehicleAdded => 'વાહન સફળતાપૂર્વક ઉમેરાયું';
+
+  @override
+  String get driverVehicleUpdated => 'વાહન સફળતાપૂર્વક અપડેટ થયું';
 
   @override
   String get profileManageSubscription => 'સબ્સ્ક્રિપ્શન મેનેજ કરો';

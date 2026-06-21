@@ -1,5 +1,6 @@
 import '../entities/shipment.dart';
 import '../models/customer_shipment_detail.dart';
+import '../models/driver_shipment_detail.dart';
 import '../models/shipment_form_prefill.dart';
 import '../models/shipment_submit_options.dart';
 
@@ -55,11 +56,16 @@ abstract class IShipmentRepository {
   /// Filtered server-side by vehicle type and location radius.
   Future<List<Shipment>> getPendingRequests({String? driverId});
 
-  /// Submits the driver's interest in a shipment with an optional
-  /// custom [quotedPrice]. Idempotent — re-submitting is a no-op.
-  Future<void> expressInterest({
+  /// Loads driver shipment detail (`GET /api/driver/shipments/{id}`).
+  Future<DriverShipmentDetail> getDriverShipmentDetail(String id);
+
+  /// Submits the driver's interest in a shipment.
+  /// Returns `true` when the API succeeds.
+  Future<bool> expressInterest({
     required String shipmentId,
     required String driverId,
-    double? quotedPrice,
+    required int vehicleId,
+    required double offeredPrice,
+    required String note,
   });
 }

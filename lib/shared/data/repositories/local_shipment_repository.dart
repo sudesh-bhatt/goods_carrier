@@ -4,6 +4,7 @@ import '../../../core/dummy/dummy_shipments.dart';
 import '../../domain/entities/shipment.dart';
 import '../../domain/enums/shipment_status.dart';
 import '../../domain/models/customer_shipment_detail.dart';
+import '../../domain/models/driver_shipment_detail.dart';
 import '../../domain/models/shipment_form_prefill.dart';
 import '../../domain/models/shipment_submit_options.dart';
 import '../../domain/repositories/i_shipment_repository.dart';
@@ -182,15 +183,27 @@ class LocalShipmentRepository implements IShipmentRepository {
   }
 
   @override
-  Future<void> expressInterest({
+  Future<DriverShipmentDetail> getDriverShipmentDetail(String id) async {
+    final shipment = await getShipment(id);
+    return DriverShipmentDetail(
+      shipment: shipment,
+      matchesDriverVehicle: true,
+      vehicleCapacityLabel: shipment.vehicleType.capacityDisplay,
+    );
+  }
+
+  @override
+  Future<bool> expressInterest({
     required String shipmentId,
     required String driverId,
-    double? quotedPrice,
+    required int vehicleId,
+    required double offeredPrice,
+    required String note,
   }) async {
     await _ensureLoaded();
     await _delay();
     final idx = _shipments.indexWhere((s) => s.id == shipmentId);
-    if (idx == -1) return;
+    if (idx == -1) return false;
     final current = _shipments[idx];
     if (!current.interestedDriverIds.contains(driverId)) {
       _shipments[idx] = current.copyWith(
@@ -201,5 +214,6 @@ class LocalShipmentRepository implements IShipmentRepository {
         await _persistUserShipments();
       }
     }
+    return true;
   }
 }

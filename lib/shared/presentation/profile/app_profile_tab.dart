@@ -124,7 +124,7 @@ class _AppProfileTabState extends ConsumerState<AppProfileTab>
           icon: Icons.directions_car_outlined,
           title: l10n.profileVehicleManagement,
           subtitle: l10n.profileVehicleManagementSub,
-          onTap: () => _showComingSoon(context),
+          onTap: () => context.push(AppRoutes.driverVehicles),
         ),
         AppProfileMenuRow(
           icon: Icons.card_membership_outlined,

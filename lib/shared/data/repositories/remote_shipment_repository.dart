@@ -8,6 +8,7 @@ import '../../../core/network/api_constants.dart';
 import '../../../core/network/api_envelope.dart';
 import '../../domain/entities/shipment.dart';
 import '../../domain/models/customer_shipment_detail.dart';
+import '../../domain/models/driver_shipment_detail.dart';
 import '../../domain/models/shipment_form_prefill.dart';
 import '../../domain/models/shipment_submit_options.dart';
 import '../../domain/repositories/i_shipment_repository.dart';
@@ -111,26 +112,36 @@ class RemoteShipmentRepository implements IShipmentRepository {
 
   @override
   Future<List<Shipment>> getPendingRequests({String? driverId}) async {
-    final response = await _dio.get(
-      ApiConstants.driverRequests,
-      queryParameters: (driverId != null) ? {'driver_id': driverId} : null,
+    final response = await _dio.get<Map<String, dynamic>>(
+      ApiConstants.driverDashboard,
     );
-    return _parseList(response.data['data']);
+    final items = ApiEnvelope.parsePaginatedData(response.data).items;
+    return items.map(Shipment.fromJson).toList();
   }
 
   @override
-  Future<void> expressInterest({
+  Future<DriverShipmentDetail> getDriverShipmentDetail(String id) {
+    throw UnsupportedError('Use DriverDashboardApiClient.getShipmentDetail');
+  }
+
+  @override
+  Future<bool> expressInterest({
     required String shipmentId,
     required String driverId,
-    double? quotedPrice,
-  }) =>
-      _dio.post(
-        ApiConstants.expressInterest(shipmentId),
-        data: {
-          'driver_id': driverId,
-          if (quotedPrice != null) 'quoted_price': quotedPrice,
-        },
-      );
+    required int vehicleId,
+    required double offeredPrice,
+    required String note,
+  }) async {
+    await _dio.post(
+      ApiConstants.driverShipmentRequest(shipmentId),
+      data: {
+        'vehicle_id': vehicleId,
+        'offered_price': offeredPrice,
+        'note': note,
+      },
+    );
+    return true;
+  }
 
   List<Shipment> _parseList(dynamic data) => (data as List<dynamic>)
       .map((e) => Shipment.fromJson(e as Map<String, dynamic>))

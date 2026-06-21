@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/router/app_routes.dart';
-import '../../../../shared/presentation/widgets/navigation/confirmation_bottom_sheet.dart';
 import '../providers/driver_trips_provider.dart';
 import '../widgets/driver_trips_empty_view.dart';
 import '../widgets/my_trips/driver_my_trip_card.dart';
@@ -24,18 +23,12 @@ class _DriverMyTripsTabState extends ConsumerState<DriverMyTripsTab>
   @override
   bool get wantKeepAlive => true;
 
-  Future<void> _confirmDelete(BuildContext context, String tripId) async {
-    final l10n = context.l10n;
-    final confirmed = await ConfirmationBottomSheet.show(
-      context,
-      title: l10n.driverDeleteTripTitle,
-      body: l10n.driverDeleteTripBody,
-      confirmLabel: l10n.actionDelete,
-      isDangerous: true,
-    );
-    if (confirmed == true && context.mounted) {
-      await ref.read(driverTripsProvider.notifier).cancelTrip(tripId);
-    }
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(driverTripsProvider.notifier).loadForTab();
+    });
   }
 
   @override
@@ -72,7 +65,7 @@ class _DriverMyTripsTabState extends ConsumerState<DriverMyTripsTab>
               onViewRequests: () =>
                   context.push(AppRoutes.driverTripDetailOf(trip.id)),
               onEdit: () => context.push(AppRoutes.editTripOf(trip.id)),
-              onDelete: () => _confirmDelete(context, trip.id),
+              onDelete: () => context.push(AppRoutes.cancelTripOf(trip.id)),
             );
           },
         ),

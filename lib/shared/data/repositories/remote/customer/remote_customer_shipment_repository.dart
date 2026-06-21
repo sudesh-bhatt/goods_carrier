@@ -1,23 +1,24 @@
 import '../../../api/customer/customer_shipment_api_client.dart';
+import '../../../api/driver/driver_dashboard_api_client.dart';
 import '../../../../domain/entities/shipment.dart';
 import '../../../../domain/models/customer_shipment_detail.dart';
+import '../../../../domain/models/driver_shipment_detail.dart';
 import '../../../../domain/models/shipment_form_prefill.dart';
 import '../../../../domain/models/shipment_submit_options.dart';
 import '../../../../domain/repositories/i_shipment_repository.dart';
-import '../../local_shipment_repository.dart';
 
 /// Remote customer shipment operations aligned with Postman collection.
 ///
-/// Driver-side methods delegate to [LocalShipmentRepository] until Phase 3.
+/// Driver-side methods use [DriverDashboardApiClient].
 class RemoteCustomerShipmentRepository implements IShipmentRepository {
   RemoteCustomerShipmentRepository({
     required CustomerShipmentApiClient apiClient,
-    required LocalShipmentRepository driverFallback,
+    required DriverDashboardApiClient driverDashboardApi,
   })  : _api = apiClient,
-        _driverFallback = driverFallback;
+        _driverDashboardApi = driverDashboardApi;
 
   final CustomerShipmentApiClient _api;
-  final LocalShipmentRepository _driverFallback;
+  final DriverDashboardApiClient _driverDashboardApi;
 
   // ── Customer operations ──────────────────────────────────────────────────
 
@@ -82,21 +83,32 @@ class RemoteCustomerShipmentRepository implements IShipmentRepository {
     );
   }
 
-  // ── Driver operations (Phase 3) ──────────────────────────────────────────
+  // ── Driver operations ────────────────────────────────────────────────────
 
   @override
-  Future<List<Shipment>> getPendingRequests({String? driverId}) =>
-      _driverFallback.getPendingRequests(driverId: driverId);
+  Future<List<Shipment>> getPendingRequests({String? driverId}) async {
+    final result = await _driverDashboardApi.fetchDashboard();
+    return result.items;
+  }
 
   @override
-  Future<void> expressInterest({
+  Future<DriverShipmentDetail> getDriverShipmentDetail(String id) =>
+      _driverDashboardApi.getShipmentDetail(id);
+
+  @override
+  Future<bool> expressInterest({
     required String shipmentId,
     required String driverId,
-    double? quotedPrice,
-  }) =>
-      _driverFallback.expressInterest(
-        shipmentId: shipmentId,
-        driverId: driverId,
-        quotedPrice: quotedPrice,
-      );
+    required int vehicleId,
+    required double offeredPrice,
+    required String note,
+  }) async {
+    await _driverDashboardApi.expressInterest(
+      shipmentId,
+      vehicleId: vehicleId,
+      offeredPrice: offeredPrice,
+      note: note,
+    );
+    return true;
+  }
 }

@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/extensions/size_ext.dart';
 import '../../../core/extensions/theme_ext.dart';
 import '../../../core/router/app_routes.dart';
+import '../../../core/config/env_config.dart';
 import '../../../features/auth/presentation/providers/auth_provider.dart';
 import '../../../features/customer/presentation/providers/customer_notifications_provider.dart';
 import '../../../features/customer/presentation/providers/customer_shipments_provider.dart';
@@ -13,6 +14,7 @@ import '../../../features/customer/presentation/widgets/customer_light_chrome.da
 import '../../../features/customer/presentation/widgets/customer_main_header.dart';
 import '../../../features/driver/presentation/providers/driver_notifications_provider.dart';
 import '../../../features/driver/presentation/providers/driver_shipment_requests_provider.dart';
+import '../../../features/driver/presentation/providers/driver_trips_provider.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../domain/enums/user_role.dart';
 import '../widgets/navigation/app_bottom_nav_bar.dart';
@@ -43,6 +45,15 @@ class AppMainShellScreen extends ConsumerWidget {
     );
     if (role == UserRole.customer && tab == AppMainTab.listings) {
       ref.read(customerShipmentsProvider.notifier).loadForTab();
+    }
+    if (role == UserRole.driver) {
+      if (tab == AppMainTab.listings) {
+        ref.read(driverTripsProvider.notifier).loadForTab();
+      } else if (tab == AppMainTab.home) {
+        ref.read(driverShipmentRequestsProvider.notifier).loadForTab();
+      } else if (tab == AppMainTab.profile && EnvConfig.useRemoteApi) {
+        ref.read(authProvider.notifier).refreshDriverProfile();
+      }
     }
   }
 

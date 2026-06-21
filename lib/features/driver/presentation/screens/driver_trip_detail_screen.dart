@@ -3,11 +3,17 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/dummy/dummy_trips.dart';
+import '../../../../core/config/env_config.dart';
 import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
+import '../../../../core/mixins/safe_set_state_mixin.dart';
+import '../../../../core/network/api_exception_mapper.dart';
+import '../../../../core/providers/repository_providers.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../res/font_res.dart';
+import '../../../../shared/domain/enums/trip_status.dart';
+import '../../../../shared/domain/models/driver_trip_detail.dart';
+import '../../../../shared/presentation/widgets/feedback/empty_state.dart';
 import '../../../../shared/presentation/widgets/feedback/error_view.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
 import '../../../customer/presentation/widgets/customer_light_chrome.dart';
@@ -17,24 +23,142 @@ import '../widgets/my_trips/driver_trip_interest_customer_card.dart';
 import '../widgets/my_trips/driver_my_trip_tokens.dart';
 
 /// Driver-owned trip detail — Figma `1:4180`.
-class DriverTripDetailScreen extends ConsumerWidget {
+class DriverTripDetailScreen extends ConsumerStatefulWidget {
   const DriverTripDetailScreen({super.key, required this.tripId});
 
   final String tripId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = context.l10n;
-    final trip = ref.watch(driverTripsProvider).byId(tripId);
+  ConsumerState<DriverTripDetailScreen> createState() =>
+      _DriverTripDetailScreenState();
+}
 
-    if (trip == null) {
+class _DriverTripDetailScreenState extends ConsumerState<DriverTripDetailScreen>
+    with SafeSetStateMixin {
+  DriverTripDetail? _detail;
+  bool _isLoading = false;
+  String? _loadError;
+  final Set<String> _actionRequestIds = {};
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadDetail());
+  }
+
+  Future<void> _loadDetail() async {
+    final cached = ref.read(driverTripsProvider.notifier).byId(widget.tripId);
+    if (cached != null) {
+      safeSetState(() {
+        _detail = DriverTripDetail(trip: cached);
+      });
+    }
+
+    safeSetState(() {
+      _isLoading = cached == null || EnvConfig.useRemoteApi;
+      _loadError = null;
+    });
+
+    try {
+      final apiId = ref
+          .read(driverTripsProvider.notifier)
+          .apiResourceIdFor(widget.tripId);
+      final fetched =
+          await ref.read(tripRepositoryProvider).getTripDetail(apiId);
+      if (!mounted) return;
+      safeSetState(() {
+        _detail = fetched;
+        _isLoading = false;
+      });
+      ref.read(driverTripsProvider.notifier).upsertTrip(fetched.trip);
+    } catch (e) {
+      if (!mounted) return;
+      safeSetState(() {
+        _isLoading = false;
+        _loadError = _detail == null ? ApiExceptionMapper.userMessage(e) : null;
+      });
+    }
+  }
+
+  Future<void> _handleAccept(DriverTripRequest request) async {
+    if (_actionRequestIds.contains(request.id)) return;
+    safeSetState(() => _actionRequestIds.add(request.id));
+    final tripApiId = ref
+        .read(driverTripsProvider.notifier)
+        .apiResourceIdFor(widget.tripId);
+    final ok = await ref.read(driverTripsProvider.notifier).acceptTripRequest(
+          tripId: tripApiId,
+          requestId: request.id,
+        );
+    if (!mounted) return;
+    safeSetState(() => _actionRequestIds.remove(request.id));
+    if (!ok) {
+      final error = ref.read(driverTripsProvider).error;
+      if (error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error)),
+        );
+      }
+      return;
+    }
+    await _loadDetail();
+  }
+
+  Future<void> _handleReject(DriverTripRequest request) async {
+    if (_actionRequestIds.contains(request.id)) return;
+    safeSetState(() => _actionRequestIds.add(request.id));
+    final tripApiId = ref
+        .read(driverTripsProvider.notifier)
+        .apiResourceIdFor(widget.tripId);
+    final ok = await ref.read(driverTripsProvider.notifier).rejectTripRequest(
+          tripId: tripApiId,
+          requestId: request.id,
+        );
+    if (!mounted) return;
+    safeSetState(() => _actionRequestIds.remove(request.id));
+    if (!ok) {
+      final error = ref.read(driverTripsProvider).error;
+      if (error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error)),
+        );
+      }
+      return;
+    }
+    await _loadDetail();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final detail = _detail;
+
+    if (_isLoading && detail == null) {
       return CustomerLightChrome(
         child: Scaffold(
           appBar: FlowScreenAppBar(title: l10n.driverTripDetailsTitle),
-          body: const ErrorView(message: 'Trip not found.'),
+          body: const Center(child: CircularProgressIndicator()),
         ),
       );
     }
+
+    if (detail == null) {
+      return CustomerLightChrome(
+        child: Scaffold(
+          appBar: FlowScreenAppBar(title: l10n.driverTripDetailsTitle),
+          body: ErrorView(
+            message: _loadError ?? 'Trip not found.',
+            onRetry: _loadDetail,
+          ),
+        ),
+      );
+    }
+
+    final trip = detail.trip;
+    final pendingRequests =
+        detail.requests.where((request) => request.isPending).toList();
+    final canCancel = trip.status != TripStatus.cancelled &&
+        trip.status != TripStatus.completed;
 
     return CustomerLightChrome(
       child: Scaffold(
@@ -54,39 +178,60 @@ class DriverTripDetailScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       DriverTripDetailCard(trip: trip),
-                      SizedBox(height: 30.h),
-                      ...DummyTrips.interestedCustomers.map(
-                        (name) => Padding(
-                          padding: EdgeInsets.only(bottom: 10.h),
-                          child: DriverTripInterestCustomerCard(
-                            name: name,
-                            onWhatsApp: () {},
-                            onCall: () {},
+                      if (_loadError != null) ...[
+                        SizedBox(height: 12.h),
+                        Text(
+                          _loadError!,
+                          style: TextStyle(
+                            fontFamily: FontRes.MANROPE_REGULAR,
+                            fontSize: 13.sp,
+                            color: DriverMyTripTokens.cancelText,
                           ),
                         ),
-                      ),
+                      ],
+                      SizedBox(height: 30.h),
+                      if (pendingRequests.isEmpty)
+                        EmptyState(
+                          headline: l10n.driverTripNoRequestsTitle,
+                          subtitle: l10n.driverTripNoRequestsMessage,
+                        )
+                      else
+                        ...pendingRequests.map(
+                          (request) => Padding(
+                            padding: EdgeInsets.only(bottom: 10.h),
+                            child: DriverTripInterestCustomerCard(
+                              name: request.customerName,
+                              phone: request.phone,
+                              showActions: true,
+                              isBusy: _actionRequestIds.contains(request.id),
+                              onAccept: () => _handleAccept(request),
+                              onReject: () => _handleReject(request),
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(24.w, 8.h, 24.w, 16.h),
-                child: TextButton(
-                  onPressed: () {
-                    HapticFeedback.lightImpact();
-                    context.push(AppRoutes.cancelTripOf(trip.id));
-                  },
-                  child: Text(
-                    l10n.driverCancelTrip,
-                    style: TextStyle(
-                      fontFamily: FontRes.MANROPE_BOLD,
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w700,
-                      color: DriverMyTripTokens.cancelText,
+              if (canCancel)
+                Padding(
+                  padding: EdgeInsets.fromLTRB(24.w, 8.h, 24.w, 16.h),
+                  child: TextButton(
+                    onPressed: () {
+                      HapticFeedback.lightImpact();
+                      context.push(AppRoutes.cancelTripOf(trip.id));
+                    },
+                    child: Text(
+                      l10n.driverCancelTrip,
+                      style: TextStyle(
+                        fontFamily: FontRes.MANROPE_BOLD,
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w700,
+                        color: DriverMyTripTokens.cancelText,
+                      ),
                     ),
                   ),
                 ),
-              ),
             ],
           ),
         ),

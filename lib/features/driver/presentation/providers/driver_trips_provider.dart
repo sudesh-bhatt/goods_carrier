@@ -1,10 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/id_prefixes.dart';
+import '../../../../core/network/api_exception_mapper.dart';
 import '../../../../core/providers/repository_providers.dart';
+import '../../../../shared/data/api/driver/trip_api_mapper.dart';
 import '../../../../shared/domain/entities/driver_trip.dart';
+import '../../../../shared/domain/enums/session_phase.dart';
 import '../../../../shared/domain/enums/trip_status.dart';
 import '../../../../shared/domain/enums/vehicle_type.dart';
+import '../../../../shared/domain/models/trip_submit_options.dart';
 import '../../../../shared/domain/repositories/i_trip_repository.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 
@@ -18,35 +22,49 @@ class DriverTripsState {
   });
 
   final List<DriverTrip> trips;
-  final bool             isLoading;
-  final String?          error;
+  final bool isLoading;
+  final String? error;
 
   DriverTripsState copyWith({
     List<DriverTrip>? trips,
-    bool?             isLoading,
-    String?           error,
+    bool? isLoading,
+    String? error,
   }) =>
       DriverTripsState(
-        trips:     trips     ?? this.trips,
+        trips: trips ?? this.trips,
         isLoading: isLoading ?? this.isLoading,
-        error:     error,
+        error: error,
       );
 
-  /// All trips for My Trips tab (excludes cancelled).
-  List<DriverTrip> get myTripsList => trips
-      .where((t) => t.status != TripStatus.cancelled)
+  List<DriverTrip> get myTripsList =>
+      trips.where((t) => t.status != TripStatus.cancelled).toList();
+
+  List<DriverTrip> get active => trips
+      .where(
+        (t) =>
+            t.status == TripStatus.active ||
+            t.status == TripStatus.confirmed,
+      )
       .toList();
 
-  List<DriverTrip> get active    => trips.where((t) =>
-      t.status == TripStatus.active || t.status == TripStatus.confirmed).toList();
-  List<DriverTrip> get pending   => trips.where((t) =>
-      t.status == TripStatus.pendingConfirmation).toList();
-  List<DriverTrip> get completed => trips.where((t) =>
-      t.status == TripStatus.completed).toList();
-  List<DriverTrip> get history   => trips.where((t) =>
-      t.status == TripStatus.completed || t.status == TripStatus.cancelled).toList();
+  List<DriverTrip> get pending => trips
+      .where((t) => t.status == TripStatus.pendingConfirmation)
+      .toList();
 
-  DriverTrip? byId(String id) => trips.where((t) => t.id == id).firstOrNull;
+  List<DriverTrip> get completed =>
+      trips.where((t) => t.status == TripStatus.completed).toList();
+
+  List<DriverTrip> get history => trips
+      .where(
+        (t) =>
+            t.status == TripStatus.completed ||
+            t.status == TripStatus.cancelled,
+      )
+      .toList();
+
+  DriverTrip? byId(String id) => trips
+      .where((t) => t.id == id || t.apiId == id || t.apiResourceId == id)
+      .firstOrNull;
 }
 
 // ─── Notifier ─────────────────────────────────────────────────────────────────
@@ -54,104 +72,224 @@ class DriverTripsState {
 class DriverTripsNotifier extends StateNotifier<DriverTripsState> {
   DriverTripsNotifier(this._repo, this._ref)
       : super(const DriverTripsState(trips: [])) {
-    _load();
+    _listenAuth();
+    _loadIfReady();
   }
 
   final ITripRepository _repo;
-  final Ref             _ref;
+  final Ref _ref;
+  bool _hasLoadedOnce = false;
 
-  // ── Private helpers ────────────────────────────────────────────────────────
+  String get _driverId => _ref.read(authProvider).user?.id ?? '';
 
-  /// Fetches the authenticated driver's trips from the repository.
-  ///
-  /// In Local mode returns [DummyTrips.myTrips] after a 400 ms delay.
-  /// In Remote mode makes an authenticated GET request.
-  Future<void> _load() async {
-    state = state.copyWith(isLoading: true);
+  void _listenAuth() {
+    _ref.listen<AuthState>(authProvider, (previous, next) {
+      final id = next.user?.id;
+      if (id == null || id.isEmpty) return;
+      if (next.sessionPhase != SessionPhase.authenticated) return;
+
+      final userChanged = id != previous?.user?.id;
+      final becameAuthenticated =
+          previous?.sessionPhase != SessionPhase.authenticated;
+      if (!_hasLoadedOnce || userChanged || becameAuthenticated) {
+        _load(driverId: id);
+      }
+    });
+  }
+
+  void _loadIfReady() {
+    final auth = _ref.read(authProvider);
+    final id = auth.user?.id;
+    if (id == null ||
+        id.isEmpty ||
+        auth.sessionPhase != SessionPhase.authenticated) {
+      return;
+    }
+    _load(driverId: id);
+  }
+
+  /// Called when the My Trips tab becomes visible.
+  Future<void> loadForTab() async {
+    final auth = _ref.read(authProvider);
+    final id = auth.user?.id;
+    if (id == null ||
+        id.isEmpty ||
+        auth.sessionPhase != SessionPhase.authenticated) {
+      return;
+    }
+    await _load(
+      driverId: id,
+      showLoadingIndicator: state.trips.isEmpty,
+    );
+  }
+
+  Future<void> _load({
+    String? driverId,
+    bool showLoadingIndicator = true,
+  }) async {
+    final id = driverId ?? _driverId;
+    if (id.isEmpty) {
+      state = state.copyWith(isLoading: false, trips: []);
+      return;
+    }
+    if (showLoadingIndicator) {
+      state = state.copyWith(isLoading: true, error: null);
+    } else {
+      state = state.copyWith(error: null);
+    }
     try {
-      final driverId = _ref.read(authProvider).user?.id ?? 'USR-DUMMY';
-      final trips    = await _repo.getDriverTrips(driverId);
+      final trips = await _repo.getDriverTrips(id);
+      _hasLoadedOnce = true;
       state = state.copyWith(isLoading: false, trips: trips);
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(
+        isLoading: false,
+        error: ApiExceptionMapper.userMessage(e),
+      );
     }
   }
 
-  // ── Public API ─────────────────────────────────────────────────────────────
+  Future<void> refresh() => _load(showLoadingIndicator: false);
 
-  /// Pull-to-refresh.
-  Future<void> refresh() => _load();
+  String apiResourceIdFor(String id) => byId(id)?.apiResourceId ?? id;
 
-  /// Post a new available trip with an optimistic insert.
-  ///
-  /// The trip is prepended to the list immediately so the UI feels instant.
-  /// On success the server-echoed entity (with the canonical VB-XXXX id)
-  /// replaces the optimistic one.  On failure the optimistic entry is removed
-  /// and [error] is surfaced.
-  Future<void> postTrip({
-    required String      fromCity,
-    required String      toCity,
-    required DateTime    estimatedStartDate,
-    required DateTime    estimatedEndDate,
-    required VehicleType vehicleType,
-    required String      vehicleNumber,
-    required double      loadCapacityTons,
-    required double      estimatedPrice,
-    String?              driverName,
+  DriverTrip? byId(String id) => state.byId(id);
+
+  void upsertTrip(DriverTrip trip) {
+    final index = state.trips.indexWhere(
+      (t) =>
+          t.id == trip.id ||
+          (t.apiId != null &&
+              (t.apiId == trip.apiId || t.apiId == trip.id)),
+    );
+    if (index < 0) return;
+    final updated = [...state.trips];
+    updated[index] = trip;
+    state = state.copyWith(trips: updated);
+  }
+
+  Future<bool> acceptTripRequest({
+    required String tripId,
+    required String requestId,
   }) async {
-    final user  = _ref.read(authProvider).user!;
-    final now   = DateTime.now();
-    final tempId = '${IdPrefixes.driverTrip}${now.millisecondsSinceEpoch % 9000 + 1000}';
+    state = state.copyWith(error: null);
+    try {
+      await _repo.acceptTripRequest(tripId: tripId, requestId: requestId);
+      return true;
+    } catch (e) {
+      state = state.copyWith(error: ApiExceptionMapper.userMessage(e));
+      return false;
+    }
+  }
+
+  Future<bool> rejectTripRequest({
+    required String tripId,
+    required String requestId,
+  }) async {
+    state = state.copyWith(error: null);
+    try {
+      await _repo.rejectTripRequest(tripId: tripId, requestId: requestId);
+      return true;
+    } catch (e) {
+      state = state.copyWith(error: ApiExceptionMapper.userMessage(e));
+      return false;
+    }
+  }
+
+  TripSubmitOptions _buildSubmitOptions({
+    required VehicleType vehicleType,
+    required double loadCapacityTons,
+    required String fromCity,
+    required String toCity,
+    String? driverPhone,
+  }) =>
+      TripSubmitOptions(
+        vehicleTypeId: TripApiMapper.defaultVehicleTypeId(vehicleType),
+        capacity: loadCapacityTons,
+        capacityUnit: TripSubmitOptions.apiCapacityUnit('Ton'),
+        driverPhone: driverPhone,
+        fromAddress: fromCity,
+        toAddress: toCity,
+      );
+
+  Future<void> postTrip({
+    required String fromCity,
+    required String toCity,
+    required DateTime estimatedStartDate,
+    required DateTime estimatedEndDate,
+    required VehicleType vehicleType,
+    required String vehicleNumber,
+    required double loadCapacityTons,
+    required double estimatedPrice,
+    String? driverName,
+    String? driverPhone,
+  }) async {
+    final user = _ref.read(authProvider).user!;
+    final now = DateTime.now();
+    final tempId =
+        '${IdPrefixes.driverTrip}${now.millisecondsSinceEpoch % 9000 + 1000}';
 
     final optimistic = DriverTrip(
-      id:                 tempId,
-      driverId:           user.id,
-      driverName:         driverName ?? user.name,
-      fromCity:           fromCity,
-      toCity:             toCity,
+      id: tempId,
+      driverId: user.id,
+      driverName: driverName ?? user.name,
+      fromCity: fromCity,
+      toCity: toCity,
       estimatedStartDate: estimatedStartDate,
-      estimatedEndDate:   estimatedEndDate,
-      vehicleCategory:    vehicleType,
-      vehicleNumber:      vehicleNumber,
-      loadCapacityTons:   loadCapacityTons,
-      estimatedPrice:     estimatedPrice,
-      status:             TripStatus.active,
+      estimatedEndDate: estimatedEndDate,
+      vehicleCategory: vehicleType,
+      vehicleNumber: vehicleNumber,
+      loadCapacityTons: loadCapacityTons,
+      estimatedPrice: estimatedPrice,
+      status: TripStatus.active,
     );
 
-    // Optimistic insert
+    final options = _buildSubmitOptions(
+      vehicleType: vehicleType,
+      loadCapacityTons: loadCapacityTons,
+      fromCity: fromCity,
+      toCity: toCity,
+      driverPhone: driverPhone,
+    );
+
     state = state.copyWith(
       isLoading: true,
       trips: [optimistic, ...state.trips],
     );
 
     try {
-      final saved = await _repo.postTrip(optimistic);
-      // Replace optimistic entry with server-echoed entity
+      final saved = await _repo.postTrip(optimistic, options: options);
       state = state.copyWith(
         isLoading: false,
-        trips: state.trips
-            .map((t) => t.id == tempId ? saved : t)
-            .toList(),
+        trips: state.trips.map((t) => t.id == tempId ? saved : t).toList(),
       );
     } catch (e) {
-      // Roll back optimistic insert
       state = state.copyWith(
         isLoading: false,
         trips: state.trips.where((t) => t.id != tempId).toList(),
-        error: e.toString(),
+        error: ApiExceptionMapper.userMessage(e),
       );
     }
   }
 
-  /// Updates an existing trip — optimistic replace with rollback on error.
-  Future<void> updateTrip(DriverTrip updated) async {
+  Future<void> updateTrip(
+    DriverTrip updated, {
+    String? driverPhone,
+  }) async {
     final prev = state.trips;
     state = state.copyWith(
       isLoading: true,
       trips: prev.map((t) => t.id == updated.id ? updated : t).toList(),
     );
     try {
-      final saved = await _repo.updateTrip(updated);
+      final options = _buildSubmitOptions(
+        vehicleType: updated.vehicleCategory,
+        loadCapacityTons: updated.loadCapacityTons,
+        fromCity: updated.fromCity,
+        toCity: updated.toCity,
+        driverPhone: driverPhone,
+      );
+      final saved = await _repo.updateTrip(updated, options: options);
       state = state.copyWith(
         isLoading: false,
         trips: state.trips.map((t) => t.id == saved.id ? saved : t).toList(),
@@ -160,23 +298,37 @@ class DriverTripsNotifier extends StateNotifier<DriverTripsState> {
       state = state.copyWith(
         isLoading: false,
         trips: prev,
-        error: e.toString(),
+        error: ApiExceptionMapper.userMessage(e),
       );
     }
   }
 
-  /// Cancel a trip — optimistic update with rollback on error.
-  Future<void> cancelTrip(String id) async {
-    final prev = state.trips;
-    state = state.copyWith(
-      trips: prev.map((t) {
-        return t.id == id ? t.copyWith(status: TripStatus.cancelled) : t;
-      }).toList(),
-    );
+  /// Cancel a trip after the API succeeds.
+  /// Returns the server-updated trip, or `null` when the request fails.
+  Future<DriverTrip?> cancelTrip(
+    String id, {
+    required String reason,
+    String? otherReason,
+  }) async {
+    state = state.copyWith(error: null);
     try {
-      await _repo.cancelTrip(id);
+      final updated = await _repo.cancelTrip(
+        apiResourceIdFor(id),
+        reason: reason,
+        otherReason: otherReason,
+      );
+      state = state.copyWith(
+        trips: state.trips
+            .where(
+              (t) =>
+                  t.id != id && t.apiId != id && t.apiResourceId != id,
+            )
+            .toList(),
+      );
+      return updated;
     } catch (e) {
-      state = state.copyWith(trips: prev, error: e.toString());
+      state = state.copyWith(error: ApiExceptionMapper.userMessage(e));
+      return null;
     }
   }
 }

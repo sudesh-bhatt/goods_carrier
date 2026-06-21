@@ -34,6 +34,14 @@ class _DriverHomeTabState extends ConsumerState<DriverHomeTab>
   bool get wantKeepAlive => true;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(driverShipmentRequestsProvider.notifier).loadForTab();
+    });
+  }
+
+  @override
   void dispose() {
     _searchCtrl.dispose();
     super.dispose();

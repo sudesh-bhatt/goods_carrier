@@ -35,10 +35,14 @@ import '../../features/customer/presentation/tabs/customer_home_tab.dart';
 import '../../features/customer/presentation/tabs/customer_notifications_tab.dart';
 import '../../features/customer/presentation/tabs/customer_profile_tab.dart';
 import '../../features/customer/presentation/tabs/customer_shipments_tab.dart';
+import '../../features/driver/presentation/screens/driver_add_vehicle_screen.dart';
 import '../../features/driver/presentation/screens/driver_earnings_screen.dart';
+import '../../features/driver/presentation/screens/driver_vehicle_detail_screen.dart';
+import '../../features/driver/presentation/screens/driver_vehicles_screen.dart';
 import '../../shared/domain/enums/user_role.dart';
 import '../../shared/presentation/screens/app_main_shell_screen.dart';
 import '../../shared/presentation/widgets/navigation/app_tab_slide_container.dart';
+import '../../features/driver/presentation/screens/driver_add_shipment_request_screen.dart';
 import '../../features/driver/presentation/screens/driver_interest_success_screen.dart';
 import '../../features/driver/presentation/models/driver_interest_success_args.dart';
 import '../../features/driver/presentation/screens/cancel_trip_screen.dart';
@@ -409,6 +413,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
+        path: AppRoutes.driverAddShipmentRequest,
+        builder: (_, state) => DriverAddShipmentRequestScreen(
+          shipmentId: state.pathParameters['id']!,
+        ),
+      ),
+      GoRoute(
         path: AppRoutes.driverShipmentDetail,
         builder: (_, state) => CustomerTripDetailScreen(
           shipmentId: state.pathParameters['id']!,
@@ -422,6 +432,26 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.driverEarnings,
         builder: (_, __) => const DriverEarningsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.driverVehicles,
+        builder: (_, __) => const DriverVehiclesScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.driverAddVehicle,
+        builder: (_, __) => const DriverAddVehicleScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.driverEditVehicle,
+        builder: (_, state) => DriverAddVehicleScreen(
+          vehicleId: int.tryParse(state.pathParameters['id'] ?? ''),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.driverVehicleDetail,
+        builder: (_, state) => DriverVehicleDetailScreen(
+          vehicleId: int.parse(state.pathParameters['id']!),
+        ),
       ),
     ],
 

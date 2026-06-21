@@ -2,6 +2,7 @@ import '../../../domain/entities/shipment.dart';
 import '../../../domain/enums/shipment_status.dart';
 import '../../../domain/enums/vehicle_type.dart';
 import '../../../domain/models/customer_shipment_detail.dart';
+import '../../../domain/models/driver_shipment_detail.dart';
 import '../../../domain/models/shipment_form_prefill.dart';
 import '../../../domain/models/shipment_submit_options.dart';
 
@@ -95,6 +96,44 @@ abstract final class ShipmentApiMapper {
     );
   }
 
+  static DriverShipmentDetail parseDriverDetail(
+    Map<String, dynamic> json, {
+    String fallbackCustomerId = '',
+  }) {
+    final shipment = fromJson(json, fallbackCustomerId: fallbackCustomerId);
+
+    final vehicleReq = json['vehicle_requirement'];
+    String? vehicleCapacityLabel;
+    bool? matchesDriverVehicle;
+    if (vehicleReq is Map<String, dynamic>) {
+      vehicleCapacityLabel = vehicleReq['capacity'] as String?;
+      matchesDriverVehicle = vehicleReq['matches_driver_vehicle'] as bool?;
+    }
+
+    final driverRequest = json['driver_request'];
+    var alreadyRequested = false;
+    String? driverRequestStatus;
+    if (driverRequest is Map<String, dynamic>) {
+      alreadyRequested = driverRequest['already_requested'] as bool? ?? false;
+      driverRequestStatus = driverRequest['status'] as String?;
+    }
+
+    final pickupLocation = json['pickup_location'];
+    String? pickupScheduleLabel;
+    if (pickupLocation is Map<String, dynamic>) {
+      pickupScheduleLabel = pickupLocation['time_label'] as String?;
+    }
+
+    return DriverShipmentDetail(
+      shipment: shipment,
+      alreadyRequested: alreadyRequested,
+      driverRequestStatus: driverRequestStatus,
+      matchesDriverVehicle: matchesDriverVehicle,
+      vehicleCapacityLabel: vehicleCapacityLabel,
+      pickupScheduleLabel: pickupScheduleLabel,
+    );
+  }
+
   static ShipmentFormPrefill parseFormPrefill(
     Map<String, dynamic> json, {
     String fallbackCustomerId = '',
@@ -166,20 +205,35 @@ abstract final class ShipmentApiMapper {
     );
   }
 
-  static ShipmentLocation _parsePickupLocation(Map<String, dynamic> source) =>
-      _parseEndpointLocation(
-        source,
-        addressKeys: ['from_address', 'pickup_address'],
-        cityKeys: ['from_city', 'pickup_city'],
-        latKeys: ['from_latitude', 'from_lat', 'pickup_latitude', 'pickup_lat'],
-        lngKeys: [
-          'from_longitude',
-          'from_lng',
-          'pickup_longitude',
-          'pickup_lng',
-        ],
-        nestedKey: 'pickup',
+  static ShipmentLocation _parsePickupLocation(Map<String, dynamic> source) {
+    final pickupLocation = source['pickup_location'];
+    if (pickupLocation is Map<String, dynamic>) {
+      final address = pickupLocation['address'] as String? ??
+          pickupLocation['full_address'] as String? ??
+          '';
+      final city = _firstString(source, ['from_city', 'pickup_city']);
+      return ShipmentLocation(
+        city: city.isNotEmpty ? city : address,
+        fullAddress: address.isNotEmpty
+            ? address
+            : _firstString(source, ['from_address', 'pickup_address']),
       );
+    }
+
+    return _parseEndpointLocation(
+      source,
+      addressKeys: ['from_address', 'pickup_address'],
+      cityKeys: ['from_city', 'pickup_city'],
+      latKeys: ['from_latitude', 'from_lat', 'pickup_latitude', 'pickup_lat'],
+      lngKeys: [
+        'from_longitude',
+        'from_lng',
+        'pickup_longitude',
+        'pickup_lng',
+      ],
+      nestedKey: 'pickup',
+    );
+  }
 
   static ShipmentLocation _parseDropLocation(Map<String, dynamic> source) =>
       _parseEndpointLocation(
@@ -245,6 +299,11 @@ abstract final class ShipmentApiMapper {
   }
 
   static VehicleType _parseVehicleType(Map<String, dynamic> source) {
+    final vehicleReq = source['vehicle_requirement'];
+    if (vehicleReq is Map<String, dynamic>) {
+      return VehicleType.fromApi(vehicleReq['vehicle_type'] as String?);
+    }
+
     final nested = source['vehicle_type'];
     if (nested is Map<String, dynamic>) {
       return VehicleType.fromApi(
@@ -271,11 +330,14 @@ abstract final class ShipmentApiMapper {
     if (nested is Map<String, dynamic>) {
       return GoodsDetail(
         type: _goodsTypeLabel(nested),
-        weightKg: _weightToKg(
-          _parseDouble(nested['estimated_weight'] ?? nested['weight_kg']),
-          nested['weight_unit'] as String?,
-        ),
-        isFragile: nested['is_fragile'] as bool? ?? false,
+        weightKg: _parseCapacityKg(nested['weight'] as String?) ??
+            _weightToKg(
+              _parseDouble(nested['estimated_weight'] ?? nested['weight_kg']),
+              nested['weight_unit'] as String?,
+            ),
+        isFragile: nested['is_fragile'] as bool? ??
+            nested['fragile_handling_required'] as bool? ??
+            false,
         specialInstructions: nested['additional_comments'] as String? ??
             nested['comments'] as String? ??
             nested['special_instructions'] as String?,

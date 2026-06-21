@@ -320,6 +320,10 @@ class _PostTripScreenState extends ConsumerState<PostTripScreen>
               estimatedPrice: price,
               driverName: driverName,
             ),
+            driverPhone: PhoneUtils.buildE164(
+              _dialCode,
+              _driverPhoneCtrl.text.trim(),
+            ),
           );
     } else {
       await ref.read(driverTripsProvider.notifier).postTrip(
@@ -332,6 +336,10 @@ class _PostTripScreenState extends ConsumerState<PostTripScreen>
             loadCapacityTons: loadCapacityTons,
             estimatedPrice: price,
             driverName: driverName,
+            driverPhone: PhoneUtils.buildE164(
+              _dialCode,
+              _driverPhoneCtrl.text.trim(),
+            ),
           );
     }
 

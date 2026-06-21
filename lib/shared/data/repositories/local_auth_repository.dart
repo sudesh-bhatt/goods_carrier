@@ -169,6 +169,17 @@ class LocalAuthRepository implements IAuthRepository {
   }
 
   @override
+  Future<User> getDriverProfile() async {
+    await _delay();
+    return createDriverProfile(
+      fullName: 'Local Driver',
+      city: 'Ahmedabad',
+      postalCode: '380001',
+      fullAddress: 'Local address',
+    );
+  }
+
+  @override
   Future<User> updateDriverProfile({
     required String fullName,
     required String city,

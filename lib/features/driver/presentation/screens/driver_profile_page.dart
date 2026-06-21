@@ -7,7 +7,9 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
+import '../../../../core/config/env_config.dart';
 import '../../../../core/mixins/safe_set_state_mixin.dart';
+import '../../../../core/utils/profile_image_utils.dart';
 import '../../../../core/utils/media_permission_helper.dart';
 import '../../../../core/utils/phone_utils.dart';
 import '../../../../core/utils/validators.dart';
@@ -61,10 +63,18 @@ class _DriverProfilePageState extends ConsumerState<DriverProfilePage>
     final auth = ref.read(authProvider);
     if (widget.isEditMode) {
       _loadUser(auth.user);
+      WidgetsBinding.instance.addPostFrameCallback((_) => _refreshProfile());
     } else {
       _applyPhone(auth.phoneNumber);
       _savedImagePath = auth.pendingProfileImageUrl;
     }
+  }
+
+  Future<void> _refreshProfile() async {
+    if (!EnvConfig.useRemoteApi) return;
+    final refreshed = await ref.read(authProvider.notifier).refreshDriverProfile();
+    if (!mounted || !refreshed) return;
+    _loadUser(ref.read(authProvider).user);
   }
 
   void _applyPhone(String? raw) {
@@ -179,7 +189,10 @@ class _DriverProfilePageState extends ConsumerState<DriverProfilePage>
   }
 
   String? _resolvedProfileImagePath() =>
-      _profileImage?.path ?? _savedImagePath;
+      ProfileImageUtils.resolveForApiSubmission(
+        pickedPath: _profileImage?.path,
+        savedReference: _savedImagePath,
+      );
 
   Future<bool> _ensureMediaPermission(ImageSource source) async {
     if (source == ImageSource.camera) {

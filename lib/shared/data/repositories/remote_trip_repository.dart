@@ -1,44 +1,107 @@
+/// @deprecated Use [RemoteDriverTripRepository] instead.
+library;
+
 import 'package:dio/dio.dart';
 
 import '../../../core/network/api_constants.dart';
+import '../../../core/network/api_envelope.dart';
 import '../../domain/entities/driver_trip.dart';
+import '../../domain/models/driver_trip_detail.dart';
+import '../../domain/models/trip_form_prefill.dart';
+import '../../domain/models/trip_submit_options.dart';
 import '../../domain/repositories/i_trip_repository.dart';
+import '../api/driver/trip_api_mapper.dart';
 
-/// REST implementation of [ITripRepository].
+@Deprecated('Use RemoteDriverTripRepository')
 class RemoteTripRepository implements ITripRepository {
   RemoteTripRepository(this._dio);
   final Dio _dio;
 
   @override
   Future<List<DriverTrip>> getDriverTrips(String driverId) async {
-    final response = await _dio.get(
+    final response = await _dio.get<Map<String, dynamic>>(
       ApiConstants.driverTrips,
-      queryParameters: {'driver_id': driverId},
     );
-    return (response.data['data'] as List<dynamic>)
-        .map((e) => DriverTrip.fromJson(e as Map<String, dynamic>))
+    final items = ApiEnvelope.parsePaginatedData(response.data).items;
+    return items
+        .map((e) => TripApiMapper.fromJson(e, fallbackDriverId: driverId))
         .toList();
   }
 
   @override
-  Future<DriverTrip> postTrip(DriverTrip trip) async {
-    final response = await _dio.post(
+  Future<DriverTrip> getTrip(String id) {
+    throw UnsupportedError('Use DriverTripApiClient.getTrip');
+  }
+
+  @override
+  Future<DriverTripDetail> getTripDetail(String id) {
+    throw UnsupportedError('Use DriverTripApiClient.getTripDetail');
+  }
+
+  @override
+  Future<DriverTripRequest> acceptTripRequest({
+    required String tripId,
+    required String requestId,
+  }) {
+    throw UnsupportedError('Use DriverTripApiClient.acceptTripRequest');
+  }
+
+  @override
+  Future<DriverTripRequest> rejectTripRequest({
+    required String tripId,
+    required String requestId,
+  }) {
+    throw UnsupportedError('Use DriverTripApiClient.rejectTripRequest');
+  }
+
+  @override
+  Future<TripFormPrefill> getTripForEdit(String id) {
+    throw UnsupportedError('Use DriverTripApiClient.getTripForEdit');
+  }
+
+  @override
+  Future<DriverTrip> postTrip(
+    DriverTrip trip, {
+    required TripSubmitOptions options,
+  }) async {
+    final response = await _dio.post<Map<String, dynamic>>(
       ApiConstants.driverTrips,
-      data: trip.toJson(),
+      data: TripApiMapper.toRequestBody(trip, options: options),
     );
-    return DriverTrip.fromJson(response.data['data'] as Map<String, dynamic>);
+    return TripApiMapper.fromJson(
+      ApiEnvelope.parseData(response.data),
+      fallbackDriverId: trip.driverId,
+    );
   }
 
   @override
-  Future<DriverTrip> updateTrip(DriverTrip trip) async {
-    final response = await _dio.put(
-      '${ApiConstants.driverTrips}/${trip.id}',
-      data: trip.toJson(),
+  Future<DriverTrip> updateTrip(
+    DriverTrip trip, {
+    required TripSubmitOptions options,
+  }) async {
+    final response = await _dio.put<Map<String, dynamic>>(
+      ApiConstants.driverTrip(trip.apiResourceId),
+      data: TripApiMapper.toRequestBody(trip, options: options),
     );
-    return DriverTrip.fromJson(response.data['data'] as Map<String, dynamic>);
+    return TripApiMapper.fromJson(
+      ApiEnvelope.parseData(response.data),
+      fallbackDriverId: trip.driverId,
+    );
   }
 
   @override
-  Future<void> cancelTrip(String tripId) =>
-      _dio.patch(ApiConstants.cancelTrip(tripId));
+  Future<DriverTrip> cancelTrip(
+    String tripId, {
+    required String reason,
+    String? otherReason,
+  }) async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      ApiConstants.cancelTrip(tripId),
+      data: TripApiMapper.toCancelBody(
+        reason: reason,
+        otherReason: otherReason,
+      ),
+    );
+    return TripApiMapper.fromJson(ApiEnvelope.parseData(response.data));
+  }
 }

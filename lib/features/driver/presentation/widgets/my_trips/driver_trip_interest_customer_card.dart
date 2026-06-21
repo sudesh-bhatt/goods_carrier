@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../../../../../core/extensions/size_ext.dart';
 import '../../../../../core/extensions/svg_gen_image_extension.dart';
+import '../../../../../core/extensions/theme_ext.dart';
 import '../../../../../generated/assets.dart';
 import '../../../../../res/font_res.dart';
 import 'driver_my_trip_tokens.dart';
@@ -12,16 +13,28 @@ class DriverTripInterestCustomerCard extends StatelessWidget {
   const DriverTripInterestCustomerCard({
     super.key,
     required this.name,
+    this.phone,
     this.onWhatsApp,
     this.onCall,
+    this.showActions = false,
+    this.isBusy = false,
+    this.onAccept,
+    this.onReject,
   });
 
   final String name;
+  final String? phone;
   final VoidCallback? onWhatsApp;
   final VoidCallback? onCall;
+  final bool showActions;
+  final bool isBusy;
+  final VoidCallback? onAccept;
+  final VoidCallback? onReject;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(20.w),
@@ -44,7 +57,8 @@ class DriverTripInterestCustomerCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 24.r,
-                backgroundColor: DriverMyTripTokens.primary.withValues(alpha: 0.15),
+                backgroundColor:
+                    DriverMyTripTokens.primary.withValues(alpha: 0.15),
                 child: Text(
                   name.isNotEmpty ? name[0].toUpperCase() : '?',
                   style: TextStyle(
@@ -70,30 +84,119 @@ class DriverTripInterestCustomerCard extends StatelessWidget {
             ],
           ),
           SizedBox(height: 16.h),
-          Row(
-            children: [
-              Expanded(
-                child: _ContactButton(
-                  leading: Assets.icWhatsapp.svgTint(
-                    width: 18.w,
-                    height: 18.w,
-                    color: DriverMyTripTokens.heading,
+          if (showActions) ...[
+            Row(
+              children: [
+                Expanded(
+                  child: _ActionButton(
+                    label: l10n.driverTripRequestAccept,
+                    foreground: Colors.white,
+                    background: DriverMyTripTokens.primary,
+                    isBusy: isBusy,
+                    onTap: onAccept,
                   ),
-                  label: 'WHATSAPP',
-                  onTap: onWhatsApp,
                 ),
-              ),
-              SizedBox(width: 8.w),
-              Expanded(
-                child: _ContactButton(
-                  icon: Icons.phone_outlined,
-                  label: 'CALL',
-                  onTap: onCall,
+                SizedBox(width: 8.w),
+                Expanded(
+                  child: _ActionButton(
+                    label: l10n.driverTripRequestReject,
+                    foreground: DriverMyTripTokens.heading,
+                    background: Colors.white,
+                    borderColor: DriverMyTripTokens.customerCardBorder,
+                    isBusy: isBusy,
+                    onTap: onReject,
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
+          ] else
+            Row(
+              children: [
+                Expanded(
+                  child: _ContactButton(
+                    leading: Assets.icWhatsapp.svgTint(
+                      width: 18.w,
+                      height: 18.w,
+                      color: DriverMyTripTokens.heading,
+                    ),
+                    label: 'WHATSAPP',
+                    onTap: onWhatsApp,
+                  ),
+                ),
+                SizedBox(width: 8.w),
+                Expanded(
+                  child: _ContactButton(
+                    icon: Icons.phone_outlined,
+                    label: 'CALL',
+                    onTap: onCall,
+                  ),
+                ),
+              ],
+            ),
         ],
+      ),
+    );
+  }
+}
+
+class _ActionButton extends StatelessWidget {
+  const _ActionButton({
+    required this.label,
+    required this.foreground,
+    required this.background,
+    this.borderColor,
+    this.isBusy = false,
+    this.onTap,
+  });
+
+  final String label;
+  final Color foreground;
+  final Color background;
+  final Color? borderColor;
+  final bool isBusy;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: background,
+      borderRadius: BorderRadius.circular(12.r),
+      child: InkWell(
+        onTap: isBusy || onTap == null
+            ? null
+            : () {
+                HapticFeedback.lightImpact();
+                onTap!();
+              },
+        borderRadius: BorderRadius.circular(12.r),
+        child: Container(
+          height: 40.h,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12.r),
+            border: borderColor == null
+                ? null
+                : Border.all(color: borderColor!),
+          ),
+          child: isBusy
+              ? SizedBox(
+                  width: 18.w,
+                  height: 18.w,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: foreground,
+                  ),
+                )
+              : Text(
+                  label,
+                  style: TextStyle(
+                    fontFamily: FontRes.MANROPE_BOLD,
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w700,
+                    color: foreground,
+                  ),
+                ),
+        ),
       ),
     );
   }

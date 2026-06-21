@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/config/env_config.dart';
 import '../../../../core/constants/app_dimensions.dart';
+import '../../../../core/mixins/safe_set_state_mixin.dart';
+import '../../../../core/providers/repository_providers.dart';
 import '../../../../core/extensions/num_ext.dart';
 import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
@@ -36,7 +39,7 @@ class ExpressInterestSheet extends ConsumerStatefulWidget {
 }
 
 class _ExpressInterestSheetState
-    extends ConsumerState<ExpressInterestSheet> {
+    extends ConsumerState<ExpressInterestSheet> with SafeSetStateMixin {
   late final TextEditingController _quoteCtrl;
   bool _useCustomQuote = false;
   bool _isSubmitting   = false;
@@ -56,15 +59,69 @@ class _ExpressInterestSheetState
   }
 
   Future<void> _submit() async {
-    setState(() => _isSubmitting = true);
-    // Simulated network delay — replace with API call in Session 7.
-    await Future.delayed(const Duration(milliseconds: 500));
+    final offeredPrice = _useCustomQuote
+        ? double.tryParse(_quoteCtrl.text.trim())
+        : widget.shipment.estimatedPrice;
+    if (offeredPrice == null || offeredPrice <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.driverTripFormPriceRequired)),
+      );
+      return;
+    }
 
-    ref
+    safeSetState(() => _isSubmitting = true);
+
+    int? vehicleId;
+    if (EnvConfig.useRemoteApi) {
+      try {
+        final vehicles =
+            await ref.read(driverVehicleApiClientProvider).listVehicles();
+        if (vehicles.isEmpty) {
+          if (mounted) {
+            safeSetState(() => _isSubmitting = false);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(context.l10n.driverNoVehiclesMessage)),
+            );
+          }
+          return;
+        }
+        vehicleId = vehicles.first.id;
+      } catch (e) {
+        if (mounted) {
+          safeSetState(() => _isSubmitting = false);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(context.l10n.driverVehicleLoadFailed)),
+          );
+        }
+        return;
+      }
+    } else {
+      vehicleId = 1;
+    }
+
+    final ok = await ref
         .read(driverShipmentRequestsProvider.notifier)
-        .expressInterest(widget.shipment.id);
+        .expressInterest(
+          shipmentId: widget.shipment.id,
+          vehicleId: vehicleId,
+          offeredPrice: offeredPrice,
+          note: '',
+        );
 
-    if (mounted) Navigator.of(context).pop(true);
+    if (!mounted) return;
+    safeSetState(() => _isSubmitting = false);
+
+    if (!ok) {
+      final error = ref.read(driverShipmentRequestsProvider).error;
+      if (error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error)),
+        );
+      }
+      return;
+    }
+
+    Navigator.of(context).pop(true);
   }
 
   @override
@@ -157,7 +214,7 @@ class _ExpressInterestSheetState
                 ),
                 GestureDetector(
                   onTap: () =>
-                      setState(() => _useCustomQuote = !_useCustomQuote),
+                      safeSetState(() => _useCustomQuote = !_useCustomQuote),
                   child: Text(
                     _useCustomQuote ? 'Use estimate' : 'Edit quote',
                     style: context.textTheme.labelSmall?.copyWith(

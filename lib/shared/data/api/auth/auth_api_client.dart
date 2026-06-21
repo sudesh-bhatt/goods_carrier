@@ -136,6 +136,13 @@ class AuthApiClient {
     throw const BadRequestException('Avatar upload returned no image URL');
   }
 
+  Future<User> getDriverProfile() async {
+    final response = await _dio.get<Map<String, dynamic>>(
+      ApiConstants.driverProfile,
+    );
+    return User.fromJson(ApiEnvelope.parseData(response.data));
+  }
+
   Future<User> createDriverProfile({
     required String fullName,
     required String city,

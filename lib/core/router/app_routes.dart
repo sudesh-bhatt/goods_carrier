@@ -46,11 +46,16 @@ abstract final class AppRoutes {
   static const String cancelTrip           = '/driver/trip/:id/cancel';
   static const String tripCancelSuccess    = '/driver/trip/cancel-success';
   static const String driverShipmentDetail = '/driver/shipment/:id';
+  static const String driverAddShipmentRequest = '/driver/shipment/:id/add-request';
   static const String driverInterestSuccess = '/driver/shipment/interest-success';
   static const String driverNotifications  = '/driver/notifications';
   static const String driverProfile        = '/driver/profile';
   static const String driverEditProfile    = '/driver/profile/edit';
   static const String driverEarnings       = '/driver/earnings';
+  static const String driverVehicles       = '/driver/profile/vehicles';
+  static const String driverVehicleDetail  = '/driver/profile/vehicles/:id';
+  static const String driverAddVehicle     = '/driver/profile/vehicles/add';
+  static const String driverEditVehicle    = '/driver/profile/vehicles/:id/edit';
 
   // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -65,6 +70,11 @@ abstract final class AppRoutes {
   static String cancelTripOf(String id) => '/driver/trip/$id/cancel';
   static String editTripOf(String id) => '/driver/trip/$id/edit';
   static String driverShipmentDetailOf(String id) => '/driver/shipment/$id';
+  static String driverAddShipmentRequestOf(String id) =>
+      '/driver/shipment/$id/add-request';
   static String customerEditAddressOf(String id) =>
       '/customer/profile/addresses/$id/edit';
+  static String driverVehicleDetailOf(int id) => '/driver/profile/vehicles/$id';
+  static String driverEditVehicleOf(int id) =>
+      '/driver/profile/vehicles/$id/edit';
 }

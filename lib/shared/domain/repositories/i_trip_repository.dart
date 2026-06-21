@@ -1,18 +1,50 @@
 import '../entities/driver_trip.dart';
+import '../models/driver_trip_detail.dart';
+import '../models/trip_form_prefill.dart';
+import '../models/trip_submit_options.dart';
 
 /// Contract for driver trip data operations.
 abstract class ITripRepository {
-  /// Returns all trips posted by [driverId].
+  /// Returns trips for the authenticated driver.
   Future<List<DriverTrip>> getDriverTrips(String driverId);
 
-  /// Posts a new available trip. Returns the persisted entity with the
-  /// server-assigned VB-XXXX ID.
-  Future<DriverTrip> postTrip(DriverTrip trip);
+  /// Loads a single trip (`GET .../trips/{id}`).
+  Future<DriverTrip> getTrip(String id);
 
-  /// Updates an existing trip. Returns the persisted entity.
-  Future<DriverTrip> updateTrip(DriverTrip trip);
+  /// Loads trip detail with customer requests.
+  Future<DriverTripDetail> getTripDetail(String id);
 
-  /// Cancels an active trip. Throws [AppException] if the trip is not
-  /// in a cancellable state.
-  Future<void> cancelTrip(String tripId);
+  /// Accepts a customer request on a trip.
+  Future<DriverTripRequest> acceptTripRequest({
+    required String tripId,
+    required String requestId,
+  });
+
+  /// Rejects a customer request on a trip.
+  Future<DriverTripRequest> rejectTripRequest({
+    required String tripId,
+    required String requestId,
+  });
+
+  /// Loads a trip for the edit form (`GET .../edit`).
+  Future<TripFormPrefill> getTripForEdit(String id);
+
+  /// Publishes a new trip.
+  Future<DriverTrip> postTrip(
+    DriverTrip trip, {
+    required TripSubmitOptions options,
+  });
+
+  /// Updates an existing trip.
+  Future<DriverTrip> updateTrip(
+    DriverTrip trip, {
+    required TripSubmitOptions options,
+  });
+
+  /// Cancels a trip. Returns the server-updated trip on success.
+  Future<DriverTrip> cancelTrip(
+    String tripId, {
+    required String reason,
+    String? otherReason,
+  });
 }

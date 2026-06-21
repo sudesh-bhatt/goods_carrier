@@ -573,6 +573,34 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  /// Refreshes driver profile from `GET /api/driver/profile`.
+  Future<bool> refreshDriverProfile() async {
+    final current = state.user;
+    if (current == null) return false;
+
+    state = state.copyWith(isLoading: true, clearError: true);
+    try {
+      final updated = await _authRepo.getDriverProfile();
+      final merged = updated.copyWith(
+        role: UserRole.driver,
+        phone: updated.phone.isNotEmpty ? updated.phone : current.phone,
+      );
+      await _persistSession(user: merged, nextStep: state.nextStep);
+      state = state.copyWith(
+        user: merged,
+        phoneNumber: merged.displayPhone,
+        isLoading: false,
+      );
+      return true;
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: ApiExceptionMapper.userMessage(e),
+      );
+      return false;
+    }
+  }
+
   Future<void> logout() async {
     try {
       await _authRepo.logout();
