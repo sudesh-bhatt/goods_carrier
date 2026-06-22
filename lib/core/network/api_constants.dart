@@ -35,6 +35,10 @@ abstract final class ApiConstants {
   static String customerShipmentEdit(String id) =>
       '/api/customer/shipments/$id/edit';
   static String cancelShipment(String id) => '/api/customer/shipments/$id/cancel';
+  static const String customerAddresses = '/api/customer/addresses';
+  static String customerAddress(int id) => '/api/customer/addresses/$id';
+  static String setDefaultCustomerAddress(int id) =>
+      '/api/customer/addresses/$id/set-default';
 
   // ── Driver ───────────────────────────────────────────────────────────────
   static const String driverProfile       = '/api/driver/profile';
@@ -56,6 +60,10 @@ abstract final class ApiConstants {
   static const String driverVehicles = '/api/driver/vehicles';
   static const String driverVehicleMasters = '/api/driver/vehicle-masters';
   static String driverVehicle(int id) => '/api/driver/vehicles/$id';
+  static const String driverAddresses = '/api/driver/addresses';
+  static String driverAddress(int id) => '/api/driver/addresses/$id';
+  static String setDefaultDriverAddress(int id) =>
+      '/api/driver/addresses/$id/set-default';
 
   // ── Notifications ──────────────────────────────────────────────────────────
   static const String notifications = '/api/notifications';

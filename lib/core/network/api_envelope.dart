@@ -83,6 +83,7 @@ abstract final class ApiEnvelope {
         'requests',
         'trip_requests',
         'vehicles',
+        'addresses',
       ]) {
         final nested = data[key];
         if (nested is List) {
@@ -135,6 +136,7 @@ abstract final class ApiEnvelope {
         'requests',
         'trip_requests',
         'vehicles',
+        'addresses',
       ]) {
         final nested = data[key];
         if (nested is List) {

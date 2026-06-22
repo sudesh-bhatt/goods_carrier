@@ -1888,6 +1888,24 @@ abstract class AppLocalizations {
   /// **'Phone number copied'**
   String get driverPhoneCopied;
 
+  /// No description provided for @driverPhoneUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number is not available'**
+  String get driverPhoneUnavailable;
+
+  /// No description provided for @driverCallLaunchFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open the phone dialer'**
+  String get driverCallLaunchFailed;
+
+  /// No description provided for @driverWhatsAppLaunchFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open WhatsApp'**
+  String get driverWhatsAppLaunchFailed;
+
   /// No description provided for @driverVehicleSpecifications.
   ///
   /// In en, this message translates to:
@@ -1989,6 +2007,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Vehicle updated successfully'**
   String get driverVehicleUpdated;
+
+  /// No description provided for @driverCropImageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Crop image'**
+  String get driverCropImageTitle;
+
+  /// No description provided for @driverAdjustCrop.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust crop'**
+  String get driverAdjustCrop;
+
+  /// No description provided for @driverReplacePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose another photo'**
+  String get driverReplacePhoto;
 
   /// No description provided for @profileManageSubscription.
   ///
@@ -2092,6 +2128,18 @@ abstract class AppLocalizations {
   /// **'Home, Office & others'**
   String get customerSavedAddressesSub;
 
+  /// No description provided for @customerSavedAddressesEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved addresses yet'**
+  String get customerSavedAddressesEmptyTitle;
+
+  /// No description provided for @customerSavedAddressesEmptySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your home, office, or other locations to use them quickly when booking.'**
+  String get customerSavedAddressesEmptySubtitle;
+
   /// No description provided for @customerSavedLocationsSection.
   ///
   /// In en, this message translates to:
@@ -2158,6 +2206,18 @@ abstract class AppLocalizations {
   /// **'e.g. San Francisco'**
   String get customerAddressCityHint;
 
+  /// No description provided for @customerAddressState.
+  ///
+  /// In en, this message translates to:
+  /// **'State'**
+  String get customerAddressState;
+
+  /// No description provided for @customerAddressStateHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Haryana'**
+  String get customerAddressStateHint;
+
   /// No description provided for @customerAddressPincode.
   ///
   /// In en, this message translates to:
@@ -2199,6 +2259,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Address saved'**
   String get customerAddressSaved;
+
+  /// No description provided for @driverAddressSetDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Set as default address'**
+  String get driverAddressSetDefault;
+
+  /// No description provided for @driverAddressDefaultBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get driverAddressDefaultBadge;
+
+  /// No description provided for @driverAddressDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete address?'**
+  String get driverAddressDeleteTitle;
+
+  /// No description provided for @driverAddressDeleteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This address will be removed from your saved locations.'**
+  String get driverAddressDeleteBody;
+
+  /// No description provided for @driverAddressDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Address deleted'**
+  String get driverAddressDeleted;
 
   /// No description provided for @customerLocationPermissionNeeded.
   ///

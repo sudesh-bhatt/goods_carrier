@@ -162,21 +162,7 @@ class CustomerDashboardNotifier extends StateNotifier<CustomerDashboardState> {
     required ShipmentFilter filter,
     int? vehicleTypeId,
   }) {
-    num? capacityMin;
-    num? capacityMax;
-    if (filter.restrictCapacity) {
-      switch (filter.capacityBand) {
-        case LoadCapacityBand.upTo500kg:
-          capacityMin = 0;
-          capacityMax = 0.5;
-        case LoadCapacityBand.from500kgTo2t:
-          capacityMin = 0.5;
-          capacityMax = 2;
-        case LoadCapacityBand.over2t:
-          capacityMin = 2;
-          capacityMax = null;
-      }
-    }
+    final capacity = filter.apiCapacityKg;
 
     return CustomerDashboardQuery(
       search: search.trim().isEmpty ? null : search.trim(),
@@ -184,8 +170,8 @@ class CustomerDashboardNotifier extends StateNotifier<CustomerDashboardState> {
       fromCity: filter.fromCity,
       toCity: filter.toCity,
       pickupDate: filter.pickupDate,
-      capacityMin: capacityMin,
-      capacityMax: capacityMax,
+      capacityMin: capacity.min,
+      capacityMax: capacity.max,
     );
   }
 }

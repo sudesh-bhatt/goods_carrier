@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import '../../../../core/utils/profile_image_utils.dart';
+import '../network/dio_network_image.dart';
 
 /// Renders a profile photo from a picked path and/or saved local/remote reference.
 class ProfileImageContent extends StatelessWidget {
@@ -41,6 +42,16 @@ class ProfileImageContent extends StatelessWidget {
 
     if (ProfileImageUtils.shouldRenderAsNetwork(displayRef)) {
       final networkUrl = ProfileImageUtils.resolveNetworkUrl(displayRef)!;
+      if (ProfileImageUtils.requiresAuthenticatedFetch(displayRef)) {
+        return DioNetworkImage(
+          url: networkUrl,
+          fit: fit,
+          width: double.infinity,
+          height: double.infinity,
+          alignment: Alignment.center,
+          placeholder: placeholder,
+        );
+      }
       return Image.network(
         networkUrl,
         fit: fit,

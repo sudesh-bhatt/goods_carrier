@@ -56,6 +56,9 @@ abstract final class AppRoutes {
   static const String driverVehicleDetail  = '/driver/profile/vehicles/:id';
   static const String driverAddVehicle     = '/driver/profile/vehicles/add';
   static const String driverEditVehicle    = '/driver/profile/vehicles/:id/edit';
+  static const String driverSavedAddresses = '/driver/profile/addresses';
+  static const String driverAddAddress     = '/driver/profile/addresses/add';
+  static const String driverEditAddress    = '/driver/profile/addresses/:id/edit';
 
   // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -72,9 +75,11 @@ abstract final class AppRoutes {
   static String driverShipmentDetailOf(String id) => '/driver/shipment/$id';
   static String driverAddShipmentRequestOf(String id) =>
       '/driver/shipment/$id/add-request';
-  static String customerEditAddressOf(String id) =>
+  static String customerEditAddressOf(dynamic id) =>
       '/customer/profile/addresses/$id/edit';
   static String driverVehicleDetailOf(int id) => '/driver/profile/vehicles/$id';
   static String driverEditVehicleOf(int id) =>
       '/driver/profile/vehicles/$id/edit';
+  static String driverEditAddressOf(int id) =>
+      '/driver/profile/addresses/$id/edit';
 }

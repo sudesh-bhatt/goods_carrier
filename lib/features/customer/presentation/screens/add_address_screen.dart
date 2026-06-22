@@ -8,25 +8,25 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/mixins/safe_set_state_mixin.dart';
-import '../../../../res/font_res.dart';
+import '../../../../core/router/app_routes.dart';
+import '../../../../core/services/google_places_service.dart';
 import '../../../../core/utils/map_location_helper.dart';
 import '../../../../core/utils/validators.dart';
-import '../../../../core/services/google_places_service.dart';
+import '../../../../res/font_res.dart';
 import '../../../../shared/domain/enums/saved_address_label.dart';
-import '../../../../shared/domain/entities/saved_address.dart';
-import '../providers/customer_saved_addresses_provider.dart';
-import '../../../../core/router/app_routes.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
+import '../../../../shared/presentation/widgets/navigation/confirmation_bottom_sheet.dart';
+import '../providers/customer_saved_addresses_provider.dart';
 import '../widgets/saved_addresses/add_address_autocomplete_field.dart';
 import '../widgets/saved_addresses/add_address_form_widgets.dart';
 import '../widgets/saved_addresses/address_map_picker.dart';
 import '../widgets/saved_addresses/saved_address_tokens.dart';
 
-/// Add / edit address with map pin — [Figma](https://www.figma.com/design/YxnNResvDQnbkcPhGejtxa/Mobile-App-UI--Developer-?node-id=1-3201).
+/// Add / edit address with map pin — `/api/customer/addresses`.
 class AddAddressScreen extends ConsumerStatefulWidget {
   const AddAddressScreen({super.key, this.addressId});
 
-  final String? addressId;
+  final int? addressId;
 
   @override
   ConsumerState<AddAddressScreen> createState() => _AddAddressScreenState();
@@ -37,14 +37,15 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen>
   final _formKey = GlobalKey<FormState>();
   final _fullAddressCtrl = TextEditingController();
   final _cityCtrl = TextEditingController();
+  final _stateCtrl = TextEditingController();
   final _pincodeCtrl = TextEditingController();
-  final _landmarkCtrl = TextEditingController();
 
   SavedAddressLabel _label = SavedAddressLabel.home;
   late LatLng _position;
   bool _initialized = false;
   bool _saving = false;
   bool _submitted = false;
+  bool _isDefault = false;
 
   bool get _isEditing => widget.addressId != null;
 
@@ -52,32 +53,30 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen>
   void initState() {
     super.initState();
     _position = MapLocationHelper.defaultPosition;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _bootstrap();
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _bootstrap());
   }
 
   Future<void> _bootstrap() async {
-    SavedAddress? existing;
-    if (_isEditing) {
-      existing = ref
-          .read(customerSavedAddressesProvider.notifier)
-          .byId(widget.addressId!);
-    }
+    final existing = _isEditing
+        ? ref.read(customerSavedAddressesProvider.notifier).byId(
+              widget.addressId!.toString(),
+            )
+        : null;
 
     if (existing != null) {
       safeSetState(() {
-        _label = existing!.label;
-        _fullAddressCtrl.text = existing.fullAddressLine;
+        _label = existing.labelEnum;
+        _fullAddressCtrl.text = existing.addressLine;
         _cityCtrl.text = existing.city;
+        _stateCtrl.text = existing.state;
         _pincodeCtrl.text = existing.pincode;
-        _landmarkCtrl.text = existing.landmark ?? '';
+        _isDefault = existing.isDefault;
       });
     }
 
     final resolved = await MapLocationHelper.resolveInitialPosition(
-      savedLatitude: existing?.latitude,
-      savedLongitude: existing?.longitude,
+      savedLatitude: existing?.latitudeValue,
+      savedLongitude: existing?.longitudeValue,
     );
 
     if (mounted) {
@@ -92,28 +91,15 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen>
   void dispose() {
     _fullAddressCtrl.dispose();
     _cityCtrl.dispose();
+    _stateCtrl.dispose();
     _pincodeCtrl.dispose();
-    _landmarkCtrl.dispose();
     super.dispose();
-  }
-
-  String _titleForLabel(SavedAddressLabel label) {
-    final l10n = context.l10n;
-    return switch (label) {
-      SavedAddressLabel.home => l10n.customerAddressLabelHome,
-      SavedAddressLabel.office => l10n.customerAddressLabelOffice,
-      SavedAddressLabel.other => l10n.customerAddressLabelOther,
-    };
   }
 
   void _onPlaceSelected(PlaceAddressDetails details) {
     safeSetState(() {
-      if (details.city.isNotEmpty) {
-        _cityCtrl.text = details.city;
-      }
-      if (details.pincode.isNotEmpty) {
-        _pincodeCtrl.text = details.pincode;
-      }
+      if (details.city.isNotEmpty) _cityCtrl.text = details.city;
+      if (details.pincode.isNotEmpty) _pincodeCtrl.text = details.pincode;
       if (MapLocationHelper.isValidCoordinate(
         details.latitude,
         details.longitude,
@@ -128,31 +114,73 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen>
     if (!_formKey.currentState!.validate()) return;
 
     safeSetState(() => _saving = true);
-    try {
-      final existing = widget.addressId != null
-          ? ref
-              .read(customerSavedAddressesProvider.notifier)
-              .byId(widget.addressId!)
-          : null;
-      await ref.read(customerSavedAddressesProvider.notifier).upsert(
-            id: widget.addressId,
-            label: _label,
-            title: existing?.title ?? _titleForLabel(_label),
-            fullAddressLine: _fullAddressCtrl.text.trim(),
-            city: _cityCtrl.text.trim(),
-            pincode: _pincodeCtrl.text.trim(),
-            latitude: _position.latitude,
-            longitude: _position.longitude,
-            landmark: _landmarkCtrl.text.trim(),
-          );
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.customerAddressSaved)),
-      );
-      context.pop();
-    } finally {
-      if (mounted) safeSetState(() => _saving = false);
+    final ok =
+        await ref.read(customerSavedAddressesProvider.notifier).saveAddress(
+              id: widget.addressId,
+              label: _label,
+              addressLine: _fullAddressCtrl.text.trim(),
+              city: _cityCtrl.text.trim(),
+              stateName: _stateCtrl.text.trim(),
+              pincode: _pincodeCtrl.text.trim(),
+              latitude: _position.latitude,
+              longitude: _position.longitude,
+              isDefault: _isDefault,
+            );
+    if (!mounted) return;
+    safeSetState(() => _saving = false);
+
+    if (!ok) {
+      final error = ref.read(customerSavedAddressesProvider).error;
+      if (error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error)),
+        );
+      }
+      return;
     }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(context.l10n.customerAddressSaved)),
+    );
+    context.pop();
+  }
+
+  Future<void> _delete() async {
+    final id = widget.addressId;
+    if (id == null) return;
+
+    final l10n = context.l10n;
+    final confirmed = await ConfirmationBottomSheet.show(
+      context,
+      title: l10n.driverAddressDeleteTitle,
+      body: l10n.driverAddressDeleteBody,
+      confirmLabel: l10n.actionYes,
+      cancelLabel: l10n.actionNo,
+      headerIcon: Icons.delete_outline_rounded,
+      isDangerous: true,
+    );
+    if (confirmed != true || !mounted) return;
+
+    safeSetState(() => _saving = true);
+    final ok =
+        await ref.read(customerSavedAddressesProvider.notifier).deleteAddress(id);
+    if (!mounted) return;
+    safeSetState(() => _saving = false);
+
+    if (!ok) {
+      final error = ref.read(customerSavedAddressesProvider).error;
+      if (error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error)),
+        );
+      }
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(l10n.driverAddressDeleted)),
+    );
+    context.pop();
   }
 
   @override
@@ -166,7 +194,17 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen>
       backgroundColor: SavedAddressTokens.screenBg,
       appBar: FlowScreenAppBar(
         title: title,
-        fallbackRoute: AppRoutes.customerHome,
+        fallbackRoute: AppRoutes.customerSavedAddresses,
+        actions: _isEditing
+            ? [
+                AppBarAction(
+                  icon: Icons.delete_outline_rounded,
+                  onTap: () {
+                    if (!_saving) _delete();
+                  },
+                ),
+              ]
+            : const [],
       ),
       body: !_initialized
           ? const Center(child: CircularProgressIndicator())
@@ -232,26 +270,43 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen>
                             ),
                             SizedBox(height: 24.h),
                             AddAddressTextField(
+                              label: l10n.customerAddressState,
+                              hint: l10n.customerAddressStateHint,
+                              controller: _stateCtrl,
+                              icon: Icons.map_outlined,
+                              textInputAction: TextInputAction.next,
+                              validator: (v) =>
+                                  Validators.required(v, l10n.customerAddressState),
+                            ),
+                            SizedBox(height: 24.h),
+                            AddAddressTextField(
                               label: l10n.customerAddressPincode,
                               hint: l10n.customerAddressPincodeHint,
                               controller: _pincodeCtrl,
                               icon: Icons.pin_drop_outlined,
                               keyboardType: TextInputType.number,
-                              textInputAction: TextInputAction.next,
-                              validator: (v) =>
-                                  Validators.required(v, l10n.customerAddressPincode),
-                            ),
-                            SizedBox(height: 24.h),
-                            AddAddressTextField(
-                              label: l10n.customerAddressLandmark,
-                              hint: l10n.customerAddressLandmarkHint,
-                              controller: _landmarkCtrl,
-                              icon: Icons.flag_outlined,
                               textInputAction: TextInputAction.done,
+                              validator: (v) => Validators.required(
+                                v,
+                                l10n.customerAddressPincode,
+                              ),
                             ),
                             SizedBox(height: 24.h),
-                            AddressLandmarkHintCard(
-                              message: l10n.customerAddressLandmarkTip,
+                            SwitchListTile.adaptive(
+                              contentPadding: EdgeInsets.zero,
+                              value: _isDefault,
+                              onChanged: _saving
+                                  ? null
+                                  : (value) =>
+                                      safeSetState(() => _isDefault = value),
+                              title: Text(
+                                l10n.driverAddressSetDefault,
+                                style: TextStyle(
+                                  fontFamily: FontRes.MANROPE_BOLD,
+                                  fontSize: 16.sp,
+                                  color: SavedAddressTokens.cardTitle,
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -293,8 +348,6 @@ class _StickySaveBar extends StatelessWidget {
           child: Material(
             color: SavedAddressTokens.chipSelected,
             borderRadius: BorderRadius.circular(24.r),
-            elevation: 0,
-            shadowColor: SavedAddressTokens.chipSelected.withValues(alpha: 0.5),
             child: InkWell(
               onTap: loading ? null : onPressed,
               borderRadius: BorderRadius.circular(24.r),

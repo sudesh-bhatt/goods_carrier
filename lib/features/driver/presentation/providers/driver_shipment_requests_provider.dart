@@ -2,8 +2,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/network/api_exception_mapper.dart';
 import '../../../../core/providers/repository_providers.dart';
+import '../../../../shared/data/api/driver/trip_api_mapper.dart';
 import '../../../../shared/domain/entities/shipment.dart';
 import '../../../../shared/domain/enums/session_phase.dart';
+import '../../../../shared/domain/models/driver_dashboard_query.dart';
+import '../../../../shared/domain/models/shipment_filter.dart';
 import '../../../../shared/domain/repositories/i_shipment_repository.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 
@@ -13,12 +16,14 @@ class DriverShipmentRequestsState {
   const DriverShipmentRequestsState({
     required this.all,
     required this.expressed,
+    this.query = const DriverDashboardQuery(),
     this.isLoading = false,
     this.error,
   });
 
   final List<Shipment> all;
   final Set<String> expressed;
+  final DriverDashboardQuery query;
   final bool isLoading;
   final String? error;
 
@@ -27,12 +32,14 @@ class DriverShipmentRequestsState {
   DriverShipmentRequestsState copyWith({
     List<Shipment>? all,
     Set<String>? expressed,
+    DriverDashboardQuery? query,
     bool? isLoading,
     String? error,
   }) =>
       DriverShipmentRequestsState(
         all: all ?? this.all,
         expressed: expressed ?? this.expressed,
+        query: query ?? this.query,
         isLoading: isLoading ?? this.isLoading,
         error: error,
       );
@@ -97,16 +104,20 @@ class DriverShipmentRequestsNotifier
 
   Future<void> _load({
     String? driverId,
+    DriverDashboardQuery? query,
     bool showLoadingIndicator = true,
   }) async {
+    final nextQuery = query ?? state.query;
     if (showLoadingIndicator) {
-      state = state.copyWith(isLoading: true, error: null);
+      state = state.copyWith(isLoading: true, query: nextQuery, error: null);
     } else {
-      state = state.copyWith(error: null);
+      state = state.copyWith(query: nextQuery, error: null);
     }
     try {
-      final requests =
-          await _repo.getPendingRequests(driverId: driverId ?? _driverId);
+      final requests = await _repo.getPendingRequests(
+        driverId: driverId ?? _driverId,
+        query: nextQuery,
+      );
       _hasLoadedOnce = true;
       state = state.copyWith(isLoading: false, all: requests);
     } catch (e) {
@@ -118,6 +129,35 @@ class DriverShipmentRequestsNotifier
   }
 
   Future<void> refresh() => _load(showLoadingIndicator: false);
+
+  Future<void> applyFilters({
+    required String search,
+    required ShipmentFilter filter,
+  }) async {
+    await _load(
+      query: _buildQuery(search: search, filter: filter),
+      showLoadingIndicator: false,
+    );
+  }
+
+  DriverDashboardQuery _buildQuery({
+    required String search,
+    required ShipmentFilter filter,
+  }) {
+    final capacity = filter.apiCapacityKg;
+
+    return DriverDashboardQuery(
+      search: search.trim().isEmpty ? null : search.trim(),
+      vehicleTypeId: filter.vehicleClass != null
+          ? TripApiMapper.defaultVehicleTypeId(filter.vehicleClass!)
+          : null,
+      fromCity: filter.fromCity,
+      toCity: filter.toCity,
+      pickupDate: filter.pickupDate,
+      capacityMin: capacity.min,
+      capacityMax: capacity.max,
+    );
+  }
 
   Shipment? byId(String id) => state.all
       .where((s) => s.id == id || s.apiId == id || s.apiResourceId == id)

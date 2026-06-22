@@ -23,6 +23,7 @@ class DriverVehicleDetail {
     this.licenseBackUrl,
     this.vehiclePhotoUrl,
     this.fleetCode,
+    this.capacityLabelOverride,
   });
 
   final int id;
@@ -42,8 +43,11 @@ class DriverVehicleDetail {
   final String? licenseBackUrl;
   final String? vehiclePhotoUrl;
   final String? fleetCode;
+  final String? capacityLabelOverride;
 
   String get capacityLabel {
+    final override = capacityLabelOverride?.trim();
+    if (override != null && override.isNotEmpty) return override;
     final value = capacity == capacity.truncateToDouble()
         ? capacity.toInt().toString()
         : capacity.toString();

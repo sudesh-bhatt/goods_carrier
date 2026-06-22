@@ -114,7 +114,11 @@ class _AppProfileTabState extends ConsumerState<AppProfileTab>
         icon: Icons.location_on_outlined,
         title: l10n.customerSavedAddresses,
         subtitle: l10n.customerSavedAddressesSub,
-        onTap: () => context.push(AppRoutes.customerSavedAddresses),
+        onTap: () => context.push(
+          role == UserRole.driver
+              ? AppRoutes.driverSavedAddresses
+              : AppRoutes.customerSavedAddresses,
+        ),
       ),
     ];
 

@@ -54,20 +54,19 @@ class _FilterSearchSheetState extends State<FilterSearchSheet>
   late final TextEditingController _toCtrl;
   bool _isCalendarExpanded = false;
   late DateTime _calendarMonth;
+  bool _pickupDateTouched = false;
+  bool _capacityTouched = false;
 
   @override
   void initState() {
     super.initState();
-    _filter = _withDefaultPickupDate(widget.initial);
+    _filter = widget.initial;
+    _pickupDateTouched = widget.initial.pickupDate != null;
+    _capacityTouched = widget.initial.restrictCapacity;
     _fromCtrl = TextEditingController(text: widget.initial.fromCity ?? '');
     _toCtrl = TextEditingController(text: widget.initial.toCity ?? '');
     final seed = _filter.pickupDate ?? _today;
     _calendarMonth = DateTime(seed.year, seed.month);
-  }
-
-  ShipmentFilter _withDefaultPickupDate(ShipmentFilter source) {
-    if (source.pickupDate != null) return source;
-    return source.copyWith(pickupDate: _today);
   }
 
   @override
@@ -80,11 +79,13 @@ class _FilterSearchSheetState extends State<FilterSearchSheet>
   void _clearAll() {
     HapticFeedback.lightImpact();
     safeSetState(() {
-      _filter = const ShipmentFilter().copyWith(pickupDate: _today);
+      _filter = const ShipmentFilter();
       _fromCtrl.clear();
       _toCtrl.clear();
       _isCalendarExpanded = false;
       _calendarMonth = DateTime(_today.year, _today.month);
+      _pickupDateTouched = false;
+      _capacityTouched = false;
     });
   }
 
@@ -107,6 +108,7 @@ class _FilterSearchSheetState extends State<FilterSearchSheet>
   void _selectPickupDate(DateTime date) {
     final normalized = DateTime(date.year, date.month, date.day);
     safeSetState(() {
+      _pickupDateTouched = true;
       _filter = _filter.copyWith(pickupDate: normalized);
       _calendarMonth = DateTime(normalized.year, normalized.month);
       _isCalendarExpanded = false;
@@ -117,9 +119,35 @@ class _FilterSearchSheetState extends State<FilterSearchSheet>
     final selected =
         _filter.pickupDate != null && _isSameDay(_filter.pickupDate!, date);
     safeSetState(() {
-      _filter = selected
-          ? _filter.copyWith(pickupDate: _today)
-          : _filter.copyWith(pickupDate: date);
+      if (selected) {
+        _pickupDateTouched = false;
+        _filter = _filter.copyWith(clearPickupDate: true);
+      } else {
+        _pickupDateTouched = true;
+        _filter = _filter.copyWith(pickupDate: date);
+      }
+    });
+  }
+
+  void _selectCapacityBand(LoadCapacityBand band) {
+    final range = band.kgRange;
+    safeSetState(() {
+      _capacityTouched = true;
+      _filter = _filter.copyWith(
+        capacityBand: band,
+        capacityRangeStart: range.$1,
+        capacityRangeEnd: range.$2,
+      );
+    });
+  }
+
+  void _updateCapacityRange(RangeValues values) {
+    safeSetState(() {
+      _capacityTouched = true;
+      _filter = _filter.copyWith(
+        capacityRangeStart: values.start,
+        capacityRangeEnd: values.end,
+      );
     });
   }
 
@@ -129,7 +157,8 @@ class _FilterSearchSheetState extends State<FilterSearchSheet>
       _filter.copyWith(
         fromCity: _fromCtrl.text.trim().isEmpty ? null : _fromCtrl.text.trim(),
         toCity: _toCtrl.text.trim().isEmpty ? null : _toCtrl.text.trim(),
-        restrictCapacity: true,
+        clearPickupDate: !_pickupDateTouched,
+        restrictCapacity: _capacityTouched,
       ),
     );
   }
@@ -323,7 +352,7 @@ class _FilterSearchSheetState extends State<FilterSearchSheet>
                       children: [
                         _SectionLabel(text: l10n.filterLoadCapacity),
                         Text(
-                          _filter.capacityBand.summaryLabel,
+                          _filter.capacityRangeLabel,
                           style: TextStyle(
                             fontFamily: FontRes.MANROPE_BOLD,
                             fontSize: 14.sp,
@@ -336,9 +365,7 @@ class _FilterSearchSheetState extends State<FilterSearchSheet>
                     SizedBox(height: 16.h),
                     _CapacitySegments(
                       selected: _filter.capacityBand,
-                      onSelected: (band) => safeSetState(
-                        () => _filter = _filter.copyWith(capacityBand: band),
-                      ),
+                      onSelected: _selectCapacityBand,
                     ),
                     SizedBox(height: 16.h),
                     SliderTheme(
@@ -355,16 +382,16 @@ class _FilterSearchSheetState extends State<FilterSearchSheet>
                         rangeTrackShape: const RoundedRectRangeSliderTrackShape(),
                       ),
                       child: RangeSlider(
+                        min: 0,
+                        max: LoadCapacityBand.maxKg,
+                        divisions: 40,
                         values: RangeValues(
-                          _filter.capacityRangeStart,
-                          _filter.capacityRangeEnd,
+                          _filter.capacityRangeStart
+                              .clamp(0, LoadCapacityBand.maxKg),
+                          _filter.capacityRangeEnd
+                              .clamp(0, LoadCapacityBand.maxKg),
                         ),
-                        onChanged: (v) => safeSetState(() {
-                          _filter = _filter.copyWith(
-                            capacityRangeStart: v.start,
-                            capacityRangeEnd: v.end,
-                          );
-                        }),
+                        onChanged: _updateCapacityRange,
                       ),
                     ),
                 ],

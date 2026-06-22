@@ -939,6 +939,15 @@ class AppLocalizationsHi extends AppLocalizations {
   String get driverPhoneCopied => 'फ़ोन नंबर कॉपी किया गया';
 
   @override
+  String get driverPhoneUnavailable => 'फ़ोन नंबर उपलब्ध नहीं है';
+
+  @override
+  String get driverCallLaunchFailed => 'फ़ोन डायलर नहीं खोला जा सका';
+
+  @override
+  String get driverWhatsAppLaunchFailed => 'WhatsApp नहीं खोला जा सका';
+
+  @override
   String get driverVehicleSpecifications => 'विनिर्देश';
 
   @override
@@ -989,6 +998,15 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get driverVehicleUpdated => 'वाहन सफलतापूर्वक अपडेट किया गया';
+
+  @override
+  String get driverCropImageTitle => 'छवि क्रॉप करें';
+
+  @override
+  String get driverAdjustCrop => 'क्रॉप समायोजित करें';
+
+  @override
+  String get driverReplacePhoto => 'दूसरी फ़ोटो चुनें';
 
   @override
   String get profileManageSubscription => 'सदस्यता प्रबंधित करें';
@@ -1042,6 +1060,13 @@ class AppLocalizationsHi extends AppLocalizations {
   String get customerSavedAddressesSub => 'घर, कार्यालय और अन्य';
 
   @override
+  String get customerSavedAddressesEmptyTitle => 'अभी कोई पता सहेजा नहीं गया';
+
+  @override
+  String get customerSavedAddressesEmptySubtitle =>
+      'बुकिंग के समय तेज़ी से उपयोग के लिए अपना घर, कार्यालय या अन्य स्थान जोड़ें।';
+
+  @override
   String get customerSavedLocationsSection => 'SAVED LOCATIONS';
 
   @override
@@ -1075,6 +1100,12 @@ class AppLocalizationsHi extends AppLocalizations {
   String get customerAddressCityHint => 'e.g. San Francisco';
 
   @override
+  String get customerAddressState => 'राज्य';
+
+  @override
+  String get customerAddressStateHint => 'जैसे हरियाणा';
+
+  @override
   String get customerAddressPincode => 'Pincode';
 
   @override
@@ -1095,6 +1126,22 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get customerAddressSaved => 'Address saved';
+
+  @override
+  String get driverAddressSetDefault => 'डिफ़ॉल्ट पते के रूप में सेट करें';
+
+  @override
+  String get driverAddressDefaultBadge => 'डिफ़ॉल्ट';
+
+  @override
+  String get driverAddressDeleteTitle => 'पता हटाएं?';
+
+  @override
+  String get driverAddressDeleteBody =>
+      'यह पता आपके सहेजे गए स्थानों से हटा दिया जाएगा।';
+
+  @override
+  String get driverAddressDeleted => 'पता हटाया गया';
 
   @override
   String get customerLocationPermissionNeeded =>

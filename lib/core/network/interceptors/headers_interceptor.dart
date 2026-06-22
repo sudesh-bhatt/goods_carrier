@@ -19,8 +19,14 @@ class HeadersInterceptor extends Interceptor {
     options.headers['X-Device-Type'] = deviceInfo.deviceType;
 
     final isMultipart = options.data is FormData;
-    if (!isMultipart) {
-      options.headers.putIfAbsent('Content-Type', () => 'application/json');
+    if (isMultipart) {
+      // BaseOptions defaults to application/json; Dio must set multipart boundary.
+      options.headers.remove(Headers.contentTypeHeader);
+    } else {
+      options.headers.putIfAbsent(
+        Headers.contentTypeHeader,
+        () => Headers.jsonContentType,
+      );
     }
     options.headers.putIfAbsent('Accept', () => 'application/json');
 

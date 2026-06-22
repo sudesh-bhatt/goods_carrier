@@ -8,6 +8,7 @@ import '../../../core/network/api_constants.dart';
 import '../../../core/network/api_envelope.dart';
 import '../../domain/entities/shipment.dart';
 import '../../domain/models/customer_shipment_detail.dart';
+import '../../domain/models/driver_dashboard_query.dart';
 import '../../domain/models/driver_shipment_detail.dart';
 import '../../domain/models/shipment_form_prefill.dart';
 import '../../domain/models/shipment_submit_options.dart';
@@ -111,9 +112,13 @@ class RemoteShipmentRepository implements IShipmentRepository {
   }
 
   @override
-  Future<List<Shipment>> getPendingRequests({String? driverId}) async {
+  Future<List<Shipment>> getPendingRequests({
+    String? driverId,
+    DriverDashboardQuery query = const DriverDashboardQuery(),
+  }) async {
     final response = await _dio.get<Map<String, dynamic>>(
       ApiConstants.driverDashboard,
+      queryParameters: query.toQueryParameters(),
     );
     final items = ApiEnvelope.parsePaginatedData(response.data).items;
     return items.map(Shipment.fromJson).toList();

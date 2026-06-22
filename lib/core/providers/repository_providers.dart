@@ -2,21 +2,29 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/config/env_config.dart';
 import '../../shared/data/api/auth/auth_api_client.dart';
+import '../../shared/data/api/customer/customer_address_api_client.dart';
 import '../../shared/data/api/customer/customer_dashboard_api_client.dart';
 import '../../shared/data/api/customer/customer_shipment_api_client.dart';
 import '../../shared/data/api/driver/driver_dashboard_api_client.dart';
 import '../../shared/data/api/driver/driver_trip_api_client.dart';
 import '../../shared/data/api/driver/driver_vehicle_api_client.dart';
+import '../../shared/data/api/driver/driver_address_api_client.dart';
+import '../../shared/data/repositories/local_customer_address_repository.dart';
+import '../../shared/data/repositories/local_driver_address_repository.dart';
 import '../../shared/data/api/onboarding/onboarding_api_client.dart';
 import '../../shared/data/repositories/local_auth_repository.dart';
 import '../../shared/data/repositories/local_onboarding_repository.dart';
 import '../../shared/data/repositories/local_trip_repository.dart';
 import '../../shared/data/repositories/remote/auth/remote_auth_repository.dart';
+import '../../shared/data/repositories/remote/customer/remote_customer_address_repository.dart';
 import '../../shared/data/repositories/remote/customer/remote_customer_shipment_repository.dart';
+import '../../shared/data/repositories/remote/driver/remote_driver_address_repository.dart';
 import '../../shared/data/repositories/remote/driver/remote_driver_trip_repository.dart';
 import '../../shared/data/repositories/remote/onboarding/remote_onboarding_repository.dart';
 import '../../shared/data/local/auth_preferences_store.dart';
 import '../../shared/domain/repositories/i_auth_repository.dart';
+import '../../shared/domain/repositories/i_customer_address_repository.dart';
+import '../../shared/domain/repositories/i_driver_address_repository.dart';
 import '../../shared/domain/repositories/i_onboarding_repository.dart';
 import '../../shared/domain/repositories/i_shipment_repository.dart';
 import '../../shared/domain/repositories/i_trip_repository.dart';
@@ -42,6 +50,21 @@ final customerDashboardApiClientProvider =
   return CustomerDashboardApiClient(ref.read(dioProvider));
 });
 
+final customerAddressApiClientProvider =
+    Provider<CustomerAddressApiClient>((ref) {
+  return CustomerAddressApiClient(ref.read(dioProvider));
+});
+
+final customerAddressRepositoryProvider =
+    Provider<ICustomerAddressRepository>((ref) {
+  if (EnvConfig.useRemoteApi) {
+    return RemoteCustomerAddressRepository(
+      apiClient: ref.read(customerAddressApiClientProvider),
+    );
+  }
+  return LocalCustomerAddressRepository();
+});
+
 final driverTripApiClientProvider = Provider<DriverTripApiClient>((ref) {
   return DriverTripApiClient(ref.read(dioProvider));
 });
@@ -53,6 +76,19 @@ final driverDashboardApiClientProvider =
 
 final driverVehicleApiClientProvider = Provider<DriverVehicleApiClient>((ref) {
   return DriverVehicleApiClient(ref.read(dioProvider));
+});
+
+final driverAddressApiClientProvider = Provider<DriverAddressApiClient>((ref) {
+  return DriverAddressApiClient(ref.read(dioProvider));
+});
+
+final driverAddressRepositoryProvider = Provider<IDriverAddressRepository>((ref) {
+  if (EnvConfig.useRemoteApi) {
+    return RemoteDriverAddressRepository(
+      apiClient: ref.read(driverAddressApiClientProvider),
+    );
+  }
+  return LocalDriverAddressRepository();
 });
 
 final authRepositoryProvider = Provider<IAuthRepository>((ref) {

@@ -115,42 +115,47 @@ class DriverHomeShipmentCard extends StatelessWidget {
               ),
             ),
             SizedBox(height: 24.h),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.shipmentPrice.toUpperCase(),
-                        style: TextStyle(
-                          fontFamily: FontRes.MANROPE_MEDIUM,
-                          fontSize: 10.4.sp,
-                          fontWeight: FontWeight.w500,
-                          height: 16 / 10.4,
-                          color: const Color(0xFF434655),
+            Padding(
+              padding: EdgeInsets.only(top: 4.16.h),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Flexible(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.shipmentPrice.toUpperCase(),
+                          style: TextStyle(
+                            fontFamily: FontRes.MANROPE_MEDIUM,
+                            fontSize: 10.4.sp,
+                            fontWeight: FontWeight.w500,
+                            height: 16 / 10.4,
+                            color: const Color(0xFF434655),
+                          ),
                         ),
-                      ),
-                      Text(
-                        shipment.estimatedPrice.inr,
-                        style: TextStyle(
-                          fontFamily: FontRes.MANROPE_EXTRABOLD,
-                          fontSize: 20.8.sp,
-                          fontWeight: FontWeight.w800,
-                          height: 29 / 20.8,
-                          letterSpacing: -1.04,
-                          color: colors.primary,
+                        Text(
+                          shipment.estimatedPrice.inr,
+                          style: TextStyle(
+                            fontFamily: FontRes.MANROPE_EXTRABOLD,
+                            fontSize: 20.8.sp,
+                            fontWeight: FontWeight.w800,
+                            height: 29 / 20.8,
+                            letterSpacing: -1.04,
+                            color: colors.primary,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                _ViewDetailsButton(
-                  label: l10n.actionViewDetails,
-                  onPressed: onViewDetails,
-                ),
-              ],
+                  SizedBox(width: 8.w),
+                  _ViewDetailsButton(
+                    label: l10n.actionViewDetails,
+                    onPressed: onViewDetails,
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -174,49 +179,47 @@ class _RouteSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          width: 12.w,
-          height: 80.h,
-          child: Column(
-            children: [
-              Container(
-                width: 12.w,
-                height: 12.w,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SizedBox(
+            width: 12.w,
+            child: Column(
+              children: [
+                Container(
+                  width: 12.w,
+                  height: 12.w,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: DriverHomeShipmentCard._routeAccent,
+                      width: 2,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 4.h),
+                    child: CustomPaint(
+                      painter: _DashedGradientLinePainter(),
+                      size: Size(2.w, double.infinity),
+                    ),
+                  ),
+                ),
+                Container(
+                  width: 12.w,
+                  height: 12.w,
+                  decoration: const BoxDecoration(
                     color: DriverHomeShipmentCard._routeAccent,
-                    width: 2,
+                    shape: BoxShape.circle,
                   ),
                 ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 4.h),
-                  child: CustomPaint(
-                    painter: _DashedGradientLinePainter(),
-                    size: Size(2.w, double.infinity),
-                  ),
-                ),
-              ),
-              Container(
-                width: 12.w,
-                height: 12.w,
-                decoration: const BoxDecoration(
-                  color: DriverHomeShipmentCard._routeAccent,
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-        SizedBox(width: 16.w),
-        Expanded(
-          child: SizedBox(
-            height: 80.h,
+          SizedBox(width: 16.w),
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -226,8 +229,8 @@ class _RouteSection extends StatelessWidget {
               ],
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -256,6 +259,8 @@ class _RouteStop extends StatelessWidget {
         ),
         Text(
           city,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
           style: TextStyle(
             fontFamily: FontRes.MANROPE_BOLD,
             fontSize: 16.sp,
@@ -332,30 +337,39 @@ class _ViewDetailsButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final borderRadius = BorderRadius.circular(8.32.r);
 
-    return SizedBox(
-      width: 140.w,
-      height: 44.h,
-      child: OutlinedButton(
-        onPressed: onPressed,
-        style: OutlinedButton.styleFrom(
-          foregroundColor: colors.primary,
-          padding: EdgeInsets.symmetric(horizontal: 25.w, vertical: 10.h),
-          side: BorderSide(color: colors.primary, width: 1.04),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.32.r),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: borderRadius,
+        child: Ink(
+          width: 140.w,
+          height: 43.88.h,
+          decoration: BoxDecoration(
+            borderRadius: borderRadius,
+            border: Border.all(color: colors.primary, width: 1.04),
           ),
-        ),
-        child: Text(
-          label,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            fontFamily: FontRes.MANROPE_SEMIBOLD,
-            fontSize: 14.56.sp,
-            fontWeight: FontWeight.w600,
-            height: 21 / 14.56,
-            color: colors.primary,
+          padding: EdgeInsets.symmetric(
+            horizontal: 24.96.w,
+            vertical: 10.4.h,
+          ),
+          child: Center(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                label,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: FontRes.MANROPE_SEMIBOLD,
+                  fontSize: 14.56.sp,
+                  fontWeight: FontWeight.w600,
+                  height: 21 / 14.56,
+                  color: colors.primary,
+                ),
+              ),
+            ),
           ),
         ),
       ),

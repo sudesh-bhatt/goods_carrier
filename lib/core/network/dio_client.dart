@@ -25,6 +25,29 @@ final secureStorageProvider = Provider<FlutterSecureStorage>((ref) {
   );
 });
 
+List<Interceptor> _dioInterceptors(
+  Ref ref,
+  FlutterSecureStorage storage,
+  DeviceInfoService deviceInfo,
+) {
+  return [
+    HeadersInterceptor(
+      deviceInfo: deviceInfo,
+      languageCode: () => ref.read(localeProvider).languageCode,
+    ),
+    AuthInterceptor(
+      storage: storage,
+      prefs: ref.read(sharedPreferencesProvider),
+      onSessionExpired: () {
+        Future.microtask(() => signalSessionExpiredFromRef(ref));
+      },
+    ),
+    ResponseInterceptor(),
+    ErrorInterceptor(),
+    if (kDebugMode) LoggingInterceptor(),
+  ];
+}
+
 // ─── Dio provider ─────────────────────────────────────────────────────────────
 
 final dioProvider = Provider<Dio>((ref) {
@@ -44,22 +67,27 @@ final dioProvider = Provider<Dio>((ref) {
     ),
   );
 
-  dio.interceptors.addAll([
-    HeadersInterceptor(
-      deviceInfo: deviceInfo,
-      languageCode: () => ref.read(localeProvider).languageCode,
+  dio.interceptors.addAll(_dioInterceptors(ref, storage, deviceInfo));
+
+  return dio;
+});
+
+/// Dio for already-absolute URLs (e.g. `/storage/...` assets resolved to full URL).
+///
+/// Avoids concatenating [ApiConstants.baseUrl] onto an absolute [RequestOptions.path].
+final absoluteUrlDioProvider = Provider<Dio>((ref) {
+  final storage = ref.read(secureStorageProvider);
+  final deviceInfo = ref.read(deviceInfoServiceProvider);
+
+  final dio = Dio(
+    BaseOptions(
+      connectTimeout: ApiConstants.connectTimeout,
+      receiveTimeout: ApiConstants.receiveTimeout,
+      sendTimeout: ApiConstants.sendTimeout,
     ),
-    AuthInterceptor(
-      storage: storage,
-      prefs: ref.read(sharedPreferencesProvider),
-      onSessionExpired: () {
-        Future.microtask(() => signalSessionExpiredFromRef(ref));
-      },
-    ),
-    ResponseInterceptor(),
-    ErrorInterceptor(),
-    if (kDebugMode) LoggingInterceptor(),
-  ]);
+  );
+
+  dio.interceptors.addAll(_dioInterceptors(ref, storage, deviceInfo));
 
   return dio;
 });

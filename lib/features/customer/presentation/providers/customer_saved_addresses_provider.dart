@@ -1,96 +1,143 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/providers/shared_preferences_provider.dart';
-import '../../../../shared/data/local/saved_address_preferences_store.dart';
-import '../../../../shared/domain/entities/saved_address.dart';
+
+import '../../../../core/network/api_exception_mapper.dart';
+import '../../../../core/providers/repository_providers.dart';
+import '../../../../shared/domain/entities/customer_saved_address.dart';
 import '../../../../shared/domain/enums/saved_address_label.dart';
+import '../../../../shared/domain/repositories/i_customer_address_repository.dart';
 
 class CustomerSavedAddressesState {
   const CustomerSavedAddressesState({
     this.addresses = const [],
     this.isLoading = false,
+    this.error,
   });
 
-  final List<SavedAddress> addresses;
+  final List<CustomerSavedAddress> addresses;
   final bool isLoading;
+  final String? error;
 
   CustomerSavedAddressesState copyWith({
-    List<SavedAddress>? addresses,
+    List<CustomerSavedAddress>? addresses,
     bool? isLoading,
+    String? error,
+    bool clearError = false,
   }) =>
       CustomerSavedAddressesState(
         addresses: addresses ?? this.addresses,
         isLoading: isLoading ?? this.isLoading,
+        error: clearError ? null : (error ?? this.error),
       );
 }
 
 class CustomerSavedAddressesNotifier
     extends StateNotifier<CustomerSavedAddressesState> {
-  CustomerSavedAddressesNotifier(this._store)
+  CustomerSavedAddressesNotifier(this._repo)
       : super(const CustomerSavedAddressesState()) {
-    _load();
+    load();
   }
 
-  final SavedAddressPreferencesStore _store;
-  Future<void> _load() async {
-    state = state.copyWith(isLoading: true);
-    final list = await _store.load();
-    state = CustomerSavedAddressesState(addresses: list);
-  }
+  final ICustomerAddressRepository _repo;
 
-  SavedAddress? byId(String id) {
-    for (final a in state.addresses) {
-      if (a.id == id) return a;
+  Future<void> load() async {
+    state = state.copyWith(isLoading: true, clearError: true);
+    try {
+      final addresses = await _repo.listAddresses();
+      state = CustomerSavedAddressesState(addresses: addresses);
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: ApiExceptionMapper.userMessage(e),
+      );
     }
-    return null;
   }
 
-  Future<void> upsert({
-    String? id,
+  CustomerSavedAddress? byId(String id) {
+    final parsed = int.tryParse(id);
+    if (parsed == null) return null;
+    return state.addresses.where((a) => a.id == parsed).firstOrNull;
+  }
+
+  static String labelForChip(SavedAddressLabel label) => switch (label) {
+        SavedAddressLabel.home => 'Home',
+        SavedAddressLabel.office => 'Office',
+        SavedAddressLabel.other => 'Other',
+      };
+
+  Future<bool> saveAddress({
+    int? id,
     required SavedAddressLabel label,
-    required String title,
-    required String fullAddressLine,
+    required String addressLine,
     required String city,
+    required String stateName,
     required String pincode,
     required double latitude,
     required double longitude,
-    String? landmark,
+    bool isDefault = false,
   }) async {
-    final resolvedId =
-        id ?? 'addr_${DateTime.now().millisecondsSinceEpoch}';
-    final next = SavedAddress(
-      id: resolvedId,
-      label: label,
-      title: title,
-      fullAddressLine: fullAddressLine,
-      city: city,
-      pincode: pincode,
-      latitude: latitude,
-      longitude: longitude,
-      landmark: landmark?.trim().isEmpty == true ? null : landmark?.trim(),
-    );
-
-    final list = List<SavedAddress>.from(state.addresses);
-    final index = list.indexWhere((a) => a.id == resolvedId);
-    if (index >= 0) {
-      list[index] = next;
-    } else {
-      list.add(next);
+    state = state.copyWith(clearError: true);
+    final apiLabel = labelForChip(label);
+    try {
+      if (id != null) {
+        await _repo.updateAddress(
+          id: id,
+          label: apiLabel,
+          addressLine: addressLine,
+          city: city,
+          state: stateName,
+          pincode: pincode,
+          latitude: latitude,
+          longitude: longitude,
+          isDefault: isDefault,
+        );
+      } else {
+        await _repo.createAddress(
+          label: apiLabel,
+          addressLine: addressLine,
+          city: city,
+          state: stateName,
+          pincode: pincode,
+          latitude: latitude,
+          longitude: longitude,
+          isDefault: isDefault,
+        );
+      }
+      await load();
+      return true;
+    } catch (e) {
+      state = state.copyWith(error: ApiExceptionMapper.userMessage(e));
+      return false;
     }
-
-    await _store.save(list);
-    state = state.copyWith(addresses: list);
   }
 
-  Future<void> remove(String id) async {
-    final list =
-        state.addresses.where((a) => a.id != id).toList(growable: false);
-    await _store.save(list);
-    state = state.copyWith(addresses: list);
+  Future<bool> deleteAddress(int id) async {
+    state = state.copyWith(clearError: true);
+    try {
+      await _repo.deleteAddress(id);
+      await load();
+      return true;
+    } catch (e) {
+      state = state.copyWith(error: ApiExceptionMapper.userMessage(e));
+      return false;
+    }
+  }
+
+  Future<bool> setDefaultAddress(int id) async {
+    state = state.copyWith(clearError: true);
+    try {
+      await _repo.setDefaultAddress(id);
+      await load();
+      return true;
+    } catch (e) {
+      state = state.copyWith(error: ApiExceptionMapper.userMessage(e));
+      return false;
+    }
   }
 }
 
 final customerSavedAddressesProvider = StateNotifierProvider<
-    CustomerSavedAddressesNotifier, CustomerSavedAddressesState>((ref) {
-  final prefs = ref.watch(sharedPreferencesProvider);
-  return CustomerSavedAddressesNotifier(SavedAddressPreferencesStore(prefs));
-});
+    CustomerSavedAddressesNotifier, CustomerSavedAddressesState>(
+  (ref) => CustomerSavedAddressesNotifier(
+    ref.read(customerAddressRepositoryProvider),
+  ),
+);

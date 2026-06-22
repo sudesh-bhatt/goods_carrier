@@ -943,6 +943,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get driverPhoneCopied => 'Phone number copied';
 
   @override
+  String get driverPhoneUnavailable => 'Phone number is not available';
+
+  @override
+  String get driverCallLaunchFailed => 'Could not open the phone dialer';
+
+  @override
+  String get driverWhatsAppLaunchFailed => 'Could not open WhatsApp';
+
+  @override
   String get driverVehicleSpecifications => 'Specifications';
 
   @override
@@ -993,6 +1002,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get driverVehicleUpdated => 'Vehicle updated successfully';
+
+  @override
+  String get driverCropImageTitle => 'Crop image';
+
+  @override
+  String get driverAdjustCrop => 'Adjust crop';
+
+  @override
+  String get driverReplacePhoto => 'Choose another photo';
 
   @override
   String get profileManageSubscription => 'Manage Subscription';
@@ -1046,6 +1064,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customerSavedAddressesSub => 'Home, Office & others';
 
   @override
+  String get customerSavedAddressesEmptyTitle => 'No saved addresses yet';
+
+  @override
+  String get customerSavedAddressesEmptySubtitle =>
+      'Add your home, office, or other locations to use them quickly when booking.';
+
+  @override
   String get customerSavedLocationsSection => 'SAVED LOCATIONS';
 
   @override
@@ -1079,6 +1104,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customerAddressCityHint => 'e.g. San Francisco';
 
   @override
+  String get customerAddressState => 'State';
+
+  @override
+  String get customerAddressStateHint => 'e.g. Haryana';
+
+  @override
   String get customerAddressPincode => 'Pincode';
 
   @override
@@ -1099,6 +1130,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get customerAddressSaved => 'Address saved';
+
+  @override
+  String get driverAddressSetDefault => 'Set as default address';
+
+  @override
+  String get driverAddressDefaultBadge => 'Default';
+
+  @override
+  String get driverAddressDeleteTitle => 'Delete address?';
+
+  @override
+  String get driverAddressDeleteBody =>
+      'This address will be removed from your saved locations.';
+
+  @override
+  String get driverAddressDeleted => 'Address deleted';
 
   @override
   String get customerLocationPermissionNeeded =>

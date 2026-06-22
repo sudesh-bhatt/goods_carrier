@@ -938,6 +938,15 @@ class AppLocalizationsGu extends AppLocalizations {
   String get driverPhoneCopied => 'ફોન નંબર કોપી થયો';
 
   @override
+  String get driverPhoneUnavailable => 'ફોન નંબર ઉપલબ્ધ નથી';
+
+  @override
+  String get driverCallLaunchFailed => 'ફોન ડાયલર ખોલી શકાયો નહીં';
+
+  @override
+  String get driverWhatsAppLaunchFailed => 'WhatsApp ખોલી શકાયું નહીં';
+
+  @override
   String get driverVehicleSpecifications => 'સ્પેસિફિકેશન્સ';
 
   @override
@@ -988,6 +997,15 @@ class AppLocalizationsGu extends AppLocalizations {
 
   @override
   String get driverVehicleUpdated => 'વાહન સફળતાપૂર્વક અપડેટ થયું';
+
+  @override
+  String get driverCropImageTitle => 'છબી ક્રોપ કરો';
+
+  @override
+  String get driverAdjustCrop => 'ક્રોપ સમાયોજિત કરો';
+
+  @override
+  String get driverReplacePhoto => 'બીજી ફોટો પસંદ કરો';
 
   @override
   String get profileManageSubscription => 'સબ્સ્ક્રિપ્શન મેનેજ કરો';
@@ -1041,6 +1059,14 @@ class AppLocalizationsGu extends AppLocalizations {
   String get customerSavedAddressesSub => 'ઘર, ઓફિસ અને અન્ય';
 
   @override
+  String get customerSavedAddressesEmptyTitle =>
+      'હજી સુધી કોઈ સરનામું સાચવેલું નથી';
+
+  @override
+  String get customerSavedAddressesEmptySubtitle =>
+      'બુકિંગ દરમિયાન ઝડપથી ઉપયોગ કરવા માટે તમારું ઘર, ઓફિસ અથવા અન્ય સ્થાન ઉમેરો.';
+
+  @override
   String get customerSavedLocationsSection => 'SAVED LOCATIONS';
 
   @override
@@ -1074,6 +1100,12 @@ class AppLocalizationsGu extends AppLocalizations {
   String get customerAddressCityHint => 'e.g. San Francisco';
 
   @override
+  String get customerAddressState => 'રાજ્ય';
+
+  @override
+  String get customerAddressStateHint => 'દા.ત. હરિયાણા';
+
+  @override
   String get customerAddressPincode => 'Pincode';
 
   @override
@@ -1094,6 +1126,22 @@ class AppLocalizationsGu extends AppLocalizations {
 
   @override
   String get customerAddressSaved => 'Address saved';
+
+  @override
+  String get driverAddressSetDefault => 'ડિફૉલ્ટ સરનામા તરીકે સેટ કરો';
+
+  @override
+  String get driverAddressDefaultBadge => 'ડિફૉલ્ટ';
+
+  @override
+  String get driverAddressDeleteTitle => 'સરનામું કાઢી નાખો?';
+
+  @override
+  String get driverAddressDeleteBody =>
+      'આ સરનામું તમારા સાચવેલા સ્થાનોમાંથી દૂર કરવામાં આવશે.';
+
+  @override
+  String get driverAddressDeleted => 'સરનામું કાઢી નાખ્યું';
 
   @override
   String get customerLocationPermissionNeeded =>

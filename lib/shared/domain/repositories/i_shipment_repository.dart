@@ -1,5 +1,6 @@
 import '../entities/shipment.dart';
 import '../models/customer_shipment_detail.dart';
+import '../models/driver_dashboard_query.dart';
 import '../models/driver_shipment_detail.dart';
 import '../models/shipment_form_prefill.dart';
 import '../models/shipment_submit_options.dart';
@@ -54,7 +55,10 @@ abstract class IShipmentRepository {
 
   /// Returns all pending shipment requests visible to this driver.
   /// Filtered server-side by vehicle type and location radius.
-  Future<List<Shipment>> getPendingRequests({String? driverId});
+  Future<List<Shipment>> getPendingRequests({
+    String? driverId,
+    DriverDashboardQuery query = const DriverDashboardQuery(),
+  });
 
   /// Loads driver shipment detail (`GET /api/driver/shipments/{id}`).
   Future<DriverShipmentDetail> getDriverShipmentDetail(String id);

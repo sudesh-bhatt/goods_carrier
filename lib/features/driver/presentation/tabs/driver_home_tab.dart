@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/config/env_config.dart';
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
@@ -13,6 +14,7 @@ import '../../../../shared/domain/models/shipment_filter.dart';
 import '../../../../shared/presentation/widgets/feedback/empty_state.dart';
 import '../../../../shared/presentation/widgets/feedback/skeleton_card.dart';
 import '../../../../shared/presentation/widgets/filters/filter_search_sheet.dart';
+import '../../../../shared/presentation/widgets/navigation/app_bottom_nav_bar.dart';
 import '../../../customer/presentation/widgets/customer_home_search_section.dart';
 import '../providers/driver_shipment_requests_provider.dart';
 import '../widgets/driver_home_shipment_card.dart';
@@ -47,7 +49,30 @@ class _DriverHomeTabState extends ConsumerState<DriverHomeTab>
     super.dispose();
   }
 
-  List<Shipment> _filterShipments(List<Shipment> source) {
+  void _resetFilters() {
+    safeSetState(() {
+      _shipmentFilter = const ShipmentFilter();
+      _searchCtrl.clear();
+    });
+    if (EnvConfig.useRemoteApi) {
+      ref.read(driverShipmentRequestsProvider.notifier).applyFilters(
+            search: '',
+            filter: const ShipmentFilter(),
+          );
+    }
+  }
+
+  bool get _hasLocalFilters =>
+      _searchCtrl.text.trim().isNotEmpty || _shipmentFilter.hasActiveFilters;
+
+  Future<void> _reloadDashboard() async {
+    await ref.read(driverShipmentRequestsProvider.notifier).applyFilters(
+          search: _searchCtrl.text,
+          filter: _shipmentFilter,
+        );
+  }
+
+  List<Shipment> _filterShipmentsLocally(List<Shipment> source) {
     final query = _searchCtrl.text.trim().toLowerCase();
     return source.where((s) {
       if (!_shipmentFilter.matches(s)) return false;
@@ -71,18 +96,12 @@ class _DriverHomeTabState extends ConsumerState<DriverHomeTab>
     final colors = context.colors;
     final l10n = context.l10n;
     final state = ref.watch(driverShipmentRequestsProvider);
-    final shipments = _filterShipments(state.all);
+    final shipments = EnvConfig.useRemoteApi
+        ? state.all
+        : _filterShipmentsLocally(state.all);
 
     if (state.isLoading && state.all.isEmpty) {
       return const Center(child: CircularProgressIndicator());
-    }
-
-    if (state.all.isEmpty) {
-      return EmptyState(
-        headline: l10n.emptyShipments,
-        subtitle: l10n.customerHomeNoMatchingShipmentsHint,
-        fallbackIcon: Icons.search_off_rounded,
-      );
     }
 
     return RefreshIndicator(
@@ -101,7 +120,10 @@ class _DriverHomeTabState extends ConsumerState<DriverHomeTab>
                   CustomerHomeSearchRow(
                     controller: _searchCtrl,
                     hint: l10n.customerHomeSearchHint,
-                    onChanged: (_) => safeSetState(() {}),
+                    onChanged: (_) {
+                      safeSetState(() {});
+                      if (EnvConfig.useRemoteApi) _reloadDashboard();
+                    },
                     onFilterTap: () async {
                       final result = await FilterSearchSheet.show(
                         context,
@@ -109,6 +131,7 @@ class _DriverHomeTabState extends ConsumerState<DriverHomeTab>
                       );
                       if (result != null) {
                         safeSetState(() => _shipmentFilter = result);
+                        if (EnvConfig.useRemoteApi) await _reloadDashboard();
                       }
                     },
                   ),
@@ -159,9 +182,15 @@ class _DriverHomeTabState extends ConsumerState<DriverHomeTab>
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 25.w),
                 child: EmptyState(
-                  headline: l10n.customerHomeNoMatchingShipments,
+                  headline: _hasLocalFilters
+                      ? l10n.customerHomeNoMatchingShipments
+                      : l10n.emptyShipments,
                   subtitle: l10n.customerHomeNoMatchingShipmentsHint,
-                  fallbackIcon: Icons.filter_list_off_rounded,
+                  fallbackIcon: Icons.local_shipping_outlined,
+                  fallbackIconColor: kBottomNavInactive,
+                  actionLabel:
+                      _hasLocalFilters ? l10n.filterClearAll : null,
+                  onAction: _hasLocalFilters ? _resetFilters : null,
                 ),
               ),
             )

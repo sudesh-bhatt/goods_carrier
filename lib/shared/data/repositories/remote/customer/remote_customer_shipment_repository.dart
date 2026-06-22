@@ -2,6 +2,7 @@ import '../../../api/customer/customer_shipment_api_client.dart';
 import '../../../api/driver/driver_dashboard_api_client.dart';
 import '../../../../domain/entities/shipment.dart';
 import '../../../../domain/models/customer_shipment_detail.dart';
+import '../../../../domain/models/driver_dashboard_query.dart';
 import '../../../../domain/models/driver_shipment_detail.dart';
 import '../../../../domain/models/shipment_form_prefill.dart';
 import '../../../../domain/models/shipment_submit_options.dart';
@@ -86,8 +87,11 @@ class RemoteCustomerShipmentRepository implements IShipmentRepository {
   // ── Driver operations ────────────────────────────────────────────────────
 
   @override
-  Future<List<Shipment>> getPendingRequests({String? driverId}) async {
-    final result = await _driverDashboardApi.fetchDashboard();
+  Future<List<Shipment>> getPendingRequests({
+    String? driverId,
+    DriverDashboardQuery query = const DriverDashboardQuery(),
+  }) async {
+    final result = await _driverDashboardApi.fetchDashboard(query: query);
     return result.items;
   }
 

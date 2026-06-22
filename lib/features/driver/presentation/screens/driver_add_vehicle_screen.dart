@@ -15,11 +15,13 @@ import '../../../../core/mixins/safe_set_state_mixin.dart';
 import '../../../../core/network/api_exception_mapper.dart';
 import '../../../../core/providers/repository_providers.dart';
 import '../../../../core/router/app_routes.dart';
-import '../../../../core/utils/media_permission_helper.dart';
+import '../../../../core/utils/image_crop_picker_helper.dart';
 import '../../../../core/utils/profile_image_utils.dart';
+import '../../../../core/utils/vehicle_image_crop_kind.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../res/font_res.dart';
 import '../../../../shared/domain/models/driver_vehicle_detail.dart';
+import '../../../../shared/domain/models/driver_vehicle_edit_result.dart';
 import '../../../../shared/domain/models/driver_vehicle_masters.dart';
 import '../../../../shared/presentation/widgets/inputs/app_phone_field.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
@@ -139,19 +141,62 @@ class _DriverAddVehicleScreenState extends ConsumerState<DriverAddVehicleScreen>
     super.dispose();
   }
 
-  Future<void> _pickImage(void Function(String path) onPicked) async {
-    final access = await MediaPermissionHelper.ensureGallery();
-    if (access == GalleryAccessResult.denied ||
-        access == GalleryAccessResult.permanentlyDenied) {
-      return;
+  Future<void> _pickImage({
+    required VehicleImageCropKind kind,
+    required void Function(String path) onPicked,
+    String? existingPath,
+  }) async {
+    final l10n = context.l10n;
+    final hasLocal = ProfileImageUtils.isLocalFileAvailable(existingPath);
+
+    if (hasLocal && existingPath != null) {
+      final action = await showModalBottomSheet<_ImagePickAction>(
+        context: context,
+        builder: (ctx) => SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.crop_rounded),
+                title: Text(l10n.driverAdjustCrop),
+                onTap: () => Navigator.pop(ctx, _ImagePickAction.adjustCrop),
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library_outlined),
+                title: Text(l10n.driverReplacePhoto),
+                onTap: () => Navigator.pop(ctx, _ImagePickAction.replace),
+              ),
+            ],
+          ),
+        ),
+      );
+      if (!mounted) return;
+      if (action == _ImagePickAction.adjustCrop) {
+        final cropped = await ImageCropPickerHelper.cropExisting(
+          context: context,
+          sourcePath: existingPath,
+          kind: kind,
+          cropTitle: l10n.driverCropImageTitle,
+        );
+        if (cropped != null) {
+          onPicked(cropped);
+          safeSetState(() {});
+        }
+        return;
+      }
+      if (action != _ImagePickAction.replace) return;
     }
-    final file = await _imagePicker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 85,
+
+    final cropped = await ImageCropPickerHelper.pickAndCrop(
+      context: context,
+      kind: kind,
+      cropTitle: l10n.driverCropImageTitle,
+      picker: _imagePicker,
     );
-    if (file == null) return;
-    onPicked(file.path);
-    safeSetState(() {});
+    if (cropped != null) {
+      onPicked(cropped);
+      safeSetState(() {});
+    }
   }
 
   Future<void> _submit() async {
@@ -168,38 +213,33 @@ class _DriverAddVehicleScreenState extends ConsumerState<DriverAddVehicleScreen>
     try {
       if (!EnvConfig.useRemoteApi) {
         if (!mounted) return;
-        context.pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              _isEditing
-                  ? context.l10n.driverVehicleUpdated
-                  : context.l10n.driverVehicleAdded,
-            ),
-          ),
-        );
+        if (_isEditing) {
+          context.pop(DriverVehicleEditResult.cancelled);
+        } else {
+          context.pop();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(context.l10n.driverVehicleAdded)),
+          );
+        }
         return;
       }
 
       final formData = await _buildFormData();
       final client = ref.read(driverVehicleApiClientProvider);
       if (_isEditing) {
-        await client.updateVehicle(widget.vehicleId!, formData);
+        final detail = await client.updateVehicle(widget.vehicleId!, formData);
+        await ref.read(driverVehiclesProvider.notifier).load();
+        if (!mounted) return;
+        context.pop(DriverVehicleEditResult.updated(detail));
       } else {
         await client.addVehicle(formData);
+        await ref.read(driverVehiclesProvider.notifier).load();
+        if (!mounted) return;
+        context.pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.driverVehicleAdded)),
+        );
       }
-      await ref.read(driverVehiclesProvider.notifier).load();
-      if (!mounted) return;
-      context.pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            _isEditing
-                ? context.l10n.driverVehicleUpdated
-                : context.l10n.driverVehicleAdded,
-          ),
-        ),
-      );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -273,7 +313,11 @@ class _DriverAddVehicleScreenState extends ConsumerState<DriverAddVehicleScreen>
                               fleetCode: _registrationCtrl.text.isEmpty
                                   ? 'V-902-XLR'
                                   : _registrationCtrl.text,
-                              onPick: () => _pickImage((p) => _vehiclePhotoPath = p),
+                              onPick: () => _pickImage(
+                                kind: VehicleImageCropKind.vehicleHero,
+                                existingPath: _vehiclePhotoPath,
+                                onPicked: (p) => _vehiclePhotoPath = p,
+                              ),
                             ),
                             SizedBox(height: 32.h),
                             DriverProfileSectionCard(
@@ -371,10 +415,16 @@ class _DriverAddVehicleScreenState extends ConsumerState<DriverAddVehicleScreen>
                                     backLabel: l10n.driverLicenseBack,
                                     frontPath: _licenseFrontPath,
                                     backPath: _licenseBackPath,
-                                    onPickFront: () =>
-                                        _pickImage((p) => _licenseFrontPath = p),
-                                    onPickBack: () =>
-                                        _pickImage((p) => _licenseBackPath = p),
+                                    onPickFront: () => _pickImage(
+                                      kind: VehicleImageCropKind.license,
+                                      existingPath: _licenseFrontPath,
+                                      onPicked: (p) => _licenseFrontPath = p,
+                                    ),
+                                    onPickBack: () => _pickImage(
+                                      kind: VehicleImageCropKind.license,
+                                      existingPath: _licenseBackPath,
+                                      onPicked: (p) => _licenseBackPath = p,
+                                    ),
                                   ),
                                   SizedBox(height: 16.h),
                                   _ProfilePhotoSection(
@@ -382,8 +432,11 @@ class _DriverAddVehicleScreenState extends ConsumerState<DriverAddVehicleScreen>
                                     subtitle: l10n.driverProfilePhotoHint,
                                     body: l10n.driverProfilePhotoBody,
                                     imagePath: _profilePhotoPath,
-                                    onPick: () =>
-                                        _pickImage((p) => _profilePhotoPath = p),
+                                    onPick: () => _pickImage(
+                                      kind: VehicleImageCropKind.profile,
+                                      existingPath: _profilePhotoPath,
+                                      onPicked: (p) => _profilePhotoPath = p,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -491,6 +544,30 @@ class _HeroImageCard extends StatelessWidget {
                   ],
                 ),
               ),
+              if (local)
+                Positioned(
+                  right: 12.w,
+                  top: 12.h,
+                  child: Container(
+                    width: 32.w,
+                    height: 32.w,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color.fromRGBO(0, 0, 0, 0.12),
+                          blurRadius: 4,
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      Icons.crop_rounded,
+                      size: 16.w,
+                      color: DriverVehicleTokens.labelBrown,
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
@@ -686,11 +763,50 @@ class _UploadTile extends StatelessWidget {
           ),
         ),
         child: local || network != null
-            ? ClipRRect(
-                borderRadius: BorderRadius.circular(14.r),
-                child: local
-                    ? Image.file(File(imagePath!), fit: BoxFit.cover, width: double.infinity)
-                    : Image.network(network!, fit: BoxFit.cover, width: double.infinity),
+            ? Stack(
+                fit: StackFit.expand,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(14.r),
+                    child: local
+                        ? Image.file(
+                            File(imagePath!),
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
+                          )
+                        : Image.network(
+                            network!,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
+                          ),
+                  ),
+                  if (local)
+                    Positioned(
+                      right: 6.w,
+                      bottom: 6.h,
+                      child: Container(
+                        width: 24.w,
+                        height: 24.w,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Color.fromRGBO(0, 0, 0, 0.12),
+                              blurRadius: 4,
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          Icons.crop_rounded,
+                          size: 12.w,
+                          color: DriverVehicleTokens.labelBrown,
+                        ),
+                      ),
+                    ),
+                ],
               )
             : Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -890,3 +1006,5 @@ class _StickySubmitBar extends StatelessWidget {
     );
   }
 }
+
+enum _ImagePickAction { adjustCrop, replace }

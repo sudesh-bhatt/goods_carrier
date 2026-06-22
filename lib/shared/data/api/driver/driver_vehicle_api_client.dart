@@ -72,9 +72,15 @@ class DriverVehicleApiClient {
   }
 
   Future<DriverVehicleDetail> updateVehicle(int id, FormData formData) async {
-    final response = await _dio.put<Map<String, dynamic>>(
+    // PHP only parses multipart/form-data on POST. Laravel routes PUT via _method.
+    final payload = FormData()
+      ..fields.addAll(formData.fields)
+      ..files.addAll(formData.files)
+      ..fields.add(const MapEntry('_method', 'PUT'));
+
+    final response = await _dio.post<Map<String, dynamic>>(
       ApiConstants.driverVehicle(id),
-      data: formData,
+      data: payload,
     );
     final data = ApiEnvelope.parseData(response.data);
     return DriverVehicleApiMapper.detailFromJson(data);

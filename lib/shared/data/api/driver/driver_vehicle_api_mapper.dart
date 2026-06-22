@@ -59,6 +59,7 @@ abstract final class DriverVehicleApiMapper {
 
   static DriverVehicleDetail detailFromJson(Map<String, dynamic> json) {
     final type = _parseVehicleType(json);
+    final capacityFields = _parseCapacityFields(json);
     return DriverVehicleDetail(
       id: _readInt(json['id']) ?? 0,
       registrationNumber: _firstString(json, [
@@ -69,10 +70,8 @@ abstract final class DriverVehicleApiMapper {
       vehicleTypeId: type.id ?? 0,
       vehicleTypeName: type.name,
       vehicleTypeSlug: type.slug,
-      capacity: _readDouble(json['capacity']) ?? 0,
-      capacityUnit: _firstString(json, ['capacity_unit', 'unit']).isEmpty
-          ? 'TON'
-          : _firstString(json, ['capacity_unit', 'unit']).toUpperCase(),
+      capacity: capacityFields.value ?? 0,
+      capacityUnit: capacityFields.unit,
       status: DriverVehicleStatus.fromApi(
         _firstString(json, ['status', 'vehicle_status']),
       ),
@@ -86,33 +85,38 @@ abstract final class DriverVehicleApiMapper {
         'driver_role',
         'designation',
       ]),
-      profilePhotoUrl: _firstString(json, [
+      profilePhotoUrl: _documentUrl(json, [
         'profile_photo',
         'profile_photo_url',
         'driver_photo',
       ]),
-      licenseFrontUrl: _firstString(json, [
+      licenseFrontUrl: _documentUrl(json, [
         'license_front',
         'license_front_url',
         'driving_license_front',
       ]),
-      licenseBackUrl: _firstString(json, [
+      licenseBackUrl: _documentUrl(json, [
         'license_back',
         'license_back_url',
         'driving_license_back',
       ]),
-      vehiclePhotoUrl: _firstString(json, [
+      vehiclePhotoUrl: _documentUrl(json, [
         'vehicle_photo',
         'vehicle_photo_url',
         'photo',
         'image',
       ]),
       fleetCode: _firstString(json, ['fleet_code', 'code', 'vehicle_code']),
+      capacityLabelOverride: _firstString(json, [
+        'capacity_label',
+        'capacity_display',
+      ]),
     );
   }
 
   static DriverVehicle fromJson(Map<String, dynamic> json) {
     final type = _parseVehicleType(json);
+    final capacityFields = _parseCapacityFields(json);
     return DriverVehicle(
       id: _readInt(json['id']) ?? 0,
       vehicleNumber: _firstString(json, [
@@ -124,10 +128,8 @@ abstract final class DriverVehicleApiMapper {
       vehicleTypeId: type.id,
       vehicleTypeName: type.name,
       vehicleTypeSlug: type.slug,
-      capacity: _readDouble(json['capacity']),
-      capacityUnit: _firstString(json, ['capacity_unit', 'unit']).isEmpty
-          ? 'TON'
-          : _firstString(json, ['capacity_unit', 'unit']).toUpperCase(),
+      capacity: capacityFields.value,
+      capacityUnit: capacityFields.unit,
       status: DriverVehicleStatus.fromApi(
         _firstString(json, ['status', 'vehicle_status']),
       ),
@@ -176,12 +178,28 @@ abstract final class DriverVehicleApiMapper {
     }
 
     final typeId = _readInt(json['vehicle_type_id']);
-    final typeName = _firstString(json, ['vehicle_type_name', 'type_name']);
-    final typeSlug = json['vehicle_type'] is String
-        ? json['vehicle_type'] as String
+    var typeName = _firstString(json, ['vehicle_type_name', 'type_name']);
+    var typeSlug = nestedType is String
+        ? nestedType
         : _firstString(json, ['vehicle_type_slug', 'type_slug']);
 
+    if (typeName.isEmpty && typeSlug.isNotEmpty) {
+      typeName = typeSlug;
+    }
+
     return _TypeParts(id: typeId, name: typeName, slug: typeSlug);
+  }
+
+  /// Reads a document URL from the root payload or nested `documents` object.
+  static String _documentUrl(Map<String, dynamic> json, List<String> keys) {
+    final direct = _firstString(json, keys);
+    if (direct.isNotEmpty) return direct;
+
+    final docs = json['documents'];
+    if (docs is Map<String, dynamic>) {
+      return _firstString(docs, keys);
+    }
+    return '';
   }
 
   static int? _readInt(dynamic raw) {
@@ -191,11 +209,50 @@ abstract final class DriverVehicleApiMapper {
     return int.tryParse(raw.toString());
   }
 
-  static double? _readDouble(dynamic raw) {
-    if (raw == null) return null;
-    if (raw is double) return raw;
-    if (raw is num) return raw.toDouble();
-    return double.tryParse(raw.toString());
+  /// Supports numeric capacity, separate `capacity_unit`, and combined strings
+  /// like `"500 KG"` returned by the list API.
+  static ({double? value, String unit}) _parseCapacityFields(
+    Map<String, dynamic> json,
+  ) {
+    final unitField = _normalizeCapacityUnit(
+      _firstString(json, ['capacity_unit', 'unit']),
+    );
+    final raw = json['capacity'];
+
+    if (raw is num) {
+      return (value: raw.toDouble(), unit: unitField);
+    }
+
+    if (raw is String && raw.trim().isNotEmpty) {
+      final trimmed = raw.trim();
+      final pure = double.tryParse(trimmed);
+      if (pure != null) {
+        return (value: pure, unit: unitField);
+      }
+
+      final match = RegExp(
+        r'^([\d.]+)\s*(.+)?$',
+        caseSensitive: false,
+      ).firstMatch(trimmed);
+      if (match != null) {
+        final value = double.tryParse(match.group(1)!);
+        final embeddedUnit = match.group(2)?.trim() ?? '';
+        final unit = embeddedUnit.isEmpty
+            ? unitField
+            : _normalizeCapacityUnit(embeddedUnit);
+        return (value: value, unit: unit);
+      }
+    }
+
+    return (value: null, unit: unitField);
+  }
+
+  static String _normalizeCapacityUnit(String raw) {
+    final unit = raw.trim().toUpperCase();
+    if (unit.isEmpty) return 'TON';
+    if (unit.startsWith('KG')) return 'KG';
+    if (unit.startsWith('TON')) return 'TON';
+    return unit;
   }
 
   static String _firstString(Map<String, dynamic> source, List<String> keys) {

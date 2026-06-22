@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -10,13 +9,14 @@ import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/mixins/safe_set_state_mixin.dart';
 import '../../../../core/router/app_routes.dart';
-import '../../../../core/utils/phone_utils.dart';
-import '../../../../core/utils/profile_image_utils.dart';
+import '../../../../core/utils/external_launcher.dart';
 import '../../../../res/assets_res.dart';
 import '../../../../res/font_res.dart';
 import '../../../../shared/domain/enums/driver_vehicle_status.dart';
 import '../../../../shared/domain/models/driver_vehicle_detail.dart';
+import '../../../../shared/domain/models/driver_vehicle_edit_result.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
+import '../../../../shared/presentation/widgets/profile/profile_image_content.dart';
 import '../providers/driver_vehicles_provider.dart';
 import '../widgets/vehicles/driver_vehicle_status_badge.dart';
 import '../widgets/vehicles/driver_vehicle_tokens.dart';
@@ -59,11 +59,57 @@ class _DriverVehicleDetailScreenState
     });
   }
 
-  void _copyPhone(String phone) {
-    Clipboard.setData(ClipboardData(text: phone));
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(context.l10n.driverPhoneCopied)),
+  Future<void> _openEdit(DriverVehicleDetail detail) async {
+    final result = await context.push<DriverVehicleEditResult>(
+      AppRoutes.driverEditVehicleOf(detail.id),
     );
+    if (!mounted || result == null || !result.updated) return;
+    final updated = result.detail;
+    if (updated == null) return;
+    safeSetState(() => _detail = updated);
+    _showSnack(context.l10n.driverVehicleUpdated);
+  }
+
+  void _showSnack(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
+  Future<void> _callDriver(DriverVehicleDetail detail) async {
+    final l10n = context.l10n;
+    if (!ExternalLauncher.hasCallableNumber(
+      detail.driverCountryCode,
+      detail.driverPhone,
+    )) {
+      _showSnack(l10n.driverPhoneUnavailable);
+      return;
+    }
+
+    final launched = await ExternalLauncher.dialPhone(
+      dialCode: detail.driverCountryCode,
+      localNumber: detail.driverPhone,
+    );
+    if (!mounted) return;
+    if (!launched) _showSnack(l10n.driverCallLaunchFailed);
+  }
+
+  Future<void> _openWhatsApp(DriverVehicleDetail detail) async {
+    final l10n = context.l10n;
+    if (!ExternalLauncher.hasCallableNumber(
+      detail.driverCountryCode,
+      detail.driverPhone,
+    )) {
+      _showSnack(l10n.driverPhoneUnavailable);
+      return;
+    }
+
+    final launched = await ExternalLauncher.openWhatsApp(
+      dialCode: detail.driverCountryCode,
+      localNumber: detail.driverPhone,
+    );
+    if (!mounted) return;
+    if (!launched) _showSnack(l10n.driverWhatsAppLaunchFailed);
   }
 
   @override
@@ -91,13 +137,8 @@ class _DriverVehicleDetailScreenState
                           SizedBox(height: 20.h),
                           _DriverCard(
                             detail: detail,
-                            onCall: () => _copyPhone(
-                              PhoneUtils.buildE164(
-                                detail.driverCountryCode,
-                                detail.driverPhone,
-                              ),
-                            ),
-                            onWhatsApp: () => _copyPhone(detail.driverPhone),
+                            onCall: () => _callDriver(detail),
+                            onWhatsApp: () => _openWhatsApp(detail),
                           ),
                           SizedBox(height: 20.h),
                           _SpecificationsCard(detail: detail),
@@ -106,9 +147,7 @@ class _DriverVehicleDetailScreenState
                     ),
                     _StickyEditBar(
                       label: l10n.driverEditVehicle,
-                      onPressed: () => context.push(
-                        AppRoutes.driverEditVehicleOf(detail.id),
-                      ),
+                      onPressed: () => _openEdit(detail),
                     ),
                   ],
                 ),
@@ -233,7 +272,10 @@ class _DriverCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final photo = ProfileImageUtils.resolveNetworkUrl(detail.profilePhotoUrl);
+    final l10n = context.l10n;
+    final subtitle = detail.driverSubtitle.trim().isNotEmpty
+        ? detail.driverSubtitle
+        : l10n.driverExpertDriverLabel;
 
     return Container(
       width: double.infinity,
@@ -249,14 +291,20 @@ class _DriverCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(24.r),
-                child: photo != null
-                    ? Image.network(photo, width: 56.w, height: 56.w, fit: BoxFit.cover)
-                    : Container(
-                        width: 56.w,
-                        height: 56.w,
-                        color: DriverVehicleTokens.cardFill,
-                        child: Icon(Icons.person_rounded, color: DriverVehicleTokens.labelBrown),
+                child: SizedBox(
+                  width: 56.w,
+                  height: 56.w,
+                  child: ProfileImageContent(
+                    imageReference: detail.profilePhotoUrl,
+                    placeholder: Container(
+                      color: DriverVehicleTokens.cardFill,
+                      child: Icon(
+                        Icons.person_rounded,
+                        color: DriverVehicleTokens.labelBrown,
                       ),
+                    ),
+                  ),
+                ),
               ),
               Positioned(
                 right: -4.w,
@@ -292,31 +340,29 @@ class _DriverCard extends StatelessWidget {
                     color: DriverVehicleTokens.bodyDark,
                   ),
                 ),
-                if (detail.driverSubtitle.isNotEmpty) ...[
-                  SizedBox(height: 2.h),
-                  Text(
-                    detail.driverSubtitle,
-                    style: TextStyle(
-                      fontFamily: FontRes.MANROPE_MEDIUM,
-                      fontSize: 10.sp,
-                      fontWeight: FontWeight.w500,
-                      height: 15 / 10,
-                      color: const Color(0xFF41484C),
-                    ),
+                SizedBox(height: 2.h),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    fontFamily: FontRes.MANROPE_MEDIUM,
+                    fontSize: 10.sp,
+                    fontWeight: FontWeight.w500,
+                    height: 15 / 10,
+                    color: const Color(0xFF41484C),
                   ),
-                ],
+                ),
               ],
             ),
           ),
           _ActionIconButton(icon: Icons.phone_outlined, onTap: onCall),
           SizedBox(width: 12.w),
           _ActionIconButton(
+            onTap: onWhatsApp,
             child: SvgPicture.asset(
               AssetsRes.SVG_IC_WHATSAPP,
               width: 18.w,
               height: 18.w,
             ),
-            onTap: onWhatsApp,
           ),
         ],
       ),
@@ -326,9 +372,9 @@ class _DriverCard extends StatelessWidget {
 
 class _ActionIconButton extends StatelessWidget {
   const _ActionIconButton({
+    required this.onTap,
     this.icon,
     this.child,
-    required this.onTap,
   });
 
   final IconData? icon;

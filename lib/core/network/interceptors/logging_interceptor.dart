@@ -76,13 +76,13 @@ class LoggingInterceptor extends Interceptor {
     handler.next(err);
   }
 
-  /// Logs path-only URL; query params are printed separately from [RequestOptions.queryParameters].
+  /// Uses Dio's resolved URI so absolute paths are not double-prefixed with [baseUrl].
   static String _requestUrlWithoutQuery(RequestOptions options) {
-    final base = options.baseUrl.endsWith('/')
-        ? options.baseUrl.substring(0, options.baseUrl.length - 1)
-        : options.baseUrl;
-    final path = options.path.startsWith('/') ? options.path : '/${options.path}';
-    return '$base$path';
+    final uri = options.uri;
+    if (uri.hasQuery) {
+      return uri.replace(queryParameters: const {}).toString();
+    }
+    return uri.origin.isEmpty ? uri.path : '${uri.origin}${uri.path}';
   }
 
   static Map<String, dynamic> _redactHeaders(Map<String, dynamic> headers) {
@@ -97,6 +97,11 @@ class LoggingInterceptor extends Interceptor {
 
   static String _formatBody(dynamic data) {
     if (data == null) return '';
+
+    if (data is Uint8List || data is List<int>) {
+      final length = data is Uint8List ? data.length : data.length;
+      return '<binary $length bytes>';
+    }
 
     if (data is FormData) {
       final fields = data.fields

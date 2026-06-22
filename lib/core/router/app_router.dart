@@ -35,9 +35,11 @@ import '../../features/customer/presentation/tabs/customer_home_tab.dart';
 import '../../features/customer/presentation/tabs/customer_notifications_tab.dart';
 import '../../features/customer/presentation/tabs/customer_profile_tab.dart';
 import '../../features/customer/presentation/tabs/customer_shipments_tab.dart';
+import '../../features/driver/presentation/screens/driver_add_address_screen.dart';
 import '../../features/driver/presentation/screens/driver_add_vehicle_screen.dart';
 import '../../features/driver/presentation/screens/driver_earnings_screen.dart';
 import '../../features/driver/presentation/screens/driver_vehicle_detail_screen.dart';
+import '../../features/driver/presentation/screens/driver_saved_addresses_screen.dart';
 import '../../features/driver/presentation/screens/driver_vehicles_screen.dart';
 import '../../shared/domain/enums/user_role.dart';
 import '../../shared/presentation/screens/app_main_shell_screen.dart';
@@ -233,7 +235,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.customerEditAddress,
         builder: (_, state) => AddAddressScreen(
-          addressId: state.pathParameters['id'],
+          addressId: int.tryParse(state.pathParameters['id'] ?? ''),
         ),
       ),
       GoRoute(
@@ -451,6 +453,20 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.driverVehicleDetail,
         builder: (_, state) => DriverVehicleDetailScreen(
           vehicleId: int.parse(state.pathParameters['id']!),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.driverSavedAddresses,
+        builder: (_, __) => const DriverSavedAddressesScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.driverAddAddress,
+        builder: (_, __) => const DriverAddAddressScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.driverEditAddress,
+        builder: (_, state) => DriverAddAddressScreen(
+          addressId: int.tryParse(state.pathParameters['id'] ?? ''),
         ),
       ),
     ],

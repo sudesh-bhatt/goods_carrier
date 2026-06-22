@@ -9,6 +9,8 @@ enum LoadCapacityBand {
   from500kgTo2t,
   over2t;
 
+  static const double maxKg = 2500;
+
   String get label => switch (this) {
         LoadCapacityBand.upTo500kg => '0-500kg',
         LoadCapacityBand.from500kgTo2t => '500kg-2t',
@@ -19,6 +21,13 @@ enum LoadCapacityBand {
         LoadCapacityBand.upTo500kg => '0-500kg',
         LoadCapacityBand.from500kgTo2t => '500kg - 2t',
         LoadCapacityBand.over2t => '2t+',
+      };
+
+  /// Preset range (kg) for the dual-thumb slider.
+  (double min, double max) get kgRange => switch (this) {
+        LoadCapacityBand.upTo500kg => (0, 500),
+        LoadCapacityBand.from500kgTo2t => (500, 2000),
+        LoadCapacityBand.over2t => (2000, maxKg),
       };
 }
 
@@ -31,8 +40,8 @@ class ShipmentFilter {
     this.pickupDate,
     this.vehicleClass,
     this.capacityBand = LoadCapacityBand.from500kgTo2t,
-    this.capacityRangeStart = 0.15,
-    this.capacityRangeEnd = 0.82,
+    this.capacityRangeStart = 500,
+    this.capacityRangeEnd = 2000,
     this.restrictCapacity = false,
   });
 
@@ -41,6 +50,8 @@ class ShipmentFilter {
   final DateTime? pickupDate;
   final VehicleType? vehicleClass;
   final LoadCapacityBand capacityBand;
+
+  /// Selected load range in kg (0–[LoadCapacityBand.maxKg]).
   final double capacityRangeStart;
   final double capacityRangeEnd;
 
@@ -53,6 +64,33 @@ class ShipmentFilter {
       pickupDate != null ||
       vehicleClass != null ||
       restrictCapacity;
+
+  /// Human-readable capacity label from the current slider range.
+  String get capacityRangeLabel =>
+      formatCapacityKgRange(capacityRangeStart, capacityRangeEnd);
+
+  /// `capacity_min` / `capacity_max` for dashboard APIs (kg).
+  ({int? min, int? max}) get apiCapacityKg {
+    if (!restrictCapacity) return (min: null, max: null);
+    return (
+      min: capacityRangeStart.round(),
+      max: capacityRangeEnd.round(),
+    );
+  }
+
+  static String formatCapacityKgRange(double minKg, double maxKg) {
+    String fmt(double kg) {
+      if (kg >= 1000) {
+        final tons = kg / 1000;
+        return tons == tons.roundToDouble()
+            ? '${tons.round()}t'
+            : '${tons.toStringAsFixed(1)}t';
+      }
+      return '${kg.round()}kg';
+    }
+
+    return '${fmt(minKg)} - ${fmt(maxKg)}';
+  }
 
   ShipmentFilter copyWith({
     String? fromCity,
@@ -111,17 +149,12 @@ class ShipmentFilter {
     if (vehicleClass != null && shipment.vehicleType != vehicleClass) {
       return false;
     }
-    if (restrictCapacity && !_matchesCapacity(shipment.goods.weightKg)) {
-      return false;
+    if (restrictCapacity) {
+      final weightKg = shipment.goods.weightKg;
+      if (weightKg < capacityRangeStart || weightKg > capacityRangeEnd) {
+        return false;
+      }
     }
     return true;
-  }
-
-  bool _matchesCapacity(double weightKg) {
-    return switch (capacityBand) {
-      LoadCapacityBand.upTo500kg => weightKg <= 500,
-      LoadCapacityBand.from500kgTo2t => weightKg > 500 && weightKg <= 2000,
-      LoadCapacityBand.over2t => weightKg > 2000,
-    };
   }
 }

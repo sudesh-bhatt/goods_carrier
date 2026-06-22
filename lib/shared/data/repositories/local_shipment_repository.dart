@@ -4,6 +4,7 @@ import '../../../core/dummy/dummy_shipments.dart';
 import '../../domain/entities/shipment.dart';
 import '../../domain/enums/shipment_status.dart';
 import '../../domain/models/customer_shipment_detail.dart';
+import '../../domain/models/driver_dashboard_query.dart';
 import '../../domain/models/driver_shipment_detail.dart';
 import '../../domain/models/shipment_form_prefill.dart';
 import '../../domain/models/shipment_submit_options.dart';
@@ -176,7 +177,10 @@ class LocalShipmentRepository implements IShipmentRepository {
   // ── Driver operations ────────────────────────────────────────────────────
 
   @override
-  Future<List<Shipment>> getPendingRequests({String? driverId}) async {
+  Future<List<Shipment>> getPendingRequests({
+    String? driverId,
+    DriverDashboardQuery query = const DriverDashboardQuery(),
+  }) async {
     await _ensureLoaded();
     await _delay();
     return _shipments.where((s) => s.isPending).toList();

@@ -451,49 +451,47 @@ class _CompactRouteSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          width: 12.w,
-          height: 80.h,
-          child: Column(
-            children: [
-              Container(
-                width: 12.w,
-                height: 12.w,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SizedBox(
+            width: 12.w,
+            child: Column(
+              children: [
+                Container(
+                  width: 12.w,
+                  height: 12.w,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: TripDetailTokens.estimatedPayBrown,
+                      width: 2,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 4.h),
+                    child: CustomPaint(
+                      painter: _DashedGradientLinePainter(),
+                      size: Size(2.w, double.infinity),
+                    ),
+                  ),
+                ),
+                Container(
+                  width: 12.w,
+                  height: 12.w,
+                  decoration: const BoxDecoration(
                     color: TripDetailTokens.estimatedPayBrown,
-                    width: 2,
+                    shape: BoxShape.circle,
                   ),
                 ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 4.h),
-                  child: CustomPaint(
-                    painter: _DashedGradientLinePainter(),
-                    size: Size(2.w, double.infinity),
-                  ),
-                ),
-              ),
-              Container(
-                width: 12.w,
-                height: 12.w,
-                decoration: const BoxDecoration(
-                  color: TripDetailTokens.estimatedPayBrown,
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-        SizedBox(width: 16.w),
-        Expanded(
-          child: SizedBox(
-            height: 80.h,
+          SizedBox(width: 16.w),
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -503,8 +501,8 @@ class _CompactRouteSection extends StatelessWidget {
               ],
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -523,6 +521,8 @@ class _RouteStop extends StatelessWidget {
         Text(label, style: _labelStyle()),
         Text(
           city,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
           style: TextStyle(
             fontFamily: FontRes.MANROPE_BOLD,
             fontSize: 16.sp,

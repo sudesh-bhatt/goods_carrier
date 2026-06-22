@@ -79,6 +79,19 @@ abstract final class ProfileImageUtils {
   static bool shouldRenderAsNetwork(String? reference) =>
       resolveNetworkUrl(reference) != null;
 
+  /// Private `/storage/...` assets require Bearer auth — [Image.network] alone fails.
+  static bool requiresAuthenticatedFetch(String? reference) {
+    final path = normalizePath(reference);
+    if (path == null || isLocalFileAvailable(path)) return false;
+
+    if (isRemoteUrl(path)) {
+      final uri = Uri.tryParse(path);
+      return uri != null && uri.path.startsWith('/storage/');
+    }
+
+    return isServerRelativePath(path) && path.startsWith('/storage/');
+  }
+
   static bool shouldRenderAsFile(String? reference) =>
       isLocalFileAvailable(reference);
 }

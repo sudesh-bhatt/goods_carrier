@@ -5,10 +5,10 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/router/app_routes.dart';
-import '../providers/customer_saved_addresses_provider.dart';
-import '../../../../core/router/app_routes.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
+import '../providers/customer_saved_addresses_provider.dart';
 import '../widgets/saved_addresses/saved_address_card.dart';
+import '../widgets/saved_addresses/saved_addresses_empty_placeholder.dart';
 import '../widgets/saved_addresses/saved_address_tokens.dart';
 import '../widgets/saved_addresses/saved_locations_section_header.dart';
 
@@ -52,28 +52,74 @@ class SavedAddressesScreen extends ConsumerWidget {
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: state.isLoading
           ? const Center(child: CircularProgressIndicator())
-          : ListView.separated(
-              padding: EdgeInsets.fromLTRB(24.w, 32.h, 24.w, 128.h),
-              itemCount: state.addresses.length + 1,
-              separatorBuilder: (_, index) {
-                if (index == 0) return SizedBox(height: 24.h);
-                return SizedBox(height: 28.h);
-              },
-              itemBuilder: (context, index) {
-                if (index == 0) {
-                  return SavedLocationsSectionHeader(
-                    label: l10n.customerSavedLocationsSection,
-                  );
-                }
-                final address = state.addresses[index - 1];
-                return SavedAddressCard(
-                  address: address,
-                  onTap: () => context.push(
-                    AppRoutes.customerEditAddressOf(address.id),
+          : state.error != null && state.addresses.isEmpty
+              ? Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(24.w),
+                    child: Text(
+                      state.error!,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        color: SavedAddressTokens.cardBody,
+                      ),
+                    ),
                   ),
-                );
-              },
-            ),
+                )
+              : RefreshIndicator(
+                  onRefresh: () =>
+                      ref.read(customerSavedAddressesProvider.notifier).load(),
+                  child: ListView.separated(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: EdgeInsets.fromLTRB(24.w, 32.h, 24.w, 128.h),
+                    itemCount: state.addresses.isEmpty
+                        ? 2
+                        : state.addresses.length + 1,
+                    separatorBuilder: (_, index) {
+                      if (index == 0) return SizedBox(height: 24.h);
+                      return SizedBox(height: 28.h);
+                    },
+                    itemBuilder: (context, index) {
+                      if (index == 0) {
+                        return SavedLocationsSectionHeader(
+                          label: l10n.customerSavedLocationsSection,
+                        );
+                      }
+                      if (state.addresses.isEmpty) {
+                        return Padding(
+                          padding: EdgeInsets.only(top: 48.h),
+                          child: const SavedAddressesEmptyPlaceholder(),
+                        );
+                      }
+                      final address = state.addresses[index - 1];
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          if (address.isDefault) ...[
+                            Padding(
+                              padding: EdgeInsets.only(bottom: 8.h, left: 4.w),
+                              child: Text(
+                                l10n.driverAddressDefaultBadge.toUpperCase(),
+                                style: TextStyle(
+                                  fontSize: 10.sp,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 1,
+                                  color: SavedAddressTokens.accentUnderline,
+                                ),
+                              ),
+                            ),
+                          ],
+                          SavedAddressCard(
+                            address: address.toDisplayAddress(),
+                            onTap: () => context.push(
+                              AppRoutes.customerEditAddressOf(address.id),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
     );
   }
 }
