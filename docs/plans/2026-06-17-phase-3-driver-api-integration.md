@@ -1,10 +1,10 @@
 # Phase 3 — Driver API Integration Plan
 
-> **Status:** PR 3.1 + 3.2 started (trip + dashboard foundation wired).
+> **Status:** ~92% complete. Core driver flows use remote APIs when `USE_REMOTE_API=true`.
 
-**Goal:** Wire the driver role to real Goods Carrier APIs for home feed, my trips, publish/edit/cancel, and express interest.
+**Goal:** Wire the driver role to real Goods Carrier APIs.
 
-**Architecture:** Mirror Phase 2 — thin `Driver*ApiClient` classes, mappers, remote repos, `USE_REMOTE_API` toggle in `repository_providers.dart`.
+See also: [API Integration Status](../API_INTEGRATION_STATUS.md)
 
 ---
 
@@ -12,56 +12,57 @@
 
 | PR | Scope | Status |
 |----|-------|--------|
-| **3.1** | `DriverTripApiClient` + `TripApiMapper` + `RemoteDriverTripRepository` | Done |
-| **3.2** | Wire `tripRepositoryProvider` + `driverShipmentRequestsProvider` + tab refresh | Done |
-| **3.3** | Driver profile page + avatar (mirror customer) | Not started |
-| **3.4** | Trip detail interested customers + accept/reject requests | Not started |
+| **3.1** | `DriverTripApiClient` + `TripApiMapper` + `RemoteDriverTripRepository` | ✅ Done |
+| **3.2** | Wire `tripRepositoryProvider` + dashboard + express interest | ✅ Done |
+| **3.3** | Driver profile page + avatar | ✅ Done |
+| **3.4** | Trip detail interested customers + accept/reject | ✅ Done |
+| **3.5** | Driver vehicles CRUD | ✅ Done |
+| **3.6** | Driver saved addresses CRUD | ✅ Done |
+| **3.7** | Payment history → earnings screen | ✅ Done |
 
 ---
 
-## Wired endpoints (PR 3.1 / 3.2)
+## Wired endpoints
 
 | Method | Path | App usage |
 |--------|------|-----------|
-| GET | `/api/driver/dashboard` | Driver home — active shipments |
+| GET | `/api/driver/dashboard` | Driver home |
 | POST | `/api/driver/shipments/{id}/requests` | Express interest |
-| GET | `/api/driver/trips` | My Trips list |
-| POST | `/api/driver/trips` | Publish trip |
-| GET | `/api/driver/trips/{id}` | Trip detail (client ready) |
-| GET | `/api/driver/trips/{id}/edit` | Edit form prefill (client ready) |
-| PUT | `/api/driver/trips/{id}` | Update trip |
-| POST | `/api/driver/trips/{id}/cancel` | Cancel trip (`reason`, `other_reason`) |
+| GET | `/api/driver/shipments/{id}` | Shipment detail |
+| GET/POST/PUT | `/api/driver/trips` | My trips CRUD |
+| GET | `/api/driver/trips/{id}` | Trip detail |
+| GET | `/api/driver/trips/{id}/requests` | Interested customers |
+| POST | `.../requests/{id}/accept\|reject` | Accept/reject |
+| POST | `/api/driver/trips/{id}/cancel` | Cancel trip |
+| GET/PUT | `/api/driver/profile` | Profile |
+| POST | `/api/driver/profile/avatar` | Avatar |
+| GET/POST/PUT/DELETE | `/api/driver/vehicles` | Vehicle management |
+| GET | `/api/driver/vehicle-masters` | Add vehicle form |
+| GET/POST/PUT/DELETE | `/api/driver/addresses` | Saved addresses |
+| GET | `/api/driver/payment-history` | Earnings screen |
 
-Contract details: [`docs/api/driver-trips-contract.md`](./api/driver-trips-contract.md)
+Contract: [`docs/api/driver-trips-contract.md`](./api/driver-trips-contract.md)
+
+---
+
+## Remaining (→ Phase 5)
+
+| Feature | Notes |
+|---------|-------|
+| Subscription plans + Razorpay | Profile "Manage subscription" still coming soon |
+| Driver reported shipments UI | `GET /api/driver/reported-shipments` | ✅ |
+| Server-side dashboard filter polish | Pagination UI optional |
 
 ---
 
 ## Verification (`USE_REMOTE_API=true`)
 
-1. Driver home tab → `GET /api/driver/dashboard`
-2. Express interest → `POST /api/driver/shipments/{id}/requests`
-3. My Trips tab → `GET /api/driver/trips`
-4. Publish trip → `POST /api/driver/trips`
-5. Cancel trip → `POST .../cancel` with reason body
-6. Tab revisit refreshes list (no stale cancelled trips)
-7. Driver profile edit → `GET /api/driver/profile` refresh + avatar upload on save
-8. Trip detail → `GET /api/driver/trips/{id}` + `GET .../requests`
-9. Accept/reject request → `POST .../requests/{id}/accept|reject`
-
----
-
-## Completed (Phase 3.3 / 3.4)
-
-- `getDriverProfile()` + `refreshDriverProfile()` on edit screen and profile tab
-- `ProfileImageUtils.resolveForApiSubmission` on driver edit form
-- `DriverTripDetail` / `DriverTripRequest` models + `TripApiMapper.parseDetail`
-- Trip detail screen loads API data; accept/reject wired
-- Local dummy repo returns sample interested customers for offline testing
-
----
-
-## Deferred (Phase 3.5+)
-
-- Driver vehicles CRUD
-- Driver subscription / payments
-- Server-side dashboard filters from driver home search sheet
+1. Driver home → `GET /api/driver/dashboard`
+2. Express interest → `POST /api/driver/shipments/{id}/requests` with `vehicle_id`
+3. My Trips → `GET /api/driver/trips`
+4. Publish / edit / cancel trip
+5. Trip detail → requests + accept/reject
+6. Profile edit + avatar refresh
+7. Vehicles CRUD
+8. Saved addresses CRUD
+9. Earnings → `GET /api/driver/payment-history`

@@ -8,6 +8,8 @@ import '../../../../core/router/app_routes.dart';
 import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/mixins/safe_set_state_mixin.dart';
+import '../../../../core/services/google_places_service.dart';
+import '../../../../core/utils/map_location_helper.dart';
 import '../../../../core/utils/media_permission_helper.dart';
 import '../../../../core/utils/phone_utils.dart';
 import '../../../../core/utils/profile_image_utils.dart';
@@ -18,7 +20,9 @@ import '../../../../shared/presentation/widgets/inputs/address_autocomplete_fiel
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
 import '../../../../shared/presentation/widgets/sheets/app_bottom_sheet.dart';
 import '../../../../shared/presentation/widgets/sheets/app_modal_bottom_sheet.dart';
+import '../../../../shared/domain/enums/saved_address_label.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../providers/customer_saved_addresses_provider.dart';
 import '../widgets/customer_edit_profile_address_card.dart';
 import '../widgets/customer_profile_form_widgets.dart';
 
@@ -366,7 +370,7 @@ class _CustomerEditProfileScreenState extends ConsumerState<CustomerEditProfileS
 }
 
 /// Address editor sheet — owns its [TextEditingController] until fully disposed.
-class _AddressEditSheet extends StatefulWidget {
+class _AddressEditSheet extends ConsumerStatefulWidget {
   const _AddressEditSheet({
     required this.title,
     required this.label,
@@ -382,11 +386,14 @@ class _AddressEditSheet extends StatefulWidget {
   final String initialAddress;
 
   @override
-  State<_AddressEditSheet> createState() => _AddressEditSheetState();
+  ConsumerState<_AddressEditSheet> createState() => _AddressEditSheetState();
 }
 
-class _AddressEditSheetState extends State<_AddressEditSheet> {
+class _AddressEditSheetState extends ConsumerState<_AddressEditSheet>
+    with SafeSetStateMixin {
   late final TextEditingController _controller;
+  PlaceAddressDetails? _selectedPlace;
+  bool _saving = false;
 
   @override
   void initState() {
@@ -400,9 +407,69 @@ class _AddressEditSheetState extends State<_AddressEditSheet> {
     super.dispose();
   }
 
-  void _save() {
+  void _onPlaceSelected(PlaceAddressDetails details) {
+    safeSetState(() => _selectedPlace = details);
+  }
+
+  Future<void> _save() async {
+    final addressLine = _controller.text.trim();
+    final requiredError = Validators.required(
+      addressLine,
+      context.l10n.customerDefaultShippingAddress,
+    );
+    if (requiredError != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(requiredError)),
+      );
+      return;
+    }
+
     FocusScope.of(context).unfocus();
-    Navigator.pop(context, _controller.text.trim());
+
+    if (_selectedPlace != null) {
+      safeSetState(() => _saving = true);
+      final details = _selectedPlace!;
+      final latitude = MapLocationHelper.isValidCoordinate(
+            details.latitude,
+            details.longitude,
+          )
+          ? details.latitude
+          : MapLocationHelper.defaultPosition.latitude;
+      final longitude = MapLocationHelper.isValidCoordinate(
+            details.latitude,
+            details.longitude,
+          )
+          ? details.longitude
+          : MapLocationHelper.defaultPosition.longitude;
+
+      final ok =
+          await ref.read(customerSavedAddressesProvider.notifier).saveAddress(
+                label: SavedAddressLabel.home,
+                addressLine: addressLine,
+                city: details.city,
+                stateName: details.state,
+                pincode: details.pincode,
+                latitude: latitude,
+                longitude: longitude,
+                isDefault: true,
+              );
+
+      if (!mounted) return;
+      safeSetState(() => _saving = false);
+
+      if (!ok) {
+        final error = ref.read(customerSavedAddressesProvider).error;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(error ?? context.l10n.errorGeneric),
+          ),
+        );
+        return;
+      }
+    }
+
+    if (!mounted) return;
+    Navigator.pop(context, addressLine);
   }
 
   @override
@@ -419,13 +486,15 @@ class _AddressEditSheetState extends State<_AddressEditSheet> {
             hint: widget.hint,
             controller: _controller,
             fillColor: kCustomerProfileFieldFill,
+            onPlaceSelected: _onPlaceSelected,
           ),
           SizedBox(height: AppBottomSheetTokens.sectionGap.h),
           AppBottomSheetActionRow(
             secondaryLabel: context.l10n.actionNo,
             primaryLabel: widget.saveLabel,
-            onSecondary: () => Navigator.pop(context),
-            onPrimary: _save,
+            onSecondary: _saving ? null : () => Navigator.pop(context),
+            onPrimary: _saving ? null : _save,
+            isPrimaryLoading: _saving,
           ),
         ],
       ),

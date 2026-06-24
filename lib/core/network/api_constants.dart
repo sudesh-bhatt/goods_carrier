@@ -39,6 +39,15 @@ abstract final class ApiConstants {
   static String customerAddress(int id) => '/api/customer/addresses/$id';
   static String setDefaultCustomerAddress(int id) =>
       '/api/customer/addresses/$id/set-default';
+  static String assignCustomerShipment(String id) =>
+      '/api/customer/shipments/$id/assign';
+  static const String customerSupport = '/api/customer/support';
+  static const String customerSettings = '/api/customer/settings';
+  static const String customerSettingsPush =
+      '/api/customer/settings/push-notification';
+  static const String customerSettingsLanguage =
+      '/api/customer/settings/language';
+  static String customerLegalPage(String slug) => '/api/customer/pages/$slug';
 
   // ── Driver ───────────────────────────────────────────────────────────────
   static const String driverProfile       = '/api/driver/profile';
@@ -64,9 +73,36 @@ abstract final class ApiConstants {
   static String driverAddress(int id) => '/api/driver/addresses/$id';
   static String setDefaultDriverAddress(int id) =>
       '/api/driver/addresses/$id/set-default';
+  static const String driverReportedShipments =
+      '/api/driver/reported-shipments';
+  static const String driverSubscriptionPlans =
+      '/api/driver/subscription-plans';
+  static const String driverSubscriptionsInitiate =
+      '/api/driver/subscriptions/initiate';
+  static const String driverSubscriptionsConfirm =
+      '/api/driver/subscriptions/confirm';
+  static const String driverSubscriptionsCurrent =
+      '/api/driver/subscriptions/current';
+  static const String driverPaymentHistory = '/api/driver/payment-history';
+  static String driverPaymentDetail(int id) => '/api/driver/payment-history/$id';
+  static String driverPaymentInvoice(int id) =>
+      '/api/driver/payment-history/$id/invoice';
+
+  // ── Shared ─────────────────────────────────────────────────────────────────
+  static const String appConfig = '/api/app/config';
+  static const String reports = '/api/reports';
+  static String report(String id) => '/api/reports/$id';
+  static const String support = '/api/support';
+  static const String settings = '/api/settings';
+  static const String settingsPush = '/api/settings/push-notification';
+  static const String settingsLanguage = '/api/settings/language';
+  static String legalPage(String slug) => '/api/pages/$slug';
 
   // ── Notifications ──────────────────────────────────────────────────────────
   static const String notifications = '/api/notifications';
+  static String notificationRead(int id) => '/api/notifications/$id/read';
+  static const String notificationsReadAll = '/api/notifications/read-all';
+  static String notificationDelete(int id) => '/api/notifications/$id';
 
   // ── Secure-storage keys ────────────────────────────────────────────────────
   static const String kAuthToken        = 'auth_token';
@@ -81,5 +117,6 @@ abstract final class ApiConstants {
     sendOtp,
     verifyOtp,
     resendOtp,
+    appConfig,
   ];
 }

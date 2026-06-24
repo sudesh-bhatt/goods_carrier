@@ -32,6 +32,8 @@ abstract final class AppRoutes {
   static const String customerSettings = '/customer/profile/settings';
   static const String customerSupportCenter = '/customer/profile/support';
   static const String customerReportedTrips = '/customer/profile/reported-trips';
+  static const String driverReportedShipments =
+      '/driver/profile/reported-shipments';
   static const String customerSavedAddresses = '/customer/profile/addresses';
   static const String customerAddAddress   = '/customer/profile/addresses/add';
   static const String customerEditAddress  = '/customer/profile/addresses/:id/edit';

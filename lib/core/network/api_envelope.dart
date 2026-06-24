@@ -72,19 +72,7 @@ abstract final class ApiEnvelope {
       return data.whereType<Map<String, dynamic>>().toList();
     }
     if (data is Map<String, dynamic>) {
-      for (final key in [
-        'shipments',
-        'items',
-        'data',
-        'records',
-        'results',
-        'trips',
-        'driver_trips',
-        'requests',
-        'trip_requests',
-        'vehicles',
-        'addresses',
-      ]) {
+      for (final key in _paginatedListKeys) {
         final nested = data[key];
         if (nested is List) {
           return nested.whereType<Map<String, dynamic>>().toList();
@@ -93,6 +81,21 @@ abstract final class ApiEnvelope {
     }
     throw const UnknownException('Unexpected response data');
   }
+
+  static const _paginatedListKeys = [
+    'shipments',
+    'items',
+    'data',
+    'records',
+    'results',
+    'trips',
+    'driver_trips',
+    'requests',
+    'trip_requests',
+    'vehicles',
+    'addresses',
+    'notifications',
+  ];
 
   /// Parses paginated list responses.
   ///
@@ -125,19 +128,7 @@ abstract final class ApiEnvelope {
 
     if (data is Map<String, dynamic>) {
       List<Map<String, dynamic>>? items;
-      for (final key in [
-        'shipments',
-        'items',
-        'data',
-        'records',
-        'results',
-        'trips',
-        'driver_trips',
-        'requests',
-        'trip_requests',
-        'vehicles',
-        'addresses',
-      ]) {
+      for (final key in _paginatedListKeys) {
         final nested = data[key];
         if (nested is List) {
           items = nested.whereType<Map<String, dynamic>>().toList();

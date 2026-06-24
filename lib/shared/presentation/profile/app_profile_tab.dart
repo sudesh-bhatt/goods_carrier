@@ -146,7 +146,7 @@ class _AppProfileTabState extends ConsumerState<AppProfileTab>
           icon: Icons.local_shipping_outlined,
           title: l10n.driverReportedShipments,
           subtitle: l10n.driverReportedShipmentsSub,
-          onTap: () => context.push(AppRoutes.customerReportedTrips),
+          onTap: () => context.push(AppRoutes.driverReportedShipments),
         ),
       ]);
     } else {

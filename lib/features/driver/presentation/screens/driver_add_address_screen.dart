@@ -100,6 +100,7 @@ class _DriverAddAddressScreenState extends ConsumerState<DriverAddAddressScreen>
   void _onPlaceSelected(PlaceAddressDetails details) {
     safeSetState(() {
       if (details.city.isNotEmpty) _cityCtrl.text = details.city;
+      if (details.state.isNotEmpty) _stateCtrl.text = details.state;
       if (details.pincode.isNotEmpty) _pincodeCtrl.text = details.pincode;
       if (MapLocationHelper.isValidCoordinate(
         details.latitude,

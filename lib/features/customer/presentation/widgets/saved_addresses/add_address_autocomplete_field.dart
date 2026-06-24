@@ -12,7 +12,7 @@ import '../../../../../core/services/google_places_service.dart';
 import '../../../../../res/font_res.dart';
 import 'saved_address_tokens.dart';
 
-/// Full address line with Google Places suggestions — Add/Edit Address styling.
+/// Full address line with Google Places suggestions (India only) — Add/Edit Address styling.
 class AddAddressAutocompleteField extends ConsumerStatefulWidget {
   const AddAddressAutocompleteField({
     super.key,

@@ -66,22 +66,37 @@ class _ReportTripScreenState extends ConsumerState<ReportTripScreen>
     if (!_canSubmit) return;
 
     safeSetState(() => _isSubmitting = true);
-    final reportId = await ref
-        .read(customerReportedTripsProvider.notifier)
-        .submitReport(shipment);
-    if (!mounted) return;
+    try {
+      final reportId = await ref
+          .read(customerReportedTripsProvider.notifier)
+          .submitReport(
+            shipment,
+            reason: _selectedReason!,
+            details: _selectedReason == _otherReasonId
+                ? _detailsController.text.trim()
+                : null,
+          );
+      if (!mounted) return;
 
-    final displayTripId = shipment.id.startsWith('#')
-        ? shipment.id
-        : '#${shipment.id}';
-    final args = ReportTripConfirmationArgs(
-      reportId: reportId,
-      submittedAt: DateTime.now(),
-      tripId: displayTripId,
-      fromCity: shipment.pickup.city,
-      toCity: shipment.drop.city,
-    );
-    context.pushReplacement(AppRoutes.reportTripSuccess, extra: args);
+      final displayTripId = shipment.id.startsWith('#')
+          ? shipment.id
+          : '#${shipment.id}';
+      final args = ReportTripConfirmationArgs(
+        reportId: reportId,
+        submittedAt: DateTime.now(),
+        tripId: displayTripId,
+        fromCity: shipment.pickup.city,
+        toCity: shipment.drop.city,
+      );
+      context.pushReplacement(AppRoutes.reportTripSuccess, extra: args);
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.errorGeneric)),
+      );
+    } finally {
+      if (mounted) safeSetState(() => _isSubmitting = false);
+    }
   }
 
   Shipment? _resolveShipment() {

@@ -27,6 +27,7 @@ class AddressAutocompleteField extends ConsumerStatefulWidget {
     this.textInputAction = TextInputAction.done,
     this.fillColor = const Color(0xFFF0F2F5),
     this.autovalidateMode = AutovalidateMode.disabled,
+    this.onPlaceSelected,
   });
 
   final String label;
@@ -36,6 +37,7 @@ class AddressAutocompleteField extends ConsumerStatefulWidget {
   final TextInputAction textInputAction;
   final Color fillColor;
   final AutovalidateMode autovalidateMode;
+  final ValueChanged<PlaceAddressDetails>? onPlaceSelected;
 
   @override
   ConsumerState<AddressAutocompleteField> createState() =>
@@ -169,14 +171,16 @@ class _AddressAutocompleteFieldState
 
     try {
       final service = ref.read(googlePlacesServiceProvider);
-      final address = await service.fetchFormattedAddress(
+      final details = await service.fetchPlaceAddressDetails(
         placeId: prediction.placeId,
         sessionToken: _sessionToken,
       );
       if (!mounted) return;
-      widget.controller.text =
-          address.isNotEmpty ? address : prediction.description;
-    } catch (e, st) {
+      widget.controller.text = details.fullAddressLine.isNotEmpty
+          ? details.fullAddressLine
+          : prediction.description;
+      widget.onPlaceSelected?.call(details);
+    } on GooglePlacesException catch (e, st) {
       if (kDebugMode) {
         developer.log(
           'fetchFormattedAddress failed',

@@ -7,6 +7,8 @@ import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../generated/assets.dart';
 import '../../../../shared/domain/enums/session_phase.dart';
+import '../../../../core/config/env_config.dart';
+import '../../../../core/providers/app_config_provider.dart';
 import '../providers/auth_provider.dart';
 
 const _kProgressDuration = Duration(milliseconds: 1800);
@@ -38,6 +40,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     _ctrl.forward();
 
     Future.microtask(() async {
+      if (EnvConfig.useRemoteApi) {
+        await ref.read(appConfigProvider.notifier).load();
+      }
       await ref.read(authProvider.notifier).restoreSession();
       Future.delayed(_kNavigateDelay, _navigateNext);
     });

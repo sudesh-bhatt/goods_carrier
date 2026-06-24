@@ -84,11 +84,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       if (loc == AppRoutes.splash) return null;
 
       if (auth.isAuthenticated) {
-        if (loc == AppRoutes.terms) {
-          return auth.user?.role == UserRole.driver
-              ? AppRoutes.driverHome
-              : AppRoutes.customerHome;
-        }
         if (_isAuthFlowPath(loc)) {
           return auth.user?.role == UserRole.driver
               ? AppRoutes.driverHome
@@ -434,6 +429,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.driverEarnings,
         builder: (_, __) => const DriverEarningsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.driverReportedShipments,
+        builder: (_, __) => const ReportedTripsScreen(forDriver: true),
       ),
       GoRoute(
         path: AppRoutes.driverVehicles,

@@ -42,7 +42,7 @@ When the Postman collection changes, update the app in this order:
 | POST | `/api/customer/shipments/{id}/cancel` | `cancelShipment(id)` |
 | GET | `/api/customer/shipment-masters` | `customerShipmentMasters` |
 
-**Not in collection (do not invent):** `PATCH/POST .../assign` — driver assignment endpoint TBD.
+**Not in collection (wired with assumed contract):** `POST .../assign` — confirm body `{ driver_id }` with backend.
 
 ## MCP setup (required for live sync)
 

@@ -158,6 +158,23 @@ class CustomerShipmentApiClient {
     );
     return ShipmentMasters.fromJson(ApiEnvelope.parseData(response.data));
   }
+
+  Future<Shipment> assignDriver(
+    String id,
+    String driverId, {
+    String fallbackCustomerId = '',
+  }) async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      ApiConstants.assignCustomerShipment(id),
+      data: {
+        'driver_id': int.tryParse(driverId) ?? driverId,
+      },
+    );
+    return ShipmentApiMapper.fromJson(
+      ApiEnvelope.parseData(response.data),
+      fallbackCustomerId: fallbackCustomerId,
+    );
+  }
 }
 
 extension on CustomerShipmentListQuery {

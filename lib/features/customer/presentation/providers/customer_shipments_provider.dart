@@ -231,7 +231,10 @@ class CustomerShipmentsNotifier
       }).toList(),
     );
     try {
-      await _repo.assignDriver(shipmentId, driverId);
+      await _repo.assignDriver(
+        apiResourceIdFor(shipmentId),
+        driverId,
+      );
     } catch (e) {
       state = state.copyWith(
         shipments: prev,

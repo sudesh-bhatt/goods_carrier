@@ -19,6 +19,7 @@ class PlaceAddressDetails {
   const PlaceAddressDetails({
     required this.fullAddressLine,
     required this.city,
+    required this.state,
     required this.pincode,
     required this.latitude,
     required this.longitude,
@@ -26,6 +27,7 @@ class PlaceAddressDetails {
 
   final String fullAddressLine;
   final String city;
+  final String state;
   final String pincode;
   final double latitude;
   final double longitude;
@@ -191,6 +193,8 @@ class GooglePlacesService {
         component('sublocality') ??
         '';
 
+    final state = component('administrative_area_level_1') ?? '';
+
     final pincode = component('postal_code') ?? '';
 
     final streetParts = [
@@ -221,6 +225,7 @@ class GooglePlacesService {
     return PlaceAddressDetails(
       fullAddressLine: fullAddressLine.isNotEmpty ? fullAddressLine : formatted,
       city: city,
+      state: state,
       pincode: pincode,
       latitude: latitude,
       longitude: longitude,

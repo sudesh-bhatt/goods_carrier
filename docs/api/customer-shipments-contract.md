@@ -175,7 +175,7 @@ Note: Update does **not** send lat/lng or `comments` / `special_instructions`. C
 
 ## Not in Postman collection
 
-- `POST /api/customer/shipments/{id}/assign` — driver assignment not wired.
+- `POST /api/customer/shipments/{id}/assign` — wired in app (`assignCustomerShipment`).
 
 ---
 

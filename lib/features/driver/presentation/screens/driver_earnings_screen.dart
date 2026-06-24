@@ -7,9 +7,9 @@ import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../shared/presentation/widgets/feedback/empty_state.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
-import '../providers/driver_trips_provider.dart';
+import '../providers/driver_payments_provider.dart';
 
-// ─── Dummy invoice model (local — no domain entity needed until Session 7) ─────
+// ─── Invoice row model ────────────────────────────────────────────────────────
 
 class _Invoice {
   const _Invoice({
@@ -20,40 +20,32 @@ class _Invoice {
     required this.isPaid,
   });
 
-  final String   id;     // INV-XXXX
-  final String   tripId; // VB-XXXX
-  final double   amount;
+  final String id;
+  final String tripId;
+  final double amount;
   final DateTime date;
-  final bool     isPaid;
+  final bool isPaid;
 }
 
-final _dummyInvoices = [
-  _Invoice(
-    id: 'INV-7721', tripId: 'VB-7701', amount: 5500,
-    date: DateTime(2026, 3, 30), isPaid: true,
-  ),
-  _Invoice(
-    id: 'INV-7655', tripId: 'VB-8814', amount: 8500,
-    date: DateTime(2026, 4, 22), isPaid: true,
-  ),
-  _Invoice(
-    id: 'INV-7890', tripId: 'VB-9928', amount: 2100,
-    date: DateTime(2026, 4, 18), isPaid: false,
-  ),
-];
-
-/// Driver earnings screen.
-///
-/// Shows INV-XXXX invoice list with paid/pending status and a totals summary
-/// at the top. Data is sourced from [_dummyInvoices] (replaced by API in
-/// Session 7).
+/// Driver earnings screen — `GET /api/driver/payment-history`.
 class DriverEarningsScreen extends ConsumerWidget {
   const DriverEarningsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final colors   = context.colors;
-    final invoices = _dummyInvoices;
+    final colors = context.colors;
+    final state = ref.watch(driverPaymentsProvider);
+    final invoices = state.payments
+        .map(
+          (p) => _Invoice(
+            id: p.displayId,
+            tripId: p.tripId,
+            amount: p.amount,
+            date: p.paidAt,
+            isPaid: p.isPaid,
+          ),
+        )
+        .toList();
 
     final totalEarned = invoices
         .where((i) => i.isPaid)
@@ -66,7 +58,9 @@ class DriverEarningsScreen extends ConsumerWidget {
       backgroundColor: colors.background,
       appBar: const FlowScreenAppBar(title: 'Earnings'),
       body: SafeArea(
-        child: invoices.isEmpty
+        child: state.isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : invoices.isEmpty
             ? const EmptyState(
                 headline: 'No earnings yet',
                 subtitle: 'Complete trips to start earning',

@@ -6,6 +6,7 @@ import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/mixins/safe_set_state_mixin.dart';
 import '../../../../res/font_res.dart';
 import '../providers/customer_reported_trips_provider.dart';
+import '../../../driver/presentation/providers/driver_reported_shipments_provider.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
 import '../widgets/reported_trips/reported_trip_card.dart';
@@ -14,7 +15,9 @@ import '../widgets/reported_trips/reported_trips_tokens.dart';
 
 /// Reported trips list — [Figma](https://www.figma.com/design/YxnNResvDQnbkcPhGejtxa/Mobile-App-UI--Developer-?node-id=1-6391).
 class ReportedTripsScreen extends ConsumerStatefulWidget {
-  const ReportedTripsScreen({super.key});
+  const ReportedTripsScreen({super.key, this.forDriver = false});
+
+  final bool forDriver;
 
   @override
   ConsumerState<ReportedTripsScreen> createState() =>
@@ -34,7 +37,9 @@ class _ReportedTripsScreenState extends ConsumerState<ReportedTripsScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final state = ref.watch(customerReportedTripsProvider);
+    final state = widget.forDriver
+        ? ref.watch(driverReportedShipmentsProvider)
+        : ref.watch(customerReportedTripsProvider);
     final query = _searchCtrl.text.trim().toLowerCase();
 
     final trips = state.trips.where((t) {
@@ -51,8 +56,11 @@ class _ReportedTripsScreenState extends ConsumerState<ReportedTripsScreen>
     return Scaffold(
       backgroundColor: ReportedTripsTokens.screenBg,
       appBar: FlowScreenAppBar(
-        title: l10n.customerReportedTrips,
-        fallbackRoute: AppRoutes.customerHome,
+        title: widget.forDriver
+            ? l10n.driverReportedShipments
+            : l10n.customerReportedTrips,
+        fallbackRoute:
+            widget.forDriver ? AppRoutes.driverHome : AppRoutes.customerHome,
       ),
       body: state.isLoading
           ? const Center(child: CircularProgressIndicator())

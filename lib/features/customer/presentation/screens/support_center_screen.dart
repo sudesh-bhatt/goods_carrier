@@ -2,28 +2,85 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/config/env_config.dart';
 import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
+import '../../../../core/mixins/safe_set_state_mixin.dart';
+import '../../../../core/network/api_exception_mapper.dart';
+import '../../../../core/providers/repository_providers.dart';
 import '../../../../core/router/app_routes.dart';
+import '../../../../shared/data/api/customer/customer_support_api_client.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
 import '../widgets/support/support_center_tokens.dart';
 import '../widgets/support/support_channel_card.dart';
 import '../widgets/support/support_faq_tile.dart';
 
-/// Support Center — [Figma](https://www.figma.com/design/YxnNResvDQnbkcPhGejtxa/Mobile-App-UI--Developer-?node-id=1-3571).
-class SupportCenterScreen extends ConsumerWidget {
+/// Support Center — remote `GET /api/customer/support` with l10n fallback.
+class SupportCenterScreen extends ConsumerStatefulWidget {
   const SupportCenterScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SupportCenterScreen> createState() =>
+      _SupportCenterScreenState();
+}
+
+class _SupportCenterScreenState extends ConsumerState<SupportCenterScreen>
+    with SafeSetStateMixin {
+  SupportCenterData? _remote;
+  bool _loading = false;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    if (EnvConfig.useRemoteApi) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _load());
+    }
+  }
+
+  Future<void> _load() async {
+    safeSetState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final data =
+          await ref.read(customerSupportApiClientProvider).fetchSupport();
+      if (!mounted) return;
+      safeSetState(() {
+        _remote = data;
+        _loading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      safeSetState(() {
+        _loading = false;
+        _error = ApiExceptionMapper.userMessage(e);
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
 
-    final faqs = [
+    final fallbackFaqs = [
       (l10n.supportFaqTrackQuestion, l10n.supportFaqTrackAnswer),
       (l10n.supportFaqChargesQuestion, l10n.supportFaqChargesAnswer),
       (l10n.supportFaqCancelQuestion, l10n.supportFaqCancelAnswer),
       (l10n.supportFaqCustomsQuestion, l10n.supportFaqCustomsAnswer),
     ];
+
+    final faqs = _remote?.faqs.isNotEmpty == true
+        ? _remote!.faqs.map((f) => (f.question, f.answer)).toList()
+        : fallbackFaqs;
+
+    final email = _remote?.contact.email.isNotEmpty == true
+        ? _remote!.contact.email
+        : l10n.supportEmailDisplay;
+    final phone = _remote?.contact.phone.isNotEmpty == true
+        ? _remote!.contact.phone
+        : l10n.supportPhoneDisplay;
 
     return Scaffold(
       backgroundColor: SupportCenterTokens.screenBg,
@@ -31,35 +88,47 @@ class SupportCenterScreen extends ConsumerWidget {
         title: l10n.supportCenterTitle,
         fallbackRoute: AppRoutes.customerHome,
       ),
-      body: MediaQuery.withClampedTextScaling(
-        maxScaleFactor: 1,
-        child: SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(24.w, 32.h, 24.w, 48.h),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _FaqSection(faqs: faqs),
-            SizedBox(height: 24.h),
-            _DirectChannelsSection(
-              emailTitle: l10n.supportEmailTitle,
-              emailDisplay: l10n.supportEmailDisplay,
-              callTitle: l10n.supportCallTitle,
-              phoneDisplay: l10n.supportPhoneDisplay,
-              onCopyEmail: () => _copyContact(
-                context,
-                l10n.supportEmailDisplay,
-                l10n.supportEmailCopied,
-              ),
-              onCopyPhone: () => _copyContact(
-                context,
-                l10n.supportPhoneDisplay,
-                l10n.supportPhoneCopied,
+      body: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : MediaQuery.withClampedTextScaling(
+              maxScaleFactor: 1,
+              child: SingleChildScrollView(
+                padding: EdgeInsets.fromLTRB(24.w, 32.h, 24.w, 48.h),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (_error != null) ...[
+                      Text(
+                        _error!,
+                        style: TextStyle(
+                          fontSize: 13.sp,
+                          color: SupportCenterTokens.subtitle,
+                        ),
+                      ),
+                      SizedBox(height: 16.h),
+                    ],
+                    _FaqSection(faqs: faqs),
+                    SizedBox(height: 24.h),
+                    _DirectChannelsSection(
+                      emailTitle: l10n.supportEmailTitle,
+                      emailDisplay: email,
+                      callTitle: l10n.supportCallTitle,
+                      phoneDisplay: phone,
+                      onCopyEmail: () => _copyContact(
+                        context,
+                        email,
+                        l10n.supportEmailCopied,
+                      ),
+                      onCopyPhone: () => _copyContact(
+                        context,
+                        phone,
+                        l10n.supportPhoneCopied,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ],
-        ),
-      ),
-      ),
     );
   }
 
@@ -71,7 +140,6 @@ class SupportCenterScreen extends ConsumerWidget {
   }
 }
 
-/// FAQ block — 32px title gap, 16px between items.
 class _FaqSection extends StatelessWidget {
   const _FaqSection({required this.faqs});
 
@@ -82,26 +150,25 @@ class _FaqSection extends StatelessWidget {
     final l10n = context.l10n;
 
     return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            l10n.supportFaqSectionTitle,
-            style: SupportCenterTokens.sectionTitle(),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          l10n.supportFaqSectionTitle,
+          style: SupportCenterTokens.sectionTitle(),
+        ),
+        SizedBox(height: 32.h),
+        for (var i = 0; i < faqs.length; i++) ...[
+          SupportFaqTile(
+            question: faqs[i].$1,
+            answer: faqs[i].$2,
           ),
-          SizedBox(height: 32.h),
-          for (var i = 0; i < faqs.length; i++) ...[
-            SupportFaqTile(
-              question: faqs[i].$1,
-              answer: faqs[i].$2,
-            ),
-            if (i < faqs.length - 1) SizedBox(height: 16.h),
-          ],
+          if (i < faqs.length - 1) SizedBox(height: 16.h),
         ],
+      ],
     );
   }
 }
 
-/// Direct Channels — compact cards, 16px heading gap, 12px between cards.
 class _DirectChannelsSection extends StatelessWidget {
   const _DirectChannelsSection({
     required this.emailTitle,

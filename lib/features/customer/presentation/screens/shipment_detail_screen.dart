@@ -161,16 +161,19 @@ class _ShipmentDetailScreenState extends ConsumerState<ShipmentDetailScreen>
                       context,
                       driverId: driver.driverId,
                       shipmentId: shipment.id,
+                      driver: driver,
                     ),
                     onCall: () => DriverDetailSheet.show(
                       context,
                       driverId: driver.driverId,
                       shipmentId: shipment.id,
+                      driver: driver,
                     ),
                     onWhatsApp: () => DriverDetailSheet.show(
                       context,
                       driverId: driver.driverId,
                       shipmentId: shipment.id,
+                      driver: driver,
                     ),
                   ),
                 );

@@ -12,6 +12,7 @@ import '../../../../core/providers/repository_providers.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../shared/domain/entities/driver_trip.dart';
 import '../../../../shared/domain/entities/driver_trip_display.dart';
+import '../../../../shared/domain/models/customer_shipment_detail.dart';
 import '../../../../shared/domain/models/driver_shipment_detail.dart';
 import '../../../../shared/domain/entities/shipment.dart';
 import '../../../../shared/presentation/widgets/feedback/error_view.dart';
@@ -48,6 +49,7 @@ class CustomerTripDetailScreen extends ConsumerStatefulWidget {
 class _CustomerTripDetailScreenState
     extends ConsumerState<CustomerTripDetailScreen> with SafeSetStateMixin {
   Shipment? _detail;
+  CustomerShipmentDetail? _customerShipmentDetail;
   DriverShipmentDetail? _driverDetail;
   bool _isLoadingDetail = false;
   String? _loadError;
@@ -87,14 +89,18 @@ class _CustomerTripDetailScreenState
 
     try {
       final apiId = cached?.apiResourceId ?? widget.shipmentId;
-      final fetched =
-          await ref.read(shipmentRepositoryProvider).getShipment(apiId);
+      final fetchedDetail = await ref
+          .read(shipmentRepositoryProvider)
+          .getCustomerShipmentDetail(apiId);
       if (!mounted) return;
       safeSetState(() {
-        _detail = fetched;
+        _customerShipmentDetail = fetchedDetail;
+        _detail = fetchedDetail.shipment;
         _isLoadingDetail = false;
       });
-      ref.read(customerShipmentsProvider.notifier).upsertShipment(fetched);
+      ref
+          .read(customerShipmentsProvider.notifier)
+          .upsertShipment(fetchedDetail.shipment);
     } catch (e) {
       if (!mounted) return;
       safeSetState(() {
@@ -339,7 +345,10 @@ class _CustomerTripDetailScreenState
   ) {
     final showDriverCard = shipment.assignedDriverId != null ||
         shipment.resolvedInterestCount > 0;
-    final vehicleNumber = _vehicleNumberFor(shipment);
+    final driver = _resolveInterestedDriver(shipment);
+    final vehicleNumber = driver?.vehicleNumber.isNotEmpty == true
+        ? driver!.vehicleNumber
+        : _vehicleNumberFor(shipment);
 
     return [
       TripDetailRouteSection(
@@ -361,11 +370,19 @@ class _CustomerTripDetailScreenState
         vehicleNumberLabel: l10n.profileVehicleNumber,
         capacityTitle: l10n.tripCapacity,
       ),
-      if (showDriverCard) ...[
+      if (showDriverCard && driver != null) ...[
         SizedBox(height: 24.h),
-        TripDetailDriverCard.fromDummy(
-          subtitle: l10n.customerExpertDriver,
-          onTap: () => _openDriverFlow(context, shipment),
+        TripDetailDriverCard(
+          name: driver.name,
+          subtitle: driver.subtitle ?? l10n.customerExpertDriver,
+          onTap: () => _openDriverFlow(context, shipment, driver),
+        ),
+      ] else if (showDriverCard) ...[
+        SizedBox(height: 24.h),
+        TripDetailDriverCard(
+          name: l10n.customerExpertDriver,
+          subtitle: shipment.status.label,
+          onTap: () => _openDriverFlow(context, shipment, null),
         ),
       ],
       SizedBox(height: 24.h),
@@ -441,17 +458,29 @@ class _CustomerTripDetailScreenState
     );
   }
 
+  ShipmentInterestedDriver? _resolveInterestedDriver(Shipment shipment) {
+    final drivers = _customerShipmentDetail?.interestedDrivers ?? const [];
+    if (drivers.isEmpty) return null;
+    if (shipment.assignedDriverId != null) {
+      return drivers
+          .where((d) => d.driverId == shipment.assignedDriverId)
+          .firstOrNull ??
+          drivers.first;
+    }
+    return drivers.first;
+  }
+
   static String _vehicleNumberFor(Shipment shipment) {
     if (shipment.assignedDriverId != null ||
         shipment.interestedDriverIds.isNotEmpty) {
-      return 'MH 01 AB 1234';
+      return '—';
     }
     return '—';
   }
 
   void _onCustomerRequestTap(BuildContext context, Shipment shipment) {
     if (shipment.interestedDriverIds.isNotEmpty) {
-      _openDriverFlow(context, shipment);
+      _openDriverFlow(context, shipment, _resolveInterestedDriver(shipment));
       return;
     }
     if (shipment.isPending) {
@@ -472,13 +501,21 @@ class _CustomerTripDetailScreenState
     context.push(AppRoutes.driverAddShipmentRequestOf(shipment.id));
   }
 
-  Future<void> _openDriverFlow(BuildContext context, Shipment shipment) async {
+  Future<void> _openDriverFlow(
+    BuildContext context,
+    Shipment shipment,
+    ShipmentInterestedDriver? driver,
+  ) async {
     final driverId = shipment.assignedDriverId ??
-        shipment.interestedDriverIds.first;
+        driver?.driverId ??
+        shipment.interestedDriverIds.firstOrNull;
+    if (driverId == null) return;
+
     await DriverDetailSheet.show(
       context,
       driverId: driverId,
       shipmentId: shipment.id,
+      driver: driver,
     );
   }
 }

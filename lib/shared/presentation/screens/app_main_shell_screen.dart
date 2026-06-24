@@ -12,7 +12,6 @@ import '../../../features/customer/presentation/providers/customer_notifications
 import '../../../features/customer/presentation/providers/customer_shipments_provider.dart';
 import '../../../features/customer/presentation/widgets/customer_light_chrome.dart';
 import '../../../features/customer/presentation/widgets/customer_main_header.dart';
-import '../../../features/driver/presentation/providers/driver_notifications_provider.dart';
 import '../../../features/driver/presentation/providers/driver_shipment_requests_provider.dart';
 import '../../../features/driver/presentation/providers/driver_trips_provider.dart';
 import '../../../l10n/app_localizations.dart';
@@ -46,6 +45,14 @@ class AppMainShellScreen extends ConsumerWidget {
     if (role == UserRole.customer && tab == AppMainTab.listings) {
       ref.read(customerShipmentsProvider.notifier).loadForTab();
     }
+    if (tab == AppMainTab.notifications) {
+      switch (role) {
+        case UserRole.customer:
+          ref.read(customerNotificationsProvider.notifier).loadForTab();
+        case UserRole.driver:
+          ref.read(driverNotificationsProvider.notifier).loadForTab();
+      }
+    }
     if (role == UserRole.driver) {
       if (tab == AppMainTab.listings) {
         ref.read(driverTripsProvider.notifier).loadForTab();
@@ -75,10 +82,8 @@ class AppMainShellScreen extends ConsumerWidget {
     final user = ref.watch(authProvider).user;
 
     final hasUnread = switch (role) {
-      UserRole.customer =>
-        ref.watch(customerNotificationsProvider).any((n) => !n.isRead),
-      UserRole.driver =>
-        ref.watch(driverNotificationsProvider).any((n) => !n.isRead),
+      UserRole.customer => ref.watch(customerNotificationsProvider).unreadCount > 0,
+      UserRole.driver => ref.watch(driverNotificationsProvider).unreadCount > 0,
     };
 
     final showFab = _showFab(ref, tab);
