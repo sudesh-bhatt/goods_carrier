@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:goods_carrier/generated/assets.dart';
 
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/svg_gen_image_extension.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/theme/app_color_scheme.dart';
-import '../../../../generated/assets.dart';
+
 import '../../../../res/font_res.dart';
 import '../../../../shared/domain/entities/shipment_masters.dart';
 

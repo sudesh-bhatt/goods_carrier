@@ -68,6 +68,8 @@ class $AssetsImagesGen {
       const AssetGenImage('assets/images/login_screen_banner.png');
   final AssetGenImage splashScreenLogo =
       const AssetGenImage('assets/images/splash_screen_logo.png');
+  final AssetGenImage subscriptionLogisticsBackground = const AssetGenImage(
+      'assets/images/subscription_logistics_background.png');
 }
 
 class AssetGenImage {

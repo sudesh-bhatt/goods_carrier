@@ -134,7 +134,7 @@ class _AppProfileTabState extends ConsumerState<AppProfileTab>
           icon: Icons.card_membership_outlined,
           title: l10n.profileManageSubscription,
           subtitle: l10n.profileManageSubscriptionSub,
-          onTap: () => _showComingSoon(context),
+          onTap: () => context.push(AppRoutes.driverSubscriptionPlans),
         ),
         AppProfileMenuRow(
           icon: Icons.receipt_long_outlined,
@@ -179,12 +179,6 @@ class _AppProfileTabState extends ConsumerState<AppProfileTab>
         onTap: () => context.push(AppRoutes.customerSupportCenter),
       ),
     ];
-  }
-
-  void _showComingSoon(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(context.l10n.profileComingSoon)),
-    );
   }
 }
 

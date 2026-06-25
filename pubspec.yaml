@@ -52,6 +52,7 @@ dependencies:
   flutter_dotenv: ^6.0.1
   image_cropper: ^12.2.1
   url_launcher: ^6.3.2
+  razorpay_flutter: ^1.4.5
 
 dev_dependencies:
   flutter_test:
@@ -90,6 +91,7 @@ flutter:
     - assets/images/empty_trip_placeholder.png
     - assets/images/login_screen_banner.png
     - assets/images/splash_screen_logo.png
+    - assets/images/subscription_logistics_background.png
     - assets/svg/app_icon.svg
     - assets/svg/cta_right_arrow.svg
     - assets/svg/ic_otp_lock.svg

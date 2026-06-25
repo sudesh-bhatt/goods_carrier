@@ -76,9 +76,10 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
       case NotificationsScope.driver:
         final route = switch (item.type) {
           NotificationType.tripRequestAccepted ||
-          NotificationType.tripCancelled ||
-          NotificationType.subscriptionPurchase =>
+          NotificationType.tripCancelled =>
             AppRoutes.driverTripDetailOf(refId),
+          NotificationType.subscriptionPurchase =>
+            AppRoutes.driverSubscriptionPlans,
           _ => AppRoutes.driverShipmentDetailOf(refId),
         };
         context.push(route);

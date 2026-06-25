@@ -52,6 +52,17 @@ abstract final class EnvConfig {
     return true;
   }
 
+  /// Razorpay publishable key — used when initiate API does not return `razorpay_key`.
+  static String get razorpayKey {
+    const fromDefine = String.fromEnvironment('RAZORPAY_KEY');
+    if (fromDefine.isNotEmpty) return fromDefine;
+
+    final fromFile = dotenv.env['RAZORPAY_KEY']?.trim();
+    if (fromFile != null && fromFile.isNotEmpty) return fromFile;
+
+    return '';
+  }
+
   /// Google Maps + Places (single key for native SDKs and Places REST).
   static String get googleApiKey {
     const fromDefine = String.fromEnvironment('GOOGLE_API_KEY');

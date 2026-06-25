@@ -1029,6 +1029,128 @@ class AppLocalizationsGu extends AppLocalizations {
   String get profileComingSoon => 'ટૂંક સમયમાં';
 
   @override
+  String get driverSubscriptionPlansTitle => 'સબ્સ્ક્રિપ્શન પ્લાન';
+
+  @override
+  String get driverSubscriptionHeroTitle => 'વૈશ્વિક વૃદ્ધિ માટે ચોક્કસ સ્તર';
+
+  @override
+  String get driverSubscriptionHeroSubtitle =>
+      'તમારા ફ્લીટ માટે યોગ્ય ઓપરેશનલ સ્કેલ પસંદ કરો. પારદર્શક કિંમત, ઉત્કૃષ્ટ અમલીકરણ.';
+
+  @override
+  String get driverSubscriptionChoosePlan => 'પ્લાન પસંદ કરો';
+
+  @override
+  String get driverSubscriptionSubscribeNow => 'હમણાં સબ્સ્ક્રાઇબ કરો';
+
+  @override
+  String get driverSubscriptionRecommended => 'ભલામણ કરેલ';
+
+  @override
+  String get driverSubscriptionPerMonth => '/મહિ';
+
+  @override
+  String get driverSubscriptionLoadErrorTitle => 'પ્લાન લોડ થઈ શક્યા નહીં';
+
+  @override
+  String get driverSubscriptionPaymentMethodTitle => 'ચુકવણી પદ્ધતિ';
+
+  @override
+  String get driverSubscriptionSecureTransaction => 'સુરક્ષિત વ્યવહાર';
+
+  @override
+  String get driverSubscriptionPaymentHeading =>
+      'તમે કેવી રીતે ચુકવણી કરવા માંગો છો તે પસંદ કરો';
+
+  @override
+  String get driverSubscriptionPaymentSubtitle =>
+      'તમારી સબ્સ્ક્રિપ્શન પૂર્ણ કરવા માટે પસંદગીની ચુકવણી પદ્ધતિ પસંદ કરો.';
+
+  @override
+  String get driverSubscriptionPaymentUpi => 'UPI';
+
+  @override
+  String get driverSubscriptionPaymentUpiSub => 'Google Pay, PhonePe, BHIM';
+
+  @override
+  String get driverSubscriptionPaymentCard => 'ક્રેડિટ/ડેબિટ કાર્ડ';
+
+  @override
+  String get driverSubscriptionPaymentCardSub => 'Visa, Mastercard, RuPay';
+
+  @override
+  String get driverSubscriptionPaymentNetBanking => 'નેટ બેંકિંગ';
+
+  @override
+  String get driverSubscriptionPaymentNetBankingSub => 'બધી મુખ્ય ભારતીય બેંકો';
+
+  @override
+  String get driverSubscriptionPaymentWallet => 'વૉલેટ';
+
+  @override
+  String get driverSubscriptionPaymentWalletSub =>
+      'Paytm, Amazon Pay, MobiKwik';
+
+  @override
+  String get driverSubscriptionTrustedPayments => 'વિશ્વસનીય ચુકવણી';
+
+  @override
+  String get driverSubscriptionSecurePay => 'સુરક્ષિત ચુકવણી';
+
+  @override
+  String get driverSubscriptionReceiptTitle => 'વ્યવહાર રસીદ';
+
+  @override
+  String get driverSubscriptionPaymentSuccessTitle => 'ચુકવણી સફળ';
+
+  @override
+  String get driverSubscriptionPaymentSuccessBody =>
+      'તમારો વ્યવહાર સુરક્ષિત રીતે પ્રક્રિયા થયો છે.';
+
+  @override
+  String get driverSubscriptionPaymentFailedTitle => 'ચુકવણી નિષ્ફળ';
+
+  @override
+  String get driverSubscriptionPaymentFailedBody =>
+      'અમે તમારી ચુકવણી પ્રક્રિયા કરી શક્યા નથી. કૃપા કરીને ફરી પ્રયાસ કરો.';
+
+  @override
+  String get driverSubscriptionAmountLabel => 'રકમ';
+
+  @override
+  String get driverSubscriptionTransactionIdLabel => 'વ્યવહાર આઈડી';
+
+  @override
+  String get driverSubscriptionDateLabel => 'તારીખ';
+
+  @override
+  String driverSubscriptionTillDate(String date) {
+    return '$date સુધી';
+  }
+
+  @override
+  String get driverSubscriptionRazorpayConfigError =>
+      'ચુકવણી ગેટવે કોન્ફિગર નથી. સપોર્ટનો સંપર્ક કરો.';
+
+  @override
+  String get driverPaymentHistoryEmptyTitle => 'હજી કોઈ ચુકવણી નથી';
+
+  @override
+  String get driverPaymentHistoryEmptySubtitle =>
+      'તમારી સબ્સ્ક્રિપ્શન ચુકવણી અહીં દેખાશે.';
+
+  @override
+  String get driverPaymentHistoryLoadErrorTitle =>
+      'ચુકવણી ઇતિહાસ લોડ થઈ શક્યો નથી';
+
+  @override
+  String get driverPaymentHistoryInvoice => 'ઇન્વૉઇસ';
+
+  @override
+  String get driverPaymentHistoryInvoiceError => 'ઇન્વૉઇસ ખોલી શકાયું નથી';
+
+  @override
   String get customerAccountSettings => 'એકાઉન્ટ સેટિંગ્સ';
 
   @override

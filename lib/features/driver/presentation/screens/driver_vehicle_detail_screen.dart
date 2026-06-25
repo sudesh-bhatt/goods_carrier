@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/extensions/size_ext.dart';
@@ -10,7 +9,8 @@ import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/mixins/safe_set_state_mixin.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/utils/external_launcher.dart';
-import '../../../../res/assets_res.dart';
+import '../../../../core/extensions/svg_gen_image_extension.dart';
+import '../../../../generated/assets.dart';
 import '../../../../res/font_res.dart';
 import '../../../../shared/domain/enums/driver_vehicle_status.dart';
 import '../../../../shared/domain/models/driver_vehicle_detail.dart';
@@ -358,8 +358,7 @@ class _DriverCard extends StatelessWidget {
           SizedBox(width: 12.w),
           _ActionIconButton(
             onTap: onWhatsApp,
-            child: SvgPicture.asset(
-              AssetsRes.SVG_IC_WHATSAPP,
+            child: Assets.icWhatsapp.svgTint(
               width: 18.w,
               height: 18.w,
             ),

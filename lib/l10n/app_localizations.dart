@@ -2068,6 +2068,228 @@ abstract class AppLocalizations {
   /// **'Coming soon'**
   String get profileComingSoon;
 
+  /// No description provided for @driverSubscriptionPlansTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription Plans'**
+  String get driverSubscriptionPlansTitle;
+
+  /// No description provided for @driverSubscriptionHeroTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Precision Tiers for Global Growth'**
+  String get driverSubscriptionHeroTitle;
+
+  /// No description provided for @driverSubscriptionHeroSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select the operational scale that fits your fleet. Transparency in pricing, excellence in execution.'**
+  String get driverSubscriptionHeroSubtitle;
+
+  /// No description provided for @driverSubscriptionChoosePlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Plan'**
+  String get driverSubscriptionChoosePlan;
+
+  /// No description provided for @driverSubscriptionSubscribeNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscribe Now'**
+  String get driverSubscriptionSubscribeNow;
+
+  /// No description provided for @driverSubscriptionRecommended.
+  ///
+  /// In en, this message translates to:
+  /// **'RECOMMENDED'**
+  String get driverSubscriptionRecommended;
+
+  /// No description provided for @driverSubscriptionPerMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'/mo'**
+  String get driverSubscriptionPerMonth;
+
+  /// No description provided for @driverSubscriptionLoadErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load plans'**
+  String get driverSubscriptionLoadErrorTitle;
+
+  /// No description provided for @driverSubscriptionPaymentMethodTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Method'**
+  String get driverSubscriptionPaymentMethodTitle;
+
+  /// No description provided for @driverSubscriptionSecureTransaction.
+  ///
+  /// In en, this message translates to:
+  /// **'SECURE TRANSACTION'**
+  String get driverSubscriptionSecureTransaction;
+
+  /// No description provided for @driverSubscriptionPaymentHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how you\'d like to pay'**
+  String get driverSubscriptionPaymentHeading;
+
+  /// No description provided for @driverSubscriptionPaymentSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a preferred payment method to complete your subscription.'**
+  String get driverSubscriptionPaymentSubtitle;
+
+  /// No description provided for @driverSubscriptionPaymentUpi.
+  ///
+  /// In en, this message translates to:
+  /// **'UPI'**
+  String get driverSubscriptionPaymentUpi;
+
+  /// No description provided for @driverSubscriptionPaymentUpiSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Pay, PhonePe, BHIM'**
+  String get driverSubscriptionPaymentUpiSub;
+
+  /// No description provided for @driverSubscriptionPaymentCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit/Debit Card'**
+  String get driverSubscriptionPaymentCard;
+
+  /// No description provided for @driverSubscriptionPaymentCardSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Visa, Mastercard, RuPay'**
+  String get driverSubscriptionPaymentCardSub;
+
+  /// No description provided for @driverSubscriptionPaymentNetBanking.
+  ///
+  /// In en, this message translates to:
+  /// **'Net Banking'**
+  String get driverSubscriptionPaymentNetBanking;
+
+  /// No description provided for @driverSubscriptionPaymentNetBankingSub.
+  ///
+  /// In en, this message translates to:
+  /// **'All major Indian banks'**
+  String get driverSubscriptionPaymentNetBankingSub;
+
+  /// No description provided for @driverSubscriptionPaymentWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallets'**
+  String get driverSubscriptionPaymentWallet;
+
+  /// No description provided for @driverSubscriptionPaymentWalletSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Paytm, Amazon Pay, MobiKwik'**
+  String get driverSubscriptionPaymentWalletSub;
+
+  /// No description provided for @driverSubscriptionTrustedPayments.
+  ///
+  /// In en, this message translates to:
+  /// **'TRUSTED PAYMENTS'**
+  String get driverSubscriptionTrustedPayments;
+
+  /// No description provided for @driverSubscriptionSecurePay.
+  ///
+  /// In en, this message translates to:
+  /// **'SECURE PAY'**
+  String get driverSubscriptionSecurePay;
+
+  /// No description provided for @driverSubscriptionReceiptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction Receipt'**
+  String get driverSubscriptionReceiptTitle;
+
+  /// No description provided for @driverSubscriptionPaymentSuccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Successful'**
+  String get driverSubscriptionPaymentSuccessTitle;
+
+  /// No description provided for @driverSubscriptionPaymentSuccessBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your transaction has been processed securely.'**
+  String get driverSubscriptionPaymentSuccessBody;
+
+  /// No description provided for @driverSubscriptionPaymentFailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Failed'**
+  String get driverSubscriptionPaymentFailedTitle;
+
+  /// No description provided for @driverSubscriptionPaymentFailedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'We could not process your payment. Please try again.'**
+  String get driverSubscriptionPaymentFailedBody;
+
+  /// No description provided for @driverSubscriptionAmountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'AMOUNT'**
+  String get driverSubscriptionAmountLabel;
+
+  /// No description provided for @driverSubscriptionTransactionIdLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'TRANSACTION ID'**
+  String get driverSubscriptionTransactionIdLabel;
+
+  /// No description provided for @driverSubscriptionDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'DATE'**
+  String get driverSubscriptionDateLabel;
+
+  /// No description provided for @driverSubscriptionTillDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Till {date}'**
+  String driverSubscriptionTillDate(String date);
+
+  /// No description provided for @driverSubscriptionRazorpayConfigError.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment gateway is not configured. Contact support.'**
+  String get driverSubscriptionRazorpayConfigError;
+
+  /// No description provided for @driverPaymentHistoryEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No payments yet'**
+  String get driverPaymentHistoryEmptyTitle;
+
+  /// No description provided for @driverPaymentHistoryEmptySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your subscription payments will appear here.'**
+  String get driverPaymentHistoryEmptySubtitle;
+
+  /// No description provided for @driverPaymentHistoryLoadErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load payment history'**
+  String get driverPaymentHistoryLoadErrorTitle;
+
+  /// No description provided for @driverPaymentHistoryInvoice.
+  ///
+  /// In en, this message translates to:
+  /// **'INVOICE'**
+  String get driverPaymentHistoryInvoice;
+
+  /// No description provided for @driverPaymentHistoryInvoiceError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open invoice'**
+  String get driverPaymentHistoryInvoiceError;
+
   /// No description provided for @customerAccountSettings.
   ///
   /// In en, this message translates to:

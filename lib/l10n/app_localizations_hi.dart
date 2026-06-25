@@ -1030,6 +1030,128 @@ class AppLocalizationsHi extends AppLocalizations {
   String get profileComingSoon => 'जल्द आ रहा है';
 
   @override
+  String get driverSubscriptionPlansTitle => 'सदस्यता योजनाएँ';
+
+  @override
+  String get driverSubscriptionHeroTitle => 'वैश्विक विकास के लिए सटीक स्तर';
+
+  @override
+  String get driverSubscriptionHeroSubtitle =>
+      'अपने बेड़े के अनुकूल परिचालन स्तर चुनें। पारदर्शी मूल्य, उत्कृष्ट निष्पादन।';
+
+  @override
+  String get driverSubscriptionChoosePlan => 'योजना चुनें';
+
+  @override
+  String get driverSubscriptionSubscribeNow => 'अभी सदस्यता लें';
+
+  @override
+  String get driverSubscriptionRecommended => 'अनुशंसित';
+
+  @override
+  String get driverSubscriptionPerMonth => '/माह';
+
+  @override
+  String get driverSubscriptionLoadErrorTitle => 'योजनाएँ लोड नहीं हो सकीं';
+
+  @override
+  String get driverSubscriptionPaymentMethodTitle => 'भुगतान विधि';
+
+  @override
+  String get driverSubscriptionSecureTransaction => 'सुरक्षित लेनदेन';
+
+  @override
+  String get driverSubscriptionPaymentHeading =>
+      'चुनें कि आप कैसे भुगतान करना चाहते हैं';
+
+  @override
+  String get driverSubscriptionPaymentSubtitle =>
+      'अपनी सदस्यता पूरी करने के लिए पसंदीदा भुगतान विधि चुनें।';
+
+  @override
+  String get driverSubscriptionPaymentUpi => 'UPI';
+
+  @override
+  String get driverSubscriptionPaymentUpiSub => 'Google Pay, PhonePe, BHIM';
+
+  @override
+  String get driverSubscriptionPaymentCard => 'क्रेडिट/डेबिट कार्ड';
+
+  @override
+  String get driverSubscriptionPaymentCardSub => 'Visa, Mastercard, RuPay';
+
+  @override
+  String get driverSubscriptionPaymentNetBanking => 'नेट बैंकिंग';
+
+  @override
+  String get driverSubscriptionPaymentNetBankingSub => 'सभी प्रमुख भारतीय बैंक';
+
+  @override
+  String get driverSubscriptionPaymentWallet => 'वॉलेट';
+
+  @override
+  String get driverSubscriptionPaymentWalletSub =>
+      'Paytm, Amazon Pay, MobiKwik';
+
+  @override
+  String get driverSubscriptionTrustedPayments => 'विश्वसनीय भुगतान';
+
+  @override
+  String get driverSubscriptionSecurePay => 'सुरक्षित भुगतान';
+
+  @override
+  String get driverSubscriptionReceiptTitle => 'लेनदेन रसीद';
+
+  @override
+  String get driverSubscriptionPaymentSuccessTitle => 'भुगतान सफल';
+
+  @override
+  String get driverSubscriptionPaymentSuccessBody =>
+      'आपका लेनदेन सुरक्षित रूप से संसाधित हो गया है।';
+
+  @override
+  String get driverSubscriptionPaymentFailedTitle => 'भुगतान विफल';
+
+  @override
+  String get driverSubscriptionPaymentFailedBody =>
+      'हम आपका भुगतान संसाधित नहीं कर सके। कृपया पुनः प्रयास करें।';
+
+  @override
+  String get driverSubscriptionAmountLabel => 'राशि';
+
+  @override
+  String get driverSubscriptionTransactionIdLabel => 'लेनदेन आईडी';
+
+  @override
+  String get driverSubscriptionDateLabel => 'तारीख';
+
+  @override
+  String driverSubscriptionTillDate(String date) {
+    return '$date तक';
+  }
+
+  @override
+  String get driverSubscriptionRazorpayConfigError =>
+      'भुगतान गेटवे कॉन्फ़िगर नहीं है। सहायता से संपर्क करें।';
+
+  @override
+  String get driverPaymentHistoryEmptyTitle => 'अभी कोई भुगतान नहीं';
+
+  @override
+  String get driverPaymentHistoryEmptySubtitle =>
+      'आपके सदस्यता भुगतान यहाँ दिखाई देंगे।';
+
+  @override
+  String get driverPaymentHistoryLoadErrorTitle =>
+      'भुगतान इतिहास लोड नहीं हो सका';
+
+  @override
+  String get driverPaymentHistoryInvoice => 'इनवॉइस';
+
+  @override
+  String get driverPaymentHistoryInvoiceError => 'इनवॉइस खोला नहीं जा सका';
+
+  @override
   String get customerAccountSettings => 'खाता सेटिंग्स';
 
   @override

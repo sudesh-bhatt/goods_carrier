@@ -78,7 +78,7 @@ class _NotificationsTabState extends ConsumerState<NotificationsTab>
           NotificationType.tripRequestAccepted ||
           NotificationType.tripCancelled ||
           NotificationType.subscriptionPurchase =>
-            AppRoutes.driverTripDetailOf(refId),
+            AppRoutes.driverSubscriptionPlans,
           _ => AppRoutes.driverShipmentDetailOf(refId),
         };
         context.push(route);

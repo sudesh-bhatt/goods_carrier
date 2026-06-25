@@ -15,6 +15,7 @@ class AssetsRes {
   static const String IMAGES_EMPTY_TRIP_PLACEHOLDER = 'assets/images/empty_trip_placeholder.png';
   static const String IMAGES_LOGIN_SCREEN_BANNER = 'assets/images/login_screen_banner.png';
   static const String IMAGES_SPLASH_SCREEN_LOGO = 'assets/images/splash_screen_logo.png';
+  static const String IMAGES_SUBSCRIPTION_LOGISTICS_BACKGROUND = 'assets/images/subscription_logistics_background.png';
   static const String SVG_APP_ICON = 'assets/svg/app_icon.svg';
   static const String SVG_CTA_RIGHT_ARROW = 'assets/svg/cta_right_arrow.svg';
   static const String SVG_IC_OTP_LOCK = 'assets/svg/ic_otp_lock.svg';

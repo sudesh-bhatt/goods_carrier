@@ -1,0 +1,101 @@
+import '../../../domain/models/confirm_subscription_payment.dart';
+import '../../../domain/models/current_subscription.dart';
+import '../../../domain/models/initiate_subscription_payment.dart';
+import '../../../domain/models/subscription_plan.dart';
+
+abstract final class DriverSubscriptionApiMapper {
+  static SubscriptionPlan planFromJson(Map<String, dynamic> json) {
+    final featuresRaw = json['features'];
+    final features = <String>[];
+    if (featuresRaw is List) {
+      for (final item in featuresRaw) {
+        if (item is String && item.trim().isNotEmpty) {
+          features.add(item.trim());
+        } else if (item is Map<String, dynamic>) {
+          final label = item['label'] ?? item['name'] ?? item['text'];
+          if (label != null && label.toString().trim().isNotEmpty) {
+            features.add(label.toString().trim());
+          }
+        }
+      }
+    }
+
+    return SubscriptionPlan(
+      id: _readInt(json['id']) ?? 0,
+      name: json['name']?.toString() ?? '',
+      tagline: _nullableString(json['tagline'] ?? json['subtitle']),
+      description: _nullableString(json['description']),
+      price: _readDouble(json['price']) ?? 0,
+      currency: json['currency']?.toString() ?? 'INR',
+      durationDays: _readInt(json['duration_days']) ?? 30,
+      isActive: json['is_active'] as bool? ?? true,
+      isRecommended: json['is_recommended'] as bool? ?? false,
+      features: features,
+    );
+  }
+
+  static InitiateSubscriptionPaymentResult initiateFromJson(
+    Map<String, dynamic> json,
+  ) {
+    final amountRaw = json['amount'] ?? json['amount_paise'];
+    var amountPaise = _readInt(amountRaw);
+    if (amountPaise != null && amountPaise < 1000) {
+      // Backend may return rupees — convert to paise for Razorpay.
+      amountPaise = (amountPaise * 100).round();
+    }
+
+    return InitiateSubscriptionPaymentResult(
+      transactionId: json['transaction_id']?.toString() ?? '',
+      status: json['status']?.toString() ?? 'pending',
+      paymentUrl: _nullableString(json['payment_url']),
+      upiIntent: _nullableString(json['upi_intent']),
+      razorpayOrderId: _nullableString(
+        json['razorpay_order_id'] ?? json['order_id'],
+      ),
+      razorpayKey: _nullableString(json['razorpay_key'] ?? json['key']),
+      amountPaise: amountPaise,
+      currency: json['currency']?.toString() ?? 'INR',
+    );
+  }
+
+  static ConfirmSubscriptionPaymentResult confirmFromJson(
+    Map<String, dynamic> json,
+  ) =>
+      ConfirmSubscriptionPaymentResult(
+        success: json['success'] as bool? ?? false,
+        message: _nullableString(json['message']),
+        subscriptionId: json['subscription_id']?.toString(),
+      );
+
+  static CurrentSubscription currentFromJson(Map<String, dynamic> json) =>
+      CurrentSubscription(
+        id: _readInt(json['id']) ?? 0,
+        planId: _readInt(json['plan_id']) ?? 0,
+        planName: json['plan_name']?.toString() ?? '',
+        status: json['status']?.toString() ?? '',
+        startDate: DateTime.tryParse(json['start_date']?.toString() ?? '') ??
+            DateTime.now(),
+        endDate: DateTime.tryParse(json['end_date']?.toString() ?? '') ??
+            DateTime.now(),
+        isExpired: json['is_expired'] as bool? ?? false,
+      );
+
+  static int? _readInt(dynamic raw) {
+    if (raw == null) return null;
+    if (raw is int) return raw;
+    if (raw is num) return raw.toInt();
+    return int.tryParse(raw.toString());
+  }
+
+  static double? _readDouble(dynamic raw) {
+    if (raw == null) return null;
+    if (raw is num) return raw.toDouble();
+    return double.tryParse(raw.toString());
+  }
+
+  static String? _nullableString(dynamic raw) {
+    if (raw == null) return null;
+    final value = raw.toString().trim();
+    return value.isEmpty ? null : value;
+  }
+}

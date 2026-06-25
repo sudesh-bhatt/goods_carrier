@@ -37,4 +37,16 @@ class DriverPaymentApiClient {
       ApiEnvelope.parseData(response.data),
     );
   }
+
+  Future<String> getPaymentInvoiceUrl(int id) async {
+    final response = await _dio.get<Map<String, dynamic>>(
+      ApiConstants.driverPaymentInvoice(id),
+    );
+    final data = ApiEnvelope.parseData(response.data);
+    final url = data['invoice_url']?.toString().trim();
+    if (url == null || url.isEmpty) {
+      throw StateError('Invoice URL not available');
+    }
+    return url;
+  }
 }

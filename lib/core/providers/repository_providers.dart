@@ -11,6 +11,7 @@ import '../../shared/data/api/driver/driver_vehicle_api_client.dart';
 import '../../shared/data/api/customer/customer_settings_api_client.dart';
 import '../../shared/data/api/customer/customer_support_api_client.dart';
 import '../../shared/data/api/driver/driver_payment_api_client.dart';
+import '../../shared/data/api/driver/driver_subscription_api_client.dart';
 import '../../shared/data/api/app/app_config_api_client.dart';
 import '../../shared/data/api/notifications/notifications_api_client.dart';
 import '../../shared/data/api/reports/reports_api_client.dart';
@@ -201,6 +202,11 @@ final customerSupportApiClientProvider =
 
 final driverPaymentApiClientProvider = Provider<DriverPaymentApiClient>((ref) {
   return DriverPaymentApiClient(ref.read(dioProvider));
+});
+
+final driverSubscriptionApiClientProvider =
+    Provider<DriverSubscriptionApiClient>((ref) {
+  return DriverSubscriptionApiClient(ref.read(dioProvider));
 });
 
 final appConfigApiClientProvider = Provider<AppConfigApiClient>((ref) {

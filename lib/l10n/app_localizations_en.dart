@@ -1034,6 +1034,128 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileComingSoon => 'Coming soon';
 
   @override
+  String get driverSubscriptionPlansTitle => 'Subscription Plans';
+
+  @override
+  String get driverSubscriptionHeroTitle => 'Precision Tiers for Global Growth';
+
+  @override
+  String get driverSubscriptionHeroSubtitle =>
+      'Select the operational scale that fits your fleet. Transparency in pricing, excellence in execution.';
+
+  @override
+  String get driverSubscriptionChoosePlan => 'Choose Plan';
+
+  @override
+  String get driverSubscriptionSubscribeNow => 'Subscribe Now';
+
+  @override
+  String get driverSubscriptionRecommended => 'RECOMMENDED';
+
+  @override
+  String get driverSubscriptionPerMonth => '/mo';
+
+  @override
+  String get driverSubscriptionLoadErrorTitle => 'Could not load plans';
+
+  @override
+  String get driverSubscriptionPaymentMethodTitle => 'Payment Method';
+
+  @override
+  String get driverSubscriptionSecureTransaction => 'SECURE TRANSACTION';
+
+  @override
+  String get driverSubscriptionPaymentHeading =>
+      'Choose how you\'d like to pay';
+
+  @override
+  String get driverSubscriptionPaymentSubtitle =>
+      'Select a preferred payment method to complete your subscription.';
+
+  @override
+  String get driverSubscriptionPaymentUpi => 'UPI';
+
+  @override
+  String get driverSubscriptionPaymentUpiSub => 'Google Pay, PhonePe, BHIM';
+
+  @override
+  String get driverSubscriptionPaymentCard => 'Credit/Debit Card';
+
+  @override
+  String get driverSubscriptionPaymentCardSub => 'Visa, Mastercard, RuPay';
+
+  @override
+  String get driverSubscriptionPaymentNetBanking => 'Net Banking';
+
+  @override
+  String get driverSubscriptionPaymentNetBankingSub => 'All major Indian banks';
+
+  @override
+  String get driverSubscriptionPaymentWallet => 'Wallets';
+
+  @override
+  String get driverSubscriptionPaymentWalletSub =>
+      'Paytm, Amazon Pay, MobiKwik';
+
+  @override
+  String get driverSubscriptionTrustedPayments => 'TRUSTED PAYMENTS';
+
+  @override
+  String get driverSubscriptionSecurePay => 'SECURE PAY';
+
+  @override
+  String get driverSubscriptionReceiptTitle => 'Transaction Receipt';
+
+  @override
+  String get driverSubscriptionPaymentSuccessTitle => 'Payment Successful';
+
+  @override
+  String get driverSubscriptionPaymentSuccessBody =>
+      'Your transaction has been processed securely.';
+
+  @override
+  String get driverSubscriptionPaymentFailedTitle => 'Payment Failed';
+
+  @override
+  String get driverSubscriptionPaymentFailedBody =>
+      'We could not process your payment. Please try again.';
+
+  @override
+  String get driverSubscriptionAmountLabel => 'AMOUNT';
+
+  @override
+  String get driverSubscriptionTransactionIdLabel => 'TRANSACTION ID';
+
+  @override
+  String get driverSubscriptionDateLabel => 'DATE';
+
+  @override
+  String driverSubscriptionTillDate(String date) {
+    return 'Till $date';
+  }
+
+  @override
+  String get driverSubscriptionRazorpayConfigError =>
+      'Payment gateway is not configured. Contact support.';
+
+  @override
+  String get driverPaymentHistoryEmptyTitle => 'No payments yet';
+
+  @override
+  String get driverPaymentHistoryEmptySubtitle =>
+      'Your subscription payments will appear here.';
+
+  @override
+  String get driverPaymentHistoryLoadErrorTitle =>
+      'Could not load payment history';
+
+  @override
+  String get driverPaymentHistoryInvoice => 'INVOICE';
+
+  @override
+  String get driverPaymentHistoryInvoiceError => 'Could not open invoice';
+
+  @override
   String get customerAccountSettings => 'Account Settings';
 
   @override
