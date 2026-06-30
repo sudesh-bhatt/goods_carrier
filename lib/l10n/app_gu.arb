@@ -235,7 +235,6 @@
   "driverTripDropLabel": "DROP",
   "driverTripCapacityLabel": "CAPACITY",
   "driverTripBadgePublished": "PUBLISHED",
-  "driverTripBadgePublish": "PUBLISH",
   "driverTripBadgeExpired": "EXPIRED",
   "driverTripBadgeDraft": "DRAFT",
   "driverExpertDriverLabel": "નિષ્ણાત ડ્રાઇવર",
@@ -249,6 +248,10 @@
   "cancelTripKeep": "ટ્રિપ રાખો",
   "tripCancelSuccessTitle": "તમારી ટ્રિપ સફળતાપૂર્વક રદ થઈ",
   "tripCancelSuccessBody": "તમારી ટ્રિપ સફળતાપૂર્વક રદ થઈ ગઈ છે. ટ્રિપ આઈડી {tripId} છે",
+  "driverTripPostSuccessTitle": "તમારી ટ્રિપ સફળતાપૂર્વક પોસ્ટ થઈ",
+  "driverTripPostSuccessBody": "તમારી ટ્રિપ સફળતાપૂર્વક પોસ્ટ થઈ ગઈ છે. તમારી ટ્રિપ આઈડી #{tripId} છે",
+  "driverTripUpdateSuccessTitle": "તમારી ટ્રિપ સફળતાપૂર્વક અપડેટ થઈ",
+  "driverTripUpdateSuccessBody": "તમારી ટ્રિપ સફળતાપૂર્વક અપડેટ થઈ ગઈ છે. તમારી ટ્રિપ આઈડી #{tripId} છે",
   "driverHomeShipmentId": "શિપમેન્ટ ID",
   "driverShipmentDetailsTitle": "શિપમેન્ટ વિગતો",
   "driverAddRequest": "વિનંતી ઉમેરો",
@@ -527,6 +530,12 @@
   "driverTripFormScheduleRequired": "કૃપા કરીને શરૂઆત અને સમાપ્તિ શેડ્યૂલ પસંદ કરો",
   "driverTripFormEndBeforeStart": "સમાપ્તિ શેડ્યૂલ શરૂઆત પછી હોવું જોઈએ",
   "driverTripFormCapacityRequired": "માન્ય લોડ ક્ષમતા દાખલ કરો",
+  "driverTripFormCapacityExceedsVehicle": "લોડ ક્ષમતા {maxCapacity} કરતાં વધુ ન હોઈ શકે",
+  "@driverTripFormCapacityExceedsVehicle": {
+    "placeholders": {
+      "maxCapacity": { "type": "String" }
+    }
+  },
   "driverTripFormPriceRequired": "માન્ય અંદાજિત કિંમત દાખલ કરો",
   "tripFrom": "થી",
   "tripTo": "સુધી",

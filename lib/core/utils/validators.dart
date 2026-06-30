@@ -1,3 +1,5 @@
+import 'vehicle_number_utils.dart';
+
 class Validators {
   Validators._();
 
@@ -33,12 +35,11 @@ class Validators {
     return null;
   }
 
-  /// Indian vehicle number: MH 02 CC 4156
+  /// Indian vehicle number — standard `AA-00-BB-1234` or Bharat `YY-BH-1234-AA`.
   static String? vehicleNumber(String? value) {
     if (value == null || value.trim().isEmpty) return 'Vehicle number is required';
-    final vehicle = RegExp(r'^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]{4}$');
-    if (!vehicle.hasMatch(value.replaceAll(' ', '').toUpperCase())) {
-      return 'Enter a valid vehicle number (e.g. MH02CC4156)';
+    if (!VehicleNumberUtils.isValid(value)) {
+      return 'Enter a valid vehicle number (e.g. GJ-01-YB-3879)';
     }
     return null;
   }

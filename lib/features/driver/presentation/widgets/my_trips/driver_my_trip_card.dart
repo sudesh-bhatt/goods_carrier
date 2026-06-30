@@ -5,7 +5,9 @@ import 'package:intl/intl.dart';
 import '../../../../../core/extensions/size_ext.dart';
 import '../../../../../core/extensions/theme_ext.dart';
 import '../../../../../res/font_res.dart';
+import '../../../../../core/utils/vehicle_number_utils.dart';
 import '../../../../../shared/domain/entities/driver_trip.dart';
+import '../../../../../shared/domain/entities/driver_trip_display.dart';
 import '../../models/driver_trip_list_badge.dart';
 import 'driver_my_trip_tokens.dart';
 
@@ -13,13 +15,6 @@ String formatDriverTripSchedule(DateTime dateTime) {
   final date = DateFormat('d MMMM yyyy').format(dateTime);
   final time = DateFormat('hh:mma').format(dateTime);
   return '$date | $time';
-}
-
-String formatDriverTripCapacity(double tons) {
-  final value = tons == tons.roundToDouble()
-      ? tons.toStringAsFixed(0)
-      : tons.toStringAsFixed(1);
-  return '$value Ton';
 }
 
 /// Figma My Trips list card — node `1:3967`.
@@ -58,7 +53,7 @@ class DriverMyTripListCard extends StatelessWidget {
           _TripRouteHeader(
             trip: trip,
             badge: badge,
-            badgeLabel: _badgeLabel(l10n, badge),
+            badgeLabel: driverTripBadgeLabel(l10n, badge),
           ),
           SizedBox(height: 16.64.h),
           DriverMyTripDetailsGrid(trip: trip),
@@ -95,13 +90,6 @@ class DriverMyTripListCard extends StatelessWidget {
       ),
     );
   }
-
-  String _badgeLabel(dynamic l10n, DriverTripListBadge badge) =>
-      switch (badge) {
-        DriverTripListBadge.published => l10n.driverTripBadgePublished,
-        DriverTripListBadge.expired => l10n.driverTripBadgeExpired,
-        DriverTripListBadge.draft => l10n.driverTripBadgeDraft,
-      };
 }
 
 class _TripRouteHeader extends StatelessWidget {
@@ -281,7 +269,7 @@ class DriverMyTripDetailsGrid extends StatelessWidget {
               Expanded(
                 child: _DetailCell(
                   label: l10n.driverTripCapacityLabel,
-                  value: formatDriverTripCapacity(trip.loadCapacityTons),
+                  value: trip.loadCapacityLabel,
                 ),
               ),
             ],
@@ -294,7 +282,9 @@ class DriverMyTripDetailsGrid extends StatelessWidget {
                 Expanded(
                   child: _DetailCell(
                     label: l10n.profileVehicleNumber.toUpperCase(),
-                    value: trip.vehicleNumber,
+                    value: trip.vehicleNumber.trim().isEmpty
+                        ? '—'
+                        : VehicleNumberUtils.format(trip.vehicleNumber),
                   ),
                 ),
                 SizedBox(width: 16.w),

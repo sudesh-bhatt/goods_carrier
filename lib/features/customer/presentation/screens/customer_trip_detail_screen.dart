@@ -10,6 +10,7 @@ import '../../../../core/mixins/safe_set_state_mixin.dart';
 import '../../../../core/network/api_exception_mapper.dart';
 import '../../../../core/providers/repository_providers.dart';
 import '../../../../core/router/app_routes.dart';
+import '../../../../core/utils/vehicle_number_utils.dart';
 import '../../../../shared/domain/entities/driver_trip.dart';
 import '../../../../shared/domain/entities/driver_trip_display.dart';
 import '../../../../shared/domain/models/customer_shipment_detail.dart';
@@ -66,48 +67,21 @@ class _CustomerTripDetailScreenState
       return;
     }
 
-    final cachedDriverTrip = _resolveCachedDriverTrip();
-    if (cachedDriverTrip != null) {
-      safeSetState(() {
-        _isLoadingDetail = false;
-        _loadError = null;
-      });
-      return;
-    }
-
-    final cached = _resolveCachedShipment();
-    if (cached != null) {
-      safeSetState(() => _detail = cached);
-    }
-
-    if (!EnvConfig.useRemoteApi) return;
-
+    // Customer driver trips — dashboard list only (no driver API access).
     safeSetState(() {
-      _isLoadingDetail = cached == null;
+      _isLoadingDetail = false;
       _loadError = null;
     });
+  }
 
-    try {
-      final apiId = cached?.apiResourceId ?? widget.shipmentId;
-      final fetchedDetail = await ref
-          .read(shipmentRepositoryProvider)
-          .getCustomerShipmentDetail(apiId);
-      if (!mounted) return;
-      safeSetState(() {
-        _customerShipmentDetail = fetchedDetail;
-        _detail = fetchedDetail.shipment;
-        _isLoadingDetail = false;
-      });
-      ref
-          .read(customerShipmentsProvider.notifier)
-          .upsertShipment(fetchedDetail.shipment);
-    } catch (e) {
-      if (!mounted) return;
-      safeSetState(() {
-        _isLoadingDetail = false;
-        _loadError = cached == null ? ApiExceptionMapper.userMessage(e) : null;
-      });
-    }
+  Future<void> _retryCustomerDriverTrip() async {
+    safeSetState(() {
+      _isLoadingDetail = true;
+      _loadError = null;
+    });
+    await ref.read(customerDashboardProvider.notifier).refresh();
+    if (!mounted) return;
+    safeSetState(() => _isLoadingDetail = false);
   }
 
   Future<void> _loadDriverDetail() async {
@@ -162,8 +136,33 @@ class _CustomerTripDetailScreenState
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final driverTrip = _resolveDriverTrip();
-    if (!widget.isDriver && driverTrip != null) {
+
+    if (!widget.isDriver) {
+      final driverTrip = _resolveDriverTrip();
+      final dashboardState = ref.watch(customerDashboardProvider);
+      if (_isLoadingDetail || dashboardState.isLoading) {
+        return Scaffold(
+          backgroundColor: TripDetailTokens.screenBg,
+          appBar: FlowScreenAppBar(
+            title: _screenTitle(l10n),
+            fallbackRoute: _fallbackRoute,
+          ),
+          body: const Center(child: CircularProgressIndicator()),
+        );
+      }
+      if (driverTrip == null) {
+        return Scaffold(
+          backgroundColor: TripDetailTokens.screenBg,
+          appBar: FlowScreenAppBar(
+            title: _screenTitle(l10n),
+            fallbackRoute: _fallbackRoute,
+          ),
+          body: ErrorView(
+            message: dashboardState.error ?? _loadError ?? 'Trip not found.',
+            onRetry: _retryCustomerDriverTrip,
+          ),
+        );
+      }
       return _buildDriverTripDetail(context, driverTrip, l10n);
     }
 
@@ -241,17 +240,12 @@ class _CustomerTripDetailScreenState
     return ref.read(customerShipmentsProvider.notifier).byId(widget.shipmentId);
   }
 
-  DriverTrip? _resolveCachedDriverTrip() {
-    if (widget.isDriver) return null;
-    return ref.read(customerDashboardProvider.notifier).byId(widget.shipmentId);
-  }
-
   DriverTrip? _resolveDriverTrip() {
     if (widget.isDriver) return null;
     return ref
         .watch(customerDashboardProvider)
         .trips
-        .where((t) => t.id == widget.shipmentId)
+        .where((t) => t.id == widget.shipmentId || t.apiId == widget.shipmentId)
         .firstOrNull;
   }
 
@@ -260,8 +254,9 @@ class _CustomerTripDetailScreenState
     DriverTrip trip,
     dynamic l10n,
   ) {
-    final vehicleNumber =
-        trip.vehicleNumber.isNotEmpty ? trip.vehicleNumber : '—';
+    final vehicleNumber = trip.vehicleNumber.trim().isEmpty
+        ? '—'
+        : VehicleNumberUtils.format(trip.vehicleNumber);
 
     return CustomerLightChrome(
       child: Scaffold(

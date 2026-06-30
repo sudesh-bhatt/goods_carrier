@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../../../core/extensions/size_ext.dart';
+import '../../../../../core/utils/vehicle_number_utils.dart';
 import '../../../../../core/utils/validators.dart';
 import '../../../../../res/font_res.dart';
 import 'driver_trip_form_common.dart';
@@ -25,7 +26,8 @@ class DriverTripFormVehicleCard extends StatelessWidget {
     required this.weightUnit,
     required this.vehicleNumberHint,
     required this.onVehicleTap,
-    required this.onWeightUnitTap,
+    required     this.onWeightUnitTap,
+    this.vehicleCategoryValidator,
     this.vehicleNumberValidator,
     this.capacityValidator,
     this.priceValidator,
@@ -46,6 +48,7 @@ class DriverTripFormVehicleCard extends StatelessWidget {
   final String vehicleNumberHint;
   final VoidCallback onVehicleTap;
   final VoidCallback onWeightUnitTap;
+  final String? Function(String?)? vehicleCategoryValidator;
   final String? Function(String?)? vehicleNumberValidator;
   final String? Function(String?)? capacityValidator;
   final String? Function(String?)? priceValidator;
@@ -69,6 +72,7 @@ class DriverTripFormVehicleCard extends StatelessWidget {
               readOnly: true,
               onTap: onVehicleTap,
               suffix: const DriverTripFormPickerSuffix(),
+              validator: vehicleCategoryValidator,
             ),
           ),
           SizedBox(height: 20.h),
@@ -77,9 +81,7 @@ class DriverTripFormVehicleCard extends StatelessWidget {
             child: DriverTripFormField(
               controller: vehicleNumberController,
               hint: vehicleNumberHint,
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z0-9 ]')),
-              ],
+              inputFormatters: [VehicleNumberInputFormatter()],
               validator: vehicleNumberValidator ?? Validators.vehicleNumber,
             ),
           ),

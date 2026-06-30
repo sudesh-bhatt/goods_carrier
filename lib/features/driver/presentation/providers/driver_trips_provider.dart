@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/id_prefixes.dart';
 import '../../../../core/network/api_exception_mapper.dart';
 import '../../../../core/providers/repository_providers.dart';
-import '../../../../shared/data/api/driver/trip_api_mapper.dart';
 import '../../../../shared/domain/entities/driver_trip.dart';
 import '../../../../shared/domain/enums/session_phase.dart';
 import '../../../../shared/domain/enums/trip_status.dart';
@@ -164,9 +163,26 @@ class DriverTripsNotifier extends StateNotifier<DriverTripsState> {
     );
     if (index < 0) return;
     final updated = [...state.trips];
-    updated[index] = trip;
+    updated[index] = _mergeTripFields(existing: state.trips[index], incoming: trip);
     state = state.copyWith(trips: updated);
   }
+
+  DriverTrip _mergeTripFields({
+    required DriverTrip existing,
+    required DriverTrip incoming,
+  }) =>
+      incoming.copyWith(
+        driverName: incoming.driverName.isNotEmpty
+            ? incoming.driverName
+            : existing.driverName,
+        driverPhone: incoming.driverPhone ?? existing.driverPhone,
+        driverAvatarUrl: incoming.driverAvatarUrl ?? existing.driverAvatarUrl,
+        vehicleNumber: incoming.vehicleNumber.isNotEmpty
+            ? incoming.vehicleNumber
+            : existing.vehicleNumber,
+        loadCapacity: incoming.loadCapacity ?? existing.loadCapacity,
+        capacityUnit: incoming.capacityUnit ?? existing.capacityUnit,
+      );
 
   Future<bool> acceptTripRequest({
     required String tripId,
@@ -197,32 +213,41 @@ class DriverTripsNotifier extends StateNotifier<DriverTripsState> {
   }
 
   TripSubmitOptions _buildSubmitOptions({
-    required VehicleType vehicleType,
-    required double loadCapacityTons,
-    required String fromCity,
-    required String toCity,
-    String? driverPhone,
+    required int vehicleId,
+    required double loadCapacity,
+    required String capacityUnit,
+    required String fromLocation,
+    required String toLocation,
+    required String driverCountryCode,
+    required String driverPhone,
   }) =>
       TripSubmitOptions(
-        vehicleTypeId: TripApiMapper.defaultVehicleTypeId(vehicleType),
-        capacity: loadCapacityTons,
-        capacityUnit: TripSubmitOptions.apiCapacityUnit('Ton'),
+        vehicleId: vehicleId,
+        loadCapacity: loadCapacity,
+        capacityUnit: capacityUnit,
+        fromLocation: fromLocation,
+        toLocation: toLocation,
+        driverCountryCode: driverCountryCode,
         driverPhone: driverPhone,
-        fromAddress: fromCity,
-        toAddress: toCity,
       );
 
-  Future<void> postTrip({
+  Future<DriverTrip?> postTrip({
     required String fromCity,
     required String toCity,
+    required String fromLocation,
+    required String toLocation,
     required DateTime estimatedStartDate,
     required DateTime estimatedEndDate,
     required VehicleType vehicleType,
     required String vehicleNumber,
+    required int vehicleId,
+    required double loadCapacity,
     required double loadCapacityTons,
     required double estimatedPrice,
+    required String capacityUnit,
+    required String driverCountryCode,
+    required String driverPhone,
     String? driverName,
-    String? driverPhone,
   }) async {
     final user = _ref.read(authProvider).user!;
     final now = DateTime.now();
@@ -233,28 +258,33 @@ class DriverTripsNotifier extends StateNotifier<DriverTripsState> {
       id: tempId,
       driverId: user.id,
       driverName: driverName ?? user.name,
-      fromCity: fromCity,
-      toCity: toCity,
+      fromCity: fromLocation.isNotEmpty ? fromLocation : fromCity,
+      toCity: toLocation.isNotEmpty ? toLocation : toCity,
       estimatedStartDate: estimatedStartDate,
       estimatedEndDate: estimatedEndDate,
       vehicleCategory: vehicleType,
       vehicleNumber: vehicleNumber,
+      loadCapacity: loadCapacity,
+      capacityUnit: capacityUnit,
       loadCapacityTons: loadCapacityTons,
       estimatedPrice: estimatedPrice,
       status: TripStatus.active,
     );
 
     final options = _buildSubmitOptions(
-      vehicleType: vehicleType,
-      loadCapacityTons: loadCapacityTons,
-      fromCity: fromCity,
-      toCity: toCity,
+      vehicleId: vehicleId,
+      loadCapacity: loadCapacity,
+      capacityUnit: capacityUnit,
+      fromLocation: fromLocation,
+      toLocation: toLocation,
+      driverCountryCode: driverCountryCode,
       driverPhone: driverPhone,
     );
 
     state = state.copyWith(
       isLoading: true,
       trips: [optimistic, ...state.trips],
+      error: null,
     );
 
     try {
@@ -263,30 +293,41 @@ class DriverTripsNotifier extends StateNotifier<DriverTripsState> {
         isLoading: false,
         trips: state.trips.map((t) => t.id == tempId ? saved : t).toList(),
       );
+      return saved;
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
         trips: state.trips.where((t) => t.id != tempId).toList(),
         error: ApiExceptionMapper.userMessage(e),
       );
+      return null;
     }
   }
 
-  Future<void> updateTrip(
+  Future<DriverTrip?> updateTrip(
     DriverTrip updated, {
-    String? driverPhone,
+    required int vehicleId,
+    required double loadCapacity,
+    required String capacityUnit,
+    required String fromLocation,
+    required String toLocation,
+    required String driverCountryCode,
+    required String driverPhone,
   }) async {
     final prev = state.trips;
     state = state.copyWith(
       isLoading: true,
       trips: prev.map((t) => t.id == updated.id ? updated : t).toList(),
+      error: null,
     );
     try {
       final options = _buildSubmitOptions(
-        vehicleType: updated.vehicleCategory,
-        loadCapacityTons: updated.loadCapacityTons,
-        fromCity: updated.fromCity,
-        toCity: updated.toCity,
+        vehicleId: vehicleId,
+        loadCapacity: loadCapacity,
+        capacityUnit: capacityUnit,
+        fromLocation: fromLocation,
+        toLocation: toLocation,
+        driverCountryCode: driverCountryCode,
         driverPhone: driverPhone,
       );
       final saved = await _repo.updateTrip(updated, options: options);
@@ -294,12 +335,14 @@ class DriverTripsNotifier extends StateNotifier<DriverTripsState> {
         isLoading: false,
         trips: state.trips.map((t) => t.id == saved.id ? saved : t).toList(),
       );
+      return saved;
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
         trips: prev,
         error: ApiExceptionMapper.userMessage(e),
       );
+      return null;
     }
   }
 

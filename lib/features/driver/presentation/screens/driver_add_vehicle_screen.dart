@@ -19,6 +19,7 @@ import '../../../../core/utils/image_crop_picker_helper.dart';
 import '../../../../core/utils/profile_image_utils.dart';
 import '../../../../core/utils/vehicle_image_crop_kind.dart';
 import '../../../../core/utils/validators.dart';
+import '../../../../core/utils/vehicle_number_utils.dart';
 import '../../../../res/font_res.dart';
 import '../../../../shared/domain/models/driver_vehicle_detail.dart';
 import '../../../../shared/domain/models/driver_vehicle_edit_result.dart';
@@ -105,7 +106,8 @@ class _DriverAddVehicleScreenState extends ConsumerState<DriverAddVehicleScreen>
             (masters.capacityUnits.isNotEmpty ? masters.capacityUnits.first : 'TON');
 
         if (existing != null) {
-          _registrationCtrl.text = existing.registrationNumber;
+          _registrationCtrl.text =
+              VehicleNumberUtils.format(existing.registrationNumber);
           _capacityCtrl.text = existing.capacity == existing.capacity.truncateToDouble()
               ? existing.capacity.toInt().toString()
               : existing.capacity.toString();
@@ -253,7 +255,8 @@ class _DriverAddVehicleScreenState extends ConsumerState<DriverAddVehicleScreen>
   Future<FormData> _buildFormData() async {
     final fields = <String, dynamic>{
       'vehicle_type_id': _selectedType!.id.toString(),
-      'registration_number': _registrationCtrl.text.trim(),
+      'registration_number':
+          VehicleNumberUtils.format(_registrationCtrl.text.trim()),
       'capacity': _capacityCtrl.text.trim(),
       'capacity_unit': _capacityUnit,
       'driver_name': _driverNameCtrl.text.trim(),
@@ -339,12 +342,10 @@ class _DriverAddVehicleScreenState extends ConsumerState<DriverAddVehicleScreen>
                                   DriverProfilePersonalField(
                                     label: l10n.driverVehicleRegistrationLabel,
                                     controller: _registrationCtrl,
-                                    hint: 'MH-12-PQ-8834',
+                                    hint: 'GJ-01-YB-3879',
                                     textCapitalization: TextCapitalization.characters,
-                                    validator: (v) => Validators.required(
-                                      v,
-                                      l10n.driverVehicleRegistrationLabel,
-                                    ),
+                                    inputFormatters: [VehicleNumberInputFormatter()],
+                                    validator: Validators.vehicleNumber,
                                   ),
                                   SizedBox(height: 24.h),
                                   DriverProfilePersonalField(

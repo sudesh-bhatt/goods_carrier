@@ -154,8 +154,11 @@ class CustomerDashboardNotifier extends StateNotifier<CustomerDashboardState> {
     await _load(query: query);
   }
 
-  DriverTrip? byId(String id) =>
-      state.trips.where((t) => t.id == id).firstOrNull;
+  DriverTrip? byId(String id) => state.trips
+      .where((t) => t.id == id || t.apiId == id)
+      .firstOrNull;
+
+  String apiResourceIdFor(String id) => byId(id)?.apiResourceId ?? id;
 
   CustomerDashboardQuery _buildQuery({
     required String search,

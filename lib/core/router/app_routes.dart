@@ -43,6 +43,7 @@ abstract final class AppRoutes {
   static const String driverHome           = '/driver/home';
   static const String driverMyTrips        = '/driver/my-trips';
   static const String postTrip             = '/driver/post-trip';
+  static const String tripPostConfirmation = '/driver/post-trip/confirmation';
   static const String editTrip             = '/driver/trip/:id/edit';
   static const String driverTripDetail     = '/driver/trip/:id';
   static const String cancelTrip           = '/driver/trip/:id/cancel';

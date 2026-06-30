@@ -285,7 +285,8 @@ class _DriverTripFormPickerField extends StatelessWidget {
     return FormField<String>(
       key: ValueKey<String>('picker_${hint}_$value'),
       initialValue: value ?? '',
-      validator: validator,
+      validator: (fieldValue) =>
+          validator?.call(value?.isNotEmpty == true ? value : fieldValue),
       builder: (fieldState) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

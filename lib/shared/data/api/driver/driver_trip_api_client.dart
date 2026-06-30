@@ -76,9 +76,15 @@ class DriverTripApiClient {
       data,
       fallbackDriverId: fallbackDriverId,
     );
-    if (detail.requests.isNotEmpty) return detail;
 
-    final requests = await listTripRequests(id);
+    var requests = detail.requests;
+    if (requests.isEmpty) {
+      try {
+        requests = await listTripRequests(id);
+      } catch (_) {
+        requests = const [];
+      }
+    }
     return DriverTripDetail(trip: detail.trip, requests: requests);
   }
 
@@ -128,7 +134,7 @@ class DriverTripApiClient {
     String fallbackDriverId = '',
   }) async {
     final response = await _dio.get<Map<String, dynamic>>(
-      ApiConstants.driverTripEdit(id),
+      ApiConstants.driverTrip(id),
     );
     return TripApiMapper.parseFormPrefill(
       ApiEnvelope.parseData(response.data),
@@ -145,11 +151,14 @@ class DriverTripApiClient {
       ApiConstants.driverTrips,
       data: TripApiMapper.toRequestBody(trip, options: options),
     );
-    return TripApiMapper.fromJson(
-      ApiEnvelope.parseData(response.data),
-      fallbackDriverId: fallbackDriverId.isNotEmpty
-          ? fallbackDriverId
-          : trip.driverId,
+    return TripApiMapper.mergeWithFallback(
+      parsed: TripApiMapper.fromJson(
+        ApiEnvelope.parseData(response.data),
+        fallbackDriverId: fallbackDriverId.isNotEmpty
+            ? fallbackDriverId
+            : trip.driverId,
+      ),
+      submitted: trip,
     );
   }
 
@@ -162,11 +171,14 @@ class DriverTripApiClient {
       ApiConstants.driverTrip(trip.apiResourceId),
       data: TripApiMapper.toRequestBody(trip, options: options),
     );
-    return TripApiMapper.fromJson(
-      ApiEnvelope.parseData(response.data),
-      fallbackDriverId: fallbackDriverId.isNotEmpty
-          ? fallbackDriverId
-          : trip.driverId,
+    return TripApiMapper.mergeWithFallback(
+      parsed: TripApiMapper.fromJson(
+        ApiEnvelope.parseData(response.data),
+        fallbackDriverId: fallbackDriverId.isNotEmpty
+            ? fallbackDriverId
+            : trip.driverId,
+      ),
+      submitted: trip,
     );
   }
 

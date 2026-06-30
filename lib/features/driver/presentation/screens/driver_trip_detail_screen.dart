@@ -11,12 +11,15 @@ import '../../../../core/network/api_exception_mapper.dart';
 import '../../../../core/providers/repository_providers.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../res/font_res.dart';
+import '../../../../shared/domain/entities/driver_trip.dart';
 import '../../../../shared/domain/enums/trip_status.dart';
 import '../../../../shared/domain/models/driver_trip_detail.dart';
 import '../../../../shared/presentation/widgets/feedback/empty_state.dart';
 import '../../../../shared/presentation/widgets/feedback/error_view.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
 import '../../../customer/presentation/widgets/customer_light_chrome.dart';
+import '../../../../core/utils/phone_utils.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/driver_trips_provider.dart';
 import '../widgets/my_trips/driver_trip_detail_card.dart';
 import '../widgets/my_trips/driver_trip_interest_customer_card.dart';
@@ -63,14 +66,23 @@ class _DriverTripDetailScreenState extends ConsumerState<DriverTripDetailScreen>
       final apiId = ref
           .read(driverTripsProvider.notifier)
           .apiResourceIdFor(widget.tripId);
-      final fetched =
-          await ref.read(tripRepositoryProvider).getTripDetail(apiId);
+      DriverTripDetail? fetched;
+      try {
+        fetched = await ref.read(tripRepositoryProvider).getTripDetail(apiId);
+      } catch (_) {
+        final trip = await ref.read(tripRepositoryProvider).getTrip(apiId);
+        fetched = DriverTripDetail(trip: trip);
+      }
       if (!mounted) return;
+      final resolved = fetched!;
+      final enriched = _enrichTrip(
+        _mergeTrips(cached, resolved.trip),
+      );
       safeSetState(() {
-        _detail = fetched;
+        _detail = DriverTripDetail(trip: enriched, requests: resolved.requests);
         _isLoading = false;
       });
-      ref.read(driverTripsProvider.notifier).upsertTrip(fetched.trip);
+      ref.read(driverTripsProvider.notifier).upsertTrip(enriched);
     } catch (e) {
       if (!mounted) return;
       safeSetState(() {
@@ -78,6 +90,44 @@ class _DriverTripDetailScreenState extends ConsumerState<DriverTripDetailScreen>
         _loadError = _detail == null ? ApiExceptionMapper.userMessage(e) : null;
       });
     }
+  }
+
+  DriverTrip _mergeTrips(DriverTrip? cached, DriverTrip fetched) {
+    if (cached == null) return fetched;
+    return fetched.copyWith(
+      driverName: fetched.driverName.isNotEmpty
+          ? fetched.driverName
+          : cached.driverName,
+      driverPhone: fetched.driverPhone ?? cached.driverPhone,
+      driverAvatarUrl: fetched.driverAvatarUrl ?? cached.driverAvatarUrl,
+      vehicleNumber: fetched.vehicleNumber.isNotEmpty
+          ? fetched.vehicleNumber
+          : cached.vehicleNumber,
+      loadCapacity: fetched.loadCapacity ?? cached.loadCapacity,
+      capacityUnit: fetched.capacityUnit ?? cached.capacityUnit,
+    );
+  }
+
+  DriverTrip _enrichTrip(DriverTrip trip) {
+    final user = ref.read(authProvider).user;
+    if (user == null) return trip;
+
+    var enriched = trip;
+    if (enriched.driverName.trim().isEmpty && user.name.trim().isNotEmpty) {
+      enriched = enriched.copyWith(driverName: user.name.trim());
+    }
+    if ((enriched.driverPhone == null || enriched.driverPhone!.trim().isEmpty) &&
+        user.phone.trim().isNotEmpty) {
+      final parsed = PhoneUtils.splitE164(user.phone);
+      enriched = enriched.copyWith(driverPhone: parsed.localNumber);
+    }
+    if ((enriched.driverAvatarUrl == null ||
+            enriched.driverAvatarUrl!.trim().isEmpty) &&
+        user.profileImageUrl != null &&
+        user.profileImageUrl!.trim().isNotEmpty) {
+      enriched = enriched.copyWith(driverAvatarUrl: user.profileImageUrl);
+    }
+    return enriched;
   }
 
   Future<void> _handleAccept(DriverTripRequest request) async {

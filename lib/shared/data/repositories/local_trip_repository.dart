@@ -5,7 +5,6 @@ import '../../domain/models/driver_trip_detail.dart';
 import '../../domain/models/trip_form_prefill.dart';
 import '../../domain/models/trip_submit_options.dart';
 import '../../domain/repositories/i_trip_repository.dart';
-import '../api/driver/trip_api_mapper.dart';
 
 /// In-memory implementation backed by [DummyTrips].
 class LocalTripRepository implements ITripRepository {
@@ -81,9 +80,13 @@ class LocalTripRepository implements ITripRepository {
     return TripFormPrefill(
       trip: trip,
       options: TripSubmitOptions(
-        vehicleTypeId: TripApiMapper.defaultVehicleTypeId(trip.vehicleCategory),
-        capacity: trip.loadCapacityTons,
+        vehicleId: 1,
+        loadCapacity: trip.loadCapacityTons,
         capacityUnit: 'TON',
+        fromLocation: trip.fromCity,
+        toLocation: trip.toCity,
+        driverCountryCode: '+91',
+        driverPhone: '9876543210',
       ),
     );
   }

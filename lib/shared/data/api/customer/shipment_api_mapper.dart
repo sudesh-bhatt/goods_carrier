@@ -138,8 +138,7 @@ abstract final class ShipmentApiMapper {
     Map<String, dynamic> json, {
     String fallbackCustomerId = '',
   }) {
-    final nested = json['shipment'];
-    final source = nested is Map<String, dynamic> ? nested : json;
+    final source = _resolveShipmentSource(json);
 
     final goodsTypeId = _readInt(source['goods_type_id']) ??
         (source['goods_type'] is Map<String, dynamic>
@@ -167,9 +166,7 @@ abstract final class ShipmentApiMapper {
             source['trip_id'] ??
             rawNumericId,
       ),
-      apiId: shipmentCode != null && rawNumericId != null
-          ? _stringId(rawNumericId)
-          : null,
+      apiId: rawNumericId != null ? _stringId(rawNumericId) : null,
       customerId: _stringId(
         source['customer_id'] ?? source['user_id'] ?? fallbackCustomerId,
       ),
@@ -575,6 +572,29 @@ abstract final class ShipmentApiMapper {
     if (raw == null) return '';
     if (raw is int) return raw.toString();
     return raw.toString();
+  }
+
+  static Map<String, dynamic> _resolveShipmentSource(Map<String, dynamic> json) {
+    final nested = json['shipment'];
+    if (nested is! Map) return json;
+
+    final shipmentMap = Map<String, dynamic>.from(nested);
+    final merged = Map<String, dynamic>.from(shipmentMap);
+    for (final entry in json.entries) {
+      if (entry.key == 'shipment') continue;
+      if (!_hasPayloadValue(merged[entry.key])) {
+        merged[entry.key] = entry.value;
+      }
+    }
+    return merged;
+  }
+
+  static bool _hasPayloadValue(dynamic value) {
+    if (value == null) return false;
+    if (value is String) return value.isNotEmpty;
+    if (value is List) return value.isNotEmpty;
+    if (value is Map) return value.isNotEmpty;
+    return true;
   }
 
   static String _firstString(Map<String, dynamic> source, List<String> keys) {

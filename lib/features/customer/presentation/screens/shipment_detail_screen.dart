@@ -15,6 +15,7 @@ import '../../../../shared/domain/entities/shipment.dart';
 import '../../../../shared/domain/models/customer_shipment_detail.dart';
 import '../../../../shared/presentation/widgets/feedback/error_view.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
+import '../models/customer_shipment_status_badge.dart';
 import '../providers/customer_shipments_provider.dart';
 import '../widgets/customer_light_chrome.dart';
 import '../widgets/driver_detail_sheet.dart';
@@ -68,10 +69,25 @@ class _ShipmentDetailScreenState extends ConsumerState<ShipmentDetailScreen>
     });
 
     try {
-      final apiId = cached?.apiResourceId ?? widget.shipmentId;
-      final fetched = await ref
-          .read(shipmentRepositoryProvider)
-          .getCustomerShipmentDetail(apiId);
+      final apiId = ref
+          .read(customerShipmentsProvider.notifier)
+          .apiResourceIdFor(widget.shipmentId);
+      CustomerShipmentDetail? fetched;
+      try {
+        fetched = await ref
+            .read(shipmentRepositoryProvider)
+            .getCustomerShipmentDetail(apiId);
+      } catch (_) {
+        final shipment =
+            await ref.read(shipmentRepositoryProvider).getShipment(apiId);
+        fetched = CustomerShipmentDetail(
+          shipment: shipment,
+          paymentSummary: ShipmentPaymentSummary(
+            baseFare: shipment.estimatedPrice,
+            totalAmount: shipment.estimatedPrice,
+          ),
+        );
+      }
       if (!mounted) return;
       safeSetState(() {
         _detail = fetched;
@@ -82,7 +98,7 @@ class _ShipmentDetailScreenState extends ConsumerState<ShipmentDetailScreen>
       if (!mounted) return;
       safeSetState(() {
         _isLoading = false;
-        _loadError = cached == null ? ApiExceptionMapper.userMessage(e) : null;
+        _loadError = _detail == null ? ApiExceptionMapper.userMessage(e) : null;
       });
     }
   }
@@ -135,7 +151,8 @@ class _ShipmentDetailScreenState extends ConsumerState<ShipmentDetailScreen>
             PublishRouteCard(
               tripIdLabel: l10n.tripId,
               displayId: displayId,
-              publishLabel: _statusBadgeLabel(shipment.status, l10n),
+              publishLabel:
+                  customerShipmentStatusBadgeLabel(l10n, shipment.status),
               fromTitle: fromTitle,
               fromSubtitle: fromSub.isNotEmpty
                   ? fromSub
@@ -210,13 +227,6 @@ class _ShipmentDetailScreenState extends ConsumerState<ShipmentDetailScreen>
         ),
       ),
     );
-  }
-
-  String _statusBadgeLabel(ShipmentStatus status, dynamic l10n) {
-    if (status == ShipmentStatus.pending) {
-      return l10n.customerShipmentPublishBadge;
-    }
-    return status.label.toUpperCase();
   }
 
   Shipment? _resolveCachedShipment() {

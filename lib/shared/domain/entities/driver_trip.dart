@@ -16,6 +16,10 @@ class DriverTrip {
     required this.estimatedPrice,
     required this.status,
     this.apiId,
+    this.loadCapacity,
+    this.capacityUnit,
+    this.driverPhone,
+    this.driverAvatarUrl,
     this.interestRequestCount = 0,
     this.isInterested = false,
   });
@@ -31,6 +35,12 @@ class DriverTrip {
   final VehicleType vehicleCategory;
   final String vehicleNumber;   // MH 02 CC 4156
   final double loadCapacityTons;
+  /// Raw capacity value as returned by the API (e.g. 200 for `"200 KG"`).
+  final double? loadCapacity;
+  /// `KG` or `TON` — original unit from API / form submit.
+  final String? capacityUnit;
+  final String? driverPhone;
+  final String? driverAvatarUrl;
   final double estimatedPrice;
   final TripStatus status;
   /// Customer interest count shown on "View Request (n)" CTA.
@@ -54,6 +64,10 @@ class DriverTrip {
     VehicleType? vehicleCategory,
     String? vehicleNumber,
     double? loadCapacityTons,
+    double? loadCapacity,
+    String? capacityUnit,
+    String? driverPhone,
+    String? driverAvatarUrl,
     double? estimatedPrice,
     TripStatus? status,
     int? interestRequestCount,
@@ -71,6 +85,10 @@ class DriverTrip {
         vehicleCategory: vehicleCategory ?? this.vehicleCategory,
         vehicleNumber: vehicleNumber ?? this.vehicleNumber,
         loadCapacityTons: loadCapacityTons ?? this.loadCapacityTons,
+        loadCapacity: loadCapacity ?? this.loadCapacity,
+        capacityUnit: capacityUnit ?? this.capacityUnit,
+        driverPhone: driverPhone ?? this.driverPhone,
+        driverAvatarUrl: driverAvatarUrl ?? this.driverAvatarUrl,
         estimatedPrice: estimatedPrice ?? this.estimatedPrice,
         status: status ?? this.status,
         interestRequestCount:

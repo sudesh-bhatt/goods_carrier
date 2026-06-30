@@ -1432,12 +1432,6 @@ abstract class AppLocalizations {
   /// **'PUBLISHED'**
   String get driverTripBadgePublished;
 
-  /// No description provided for @driverTripBadgePublish.
-  ///
-  /// In en, this message translates to:
-  /// **'PUBLISH'**
-  String get driverTripBadgePublish;
-
   /// No description provided for @driverTripBadgeExpired.
   ///
   /// In en, this message translates to:
@@ -1515,6 +1509,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your trip has been cancel successfully your trip id is {tripId}'**
   String tripCancelSuccessBody(String tripId);
+
+  /// No description provided for @driverTripPostSuccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Trip Post Successfully'**
+  String get driverTripPostSuccessTitle;
+
+  /// No description provided for @driverTripPostSuccessBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your trip has been post successfully your trip id is #{tripId}'**
+  String driverTripPostSuccessBody(String tripId);
+
+  /// No description provided for @driverTripUpdateSuccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Trip Update Successfully'**
+  String get driverTripUpdateSuccessTitle;
+
+  /// No description provided for @driverTripUpdateSuccessBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your trip has been updated successfully your trip id is #{tripId}'**
+  String driverTripUpdateSuccessBody(String tripId);
 
   /// No description provided for @driverHomeShipmentId.
   ///
@@ -3147,6 +3165,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter a valid load capacity'**
   String get driverTripFormCapacityRequired;
+
+  /// No description provided for @driverTripFormCapacityExceedsVehicle.
+  ///
+  /// In en, this message translates to:
+  /// **'Load capacity cannot exceed {maxCapacity}'**
+  String driverTripFormCapacityExceedsVehicle(String maxCapacity);
 
   /// No description provided for @driverTripFormPriceRequired.
   ///

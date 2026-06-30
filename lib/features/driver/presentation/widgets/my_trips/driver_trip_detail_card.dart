@@ -4,6 +4,7 @@ import '../../../../../core/extensions/size_ext.dart';
 import '../../../../../core/extensions/theme_ext.dart';
 import '../../../../../res/font_res.dart';
 import '../../../../../shared/domain/entities/driver_trip.dart';
+import '../../../../../shared/presentation/widgets/profile/profile_image_content.dart';
 import '../../models/driver_trip_list_badge.dart';
 import 'driver_my_trip_card.dart';
 import 'driver_my_trip_tokens.dart';
@@ -18,11 +19,7 @@ class DriverTripDetailCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final badge = listBadgeFor(trip);
-    final badgeLabel = switch (badge) {
-      DriverTripListBadge.published => l10n.driverTripBadgePublish,
-      DriverTripListBadge.expired => l10n.driverTripBadgeExpired,
-      DriverTripListBadge.draft => l10n.driverTripBadgeDraft,
-    };
+    final badgeLabel = driverTripBadgeLabel(l10n, badge);
 
     return Container(
       width: double.infinity,
@@ -70,7 +67,9 @@ class DriverTripDetailCard extends StatelessWidget {
           SizedBox(height: 24.h),
           _DriverInfoRow(
             name: trip.driverName,
-            subtitle: l10n.driverExpertDriverLabel,
+            phone: trip.driverPhone,
+            avatarUrl: trip.driverAvatarUrl,
+            fallbackSubtitle: l10n.driverExpertDriverLabel,
           ),
           SizedBox(height: 24.h),
           DriverMyTripPriceBlock(price: trip.estimatedPrice),
@@ -157,13 +156,33 @@ class _StatusPill extends StatelessWidget {
 }
 
 class _DriverInfoRow extends StatelessWidget {
-  const _DriverInfoRow({required this.name, required this.subtitle});
+  const _DriverInfoRow({
+    required this.name,
+    required this.fallbackSubtitle,
+    this.phone,
+    this.avatarUrl,
+  });
 
   final String name;
-  final String subtitle;
+  final String? phone;
+  final String? avatarUrl;
+  final String fallbackSubtitle;
 
   @override
   Widget build(BuildContext context) {
+    final displayName = name.trim();
+    final displayPhone = phone?.trim() ?? '';
+    final hasName = displayName.isNotEmpty;
+    final hasPhone = displayPhone.isNotEmpty;
+    final title = hasName
+        ? displayName
+        : (hasPhone ? displayPhone : fallbackSubtitle);
+    final subtitle = hasName && hasPhone
+        ? displayPhone
+        : (hasName ? fallbackSubtitle : '');
+    final initials =
+        hasName ? displayName[0].toUpperCase() : (hasPhone ? '#' : '?');
+
     return Row(
       children: [
         Stack(
@@ -173,12 +192,21 @@ class _DriverInfoRow extends StatelessWidget {
               radius: 28.r,
               backgroundColor:
                   DriverMyTripTokens.primary.withValues(alpha: 0.12),
-              child: Text(
-                name.isNotEmpty ? name[0].toUpperCase() : '?',
-                style: TextStyle(
-                  fontFamily: FontRes.MANROPE_BOLD,
-                  fontSize: 20.sp,
-                  color: DriverMyTripTokens.primary,
+              child: ClipOval(
+                child: SizedBox(
+                  width: 56.r,
+                  height: 56.r,
+                  child: ProfileImageContent(
+                    imageReference: avatarUrl,
+                    placeholder: Text(
+                      initials,
+                      style: TextStyle(
+                        fontFamily: FontRes.MANROPE_BOLD,
+                        fontSize: 20.sp,
+                        color: DriverMyTripTokens.primary,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -206,7 +234,7 @@ class _DriverInfoRow extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                name,
+                title,
                 style: TextStyle(
                   fontFamily: FontRes.MANROPE_BOLD,
                   fontSize: 14.sp,
@@ -214,15 +242,16 @@ class _DriverInfoRow extends StatelessWidget {
                   color: DriverMyTripTokens.heading,
                 ),
               ),
-              Text(
-                subtitle,
-                style: TextStyle(
-                  fontFamily: FontRes.MANROPE_MEDIUM,
-                  fontSize: 10.sp,
-                  fontWeight: FontWeight.w500,
-                  color: DriverMyTripTokens.expertDriver,
+              if (subtitle.isNotEmpty)
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    fontFamily: FontRes.MANROPE_MEDIUM,
+                    fontSize: 10.sp,
+                    fontWeight: FontWeight.w500,
+                    color: DriverMyTripTokens.expertDriver,
+                  ),
                 ),
-              ),
             ],
           ),
         ),

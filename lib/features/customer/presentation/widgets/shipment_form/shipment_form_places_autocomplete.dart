@@ -176,7 +176,7 @@ class _ShipmentFormPlacesAutocompleteState
 
     return FormField<String>(
       initialValue: widget.controller.text,
-      validator: widget.validator,
+      validator: (_) => widget.validator?.call(widget.controller.text),
       builder: (field) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

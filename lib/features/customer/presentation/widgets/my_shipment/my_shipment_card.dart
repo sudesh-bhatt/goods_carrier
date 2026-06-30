@@ -8,6 +8,7 @@ import '../../../../../core/extensions/theme_ext.dart';
 import '../../../../../res/font_res.dart';
 import '../../../../../shared/domain/entities/shipment.dart';
 import '../../../../../shared/domain/enums/shipment_status.dart';
+import '../../models/customer_shipment_status_badge.dart';
 import 'my_shipment_card_tokens.dart';
 
 /// My Shipment tab list card — Figma `1:2327` / `1:2328`.
@@ -150,26 +151,13 @@ class _StatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final (label, bg, fg) = switch (status) {
+    final label = customerShipmentStatusBadgeLabel(l10n, status);
+    final (bg, fg) = switch (status) {
       ShipmentStatus.cancelled => (
-          'EXPIRED',
           MyShipmentCardTokens.expiredBg,
           MyShipmentCardTokens.expiredFg,
         ),
-      ShipmentStatus.pending => (
-          l10n.shipmentStatusPublished.toUpperCase(),
-          MyShipmentCardTokens.publishedBg,
-          MyShipmentCardTokens.publishedFg,
-        ),
-      ShipmentStatus.interestReceived => (
-          l10n.shipmentStatusPublished.toUpperCase(),
-          MyShipmentCardTokens.publishedBg,
-          MyShipmentCardTokens.publishedFg,
-        ),
-      ShipmentStatus.assigned ||
-      ShipmentStatus.inTransit ||
-      ShipmentStatus.delivered => (
-          l10n.shipmentStatusPublished.toUpperCase(),
+      _ => (
           MyShipmentCardTokens.publishedBg,
           MyShipmentCardTokens.publishedFg,
         ),

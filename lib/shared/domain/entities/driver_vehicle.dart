@@ -43,4 +43,18 @@ class DriverVehicle {
     final unit = capacityUnit.toUpperCase() == 'TON' ? 'Tons' : capacityUnit;
     return '$value $unit';
   }
+
+  /// Driver publish / update trip form — selected vehicle summary.
+  String get tripFormLabel {
+    if (capacity != null && capacity! > 0) {
+      final isTon = capacityUnit.toUpperCase() != 'KG';
+      final value = capacity!;
+      final formatted = value == value.truncateToDouble()
+          ? value.toInt().toString()
+          : value.toStringAsFixed(1);
+      final suffix = isTon ? 'T' : ' KG';
+      return '$displayTypeName ($formatted$suffix)';
+    }
+    return displayTypeName;
+  }
 }

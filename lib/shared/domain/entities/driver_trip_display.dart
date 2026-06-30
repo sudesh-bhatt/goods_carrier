@@ -19,6 +19,13 @@ extension DriverTripDisplay on DriverTrip {
   }
 
   String get loadCapacityLabel {
+    if (loadCapacity != null && loadCapacity! > 0 && capacityUnit != null) {
+      final value = loadCapacity!;
+      final formatted = value == value.truncateToDouble()
+          ? value.toInt().toString()
+          : value.toStringAsFixed(1);
+      return capacityUnit == 'KG' ? '$formatted KG' : '$formatted Ton';
+    }
     if (loadCapacityTons <= 0) return vehicleCategory.capacityDisplay;
     if (loadCapacityTons >= 1) {
       final tons = loadCapacityTons % 1 == 0

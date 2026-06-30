@@ -288,7 +288,6 @@
   "driverTripDropLabel": "DROP",
   "driverTripCapacityLabel": "CAPACITY",
   "driverTripBadgePublished": "PUBLISHED",
-  "driverTripBadgePublish": "PUBLISH",
   "driverTripBadgeExpired": "EXPIRED",
   "driverTripBadgeDraft": "DRAFT",
   "driverExpertDriverLabel": "Expert Driver",
@@ -303,6 +302,20 @@
   "tripCancelSuccessTitle": "Your Trip Cancel Successfully",
   "tripCancelSuccessBody": "Your trip has been cancel successfully your trip id is {tripId}",
   "@tripCancelSuccessBody": {
+    "placeholders": {
+      "tripId": { "type": "String" }
+    }
+  },
+  "driverTripPostSuccessTitle": "Your Trip Post Successfully",
+  "driverTripPostSuccessBody": "Your trip has been post successfully your trip id is #{tripId}",
+  "@driverTripPostSuccessBody": {
+    "placeholders": {
+      "tripId": { "type": "String" }
+    }
+  },
+  "driverTripUpdateSuccessTitle": "Your Trip Update Successfully",
+  "driverTripUpdateSuccessBody": "Your trip has been updated successfully your trip id is #{tripId}",
+  "@driverTripUpdateSuccessBody": {
     "placeholders": {
       "tripId": { "type": "String" }
     }
@@ -600,6 +613,12 @@
   "driverTripFormScheduleRequired": "Please select start and end schedule",
   "driverTripFormEndBeforeStart": "End schedule must be after start schedule",
   "driverTripFormCapacityRequired": "Enter a valid load capacity",
+  "driverTripFormCapacityExceedsVehicle": "Load capacity cannot exceed {maxCapacity}",
+  "@driverTripFormCapacityExceedsVehicle": {
+    "placeholders": {
+      "maxCapacity": { "type": "String" }
+    }
+  },
   "driverTripFormPriceRequired": "Enter a valid estimated price",
   "tripFrom": "From",
   "tripTo": "To",

@@ -706,9 +706,6 @@ class AppLocalizationsHi extends AppLocalizations {
   String get driverTripBadgePublished => 'PUBLISHED';
 
   @override
-  String get driverTripBadgePublish => 'PUBLISH';
-
-  @override
   String get driverTripBadgeExpired => 'EXPIRED';
 
   @override
@@ -747,6 +744,23 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String tripCancelSuccessBody(String tripId) {
     return 'आपकी यात्रा सफलतापूर्वक रद्द हो गई है। यात्रा आईडी $tripId है';
+  }
+
+  @override
+  String get driverTripPostSuccessTitle => 'आपकी यात्रा सफलतापूर्वक पोस्ट हुई';
+
+  @override
+  String driverTripPostSuccessBody(String tripId) {
+    return 'आपकी यात्रा सफलतापूर्वक पोस्ट हो गई है। आपकी यात्रा आईडी #$tripId है';
+  }
+
+  @override
+  String get driverTripUpdateSuccessTitle =>
+      'आपकी यात्रा सफलतापूर्वक अपडेट हुई';
+
+  @override
+  String driverTripUpdateSuccessBody(String tripId) {
+    return 'आपकी यात्रा सफलतापूर्वक अपडेट हो गई है। आपकी यात्रा आईडी #$tripId है';
   }
 
   @override
@@ -1601,6 +1615,11 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get driverTripFormCapacityRequired => 'मान्य लोड क्षमता दर्ज करें';
+
+  @override
+  String driverTripFormCapacityExceedsVehicle(String maxCapacity) {
+    return 'लोड क्षमता $maxCapacity से अधिक नहीं हो सकती';
+  }
 
   @override
   String get driverTripFormPriceRequired => 'मान्य अनुमानित कीमत दर्ज करें';

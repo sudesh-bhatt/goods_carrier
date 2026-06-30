@@ -56,6 +56,8 @@ import '../../features/driver/presentation/screens/driver_trip_detail_screen.dar
 import '../../features/driver/presentation/screens/trip_cancel_success_screen.dart';
 import '../../features/driver/presentation/models/trip_cancel_confirmation_args.dart';
 import '../../features/driver/presentation/screens/post_trip_screen.dart';
+import '../../features/driver/presentation/screens/trip_post_confirmation_screen.dart';
+import '../../features/driver/presentation/models/trip_post_confirmation_args.dart';
 import '../../features/driver/presentation/tabs/driver_home_tab.dart';
 import '../../features/driver/presentation/tabs/driver_my_trips_tab.dart';
 import '../../features/driver/presentation/tabs/driver_notifications_tab.dart';
@@ -370,6 +372,18 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.postTrip,
         builder: (_, __) => const PostTripScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.tripPostConfirmation,
+        builder: (_, state) {
+          final extra = state.extra;
+          if (extra is! TripPostConfirmationArgs) {
+            return const _RouterErrorPage(
+              error: FormatException('Missing trip post confirmation args'),
+            );
+          }
+          return TripPostConfirmationScreen(args: extra);
+        },
       ),
       GoRoute(
         path: AppRoutes.editTrip,

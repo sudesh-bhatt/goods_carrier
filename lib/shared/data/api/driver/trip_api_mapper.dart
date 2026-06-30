@@ -20,24 +20,20 @@ abstract final class TripApiMapper {
     final end = trip.estimatedEndDate;
 
     return {
-      'from_city': trip.fromCity,
-      if (options.fromAddress != null && options.fromAddress!.isNotEmpty)
-        'from_address': options.fromAddress,
-      'to_city': trip.toCity,
-      if (options.toAddress != null && options.toAddress!.isNotEmpty)
-        'to_address': options.toAddress,
+      'from_location': options.fromLocation,
+      'to_location': options.toLocation,
       'estimated_start_date': _formatDate(start),
       'estimated_start_time': _formatTime(start),
       'estimated_end_date': _formatDate(end),
       'estimated_end_time': _formatTime(end),
-      'vehicle_type_id': options.vehicleTypeId,
+      'vehicle_id': options.vehicleId,
       'vehicle_number': trip.vehicleNumber,
-      'capacity': options.capacity,
+      'load_capacity': options.loadCapacity,
       'capacity_unit': options.capacityUnit,
-      'budget': trip.estimatedPrice,
+      'estimated_price': trip.estimatedPrice,
       if (trip.driverName.isNotEmpty) 'driver_name': trip.driverName,
-      if (options.driverPhone != null && options.driverPhone!.isNotEmpty)
-        'driver_phone': options.driverPhone,
+      'driver_country_code': options.driverCountryCode,
+      'driver_phone': options.driverPhone,
     };
   }
 
@@ -128,7 +124,8 @@ abstract final class TripApiMapper {
     String fallbackDriverId = '',
   }) {
     final nested = json['trip'];
-    final source = nested is Map<String, dynamic> ? nested : json;
+    final source = _resolveTripSource(json);
+    final root = nested is Map ? json : source;
 
     final tripCode = _firstString(source, [
       'trip_id',
@@ -137,22 +134,11 @@ abstract final class TripApiMapper {
     ]);
     final rawNumericId = source['id'];
 
-    final vehicleTypeId = _readInt(source['vehicle_type_id']) ??
-        (source['vehicle_type'] is Map<String, dynamic>
-            ? _readInt((source['vehicle_type'] as Map)['id'])
-            : null);
-
-    final capacity = _parseCapacity(source);
-    final capacityUnit = _normalizeCapacityUnit(
-      source['capacity_unit'] as String? ??
-          source['weight_unit'] as String?,
-    );
+    final cap = _parseCapacityFields(source);
 
     final trip = DriverTrip(
       id: tripCode.isNotEmpty ? tripCode : _stringId(rawNumericId),
-      apiId: tripCode.isNotEmpty && rawNumericId != null
-          ? _stringId(rawNumericId)
-          : null,
+      apiId: rawNumericId != null ? _stringId(rawNumericId) : null,
       driverId: _stringId(
         source['driver_id'] ??
             source['user_id'] ??
@@ -161,18 +147,19 @@ abstract final class TripApiMapper {
                 : null) ??
             fallbackDriverId,
       ),
-      driverName: _firstString(source, [
-        'driver_name',
-        'driver',
-      ]),
+      driverName: _parseDriverName(source, root),
+      driverPhone: _parseDriverPhone(source, root),
+      driverAvatarUrl: _parseDriverAvatar(source, root),
       fromCity: _firstString(source, [
         'from_city',
+        'from_location',
         'from_address',
         'pickup_city',
         'pickup_address',
       ]),
       toCity: _firstString(source, [
         'to_city',
+        'to_location',
         'to_address',
         'drop_city',
         'drop_address',
@@ -180,12 +167,10 @@ abstract final class TripApiMapper {
       estimatedStartDate: _parseStartDate(source),
       estimatedEndDate: _parseEndDate(source),
       vehicleCategory: _parseVehicleType(source),
-      vehicleNumber: _firstString(source, [
-        'vehicle_number',
-        'vehicle_no',
-        'registration_number',
-      ]),
-      loadCapacityTons: capacity,
+      vehicleNumber: _parseVehicleNumber(source),
+      loadCapacity: cap.raw > 0 ? cap.raw : null,
+      capacityUnit: cap.raw > 0 ? cap.unit : null,
+      loadCapacityTons: cap.tons,
       estimatedPrice: _parseDouble(
         source['estimated_price'] ??
             source['price'] ??
@@ -202,19 +187,80 @@ abstract final class TripApiMapper {
       isInterested: source['is_interested'] as bool? ?? false,
     );
 
+    final vehicleId = _readInt(source['vehicle_id']) ??
+        (source['vehicle'] is Map<String, dynamic>
+            ? _readInt((source['vehicle'] as Map)['id'])
+            : null);
+
     return TripFormPrefill(
       trip: trip,
       options: TripSubmitOptions(
-        vehicleTypeId: vehicleTypeId ?? defaultVehicleTypeId(trip.vehicleCategory),
-        capacity: capacity > 0 ? capacity : trip.loadCapacityTons,
-        capacityUnit: capacityUnit,
-        fromAddress: _firstString(source, ['from_address', 'pickup_address']),
-        toAddress: _firstString(source, ['to_address', 'drop_address']),
+        vehicleId: vehicleId ?? 0,
+        loadCapacity: cap.raw > 0 ? cap.raw : cap.tons,
+        capacityUnit: cap.unit,
+        fromLocation: _firstString(source, [
+          'from_location',
+          'from_address',
+          'from_city',
+          'pickup_address',
+        ]),
+        toLocation: _firstString(source, [
+          'to_location',
+          'to_address',
+          'to_city',
+          'drop_address',
+        ]),
+        driverCountryCode: _firstString(source, ['driver_country_code']).isEmpty
+            ? '+91'
+            : _firstString(source, ['driver_country_code']),
+        driverPhone: _parseDriverPhone(source, root).isNotEmpty
+            ? _parseDriverPhone(source, root)
+            : _firstString(source, ['driver_phone']),
       ),
     );
   }
 
   static final _unsetSchedule = DateTime(1970, 1, 1);
+
+  /// Publish/update responses may only return `trip_id` + `status`.
+  static DriverTrip mergeWithFallback({
+    required DriverTrip parsed,
+    required DriverTrip submitted,
+  }) {
+    return submitted.copyWith(
+      id: parsed.id.isNotEmpty ? parsed.id : submitted.id,
+      apiId: parsed.apiId ?? submitted.apiId,
+      fromCity: parsed.fromCity.isNotEmpty ? parsed.fromCity : submitted.fromCity,
+      toCity: parsed.toCity.isNotEmpty ? parsed.toCity : submitted.toCity,
+      estimatedStartDate: _hasSchedule(parsed.estimatedStartDate)
+          ? parsed.estimatedStartDate
+          : submitted.estimatedStartDate,
+      estimatedEndDate: _hasSchedule(parsed.estimatedEndDate)
+          ? parsed.estimatedEndDate
+          : submitted.estimatedEndDate,
+      vehicleNumber: parsed.vehicleNumber.isNotEmpty
+          ? parsed.vehicleNumber
+          : submitted.vehicleNumber,
+      loadCapacityTons: parsed.loadCapacityTons > 0
+          ? parsed.loadCapacityTons
+          : submitted.loadCapacityTons,
+      loadCapacity: parsed.loadCapacity ?? submitted.loadCapacity,
+      capacityUnit: parsed.capacityUnit ?? submitted.capacityUnit,
+      driverPhone: parsed.driverPhone ?? submitted.driverPhone,
+      driverAvatarUrl: parsed.driverAvatarUrl ?? submitted.driverAvatarUrl,
+      estimatedPrice: parsed.estimatedPrice > 0
+          ? parsed.estimatedPrice
+          : submitted.estimatedPrice,
+      driverName: parsed.driverName.isNotEmpty
+          ? parsed.driverName
+          : submitted.driverName,
+      status: parsed.status,
+      interestRequestCount: parsed.interestRequestCount,
+    );
+  }
+
+  static bool _hasSchedule(DateTime value) =>
+      value.isAfter(_unsetSchedule.add(const Duration(days: 1)));
 
   static String _formatDate(DateTime value) =>
       '${value.year.toString().padLeft(4, '0')}-'
@@ -312,32 +358,51 @@ abstract final class TripApiMapper {
     );
   }
 
-  static double _parseCapacity(Map<String, dynamic> json) {
-    final rawCapacity = json['capacity'] ??
-        json['load_capacity'] ??
+  /// Supports numeric capacity, separate `capacity_unit`, and combined strings
+  /// like `"200 KG"` returned by trip detail/list APIs.
+  static ({double raw, String unit, double tons}) _parseCapacityFields(
+    Map<String, dynamic> json,
+  ) {
+    final unitField = _normalizeCapacityUnit(
+      json['capacity_unit'] as String? ?? json['weight_unit'] as String?,
+    );
+    final raw = json['load_capacity'] ??
+        json['capacity'] ??
         json['load_capacity_tons'] ??
         json['capacity_tons'];
 
-    if (rawCapacity is num) {
-      final unit = _normalizeCapacityUnit(
-        json['capacity_unit'] as String? ?? json['weight_unit'] as String?,
-      );
-      if (unit == 'KG' && rawCapacity > 20) return rawCapacity / 1000;
-      return rawCapacity > 20 ? rawCapacity / 1000 : rawCapacity.toDouble();
+    if (raw is num) {
+      final value = raw.toDouble();
+      final unit = unitField;
+      final tons = unit == 'KG' ? value / 1000 : value;
+      return (raw: value, unit: unit, tons: tons);
     }
 
-    if (rawCapacity is String) {
-      final match = RegExp(r'([\d.]+)').firstMatch(rawCapacity);
+    if (raw is String && raw.trim().isNotEmpty) {
+      final trimmed = raw.trim();
+      final pure = double.tryParse(trimmed);
+      if (pure != null) {
+        final unit = unitField;
+        final tons = unit == 'KG' ? pure / 1000 : pure;
+        return (raw: pure, unit: unit, tons: tons);
+      }
+
+      final match = RegExp(
+        r'^([\d.]+)\s*(.+)?$',
+        caseSensitive: false,
+      ).firstMatch(trimmed);
       if (match != null) {
         final value = double.tryParse(match.group(1)!) ?? 0;
-        if (value <= 0) return 0;
-        if (rawCapacity.toLowerCase().contains('kg')) return value / 1000;
-        if (rawCapacity.toLowerCase().contains('ton')) return value;
-        return value > 20 ? value / 1000 : value;
+        final embeddedUnit = match.group(2)?.trim() ?? '';
+        final unit = embeddedUnit.isEmpty
+            ? unitField
+            : _normalizeCapacityUnit(embeddedUnit);
+        final tons = unit == 'KG' ? value / 1000 : value;
+        return (raw: value, unit: unit, tons: tons);
       }
     }
 
-    return 0;
+    return (raw: 0, unit: 'TON', tons: 0);
   }
 
   static String _normalizeCapacityUnit(String? raw) {
@@ -364,13 +429,124 @@ abstract final class TripApiMapper {
     return raw.toString();
   }
 
+  static Map<String, dynamic> _resolveTripSource(Map<String, dynamic> json) {
+    final nested = json['trip'];
+    if (nested is! Map) return json;
+
+    final tripMap = Map<String, dynamic>.from(nested);
+    final merged = Map<String, dynamic>.from(tripMap);
+    for (final entry in json.entries) {
+      if (entry.key == 'trip') continue;
+      if (!_hasPayloadValue(merged[entry.key])) {
+        merged[entry.key] = entry.value;
+      }
+    }
+    return merged;
+  }
+
+  static bool _hasPayloadValue(dynamic value) {
+    if (value == null) return false;
+    if (value is String) return value.isNotEmpty;
+    if (value is List) return value.isNotEmpty;
+    if (value is Map) return value.isNotEmpty;
+    return true;
+  }
+
+  static String _parseDriverName(
+    Map<String, dynamic> source,
+    Map<String, dynamic> root,
+  ) {
+    for (final map in [source, root]) {
+      final name = _firstString(map, ['driver_name', 'driver', 'user']);
+      if (name.isNotEmpty) return name;
+    }
+    return '';
+  }
+
+  static String _parseDriverPhone(
+    Map<String, dynamic> source,
+    Map<String, dynamic> root,
+  ) {
+    for (final map in [source, root]) {
+      final direct = _firstString(map, ['driver_phone', 'phone']);
+      if (direct.isNotEmpty) return direct;
+      for (final key in ['driver', 'user']) {
+        final nested = map[key];
+        if (nested is Map) {
+          final phone = _firstString(
+            Map<String, dynamic>.from(nested),
+            ['phone', 'mobile', 'driver_phone', 'contact_number'],
+          );
+          if (phone.isNotEmpty) return phone;
+        }
+      }
+    }
+    return '';
+  }
+
+  static String _parseDriverAvatar(
+    Map<String, dynamic> source,
+    Map<String, dynamic> root,
+  ) {
+    for (final map in [source, root]) {
+      final direct = _firstString(map, [
+        'driver_avatar',
+        'avatar',
+        'profile_image_url',
+      ]);
+      if (direct.isNotEmpty) return direct;
+      for (final key in ['driver', 'user']) {
+        final nested = map[key];
+        if (nested is Map) {
+          final avatar = _firstString(
+            Map<String, dynamic>.from(nested),
+            ['avatar', 'photo', 'image', 'profile_image_url'],
+          );
+          if (avatar.isNotEmpty) return avatar;
+        }
+      }
+    }
+    return '';
+  }
+
+  static String _parseVehicleNumber(Map<String, dynamic> source) {
+    final direct = _firstString(source, [
+      'vehicle_number',
+      'vehicle_no',
+      'registration_number',
+    ]);
+    if (direct.isNotEmpty) return direct;
+
+    final vehicle = source['vehicle'];
+    if (vehicle is Map) {
+      return _firstString(
+        Map<String, dynamic>.from(vehicle),
+        [
+          'vehicle_number',
+          'registration_number',
+          'number',
+          'plate_number',
+        ],
+      );
+    }
+    return '';
+  }
+
   static String _firstString(Map<String, dynamic> source, List<String> keys) {
     for (final key in keys) {
       final value = source[key];
       if (value is String && value.isNotEmpty) return value;
-      if (value is Map<String, dynamic>) {
-        final nested = value['name'] as String? ?? value['label'] as String?;
-        if (nested != null && nested.isNotEmpty) return nested;
+      if (value is Map) {
+        final map = Map<String, dynamic>.from(value);
+        for (final nestedKey in [
+          'name',
+          'full_name',
+          'driver_name',
+          'label',
+        ]) {
+          final nested = map[nestedKey];
+          if (nested is String && nested.isNotEmpty) return nested;
+        }
       }
     }
     return '';

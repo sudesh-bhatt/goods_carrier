@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/domain/entities/driver_trip.dart';
 import '../../../../shared/domain/enums/trip_status.dart';
 
@@ -36,3 +37,11 @@ DriverTripListBadge listBadgeFor(DriverTrip trip) {
       return DriverTripListBadge.published;
   }
 }
+
+/// Single source of truth for driver trip status pill copy.
+String driverTripBadgeLabel(AppLocalizations l10n, DriverTripListBadge badge) =>
+    switch (badge) {
+      DriverTripListBadge.published => l10n.driverTripBadgePublished,
+      DriverTripListBadge.expired => l10n.driverTripBadgeExpired,
+      DriverTripListBadge.draft => l10n.driverTripBadgeDraft,
+    };

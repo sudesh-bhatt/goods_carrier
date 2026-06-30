@@ -709,9 +709,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get driverTripBadgePublished => 'PUBLISHED';
 
   @override
-  String get driverTripBadgePublish => 'PUBLISH';
-
-  @override
   String get driverTripBadgeExpired => 'EXPIRED';
 
   @override
@@ -751,6 +748,22 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String tripCancelSuccessBody(String tripId) {
     return 'Your trip has been cancel successfully your trip id is $tripId';
+  }
+
+  @override
+  String get driverTripPostSuccessTitle => 'Your Trip Post Successfully';
+
+  @override
+  String driverTripPostSuccessBody(String tripId) {
+    return 'Your trip has been post successfully your trip id is #$tripId';
+  }
+
+  @override
+  String get driverTripUpdateSuccessTitle => 'Your Trip Update Successfully';
+
+  @override
+  String driverTripUpdateSuccessBody(String tripId) {
+    return 'Your trip has been updated successfully your trip id is #$tripId';
   }
 
   @override
@@ -1606,6 +1619,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get driverTripFormCapacityRequired => 'Enter a valid load capacity';
+
+  @override
+  String driverTripFormCapacityExceedsVehicle(String maxCapacity) {
+    return 'Load capacity cannot exceed $maxCapacity';
+  }
 
   @override
   String get driverTripFormPriceRequired => 'Enter a valid estimated price';

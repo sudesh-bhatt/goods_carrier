@@ -235,7 +235,6 @@
   "driverTripDropLabel": "DROP",
   "driverTripCapacityLabel": "CAPACITY",
   "driverTripBadgePublished": "PUBLISHED",
-  "driverTripBadgePublish": "PUBLISH",
   "driverTripBadgeExpired": "EXPIRED",
   "driverTripBadgeDraft": "DRAFT",
   "driverExpertDriverLabel": "विशेषज्ञ ड्राइवर",
@@ -249,6 +248,10 @@
   "cancelTripKeep": "यात्रा रखें",
   "tripCancelSuccessTitle": "आपकी यात्रा सफलतापूर्वक रद्द हुई",
   "tripCancelSuccessBody": "आपकी यात्रा सफलतापूर्वक रद्द हो गई है। यात्रा आईडी {tripId} है",
+  "driverTripPostSuccessTitle": "आपकी यात्रा सफलतापूर्वक पोस्ट हुई",
+  "driverTripPostSuccessBody": "आपकी यात्रा सफलतापूर्वक पोस्ट हो गई है। आपकी यात्रा आईडी #{tripId} है",
+  "driverTripUpdateSuccessTitle": "आपकी यात्रा सफलतापूर्वक अपडेट हुई",
+  "driverTripUpdateSuccessBody": "आपकी यात्रा सफलतापूर्वक अपडेट हो गई है। आपकी यात्रा आईडी #{tripId} है",
   "driverHomeShipmentId": "शिपमेंट ID",
   "driverShipmentDetailsTitle": "शिपमेंट विवरण",
   "driverAddRequest": "अनुरोध जोड़ें",
@@ -527,6 +530,12 @@
   "driverTripFormScheduleRequired": "कृपया प्रारंभ और समाप्ति शेड्यूल चुनें",
   "driverTripFormEndBeforeStart": "समाप्ति शेड्यूल प्रारंभ के बाद होना चाहिए",
   "driverTripFormCapacityRequired": "मान्य लोड क्षमता दर्ज करें",
+  "driverTripFormCapacityExceedsVehicle": "लोड क्षमता {maxCapacity} से अधिक नहीं हो सकती",
+  "@driverTripFormCapacityExceedsVehicle": {
+    "placeholders": {
+      "maxCapacity": { "type": "String" }
+    }
+  },
   "driverTripFormPriceRequired": "मान्य अनुमानित कीमत दर्ज करें",
   "tripFrom": "से",
   "tripTo": "तक",

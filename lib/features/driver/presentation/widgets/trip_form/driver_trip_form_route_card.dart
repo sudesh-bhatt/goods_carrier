@@ -24,6 +24,8 @@ class DriverTripFormRouteCard extends StatelessWidget {
     required this.onToPlaceSelected,
     this.fromValidator,
     this.toValidator,
+    this.fromFieldKey,
+    this.toFieldKey,
   });
 
   final TextEditingController fromController;
@@ -37,6 +39,8 @@ class DriverTripFormRouteCard extends StatelessWidget {
   final ValueChanged<PlaceAddressDetails> onToPlaceSelected;
   final String? Function(String?)? fromValidator;
   final String? Function(String?)? toValidator;
+  final Key? fromFieldKey;
+  final Key? toFieldKey;
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +55,7 @@ class DriverTripFormRouteCard extends StatelessWidget {
           ),
           SizedBox(height: 24.h),
           _RouteStopRow(
+            key: fromFieldKey,
             label: fromLabel,
             icon: Icons.location_on,
             iconSize: 16.67,
@@ -72,6 +77,7 @@ class DriverTripFormRouteCard extends StatelessWidget {
             ),
           ),
           _RouteStopRow(
+            key: toFieldKey,
             label: toLabel,
             icon: Icons.map,
             iconSize: 15,
@@ -90,6 +96,7 @@ class DriverTripFormRouteCard extends StatelessWidget {
 
 class _RouteStopRow extends StatelessWidget {
   const _RouteStopRow({
+    super.key,
     required this.label,
     required this.icon,
     required this.iconColor,
