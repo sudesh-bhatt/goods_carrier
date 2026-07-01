@@ -11,18 +11,18 @@ class ReportsApiClient {
   final Dio _dio;
 
   Future<ReportSubmissionResult> submitReport({
-    required String referenceType,
-    required String referenceId,
+    required String reportableType,
+    required String reportableId,
     required String reason,
-    String? details,
+    String? description,
   }) async {
     final response = await _dio.post<Map<String, dynamic>>(
       ApiConstants.reports,
       data: ReportsApiMapper.toSubmitBody(
-        referenceType: referenceType,
-        referenceId: referenceId,
+        reportableType: reportableType,
+        reportableId: reportableId,
         reason: reason,
-        details: details,
+        description: description,
       ),
     );
     return ReportsApiMapper.fromSubmitJson(

@@ -6,6 +6,7 @@ class ReportTripConfirmationArgs {
     required this.tripId,
     required this.fromCity,
     required this.toCity,
+    this.isDriver = false,
   });
 
   final String reportId;
@@ -13,4 +14,5 @@ class ReportTripConfirmationArgs {
   final String tripId;
   final String fromCity;
   final String toCity;
+  final bool isDriver;
 }

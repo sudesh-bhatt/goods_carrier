@@ -203,7 +203,10 @@ class _CustomerTripDetailScreenState
                 : l10n.customerReportTripQuestion,
             onReport: () => context.push(
               AppRoutes.reportTripOf(shipment.id),
-              extra: ReportTripScreenArgs(shipment: shipment),
+              extra: ReportTripScreenArgs(
+                shipment: shipment,
+                isDriver: widget.isDriver,
+              ),
             ),
           ),
         ),

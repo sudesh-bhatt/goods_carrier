@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -9,18 +10,29 @@ import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../res/font_res.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
+import '../../../driver/presentation/providers/driver_shipment_requests_provider.dart';
 import '../models/report_trip_confirmation_args.dart';
 import '../widgets/customer_light_chrome.dart';
 import '../widgets/report_trip/report_trip_tokens.dart';
 
 /// Report submitted success — Figma `1:6123`.
-class ReportTripSuccessScreen extends StatelessWidget {
+class ReportTripSuccessScreen extends ConsumerWidget {
   const ReportTripSuccessScreen({super.key, required this.args});
 
   final ReportTripConfirmationArgs args;
 
+  String get _homeRoute =>
+      args.isDriver ? AppRoutes.driverHome : AppRoutes.customerHome;
+
+  void _goHome(BuildContext context, WidgetRef ref) {
+    if (args.isDriver) {
+      ref.read(driverShipmentRequestsProvider.notifier).refresh();
+    }
+    context.go(_homeRoute);
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final locale = Localizations.localeOf(context).toString();
     final dateLabel = DateFormat('d MMMM yyyy', locale).format(args.submittedAt);
@@ -34,7 +46,7 @@ class ReportTripSuccessScreen extends StatelessWidget {
         appBar: FlowScreenAppBar(
           title: l10n.reportTripStatusTitle,
           backgroundColor: Colors.white.withValues(alpha: 0.8),
-          onBackTap: () => context.go(AppRoutes.customerHome),
+          onBackTap: () => _goHome(context, ref),
         ),
         body: SafeArea(
           top: false,
@@ -96,7 +108,7 @@ class ReportTripSuccessScreen extends StatelessWidget {
                     shadowColor:
                         ReportTripTokens.primaryOrange.withValues(alpha: 0.3),
                     child: InkWell(
-                      onTap: () => context.go(AppRoutes.customerHome),
+                      onTap: () => _goHome(context, ref),
                       borderRadius: BorderRadius.circular(
                         ReportTripTokens.buttonRadius.r,
                       ),

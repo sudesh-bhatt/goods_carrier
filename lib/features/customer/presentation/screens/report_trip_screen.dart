@@ -23,11 +23,13 @@ class ReportTripScreen extends ConsumerStatefulWidget {
     super.key,
     this.shipment,
     this.shipmentId,
+    this.isDriver = false,
   }) : assert(shipment != null || shipmentId != null);
 
   /// Preferred — passed from Trip Details so lookup is not required.
   final Shipment? shipment;
   final String? shipmentId;
+  final bool isDriver;
 
   @override
   ConsumerState<ReportTripScreen> createState() => _ReportTripScreenState();
@@ -87,6 +89,7 @@ class _ReportTripScreenState extends ConsumerState<ReportTripScreen>
         tripId: displayTripId,
         fromCity: shipment.pickup.city,
         toCity: shipment.drop.city,
+        isDriver: widget.isDriver,
       );
       context.pushReplacement(AppRoutes.reportTripSuccess, extra: args);
     } catch (_) {
@@ -120,7 +123,8 @@ class _ReportTripScreenState extends ConsumerState<ReportTripScreen>
         backgroundColor: ReportTripTokens.screenBg,
         appBar: FlowScreenAppBar(
           title: l10n.customerReportIssueTitle,
-          fallbackRoute: AppRoutes.customerHome,
+          fallbackRoute:
+              widget.isDriver ? AppRoutes.driverHome : AppRoutes.customerHome,
         ),
         body: const ErrorView(message: 'Trip not found.'),
       );

@@ -14,10 +14,10 @@ class RemoteReportsRepository implements IReportsRepository {
     String? details,
   }) async {
     final result = await _api.submitReport(
-      referenceType: 'shipment',
-      referenceId: shipmentId,
+      reportableType: 'shipment',
+      reportableId: shipmentId,
       reason: reason,
-      details: details,
+      description: details,
     );
     return result.id;
   }

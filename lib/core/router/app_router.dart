@@ -296,7 +296,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (_, state) {
           final extra = state.extra;
           if (extra is ReportTripScreenArgs) {
-            return ReportTripScreen(shipment: extra.shipment);
+            return ReportTripScreen(
+              shipment: extra.shipment,
+              isDriver: extra.isDriver,
+            );
           }
           return ReportTripScreen(
             shipmentId: state.pathParameters['id']!,
