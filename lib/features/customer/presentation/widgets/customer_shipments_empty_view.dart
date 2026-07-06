@@ -10,12 +10,14 @@ class CustomerShipmentsEmptyView extends StatelessWidget {
     required this.description,
     required this.actionLabel,
     required this.onAction,
+    this.scrollable = true,
   });
 
   final String title;
   final String description;
   final String actionLabel;
   final VoidCallback onAction;
+  final bool scrollable;
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +26,7 @@ class CustomerShipmentsEmptyView extends StatelessWidget {
       description: description,
       actionLabel: actionLabel,
       onAction: onAction,
+      scrollable: scrollable,
     );
   }
 }

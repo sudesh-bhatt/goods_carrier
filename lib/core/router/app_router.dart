@@ -24,6 +24,10 @@ import '../../features/customer/presentation/screens/cancel_shipment_screen.dart
 import '../../features/customer/presentation/models/report_trip_confirmation_args.dart';
 import '../../features/customer/presentation/models/report_trip_screen_args.dart';
 import '../../features/customer/presentation/screens/customer_trip_detail_screen.dart';
+import '../../features/customer/presentation/screens/customer_trip_request_screen.dart';
+import '../../features/customer/presentation/screens/customer_trip_request_success_screen.dart';
+import '../../features/customer/presentation/models/customer_trip_request_screen_args.dart';
+import '../../features/customer/presentation/models/customer_trip_request_success_args.dart';
 import '../../features/customer/presentation/widgets/trip_detail/trip_detail_tokens.dart';
 import '../../features/customer/presentation/screens/report_trip_screen.dart';
 import '../../features/customer/presentation/screens/report_trip_success_screen.dart';
@@ -298,12 +302,37 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           if (extra is ReportTripScreenArgs) {
             return ReportTripScreen(
               shipment: extra.shipment,
+              driverTrip: extra.driverTrip,
               isDriver: extra.isDriver,
             );
           }
           return ReportTripScreen(
             shipmentId: state.pathParameters['id']!,
           );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.customerTripRequest,
+        builder: (_, state) {
+          final extra = state.extra;
+          if (extra is CustomerTripRequestScreenArgs) {
+            return CustomerTripRequestScreen(trip: extra.trip);
+          }
+          return CustomerTripRequestScreen(
+            tripId: state.pathParameters['id']!,
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.customerTripRequestSuccess,
+        builder: (_, state) {
+          final extra = state.extra;
+          if (extra is! CustomerTripRequestSuccessArgs) {
+            return const _RouterErrorPage(
+              error: FormatException('Missing trip request success args'),
+            );
+          }
+          return CustomerTripRequestSuccessScreen(args: extra);
         },
       ),
       GoRoute(

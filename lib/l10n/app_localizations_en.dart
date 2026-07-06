@@ -632,6 +632,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customerHomeDriverTrips => 'Driver Trips';
 
   @override
+  String get customerHomeEmptyTitle => 'No Driver Trips';
+
+  @override
   String get customerHomeInterestBadge => 'YOUR ARE IN INTEREST';
 
   @override
@@ -768,6 +771,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get driverHomeShipmentId => 'Shipment ID';
+
+  @override
+  String get driverHomeShipmentsTitle => 'Active Shipments';
 
   @override
   String get driverShipmentDetailsTitle => 'Shipment Details';
@@ -1382,6 +1388,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get customerTripDetailsTitle => 'Trip Details';
+
+  @override
+  String get customerTripRequestTitle => 'Send Request';
+
+  @override
+  String get customerSelectShipment => 'Select a shipment';
+
+  @override
+  String get customerTripRequestNote => 'Note';
+
+  @override
+  String get customerTripRequestNoteHint => 'I am interested in this trip.';
+
+  @override
+  String get customerTripRequestNoShipments =>
+      'Post a shipment first to request this trip.';
+
+  @override
+  String get customerTripRequestSentTitle => 'Request Sent Successfully';
+
+  @override
+  String get customerTripRequestSentBody =>
+      'Your request has been sent to the driver/transporter. You will be notified once they respond.';
 
   @override
   String get customerReportTripQuestion => 'Report a trip?';

@@ -160,6 +160,14 @@ class CustomerDashboardNotifier extends StateNotifier<CustomerDashboardState> {
 
   String apiResourceIdFor(String id) => byId(id)?.apiResourceId ?? id;
 
+  void markInterested(String tripId) {
+    final updated = state.trips.map((trip) {
+      if (trip.id != tripId && trip.apiId != tripId) return trip;
+      return trip.copyWith(isInterested: true);
+    }).toList(growable: false);
+    state = state.copyWith(trips: updated);
+  }
+
   CustomerDashboardQuery _buildQuery({
     required String search,
     required ShipmentFilter filter,

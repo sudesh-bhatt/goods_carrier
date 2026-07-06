@@ -12,8 +12,7 @@ import '../../../../res/font_res.dart';
 import '../../../../shared/domain/entities/driver_trip.dart';
 import '../../../../shared/domain/models/shipment_filter.dart';
 import '../../../../shared/presentation/widgets/filters/filter_search_sheet.dart';
-import '../../../../shared/presentation/widgets/feedback/empty_state.dart';
-import '../../../../shared/presentation/widgets/navigation/app_bottom_nav_bar.dart';
+import '../../../../shared/presentation/widgets/feedback/home_feed_empty_state.dart';
 import '../../../../shared/presentation/widgets/feedback/skeleton_card.dart';
 import '../providers/customer_dashboard_provider.dart';
 import '../widgets/customer_home_search_section.dart';
@@ -194,20 +193,14 @@ class _CustomerHomeTabState extends ConsumerState<CustomerHomeTab>
               ),
             )
           else if (trips.isEmpty)
-            SliverFillRemaining(
-              hasScrollBody: false,
+            SliverToBoxAdapter(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 25.w),
-                child: EmptyState(
-                  headline: _hasLocalFilters
-                      ? l10n.customerHomeNoMatchingShipments
-                      : l10n.customerHomeDriverTrips,
-                  subtitle: l10n.customerHomeNoMatchingShipmentsHint,
-                  fallbackIcon: Icons.local_shipping_outlined,
-                  fallbackIconColor: kBottomNavInactive,
-                  actionLabel:
-                      _hasLocalFilters ? l10n.filterClearAll : null,
-                  onAction: _hasLocalFilters ? _resetFilters : null,
+                padding: EdgeInsets.fromLTRB(25.w, 0, 25.w, 120.h),
+                child: HomeFeedEmptyState(
+                  emptyTitle: l10n.customerHomeEmptyTitle,
+                  hasActiveFilters: _hasLocalFilters,
+                  onClearFilters: _resetFilters,
+                  scrollable: false,
                 ),
               ),
             )

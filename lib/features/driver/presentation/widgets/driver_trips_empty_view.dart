@@ -8,9 +8,13 @@ class DriverTripsEmptyView extends StatelessWidget {
   const DriverTripsEmptyView({
     super.key,
     required this.onPostTrip,
+    this.scrollable = true,
+    this.showActionIcon = false,
   });
 
   final VoidCallback onPostTrip;
+  final bool scrollable;
+  final bool showActionIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +25,8 @@ class DriverTripsEmptyView extends StatelessWidget {
       description: l10n.driverEmptyTripsDescription,
       actionLabel: l10n.tripPostNew,
       onAction: onPostTrip,
-      showActionIcon: false,
+      showActionIcon: showActionIcon,
+      scrollable: scrollable,
     );
   }
 }

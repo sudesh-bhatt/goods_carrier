@@ -23,6 +23,9 @@ abstract final class AppRoutes {
   static const String shipmentCancelSuccess =
       '/customer/shipment/cancel-success';
   static const String customerTripDetail   = '/customer/trip/:id';
+  static const String customerTripRequest  = '/customer/trip/:id/request';
+  static const String customerTripRequestSuccess =
+      '/customer/trip/request-success';
   static const String reportTrip           = '/customer/trip/:id/report';
   static const String reportTripSuccess    = '/customer/report-trip/success';
   static const String tracking             = '/customer/tracking/:id';
@@ -74,6 +77,7 @@ abstract final class AppRoutes {
   static String shipmentDetailOf(String id) => '/customer/shipment/$id';
   static String cancelShipmentOf(String id) => '/customer/shipment/$id/cancel';
   static String tripDetailOf(String id) => '/customer/trip/$id';
+  static String customerTripRequestOf(String id) => '/customer/trip/$id/request';
   static String reportTripOf(String id) => '/customer/trip/$id/report';
   static String editShipmentOf(String id) => '/customer/shipment/$id/edit';
   static String trackingOf(String id)        => '/customer/tracking/$id';

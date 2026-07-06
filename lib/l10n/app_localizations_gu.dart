@@ -628,6 +628,9 @@ class AppLocalizationsGu extends AppLocalizations {
   String get customerHomeDriverTrips => 'ડ્રાઇવર ટ્રિપ્સ';
 
   @override
+  String get customerHomeEmptyTitle => 'કોઈ ડ્રાઇવર ટ્રિપ નથી';
+
+  @override
   String get customerHomeInterestBadge => 'તમારી રુચિ નોંધાઈ છે';
 
   @override
@@ -763,6 +766,9 @@ class AppLocalizationsGu extends AppLocalizations {
 
   @override
   String get driverHomeShipmentId => 'શિપમેન્ટ ID';
+
+  @override
+  String get driverHomeShipmentsTitle => 'સક્રિય શિપમેન્ટ';
 
   @override
   String get driverShipmentDetailsTitle => 'શિપમેન્ટ વિગતો';
@@ -1377,6 +1383,29 @@ class AppLocalizationsGu extends AppLocalizations {
 
   @override
   String get customerTripDetailsTitle => 'ટ્રિપ વિગતો';
+
+  @override
+  String get customerTripRequestTitle => 'વિનંતી મોકલો';
+
+  @override
+  String get customerSelectShipment => 'શિપમેન્ટ પસંદ કરો';
+
+  @override
+  String get customerTripRequestNote => 'નોંધ';
+
+  @override
+  String get customerTripRequestNoteHint => 'મને આ ટ્રિપમાં રસ છે.';
+
+  @override
+  String get customerTripRequestNoShipments =>
+      'આ ટ્રિપની વિનંતી કરવા માટે પહેલા શિપમેન્ટ પોસ્ટ કરો.';
+
+  @override
+  String get customerTripRequestSentTitle => 'વિનંતી સફળતાપૂર્વક મોકલાઈ';
+
+  @override
+  String get customerTripRequestSentBody =>
+      'તમારી વિનંતી ડ્રાઇવર/ટ્રાન્સપોર્ટરને મોકલવામાં આવી છે. જવાબ મળે ત્યારે તમને સૂચિત કરવામાં આવશે.';
 
   @override
   String get customerReportTripQuestion => 'ટ્રિપની રિપોર્ટ કરો?';

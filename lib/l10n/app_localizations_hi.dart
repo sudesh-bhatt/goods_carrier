@@ -629,6 +629,9 @@ class AppLocalizationsHi extends AppLocalizations {
   String get customerHomeDriverTrips => 'ड्राइवर यात्राएं';
 
   @override
+  String get customerHomeEmptyTitle => 'कोई ड्राइवर यात्रा नहीं';
+
+  @override
   String get customerHomeInterestBadge => 'आपकी रुचि दर्ज है';
 
   @override
@@ -765,6 +768,9 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get driverHomeShipmentId => 'शिपमेंट ID';
+
+  @override
+  String get driverHomeShipmentsTitle => 'सक्रिय शिपमेंट';
 
   @override
   String get driverShipmentDetailsTitle => 'शिपमेंट विवरण';
@@ -1379,6 +1385,29 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get customerTripDetailsTitle => 'यात्रा विवरण';
+
+  @override
+  String get customerTripRequestTitle => 'अनुरोध भेजें';
+
+  @override
+  String get customerSelectShipment => 'शिपमेंट चुनें';
+
+  @override
+  String get customerTripRequestNote => 'नोट';
+
+  @override
+  String get customerTripRequestNoteHint => 'मुझे इस यात्रा में रुचि है।';
+
+  @override
+  String get customerTripRequestNoShipments =>
+      'इस यात्रा का अनुरोध करने के लिए पहले शिपमेंट पोस्ट करें।';
+
+  @override
+  String get customerTripRequestSentTitle => 'अनुरोध सफलतापूर्वक भेजा गया';
+
+  @override
+  String get customerTripRequestSentBody =>
+      'आपका अनुरोध ड्राइवर/ट्रांसपोर्टर को भेज दिया गया है। जवाब मिलने पर आपको सूचित किया जाएगा।';
 
   @override
   String get customerReportTripQuestion => 'यात्रा की रिपोर्ट करें?';

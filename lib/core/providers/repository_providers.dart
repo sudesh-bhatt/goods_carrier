@@ -39,11 +39,15 @@ import '../../shared/data/repositories/remote/driver/remote_driver_address_repos
 import '../../shared/domain/repositories/i_notifications_repository.dart';
 import '../../shared/domain/repositories/i_onboarding_repository.dart';
 import '../../shared/domain/repositories/i_reports_repository.dart';
+import '../../shared/domain/repositories/i_customer_trip_repository.dart';
 import '../../shared/domain/repositories/i_shipment_repository.dart';
 import '../../shared/domain/repositories/i_trip_repository.dart';
 import '../network/dio_client.dart';
 import 'shared_preferences_provider.dart';
+import '../../shared/data/api/customer/customer_trip_api_client.dart';
+import '../../shared/data/repositories/local_customer_trip_repository.dart';
 import '../../shared/data/repositories/local_shipment_repository.dart';
+import '../../shared/data/repositories/remote/customer/remote_customer_trip_repository.dart';
 
 final authApiClientProvider = Provider<AuthApiClient>((ref) {
   return AuthApiClient(ref.read(dioProvider));
@@ -207,6 +211,19 @@ final driverPaymentApiClientProvider = Provider<DriverPaymentApiClient>((ref) {
 final driverSubscriptionApiClientProvider =
     Provider<DriverSubscriptionApiClient>((ref) {
   return DriverSubscriptionApiClient(ref.read(dioProvider));
+});
+
+final customerTripApiClientProvider = Provider<CustomerTripApiClient>((ref) {
+  return CustomerTripApiClient(ref.read(dioProvider));
+});
+
+final customerTripRepositoryProvider = Provider<ICustomerTripRepository>((ref) {
+  if (EnvConfig.useRemoteApi) {
+    return RemoteCustomerTripRepository(
+      apiClient: ref.read(customerTripApiClientProvider),
+    );
+  }
+  return LocalCustomerTripRepository();
 });
 
 final appConfigApiClientProvider = Provider<AppConfigApiClient>((ref) {

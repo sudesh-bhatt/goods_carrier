@@ -11,13 +11,13 @@ import '../../../../core/router/app_routes.dart';
 import '../../../../res/font_res.dart';
 import '../../../../shared/domain/entities/shipment.dart';
 import '../../../../shared/domain/models/shipment_filter.dart';
-import '../../../../shared/presentation/widgets/feedback/empty_state.dart';
 import '../../../../shared/presentation/widgets/feedback/skeleton_card.dart';
+import '../../../../shared/presentation/widgets/feedback/trip_empty_placeholder_view.dart';
 import '../../../../shared/presentation/widgets/filters/filter_search_sheet.dart';
-import '../../../../shared/presentation/widgets/navigation/app_bottom_nav_bar.dart';
 import '../../../customer/presentation/widgets/customer_home_search_section.dart';
 import '../providers/driver_shipment_requests_provider.dart';
 import '../widgets/driver_home_shipment_card.dart';
+import '../widgets/driver_trips_empty_view.dart';
 
 /// Driver home tab — customer shipment feed (Figma `1:408`, no vehicle chips).
 class DriverHomeTab extends ConsumerStatefulWidget {
@@ -177,21 +177,23 @@ class _DriverHomeTabState extends ConsumerState<DriverHomeTab>
               ),
             )
           else if (shipments.isEmpty)
-            SliverFillRemaining(
-              hasScrollBody: false,
+            SliverToBoxAdapter(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 25.w),
-                child: EmptyState(
-                  headline: _hasLocalFilters
-                      ? l10n.customerHomeNoMatchingShipments
-                      : l10n.emptyShipments,
-                  subtitle: l10n.customerHomeNoMatchingShipmentsHint,
-                  fallbackIcon: Icons.local_shipping_outlined,
-                  fallbackIconColor: kBottomNavInactive,
-                  actionLabel:
-                      _hasLocalFilters ? l10n.filterClearAll : null,
-                  onAction: _hasLocalFilters ? _resetFilters : null,
-                ),
+                padding: EdgeInsets.fromLTRB(25.w, 0, 25.w, 120.h),
+                child: _hasLocalFilters
+                    ? TripEmptyPlaceholderView(
+                        title: l10n.customerHomeNoMatchingShipments,
+                        description: l10n.customerHomeNoMatchingShipmentsHint,
+                        actionLabel: l10n.filterClearAll,
+                        onAction: _resetFilters,
+                        showActionIcon: false,
+                        scrollable: false,
+                      )
+                    : DriverTripsEmptyView(
+                        onPostTrip: () => context.push(AppRoutes.postTrip),
+                        scrollable: false,
+                        showActionIcon: true,
+                      ),
               ),
             )
           else

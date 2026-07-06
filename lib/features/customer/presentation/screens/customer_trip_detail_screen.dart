@@ -19,6 +19,7 @@ import '../../../../shared/domain/entities/shipment.dart';
 import '../../../../shared/presentation/widgets/feedback/error_view.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
 import '../../../driver/presentation/providers/driver_shipment_requests_provider.dart';
+import '../models/customer_trip_request_screen_args.dart';
 import '../models/report_trip_screen_args.dart';
 import '../providers/customer_dashboard_provider.dart';
 import '../providers/customer_shipments_provider.dart';
@@ -268,6 +269,13 @@ class _CustomerTripDetailScreenState
           title: _screenTitle(l10n),
           fallbackRoute: _fallbackRoute,
           backgroundColor: Colors.white.withValues(alpha: 0.8),
+          trailing: TripDetailMoreMenuButton(
+            reportLabel: l10n.customerReportTripQuestion,
+            onReport: () => context.push(
+              AppRoutes.reportTripOf(trip.apiResourceId),
+              extra: ReportTripScreenArgs(driverTrip: trip),
+            ),
+          ),
         ),
         body: ListView(
           padding: EdgeInsets.fromLTRB(24.w, 16.h, 24.w, 120.h),
@@ -311,13 +319,19 @@ class _CustomerTripDetailScreenState
             ),
           ],
         ),
-        bottomNavigationBar: TripDetailRequestFooter(
-          label: l10n.actionRequest,
-          onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(l10n.customerHomeFilterSoon)),
-            );
-          },
+        bottomNavigationBar: Opacity(
+          opacity: trip.isInterested ? 0.5 : 1,
+          child: TripDetailRequestFooter(
+            label: trip.isInterested
+                ? l10n.driverRequestSent
+                : l10n.actionRequest,
+            onPressed: trip.isInterested
+                ? () {}
+                : () => context.push(
+                      AppRoutes.customerTripRequestOf(trip.apiResourceId),
+                      extra: CustomerTripRequestScreenArgs(trip: trip),
+                    ),
+          ),
         ),
       ),
     );

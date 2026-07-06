@@ -14,16 +14,18 @@ class TripEmptyPlaceholderView extends StatelessWidget {
     super.key,
     required this.title,
     required this.description,
-    required this.actionLabel,
-    required this.onAction,
+    this.actionLabel,
+    this.onAction,
     this.showActionIcon = true,
+    this.scrollable = true,
   });
 
   final String title;
   final String description;
-  final String actionLabel;
-  final VoidCallback onAction;
+  final String? actionLabel;
+  final VoidCallback? onAction;
   final bool showActionIcon;
+  final bool scrollable;
 
   static const _kTitleColor = Color(0xFF161C20);
   static const _kBodyColor = Color(0xFF594136);
@@ -33,7 +35,7 @@ class TripEmptyPlaceholderView extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
 
-    return SingleChildScrollView(
+    final content = Padding(
       padding: EdgeInsets.fromLTRB(24.w, 24.h, 24.w, 32.h),
       child: Column(
         children: [
@@ -63,15 +65,24 @@ class TripEmptyPlaceholderView extends StatelessWidget {
               color: _kBodyColor,
             ),
           ),
-          SizedBox(height: 48.h),
-          _PrimaryCtaButton(
-            label: actionLabel,
-            onPressed: onAction,
-            colors: colors,
-            showIcon: showActionIcon,
-          ),
+          if (actionLabel != null && onAction != null) ...[
+            SizedBox(height: 48.h),
+            _PrimaryCtaButton(
+              label: actionLabel!,
+              onPressed: onAction!,
+              colors: colors,
+              showIcon: showActionIcon,
+            ),
+          ],
         ],
       ),
+    );
+
+    if (!scrollable) return content;
+
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: content,
     );
   }
 }

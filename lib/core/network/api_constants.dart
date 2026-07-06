@@ -41,6 +41,10 @@ abstract final class ApiConstants {
       '/api/customer/addresses/$id/set-default';
   static String assignCustomerShipment(String id) =>
       '/api/customer/shipments/$id/assign';
+  static String customerTripRequests(String tripId) =>
+      '/api/customer/trips/$tripId/requests';
+  static String customerTripReport(String tripId) =>
+      '/api/customer/trips/$tripId/report';
   static const String customerSupport = '/api/customer/support';
   static const String customerSettings = '/api/customer/settings';
   static const String customerSettingsPush =

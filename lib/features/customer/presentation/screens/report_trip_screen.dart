@@ -8,12 +8,14 @@ import '../../../../core/mixins/safe_set_state_mixin.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../res/font_res.dart';
+import '../../../../shared/domain/entities/driver_trip.dart';
 import '../../../../shared/domain/entities/shipment.dart';
 import '../../../../shared/presentation/widgets/feedback/error_view.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
 import '../models/report_trip_confirmation_args.dart';
 import '../providers/customer_reported_trips_provider.dart';
 import '../providers/customer_shipments_provider.dart';
+import '../providers/customer_trip_actions_provider.dart';
 import '../widgets/customer_light_chrome.dart';
 import '../widgets/report_trip/report_trip_tokens.dart';
 
@@ -22,12 +24,16 @@ class ReportTripScreen extends ConsumerStatefulWidget {
   const ReportTripScreen({
     super.key,
     this.shipment,
+    this.driverTrip,
     this.shipmentId,
     this.isDriver = false,
-  }) : assert(shipment != null || shipmentId != null);
+  }) : assert(
+          shipment != null || driverTrip != null || shipmentId != null,
+        );
 
   /// Preferred — passed from Trip Details so lookup is not required.
   final Shipment? shipment;
+  final DriverTrip? driverTrip;
   final String? shipmentId;
   final bool isDriver;
 
@@ -64,31 +70,50 @@ class _ReportTripScreenState extends ConsumerState<ReportTripScreen>
       (_selectedReason != _otherReasonId ||
           _detailsController.text.trim().isNotEmpty);
 
-  Future<void> _submit(Shipment shipment) async {
+  Future<void> _submit() async {
     if (!_canSubmit) return;
+
+    final shipment = _resolveShipment();
+    final driverTrip = _resolveDriverTrip();
+    if (shipment == null && driverTrip == null) return;
 
     safeSetState(() => _isSubmitting = true);
     try {
-      final reportId = await ref
-          .read(customerReportedTripsProvider.notifier)
-          .submitReport(
-            shipment,
-            reason: _selectedReason!,
-            details: _selectedReason == _otherReasonId
-                ? _detailsController.text.trim()
-                : null,
-          );
+      final String reportId;
+      if (driverTrip != null) {
+        reportId = await ref
+            .read(customerTripActionsProvider.notifier)
+            .submitReport(
+              trip: driverTrip,
+              reason: _selectedReason!,
+              description: _selectedReason == _otherReasonId
+                  ? _detailsController.text.trim()
+                  : null,
+            );
+      } else {
+        reportId = await ref
+            .read(customerReportedTripsProvider.notifier)
+            .submitReport(
+              shipment!,
+              reason: _selectedReason!,
+              details: _selectedReason == _otherReasonId
+                  ? _detailsController.text.trim()
+                  : null,
+            );
+      }
       if (!mounted) return;
 
-      final displayTripId = shipment.id.startsWith('#')
-          ? shipment.id
-          : '#${shipment.id}';
+      final fromCity = driverTrip?.fromCity ?? shipment!.pickup.city;
+      final toCity = driverTrip?.toCity ?? shipment!.drop.city;
+      final displayTripId = driverTrip != null
+          ? (driverTrip.id.startsWith('#') ? driverTrip.id : '#${driverTrip.id}')
+          : (shipment!.id.startsWith('#') ? shipment.id : '#${shipment.id}');
       final args = ReportTripConfirmationArgs(
         reportId: reportId,
         submittedAt: DateTime.now(),
         tripId: displayTripId,
-        fromCity: shipment.pickup.city,
-        toCity: shipment.drop.city,
+        fromCity: fromCity,
+        toCity: toCity,
         isDriver: widget.isDriver,
       );
       context.pushReplacement(AppRoutes.reportTripSuccess, extra: args);
@@ -104,6 +129,7 @@ class _ReportTripScreenState extends ConsumerState<ReportTripScreen>
 
   Shipment? _resolveShipment() {
     if (widget.shipment != null) return widget.shipment;
+    if (widget.driverTrip != null) return null;
     final id = widget.shipmentId;
     if (id == null) return null;
     return ref
@@ -113,12 +139,15 @@ class _ReportTripScreenState extends ConsumerState<ReportTripScreen>
         .firstOrNull;
   }
 
+  DriverTrip? _resolveDriverTrip() => widget.driverTrip;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final shipment = _resolveShipment();
+    final driverTrip = _resolveDriverTrip();
 
-    if (shipment == null) {
+    if (shipment == null && driverTrip == null) {
       return Scaffold(
         backgroundColor: ReportTripTokens.screenBg,
         appBar: FlowScreenAppBar(
@@ -194,7 +223,7 @@ class _ReportTripScreenState extends ConsumerState<ReportTripScreen>
                   shadowColor:
                       ReportTripTokens.primaryOrange.withValues(alpha: 0.3),
                   child: InkWell(
-                    onTap: _canSubmit ? () => _submit(shipment) : null,
+                    onTap: _canSubmit ? () => _submit() : null,
                     borderRadius:
                         BorderRadius.circular(ReportTripTokens.buttonRadius.r),
                     child: Center(

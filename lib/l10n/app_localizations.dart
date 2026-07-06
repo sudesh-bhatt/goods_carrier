@@ -1288,6 +1288,12 @@ abstract class AppLocalizations {
   /// **'Driver Trips'**
   String get customerHomeDriverTrips;
 
+  /// No description provided for @customerHomeEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No Driver Trips'**
+  String get customerHomeEmptyTitle;
+
   /// No description provided for @customerHomeInterestBadge.
   ///
   /// In en, this message translates to:
@@ -1539,6 +1545,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Shipment ID'**
   String get driverHomeShipmentId;
+
+  /// No description provided for @driverHomeShipmentsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Shipments'**
+  String get driverHomeShipmentsTitle;
 
   /// No description provided for @driverShipmentDetailsTitle.
   ///
@@ -2715,6 +2727,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Trip Details'**
   String get customerTripDetailsTitle;
+
+  /// No description provided for @customerTripRequestTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Request'**
+  String get customerTripRequestTitle;
+
+  /// No description provided for @customerSelectShipment.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a shipment'**
+  String get customerSelectShipment;
+
+  /// No description provided for @customerTripRequestNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Note'**
+  String get customerTripRequestNote;
+
+  /// No description provided for @customerTripRequestNoteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'I am interested in this trip.'**
+  String get customerTripRequestNoteHint;
+
+  /// No description provided for @customerTripRequestNoShipments.
+  ///
+  /// In en, this message translates to:
+  /// **'Post a shipment first to request this trip.'**
+  String get customerTripRequestNoShipments;
+
+  /// No description provided for @customerTripRequestSentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Sent Successfully'**
+  String get customerTripRequestSentTitle;
+
+  /// No description provided for @customerTripRequestSentBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your request has been sent to the driver/transporter. You will be notified once they respond.'**
+  String get customerTripRequestSentBody;
 
   /// No description provided for @customerReportTripQuestion.
   ///
