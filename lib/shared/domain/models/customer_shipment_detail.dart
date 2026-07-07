@@ -19,6 +19,10 @@ class ShipmentInterestedDriver {
     this.vehicleNumber = '',
     this.capacityLabel = '',
     this.phone,
+    this.countryCode = '+91',
+    this.avatarUrl,
+    this.offeredPrice,
+    this.note,
   });
 
   final String driverId;
@@ -28,6 +32,10 @@ class ShipmentInterestedDriver {
   final String vehicleNumber;
   final String capacityLabel;
   final String? phone;
+  final String countryCode;
+  final String? avatarUrl;
+  final double? offeredPrice;
+  final String? note;
 }
 
 /// Detail payload from `GET /api/customer/shipments/{id}`.

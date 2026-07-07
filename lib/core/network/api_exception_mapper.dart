@@ -28,6 +28,7 @@ abstract final class ApiExceptionMapper {
       UnauthorisedException() => 'Session expired. Please log in again.',
       ForbiddenException() => 'You don\'t have permission to do this.',
       ValidationException(:final message) => message,
+      ConflictException(:final message) => message,
       ServerException(:final message) => message,
       RequestCancelledException() => 'Request was cancelled.',
       _ => 'Something went wrong. Please try again.',

@@ -63,8 +63,10 @@ abstract final class ReportsApiMapper {
       return DateTime.parse(combined);
     }
 
-    final date = source['pickup_date']?.toString();
-    final time = source['pickup_time']?.toString();
+    final date = source['estimated_start_date']?.toString() ??
+        source['pickup_date']?.toString();
+    final time = source['estimated_start_time']?.toString() ??
+        source['pickup_time']?.toString();
     if (date != null && date.isNotEmpty) {
       if (time != null && time.isNotEmpty) {
         final normalizedTime = time.length <= 5 ? '$time:00' : time;
@@ -82,11 +84,14 @@ abstract final class ReportsApiMapper {
       return DateTime.tryParse(combined);
     }
 
-    final date =
-        source['drop_date']?.toString() ?? source['estimated_end_date']?.toString();
-    if (date == null || date.isEmpty) return null;
+    final date = source['estimated_end_date']?.toString() ??
+        source['drop_date']?.toString();
+    if (date == null || date.isEmpty || date.toLowerCase() == 'null') {
+      return null;
+    }
 
-    final time = source['drop_time']?.toString();
+    final time = source['estimated_end_time']?.toString() ??
+        source['drop_time']?.toString();
     if (time != null && time.isNotEmpty) {
       final normalizedTime = time.length <= 5 ? '$time:00' : time;
       return DateTime.tryParse('${date}T$normalizedTime');

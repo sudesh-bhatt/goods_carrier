@@ -13,13 +13,32 @@ import '../widgets/saved_addresses/saved_address_tokens.dart';
 import '../widgets/saved_addresses/saved_locations_section_header.dart';
 
 /// Saved addresses list — [Figma](https://www.figma.com/design/YxnNResvDQnbkcPhGejtxa/Mobile-App-UI--Developer-?node-id=1-3130).
-class SavedAddressesScreen extends ConsumerWidget {
+class SavedAddressesScreen extends ConsumerStatefulWidget {
   const SavedAddressesScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SavedAddressesScreen> createState() =>
+      _SavedAddressesScreenState();
+}
+
+class _SavedAddressesScreenState extends ConsumerState<SavedAddressesScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(customerSavedAddressesProvider.notifier).load();
+    });
+  }
+
+  Future<void> _reload() =>
+      ref.read(customerSavedAddressesProvider.notifier).load();
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final colors = context.colors;
     final state = ref.watch(customerSavedAddressesProvider);
+    final showInitialLoading = state.isLoading && state.addresses.isEmpty;
 
     return Scaffold(
       backgroundColor: SavedAddressTokens.screenBg,
@@ -50,7 +69,7 @@ class SavedAddressesScreen extends ConsumerWidget {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      body: state.isLoading
+      body: showInitialLoading
           ? const Center(child: CircularProgressIndicator())
           : state.error != null && state.addresses.isEmpty
               ? Center(
@@ -67,8 +86,8 @@ class SavedAddressesScreen extends ConsumerWidget {
                   ),
                 )
               : RefreshIndicator(
-                  onRefresh: () =>
-                      ref.read(customerSavedAddressesProvider.notifier).load(),
+                  color: colors.primary,
+                  onRefresh: _reload,
                   child: ListView.separated(
                     physics: const AlwaysScrollableScrollPhysics(),
                     padding: EdgeInsets.fromLTRB(24.w, 32.h, 24.w, 128.h),

@@ -18,6 +18,7 @@ import '../../../../shared/presentation/widgets/feedback/empty_state.dart';
 import '../../../../shared/presentation/widgets/feedback/error_view.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
 import '../../../customer/presentation/widgets/customer_light_chrome.dart';
+import '../../../../core/utils/external_launcher.dart';
 import '../../../../core/utils/phone_utils.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/driver_trips_provider.dart';
@@ -41,7 +42,6 @@ class _DriverTripDetailScreenState extends ConsumerState<DriverTripDetailScreen>
   DriverTripDetail? _detail;
   bool _isLoading = false;
   String? _loadError;
-  final Set<String> _actionRequestIds = {};
 
   @override
   void initState() {
@@ -130,52 +130,41 @@ class _DriverTripDetailScreenState extends ConsumerState<DriverTripDetailScreen>
     return enriched;
   }
 
-  Future<void> _handleAccept(DriverTripRequest request) async {
-    if (_actionRequestIds.contains(request.id)) return;
-    safeSetState(() => _actionRequestIds.add(request.id));
-    final tripApiId = ref
-        .read(driverTripsProvider.notifier)
-        .apiResourceIdFor(widget.tripId);
-    final ok = await ref.read(driverTripsProvider.notifier).acceptTripRequest(
-          tripId: tripApiId,
-          requestId: request.id,
-        );
-    if (!mounted) return;
-    safeSetState(() => _actionRequestIds.remove(request.id));
-    if (!ok) {
-      final error = ref.read(driverTripsProvider).error;
-      if (error != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(error)),
-        );
-      }
-      return;
-    }
-    await _loadDetail();
-  }
+  Future<void> _contactCustomer(
+    DriverTripRequest request, {
+    required bool whatsApp,
+  }) async {
+    final phone = request.phone?.trim();
+    if (phone == null || phone.isEmpty) return;
 
-  Future<void> _handleReject(DriverTripRequest request) async {
-    if (_actionRequestIds.contains(request.id)) return;
-    safeSetState(() => _actionRequestIds.add(request.id));
-    final tripApiId = ref
-        .read(driverTripsProvider.notifier)
-        .apiResourceIdFor(widget.tripId);
-    final ok = await ref.read(driverTripsProvider.notifier).rejectTripRequest(
-          tripId: tripApiId,
-          requestId: request.id,
-        );
-    if (!mounted) return;
-    safeSetState(() => _actionRequestIds.remove(request.id));
-    if (!ok) {
-      final error = ref.read(driverTripsProvider).error;
-      if (error != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(error)),
-        );
-      }
-      return;
+    final dialCode = request.countryCode.isNotEmpty
+        ? request.countryCode
+        : PhoneUtils.splitE164(phone).dialCode;
+    final localNumber = phone.startsWith('+')
+        ? PhoneUtils.splitE164(phone).localNumber
+        : phone.replaceAll(RegExp(r'\D'), '');
+
+    final launched = whatsApp
+        ? await ExternalLauncher.openWhatsApp(
+            dialCode: dialCode,
+            localNumber: localNumber,
+          )
+        : await ExternalLauncher.dialPhone(
+            dialCode: dialCode,
+            localNumber: localNumber,
+          );
+
+    if (!launched && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            whatsApp
+                ? context.l10n.driverWhatsAppLaunchFailed
+                : 'Could not open phone dialer',
+          ),
+        ),
+      );
     }
-    await _loadDetail();
   }
 
   @override
@@ -251,11 +240,16 @@ class _DriverTripDetailScreenState extends ConsumerState<DriverTripDetailScreen>
                             padding: EdgeInsets.only(bottom: 10.h),
                             child: DriverTripInterestCustomerCard(
                               name: request.customerName,
+                              avatarUrl: request.avatarUrl,
                               phone: request.phone,
-                              showActions: true,
-                              isBusy: _actionRequestIds.contains(request.id),
-                              onAccept: () => _handleAccept(request),
-                              onReject: () => _handleReject(request),
+                              onWhatsApp: () => _contactCustomer(
+                                request,
+                                whatsApp: true,
+                              ),
+                              onCall: () => _contactCustomer(
+                                request,
+                                whatsApp: false,
+                              ),
                             ),
                           ),
                         ),

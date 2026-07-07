@@ -31,6 +31,9 @@ class _DriverPaymentHistoryScreenState
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(driverPaymentsProvider.notifier).load(refresh: true);
+    });
   }
 
   @override
@@ -83,6 +86,7 @@ class _DriverPaymentHistoryScreenState
     final l10n = context.l10n;
     final locale = Localizations.localeOf(context).toString();
     final state = ref.watch(driverPaymentsProvider);
+    final showInitialLoading = state.isLoading && state.payments.isEmpty;
 
     return Scaffold(
       backgroundColor: SubscriptionTokens.paymentScreenBg,
@@ -92,7 +96,7 @@ class _DriverPaymentHistoryScreenState
       ),
       body: SafeArea(
         top: false,
-        child: state.isLoading
+        child: showInitialLoading
             ? const Center(child: CircularProgressIndicator())
             : state.error != null && state.payments.isEmpty
                 ? EmptyState(
@@ -105,12 +109,24 @@ class _DriverPaymentHistoryScreenState
                             ),
                   )
                 : state.payments.isEmpty
-                    ? EmptyState(
-                        headline: l10n.driverPaymentHistoryEmptyTitle,
-                        subtitle: l10n.driverPaymentHistoryEmptySubtitle,
-                        fallbackIcon: Icons.receipt_long_outlined,
+                    ? RefreshIndicator(
+                        onRefresh: () => ref
+                            .read(driverPaymentsProvider.notifier)
+                            .load(refresh: true),
+                        child: SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: SizedBox(
+                            height: MediaQuery.sizeOf(context).height * 0.7,
+                            child: EmptyState(
+                              headline: l10n.driverPaymentHistoryEmptyTitle,
+                              subtitle: l10n.driverPaymentHistoryEmptySubtitle,
+                              fallbackIcon: Icons.receipt_long_outlined,
+                            ),
+                          ),
+                        ),
                       )
                     : RefreshIndicator(
+                        color: context.colors.primary,
                         onRefresh: () => ref
                             .read(driverPaymentsProvider.notifier)
                             .load(refresh: true),

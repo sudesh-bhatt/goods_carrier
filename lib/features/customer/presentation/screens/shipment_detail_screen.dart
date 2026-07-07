@@ -7,6 +7,8 @@ import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/mixins/safe_set_state_mixin.dart';
 import '../../../../core/network/api_exception_mapper.dart';
+import '../../../../core/utils/external_launcher.dart';
+import '../../../../core/utils/phone_utils.dart';
 import '../../../../core/providers/repository_providers.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../res/font_res.dart';
@@ -171,26 +173,25 @@ class _ShipmentDetailScreenState extends ConsumerState<ShipmentDetailScreen>
                     expertLabel:
                         driver.subtitle ?? l10n.customerExpertDriver,
                     vehicleName: driver.vehicleName,
-                    vehicleNumber: driver.vehicleNumber,
+                    vehicleNumber: driver.vehicleNumber.toUpperCase(),
                     capacityLabel: l10n.tripCapacity,
                     capacityValue: driver.capacityLabel.toUpperCase(),
+                    avatarUrl: driver.avatarUrl,
                     onTap: () => DriverDetailSheet.show(
                       context,
                       driverId: driver.driverId,
                       shipmentId: shipment.id,
                       driver: driver,
                     ),
-                    onCall: () => DriverDetailSheet.show(
+                    onCall: () => _contactDriver(
                       context,
-                      driverId: driver.driverId,
-                      shipmentId: shipment.id,
-                      driver: driver,
+                      driver,
+                      whatsApp: false,
                     ),
-                    onWhatsApp: () => DriverDetailSheet.show(
+                    onWhatsApp: () => _contactDriver(
                       context,
-                      driverId: driver.driverId,
-                      shipmentId: shipment.id,
-                      driver: driver,
+                      driver,
+                      whatsApp: true,
                     ),
                   ),
                 );
@@ -233,5 +234,43 @@ class _ShipmentDetailScreenState extends ConsumerState<ShipmentDetailScreen>
     return ref
         .read(customerShipmentsProvider.notifier)
         .byId(widget.shipmentId);
+  }
+
+  Future<void> _contactDriver(
+    BuildContext context,
+    ShipmentInterestedDriver driver, {
+    required bool whatsApp,
+  }) async {
+    final phone = driver.phone?.trim();
+    if (phone == null || phone.isEmpty) return;
+
+    final dialCode = driver.countryCode.isNotEmpty
+        ? driver.countryCode
+        : PhoneUtils.splitE164(phone).dialCode;
+    final localNumber = phone.startsWith('+')
+        ? PhoneUtils.splitE164(phone).localNumber
+        : phone.replaceAll(RegExp(r'\D'), '');
+
+    final launched = whatsApp
+        ? await ExternalLauncher.openWhatsApp(
+            dialCode: dialCode,
+            localNumber: localNumber,
+          )
+        : await ExternalLauncher.dialPhone(
+            dialCode: dialCode,
+            localNumber: localNumber,
+          );
+
+    if (!launched && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            whatsApp
+                ? context.l10n.driverWhatsAppLaunchFailed
+                : 'Could not open phone dialer',
+          ),
+        ),
+      );
+    }
   }
 }

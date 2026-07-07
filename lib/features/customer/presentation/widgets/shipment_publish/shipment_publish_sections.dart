@@ -4,7 +4,10 @@ import 'package:flutter/services.dart';
 import '../../../../../core/extensions/num_ext.dart';
 import '../../../../../core/extensions/size_ext.dart';
 import '../../../../../core/extensions/string_ext.dart';
+import '../../../../../core/extensions/svg_gen_image_extension.dart';
+import '../../../../../generated/assets.dart';
 import '../../../../../res/font_res.dart';
+import '../../../../../shared/presentation/widgets/profile/profile_image_content.dart';
 import 'shipment_publish_tokens.dart';
 
 /// Splits "Mumbai, MH" → ("Mumbai", "MH") or city-only.
@@ -231,6 +234,7 @@ class PublishDriverInterestCard extends StatelessWidget {
     required this.vehicleNumber,
     required this.capacityLabel,
     required this.capacityValue,
+    this.avatarUrl,
     this.onTap,
     this.onCall,
     this.onWhatsApp,
@@ -242,6 +246,7 @@ class PublishDriverInterestCard extends StatelessWidget {
   final String vehicleNumber;
   final String capacityLabel;
   final String capacityValue;
+  final String? avatarUrl;
   final VoidCallback? onTap;
   final VoidCallback? onCall;
   final VoidCallback? onWhatsApp;
@@ -267,7 +272,7 @@ class PublishDriverInterestCard extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        _DriverAvatar(name: driverName),
+                        _DriverAvatar(name: driverName, avatarUrl: avatarUrl),
                         SizedBox(width: 16.w),
                         Expanded(
                           child: Column(
@@ -328,7 +333,11 @@ class PublishDriverInterestCard extends StatelessWidget {
                   ),
                   SizedBox(height: 12.h),
                   _ContactButton(
-                    icon: Icons.chat_outlined,
+                    leading: Assets.icWhatsapp.svgTint(
+                      width: 18.w,
+                      height: 18.w,
+                      color: Colors.black,
+                    ),
                     onTap: onWhatsApp,
                   ),
                 ],
@@ -342,9 +351,30 @@ class PublishDriverInterestCard extends StatelessWidget {
 }
 
 class _DriverAvatar extends StatelessWidget {
-  const _DriverAvatar({required this.name});
+  const _DriverAvatar({required this.name, this.avatarUrl});
 
   final String name;
+  final String? avatarUrl;
+
+  Widget _initialsPlaceholder() {
+    return Container(
+      width: 56.w,
+      height: 56.w,
+      decoration: BoxDecoration(
+        color: ShipmentPublishTokens.routeRing.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(24.r),
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        name.initials,
+        style: TextStyle(
+          fontFamily: FontRes.MANROPE_BOLD,
+          fontSize: 18.sp,
+          color: ShipmentPublishTokens.routeRing,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -354,21 +384,11 @@ class _DriverAvatar extends StatelessWidget {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          Container(
-            width: 56.w,
-            height: 56.w,
-            decoration: BoxDecoration(
-              color: ShipmentPublishTokens.routeRing.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(24.r),
-            ),
-            alignment: Alignment.center,
-            child: Text(
-              name.initials,
-              style: TextStyle(
-                fontFamily: FontRes.MANROPE_BOLD,
-                fontSize: 18.sp,
-                color: ShipmentPublishTokens.routeRing,
-              ),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(24.r),
+            child: ProfileImageContent(
+              imageReference: avatarUrl,
+              placeholder: _initialsPlaceholder(),
             ),
           ),
           Positioned(
@@ -432,9 +452,11 @@ class _VehicleMeta extends StatelessWidget {
 }
 
 class _ContactButton extends StatelessWidget {
-  const _ContactButton({required this.icon, this.onTap});
+  const _ContactButton({this.icon, this.leading, this.onTap})
+      : assert(icon != null || leading != null);
 
-  final IconData icon;
+  final IconData? icon;
+  final Widget? leading;
   final VoidCallback? onTap;
 
   @override
@@ -455,7 +477,9 @@ class _ContactButton extends StatelessWidget {
         child: SizedBox(
           width: 42.w,
           height: 42.w,
-          child: Icon(icon, size: 18.w, color: Colors.black),
+          child: Center(
+            child: leading ?? Icon(icon, size: 18.w, color: Colors.black),
+          ),
         ),
       ),
     );

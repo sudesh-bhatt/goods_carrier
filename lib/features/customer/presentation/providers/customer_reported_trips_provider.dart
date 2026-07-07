@@ -40,8 +40,12 @@ class CustomerReportedTripsNotifier
   final IReportsRepository _repo;
   final List<ReportedTrip> _localSubmissions = [];
 
-  Future<void> load() async {
-    state = state.copyWith(isLoading: true, clearError: true);
+  Future<void> load({bool showLoadingIndicator = true}) async {
+    if (showLoadingIndicator || state.trips.isEmpty) {
+      state = state.copyWith(isLoading: true, clearError: true);
+    } else {
+      state = state.copyWith(clearError: true);
+    }
     try {
       final remote = await _repo.listCustomerReportedTrips();
       state = CustomerReportedTripsState(
@@ -54,6 +58,8 @@ class CustomerReportedTripsNotifier
       );
     }
   }
+
+  Future<void> refresh() => load(showLoadingIndicator: false);
 
   Future<String> submitReport(
     Shipment shipment, {

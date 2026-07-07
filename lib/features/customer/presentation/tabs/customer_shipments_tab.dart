@@ -47,16 +47,27 @@ class _CustomerShipmentsTabState extends ConsumerState<CustomerShipmentsTab>
       state.shipments.where((s) => !s.isCancelled),
     )..sort((a, b) => b.pickupDateTime.compareTo(a.pickupDateTime));
 
-    if (state.isLoading) {
+    if (state.isLoading && shipments.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
 
     if (shipments.isEmpty) {
-      return CustomerShipmentsEmptyView(
-        title: l10n.customerEmptyShipmentsTitle,
-        description: l10n.customerEmptyShipmentsDescription,
-        actionLabel: l10n.shipmentPostNew,
-        onAction: () => context.push(AppRoutes.postShipment),
+      return RefreshIndicator(
+        color: colors.primary,
+        onRefresh: () =>
+            ref.read(customerShipmentsProvider.notifier).refresh(),
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: SizedBox(
+            height: MediaQuery.sizeOf(context).height * 0.7,
+            child: CustomerShipmentsEmptyView(
+              title: l10n.customerEmptyShipmentsTitle,
+              description: l10n.customerEmptyShipmentsDescription,
+              actionLabel: l10n.shipmentPostNew,
+              onAction: () => context.push(AppRoutes.postShipment),
+            ),
+          ),
+        ),
       );
     }
 

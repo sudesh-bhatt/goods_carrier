@@ -112,7 +112,9 @@ class DriverTrip {
         estimatedPrice:     (j['estimated_price']    as num).toDouble(),
         status:             TripStatus.values.byName(j['status']  as String),
         interestRequestCount:
-            (j['interest_request_count'] as num?)?.toInt() ?? 0,
+            (j['request_count'] as num?)?.toInt() ??
+            (j['interest_request_count'] as num?)?.toInt() ??
+            0,
         isInterested: j['is_interested'] as bool? ?? false,
       );
 

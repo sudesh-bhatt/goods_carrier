@@ -450,7 +450,8 @@ abstract final class ShipmentApiMapper {
     Map<String, dynamic> source,
     Shipment shipment,
   ) {
-    final rawList = source['interested_drivers'] ??
+    final rawList = source['requests'] ??
+        source['interested_drivers'] ??
         source['driver_requests'] ??
         source['shipment_requests'];
     if (rawList is! List || rawList.isEmpty) return const [];
@@ -463,25 +464,69 @@ abstract final class ShipmentApiMapper {
       final driverMap =
           nestedDriver is Map<String, dynamic> ? nestedDriver : item;
 
+      final nestedVehicle = item['vehicle'];
+      final vehicleMap =
+          nestedVehicle is Map<String, dynamic> ? nestedVehicle : null;
+
       final name = _firstString(driverMap, [
         'name',
         'driver_name',
         'full_name',
       ]);
-      final vehicleName = _firstString(item, [
-        'vehicle_type',
-        'vehicle_name',
-        'vehicle',
+
+      var vehicleName = vehicleMap != null
+          ? _firstString(vehicleMap, [
+              'vehicle_type',
+              'vehicle_name',
+              'name',
+              'type',
+            ])
+          : '';
+      if (vehicleName.isEmpty) {
+        final rawVehicleType = item['vehicle_type'];
+        if (rawVehicleType is String && rawVehicleType.isNotEmpty) {
+          vehicleName = rawVehicleType;
+        } else if (rawVehicleType is Map<String, dynamic>) {
+          vehicleName = _firstString(rawVehicleType, ['name', 'type', 'slug']);
+        }
+      }
+
+      var vehicleNumber = vehicleMap != null
+          ? _firstString(vehicleMap, [
+              'registration_number',
+              'vehicle_number',
+              'vehicle_no',
+            ])
+          : '';
+      if (vehicleNumber.isEmpty) {
+        vehicleNumber = _firstString(item, [
+          'vehicle_number',
+          'vehicle_no',
+          'registration_number',
+        ]);
+      }
+
+      var capacity = vehicleMap != null
+          ? _firstString(vehicleMap, ['capacity', 'load_capacity'])
+          : '';
+      if (capacity.isEmpty) {
+        capacity = _firstString(item, [
+          'capacity',
+          'load_capacity',
+        ]);
+      }
+
+      final countryCode = _firstString(driverMap, [
+        'country_code',
+        'dial_code',
       ]);
-      final vehicleNumber = _firstString(item, [
-        'vehicle_number',
-        'vehicle_no',
-        'registration_number',
-      ]);
-      final capacity = _firstString(item, [
-        'capacity',
-        'load_capacity',
-        'estimated_weight',
+
+      final offeredPrice = _parseDouble(item['offered_price']);
+      final note = _firstString(item, [
+        'note',
+        'message',
+        'additional_note',
+        'request_note',
       ]);
 
       return ShipmentInterestedDriver(
@@ -502,6 +547,14 @@ abstract final class ShipmentApiMapper {
           'mobile',
           'business_phone',
         ]),
+        countryCode: countryCode.isNotEmpty ? countryCode : '+91',
+        avatarUrl: _firstString(driverMap, [
+          'avatar',
+          'profile_image_url',
+          'photo',
+        ]),
+        offeredPrice: offeredPrice > 0 ? offeredPrice : null,
+        note: note.isNotEmpty ? note : null,
       );
     }).where((d) => d.driverId.isNotEmpty).toList(growable: false);
   }

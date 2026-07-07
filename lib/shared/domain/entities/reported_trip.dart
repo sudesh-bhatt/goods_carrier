@@ -28,6 +28,12 @@ class ReportedTrip {
   final String? capacityUnit;
   final double estimatedPrice;
 
+  static const Duration defaultTripDuration = Duration(hours: 24);
+
+  /// End date from API, or [estimatedStartDate] + 24h when omitted.
+  DateTime get effectiveEstimatedEndDate =>
+      estimatedEndDate ?? estimatedStartDate.add(defaultTripDuration);
+
   String get capacityDisplay {
     final raw = loadCapacity ?? loadCapacityTons;
     final unit = capacityUnit?.toUpperCase();

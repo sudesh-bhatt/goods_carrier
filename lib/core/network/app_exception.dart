@@ -30,6 +30,7 @@ sealed class AppException implements Exception {
           401 => const UnauthorisedException(),
           403 => const ForbiddenException(),
           404 => NotFoundException(msg ?? 'Resource not found'),
+          409 => ConflictException(msg ?? 'Conflict'),
           422 => ValidationException(msg ?? 'Validation failed'),
           >= 500 => ServerException(
               msg ?? 'Server error ($code)',
@@ -99,6 +100,11 @@ final class ForbiddenException extends AppException {
 /// HTTP 404.
 final class NotFoundException extends AppException {
   const NotFoundException(super.message) : super(statusCode: 404);
+}
+
+/// HTTP 409 — duplicate or conflicting state (e.g. report already submitted).
+final class ConflictException extends AppException {
+  const ConflictException(super.message) : super(statusCode: 409);
 }
 
 /// HTTP 422 — business validation failure.

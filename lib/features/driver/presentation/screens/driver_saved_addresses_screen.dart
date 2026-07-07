@@ -13,13 +13,33 @@ import '../../../customer/presentation/widgets/saved_addresses/saved_locations_s
 import '../providers/driver_saved_addresses_provider.dart';
 
 /// Driver saved addresses list — mirrors customer Figma `1:3130`.
-class DriverSavedAddressesScreen extends ConsumerWidget {
+class DriverSavedAddressesScreen extends ConsumerStatefulWidget {
   const DriverSavedAddressesScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DriverSavedAddressesScreen> createState() =>
+      _DriverSavedAddressesScreenState();
+}
+
+class _DriverSavedAddressesScreenState
+    extends ConsumerState<DriverSavedAddressesScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(driverSavedAddressesProvider.notifier).load();
+    });
+  }
+
+  Future<void> _reload() =>
+      ref.read(driverSavedAddressesProvider.notifier).load();
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final colors = context.colors;
     final state = ref.watch(driverSavedAddressesProvider);
+    final showInitialLoading = state.isLoading && state.addresses.isEmpty;
 
     return Scaffold(
       backgroundColor: SavedAddressTokens.screenBg,
@@ -50,7 +70,7 @@ class DriverSavedAddressesScreen extends ConsumerWidget {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      body: state.isLoading
+      body: showInitialLoading
           ? const Center(child: CircularProgressIndicator())
           : state.error != null && state.addresses.isEmpty
               ? Center(
@@ -67,8 +87,8 @@ class DriverSavedAddressesScreen extends ConsumerWidget {
                   ),
                 )
               : RefreshIndicator(
-                  onRefresh: () =>
-                      ref.read(driverSavedAddressesProvider.notifier).load(),
+                  color: colors.primary,
+                  onRefresh: _reload,
                   child: ListView.separated(
                     physics: const AlwaysScrollableScrollPhysics(),
                     padding: EdgeInsets.fromLTRB(24.w, 32.h, 24.w, 128.h),

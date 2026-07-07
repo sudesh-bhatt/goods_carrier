@@ -101,21 +101,54 @@ abstract final class TripApiMapper {
       'customer_name',
       'full_name',
     ]);
-    final phone = _firstString(customerMap, [
+    final resolvedName = name.isNotEmpty
+        ? name
+        : _firstString(item, ['name', 'customer_name', 'full_name']);
+
+    var phone = _firstString(customerMap, [
       'phone',
       'mobile',
       'contact_number',
     ]);
+    if (phone.isEmpty) {
+      phone = _firstString(item, ['phone', 'mobile', 'contact_number']);
+    }
+
+    final countryCode = _firstString(customerMap, [
+      'country_code',
+      'dial_code',
+    ]);
+    final resolvedCountryCode = countryCode.isNotEmpty
+        ? countryCode
+        : _firstString(item, ['country_code', 'dial_code']);
+
+    final avatarUrl = _firstString(customerMap, [
+      'avatar',
+      'profile_image_url',
+      'photo',
+    ]);
+    final resolvedAvatar = avatarUrl.isNotEmpty
+        ? avatarUrl
+        : _firstString(item, ['avatar', 'profile_image_url', 'photo']);
+
+    final note = _firstString(item, ['note', 'message', 'additional_note']);
 
     return DriverTripRequest(
       id: _stringId(item['id'] ?? item['request_id']),
       customerId: customerId,
-      customerName: name.isNotEmpty ? name : 'Customer',
+      customerName: resolvedName.isNotEmpty ? resolvedName : 'Customer',
       phone: phone.isEmpty ? null : phone,
+      countryCode:
+          resolvedCountryCode.isNotEmpty ? resolvedCountryCode : '+91',
+      avatarUrl: resolvedAvatar.isEmpty ? null : resolvedAvatar,
       status: item['status'] as String?,
       quotedPrice: _parseDouble(
-        item['quoted_price'] ?? item['price'] ?? item['budget'],
+        item['quoted_price'] ??
+            item['offered_price'] ??
+            item['price'] ??
+            item['budget'],
       ),
+      note: note.isEmpty ? null : note,
     );
   }
 
@@ -179,11 +212,14 @@ abstract final class TripApiMapper {
       ),
       status: TripStatus.fromApi(source['status'] as String?),
       interestRequestCount: _readInt(
-            source['interest_count'] ??
+            source['request_count'] ??
+                source['interest_count'] ??
                 source['interest_request_count'] ??
                 source['requests_count'],
           ) ??
-          0,
+          (source['requests'] is List
+              ? (source['requests'] as List).length
+              : 0),
       isInterested: source['is_interested'] as bool? ?? false,
     );
 

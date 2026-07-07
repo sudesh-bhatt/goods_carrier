@@ -7,16 +7,22 @@ class DriverTripRequest {
     required this.customerId,
     required this.customerName,
     this.phone,
+    this.countryCode = '+91',
+    this.avatarUrl,
     this.status,
     this.quotedPrice,
+    this.note,
   });
 
   final String id;
   final String customerId;
   final String customerName;
   final String? phone;
+  final String countryCode;
+  final String? avatarUrl;
   final String? status;
   final double? quotedPrice;
+  final String? note;
 
   bool get isPending {
     final normalized = status?.toLowerCase().trim();

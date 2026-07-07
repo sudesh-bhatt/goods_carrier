@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/mixins/safe_set_state_mixin.dart';
+import '../../../../core/network/api_exception_mapper.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../res/font_res.dart';
@@ -117,10 +118,12 @@ class _ReportTripScreenState extends ConsumerState<ReportTripScreen>
         isDriver: widget.isDriver,
       );
       context.pushReplacement(AppRoutes.reportTripSuccess, extra: args);
-    } catch (_) {
+    } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.errorGeneric)),
+        SnackBar(
+          content: Text(ApiExceptionMapper.userMessage(e, context.l10n)),
+        ),
       );
     } finally {
       if (mounted) safeSetState(() => _isSubmitting = false);

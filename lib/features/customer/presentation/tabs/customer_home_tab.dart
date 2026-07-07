@@ -35,6 +35,14 @@ class _CustomerHomeTabState extends ConsumerState<CustomerHomeTab>
   bool get wantKeepAlive => true;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(customerDashboardProvider.notifier).refresh();
+    });
+  }
+
+  @override
   void dispose() {
     _searchCtrl.dispose();
     super.dispose();

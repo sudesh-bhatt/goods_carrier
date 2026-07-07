@@ -12,13 +12,31 @@ import '../widgets/vehicles/driver_vehicle_card.dart';
 import '../widgets/vehicles/driver_vehicle_tokens.dart';
 
 /// My Vehicles list — [Figma](https://www.figma.com/design/YxnNResvDQnbkcPhGejtxa/Mobile-App-UI--Developer-?node-id=1-2).
-class DriverVehiclesScreen extends ConsumerWidget {
+class DriverVehiclesScreen extends ConsumerStatefulWidget {
   const DriverVehiclesScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DriverVehiclesScreen> createState() =>
+      _DriverVehiclesScreenState();
+}
+
+class _DriverVehiclesScreenState extends ConsumerState<DriverVehiclesScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(driverVehiclesProvider.notifier).load();
+    });
+  }
+
+  Future<void> _reload() => ref.read(driverVehiclesProvider.notifier).load();
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final colors = context.colors;
     final state = ref.watch(driverVehiclesProvider);
+    final showInitialLoading = state.isLoading && state.vehicles.isEmpty;
 
     return Scaffold(
       backgroundColor: DriverVehicleTokens.screenBg,
@@ -45,11 +63,13 @@ class DriverVehiclesScreen extends ConsumerWidget {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      body: state.isLoading
+      body: showInitialLoading
           ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(
-              onRefresh: () => ref.read(driverVehiclesProvider.notifier).load(),
+              color: colors.primary,
+              onRefresh: _reload,
               child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
                 padding: EdgeInsets.fromLTRB(24.w, 30.h, 24.w, 128.h),
                 children: [
                   if (state.error != null) ...[

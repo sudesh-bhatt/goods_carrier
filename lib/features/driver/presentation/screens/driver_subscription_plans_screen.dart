@@ -37,6 +37,7 @@ class _DriverSubscriptionPlansScreenState
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final state = ref.watch(driverSubscriptionProvider);
+    final showInitialLoading = state.isLoadingPlans && state.plans.isEmpty;
 
     return Scaffold(
       backgroundColor: SubscriptionTokens.screenBg,
@@ -49,7 +50,7 @@ class _DriverSubscriptionPlansScreenState
           SubscriptionLogisticsBackground.positioned(),
           SafeArea(
             top: false,
-            child: state.isLoadingPlans
+            child: showInitialLoading
                 ? const Center(child: CircularProgressIndicator())
                 : state.error != null && state.plans.isEmpty
                     ? EmptyState(
@@ -60,8 +61,14 @@ class _DriverSubscriptionPlansScreenState
                             .read(driverSubscriptionProvider.notifier)
                             .loadPlans(),
                       )
-                    : CustomScrollView(
-                        slivers: [
+                    : RefreshIndicator(
+                        color: context.colors.primary,
+                        onRefresh: () => ref
+                            .read(driverSubscriptionProvider.notifier)
+                            .loadPlans(),
+                        child: CustomScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          slivers: [
                           SliverToBoxAdapter(
                             child: Padding(
                               padding: EdgeInsets.fromLTRB(
@@ -124,6 +131,7 @@ class _DriverSubscriptionPlansScreenState
                             ),
                           ),
                         ],
+                      ),
                       ),
           ),
         ],

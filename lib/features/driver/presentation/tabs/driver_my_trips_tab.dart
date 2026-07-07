@@ -43,8 +43,18 @@ class _DriverMyTripsTabState extends ConsumerState<DriverMyTripsTab>
     }
 
     if (trips.isEmpty) {
-      return DriverTripsEmptyView(
-        onPostTrip: () => context.push(AppRoutes.postTrip),
+      return RefreshIndicator(
+        color: context.colors.primary,
+        onRefresh: () => ref.read(driverTripsProvider.notifier).refresh(),
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: SizedBox(
+            height: MediaQuery.sizeOf(context).height * 0.7,
+            child: DriverTripsEmptyView(
+              onPostTrip: () => context.push(AppRoutes.postTrip),
+            ),
+          ),
+        ),
       );
     }
 

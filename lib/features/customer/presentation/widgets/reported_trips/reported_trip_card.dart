@@ -92,30 +92,24 @@ class ReportedTripCard extends StatelessWidget {
             ),
             child: Column(
               children: [
-                if (trip.estimatedEndDate != null)
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: _MetaCell(
-                          label: estStartLabel,
-                          value: _pipeDateTime(trip.estimatedStartDate),
-                        ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: _MetaCell(
+                        label: estStartLabel,
+                        value: _pipeDateTime(trip.estimatedStartDate),
                       ),
-                      SizedBox(width: 16.w),
-                      Expanded(
-                        child: _MetaCell(
-                          label: estEndLabel,
-                          value: _pipeDateTime(trip.estimatedEndDate!),
-                        ),
+                    ),
+                    SizedBox(width: 16.w),
+                    Expanded(
+                      child: _MetaCell(
+                        label: estEndLabel,
+                        value: _pipeDateTime(trip.effectiveEstimatedEndDate),
                       ),
-                    ],
-                  )
-                else
-                  _MetaCell(
-                    label: estStartLabel,
-                    value: _pipeDateTime(trip.estimatedStartDate),
-                  ),
+                    ),
+                  ],
+                ),
                 SizedBox(height: 16.h),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
