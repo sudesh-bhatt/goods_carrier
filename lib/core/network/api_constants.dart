@@ -45,6 +45,7 @@ abstract final class ApiConstants {
       '/api/customer/trips/$tripId/requests';
   static String customerTripReport(String tripId) =>
       '/api/customer/trips/$tripId/report';
+  static const String customerReportedTrips = '/api/customer/reported-trips';
   static const String customerSupport = '/api/customer/support';
   static const String customerSettings = '/api/customer/settings';
   static const String customerSettingsPush =

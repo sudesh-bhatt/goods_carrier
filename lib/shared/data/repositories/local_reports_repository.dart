@@ -18,14 +18,36 @@ class LocalReportsRepository implements IReportsRepository {
   }
 
   @override
-  Future<List<ReportedTrip>> listCustomerReportedTrips() async {
+  Future<List<ReportedTrip>> listCustomerReportedTrips({
+    String? search,
+    int page = 1,
+    int perPage = 20,
+  }) async {
     await Future<void>.delayed(const Duration(milliseconds: 200));
-    return List.unmodifiable(_items);
+    return List.unmodifiable(_filter(_items, search));
   }
 
   @override
-  Future<List<ReportedTrip>> listDriverReportedShipments({String? search}) async {
+  Future<List<ReportedTrip>> listDriverReportedShipments({
+    String? search,
+    int page = 1,
+    int perPage = 20,
+  }) async {
     await Future<void>.delayed(const Duration(milliseconds: 200));
-    return List.unmodifiable(_items);
+    return List.unmodifiable(_filter(_items, search));
+  }
+
+  List<ReportedTrip> _filter(List<ReportedTrip> source, String? search) {
+    final query = search?.trim().toLowerCase() ?? '';
+    if (query.isEmpty) return source;
+    return source.where((t) {
+      final haystack = [
+        t.id,
+        t.fromCity,
+        t.toCity,
+        t.vehicleType.label,
+      ].join(' ').toLowerCase();
+      return haystack.contains(query);
+    }).toList(growable: false);
   }
 }

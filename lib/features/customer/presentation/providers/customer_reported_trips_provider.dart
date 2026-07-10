@@ -11,22 +11,26 @@ class CustomerReportedTripsState {
     this.trips = const [],
     this.isLoading = false,
     this.error,
+    this.search = '',
   });
 
   final List<ReportedTrip> trips;
   final bool isLoading;
   final String? error;
+  final String search;
 
   CustomerReportedTripsState copyWith({
     List<ReportedTrip>? trips,
     bool? isLoading,
     String? error,
+    String? search,
     bool clearError = false,
   }) =>
       CustomerReportedTripsState(
         trips: trips ?? this.trips,
         isLoading: isLoading ?? this.isLoading,
         error: clearError ? null : (error ?? this.error),
+        search: search ?? this.search,
       );
 }
 
@@ -38,18 +42,31 @@ class CustomerReportedTripsNotifier
   }
 
   final IReportsRepository _repo;
-  final List<ReportedTrip> _localSubmissions = [];
 
-  Future<void> load({bool showLoadingIndicator = true}) async {
-    if (showLoadingIndicator || state.trips.isEmpty) {
-      state = state.copyWith(isLoading: true, clearError: true);
+  Future<void> load({
+    String? search,
+    bool showLoadingIndicator = true,
+  }) async {
+    final nextSearch = search ?? state.search;
+    // Never blank the list / steal focus while the user is typing a search.
+    final shouldShowLoader =
+        showLoadingIndicator && state.trips.isEmpty && nextSearch.isEmpty;
+    if (shouldShowLoader) {
+      state = state.copyWith(
+        isLoading: true,
+        clearError: true,
+        search: nextSearch,
+      );
     } else {
-      state = state.copyWith(clearError: true);
+      state = state.copyWith(clearError: true, search: nextSearch);
     }
     try {
-      final remote = await _repo.listCustomerReportedTrips();
+      final remote = await _repo.listCustomerReportedTrips(
+        search: nextSearch.isEmpty ? null : nextSearch,
+      );
       state = CustomerReportedTripsState(
-        trips: [..._localSubmissions, ...remote],
+        trips: remote,
+        search: nextSearch,
       );
     } catch (e) {
       state = state.copyWith(
@@ -59,7 +76,8 @@ class CustomerReportedTripsNotifier
     }
   }
 
-  Future<void> refresh() => load(showLoadingIndicator: false);
+  Future<void> refresh({String? search}) =>
+      load(search: search, showLoadingIndicator: false);
 
   Future<String> submitReport(
     Shipment shipment, {
@@ -84,7 +102,6 @@ class CustomerReportedTripsNotifier
         loadCapacityTons: shipment.goods.weightKg / 1000,
         estimatedPrice: shipment.estimatedPrice,
       );
-      _localSubmissions.insert(0, reported);
       state = state.copyWith(trips: [reported, ...state.trips]);
       return reportId;
     } catch (e) {

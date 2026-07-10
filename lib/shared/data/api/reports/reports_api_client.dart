@@ -39,6 +39,26 @@ class ReportsApiClient {
     );
   }
 
+  Future<List<ReportedTrip>> listCustomerReportedTrips({
+    String? search,
+    int page = 1,
+    int perPage = 20,
+  }) async {
+    final response = await _dio.get<Map<String, dynamic>>(
+      ApiConstants.customerReportedTrips,
+      queryParameters: {
+        if (search != null && search.trim().isNotEmpty) 'search': search.trim(),
+        'page': page,
+        'per_page': perPage,
+      },
+    );
+    final rows = ApiEnvelope.parseDataListFlexible(response.data);
+    return rows
+        .map(ReportsApiMapper.reportedTripFromJson)
+        .whereType<ReportedTrip>()
+        .toList(growable: false);
+  }
+
   Future<List<ReportedTrip>> listDriverReportedShipments({
     String? search,
     int page = 1,

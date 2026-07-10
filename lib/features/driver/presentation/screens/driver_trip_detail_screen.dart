@@ -14,7 +14,6 @@ import '../../../../res/font_res.dart';
 import '../../../../shared/domain/entities/driver_trip.dart';
 import '../../../../shared/domain/enums/trip_status.dart';
 import '../../../../shared/domain/models/driver_trip_detail.dart';
-import '../../../../shared/presentation/widgets/feedback/empty_state.dart';
 import '../../../../shared/presentation/widgets/feedback/error_view.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
 import '../../../customer/presentation/widgets/customer_light_chrome.dart';
@@ -228,13 +227,8 @@ class _DriverTripDetailScreenState extends ConsumerState<DriverTripDetailScreen>
                           ),
                         ),
                       ],
-                      SizedBox(height: 30.h),
-                      if (pendingRequests.isEmpty)
-                        EmptyState(
-                          headline: l10n.driverTripNoRequestsTitle,
-                          subtitle: l10n.driverTripNoRequestsMessage,
-                        )
-                      else
+                      if (pendingRequests.isNotEmpty) ...[
+                        SizedBox(height: 30.h),
                         ...pendingRequests.map(
                           (request) => Padding(
                             padding: EdgeInsets.only(bottom: 10.h),
@@ -253,6 +247,7 @@ class _DriverTripDetailScreenState extends ConsumerState<DriverTripDetailScreen>
                             ),
                           ),
                         ),
+                      ],
                     ],
                   ),
                 ),

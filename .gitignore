@@ -19,10 +19,9 @@ migrate_working_dir/
 !.idea/modules.xml
 !.idea/misc.xml
 !.idea/dart.xml
-!.idea/runConfigurations/
-!.idea/runConfigurations/**
 !.idea/libraries/
 !.idea/libraries/**
+.idea/runConfigurations/_template__of_Flutter*.xml
 
 *.iml
 !goods_carrier.iml
@@ -38,6 +37,10 @@ migrate_working_dir/
 # Local secrets — copy .env.example → .env, then run: dart run tool/sync_env.dart
 .env
 ios/Flutter/Secrets.xcconfig
+
+# Postman local sync / collection exports (not app source)
+postman/
+.postman/
 
 # Flutter/Dart/Pub related
 **/doc/api/

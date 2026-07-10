@@ -11,9 +11,11 @@ class ReportedTripsSearchField extends StatelessWidget {
     required this.controller,
     required this.hint,
     required this.onChanged,
+    this.focusNode,
   });
 
   final TextEditingController controller;
+  final FocusNode? focusNode;
   final String hint;
   final ValueChanged<String> onChanged;
 
@@ -28,6 +30,7 @@ class ReportedTripsSearchField extends StatelessWidget {
       alignment: Alignment.center,
       child: TextField(
         controller: controller,
+        focusNode: focusNode,
         onChanged: onChanged,
         style: TextStyle(
           fontFamily: FontRes.MANROPE_MEDIUM,

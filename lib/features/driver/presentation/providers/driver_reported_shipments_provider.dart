@@ -15,7 +15,10 @@ class DriverReportedShipmentsNotifier
   final IReportsRepository _repo;
 
   Future<void> load({String? search, bool showLoadingIndicator = true}) async {
-    if (showLoadingIndicator || state.trips.isEmpty) {
+    final nextSearch = search;
+    final shouldShowLoader =
+        showLoadingIndicator && state.trips.isEmpty && (nextSearch == null || nextSearch.isEmpty);
+    if (shouldShowLoader) {
       state = state.copyWith(isLoading: true, clearError: true);
     } else {
       state = state.copyWith(clearError: true);

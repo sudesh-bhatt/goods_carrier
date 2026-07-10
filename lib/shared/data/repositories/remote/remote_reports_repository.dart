@@ -23,12 +23,26 @@ class RemoteReportsRepository implements IReportsRepository {
   }
 
   @override
-  Future<List<ReportedTrip>> listCustomerReportedTrips() async {
-    // No dedicated customer list endpoint — return empty until backend adds one.
-    return const [];
-  }
+  Future<List<ReportedTrip>> listCustomerReportedTrips({
+    String? search,
+    int page = 1,
+    int perPage = 20,
+  }) =>
+      _api.listCustomerReportedTrips(
+        search: search,
+        page: page,
+        perPage: perPage,
+      );
 
   @override
-  Future<List<ReportedTrip>> listDriverReportedShipments({String? search}) =>
-      _api.listDriverReportedShipments(search: search);
+  Future<List<ReportedTrip>> listDriverReportedShipments({
+    String? search,
+    int page = 1,
+    int perPage = 20,
+  }) =>
+      _api.listDriverReportedShipments(
+        search: search,
+        page: page,
+        perPage: perPage,
+      );
 }

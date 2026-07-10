@@ -7,7 +7,15 @@ abstract class IReportsRepository {
     String? details,
   });
 
-  Future<List<ReportedTrip>> listCustomerReportedTrips();
+  Future<List<ReportedTrip>> listCustomerReportedTrips({
+    String? search,
+    int page = 1,
+    int perPage = 20,
+  });
 
-  Future<List<ReportedTrip>> listDriverReportedShipments({String? search});
+  Future<List<ReportedTrip>> listDriverReportedShipments({
+    String? search,
+    int page = 1,
+    int perPage = 20,
+  });
 }

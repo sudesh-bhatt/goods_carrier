@@ -1,13 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
-import '../../../../core/mixins/safe_set_state_mixin.dart';
-import '../../../../res/font_res.dart';
-import '../providers/customer_reported_trips_provider.dart';
-import '../../../driver/presentation/providers/driver_reported_shipments_provider.dart';
 import '../../../../core/router/app_routes.dart';
+import '../../../../res/font_res.dart';
+import '../../../driver/presentation/providers/driver_reported_shipments_provider.dart';
+import '../providers/customer_reported_trips_provider.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
 import '../widgets/reported_trips/reported_trip_card.dart';
 import '../widgets/reported_trips/reported_trips_search_field.dart';
@@ -24,9 +25,12 @@ class ReportedTripsScreen extends ConsumerStatefulWidget {
       _ReportedTripsScreenState();
 }
 
-class _ReportedTripsScreenState extends ConsumerState<ReportedTripsScreen>
-    with SafeSetStateMixin {
+class _ReportedTripsScreenState extends ConsumerState<ReportedTripsScreen> {
+  static const _searchDebounce = Duration(milliseconds: 600);
+
   final _searchCtrl = TextEditingController();
+  final _searchFocus = FocusNode();
+  Timer? _searchTimer;
 
   @override
   void initState() {
@@ -36,15 +40,41 @@ class _ReportedTripsScreenState extends ConsumerState<ReportedTripsScreen>
 
   @override
   void dispose() {
+    _searchTimer?.cancel();
     _searchCtrl.dispose();
+    _searchFocus.dispose();
     super.dispose();
   }
 
+  String get _searchQuery => _searchCtrl.text.trim();
+
   Future<void> _reload() {
     if (widget.forDriver) {
-      return ref.read(driverReportedShipmentsProvider.notifier).refresh();
+      return ref.read(driverReportedShipmentsProvider.notifier).refresh(
+            search: _searchQuery.isEmpty ? null : _searchQuery,
+          );
     }
-    return ref.read(customerReportedTripsProvider.notifier).refresh();
+    return ref.read(customerReportedTripsProvider.notifier).refresh(
+          search: _searchQuery,
+        );
+  }
+
+  void _onSearchChanged(String _) {
+    _searchTimer?.cancel();
+    _searchTimer = Timer(_searchDebounce, () {
+      if (!mounted) return;
+      if (widget.forDriver) {
+        ref.read(driverReportedShipmentsProvider.notifier).load(
+              search: _searchQuery.isEmpty ? null : _searchQuery,
+              showLoadingIndicator: false,
+            );
+      } else {
+        ref.read(customerReportedTripsProvider.notifier).load(
+              search: _searchQuery,
+              showLoadingIndicator: false,
+            );
+      }
+    });
   }
 
   @override
@@ -54,20 +84,7 @@ class _ReportedTripsScreenState extends ConsumerState<ReportedTripsScreen>
     final state = widget.forDriver
         ? ref.watch(driverReportedShipmentsProvider)
         : ref.watch(customerReportedTripsProvider);
-    final query = _searchCtrl.text.trim().toLowerCase();
-
-    final trips = state.trips.where((t) {
-      if (query.isEmpty) return true;
-      final haystack = [
-        t.fromCity,
-        t.toCity,
-        t.vehicleType.label,
-        t.id,
-      ].join(' ').toLowerCase();
-      return haystack.contains(query);
-    }).toList();
-
-    final showInitialLoading = state.isLoading && state.trips.isEmpty;
+    final trips = state.trips;
 
     return Scaffold(
       backgroundColor: ReportedTripsTokens.screenBg,
@@ -78,36 +95,48 @@ class _ReportedTripsScreenState extends ConsumerState<ReportedTripsScreen>
         fallbackRoute:
             widget.forDriver ? AppRoutes.driverHome : AppRoutes.customerHome,
       ),
-      body: showInitialLoading
-          ? const Center(child: CircularProgressIndicator())
-          : RefreshIndicator(
+      body: Column(
+        children: [
+          // Keep search mounted so focus is never lost on list rebuilds.
+          Padding(
+            padding: EdgeInsets.fromLTRB(25.w, 16.h, 25.w, 0),
+            child: ReportedTripsSearchField(
+              controller: _searchCtrl,
+              focusNode: _searchFocus,
+              hint: l10n.customerHomeSearchHint,
+              onChanged: _onSearchChanged,
+            ),
+          ),
+          SizedBox(height: 17.h),
+          Expanded(
+            child: RefreshIndicator(
               color: colors.primary,
               onRefresh: _reload,
               child: ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: EdgeInsets.fromLTRB(25.w, 16.h, 25.w, 32.h),
+                padding: EdgeInsets.fromLTRB(25.w, 0, 25.w, 32.h),
                 children: [
-                  ReportedTripsSearchField(
-                    controller: _searchCtrl,
-                    hint: l10n.customerHomeSearchHint,
-                    onChanged: (_) => safeSetState(() {}),
-                  ),
-                  SizedBox(height: 17.h),
-                  ...trips.map(
-                    (trip) => Padding(
-                      padding: EdgeInsets.only(bottom: 17.h),
-                      child: ReportedTripCard(
-                        trip: trip,
-                        reportedByYouLabel: l10n.customerReportedByYouBadge,
-                        estStartLabel: l10n.customerHomeEstStartDate,
-                        estEndLabel: l10n.customerHomeEstEndDate,
-                        vehicleLabel: l10n.tripVehicle,
-                        capacityLabel: l10n.tripCapacity,
-                        estimatedPriceLabel: l10n.customerEstimatedPrice,
+                  if (state.isLoading && trips.isEmpty)
+                    Padding(
+                      padding: EdgeInsets.only(top: 48.h),
+                      child: const Center(child: CircularProgressIndicator()),
+                    )
+                  else if (state.error != null && trips.isEmpty)
+                    Padding(
+                      padding: EdgeInsets.only(top: 48.h),
+                      child: Center(
+                        child: Text(
+                          state.error!,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: FontRes.MANROPE_MEDIUM,
+                            fontSize: 14.sp,
+                            color: ReportedTripsTokens.labelGrey,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  if (trips.isEmpty)
+                    )
+                  else if (trips.isEmpty)
                     Padding(
                       padding: EdgeInsets.only(top: 48.h),
                       child: Center(
@@ -120,10 +149,28 @@ class _ReportedTripsScreenState extends ConsumerState<ReportedTripsScreen>
                           ),
                         ),
                       ),
+                    )
+                  else
+                    ...trips.map(
+                      (trip) => Padding(
+                        padding: EdgeInsets.only(bottom: 17.h),
+                        child: ReportedTripCard(
+                          trip: trip,
+                          reportedByYouLabel: l10n.customerReportedByYouBadge,
+                          estStartLabel: l10n.customerHomeEstStartDate,
+                          estEndLabel: l10n.customerHomeEstEndDate,
+                          vehicleLabel: l10n.tripVehicle,
+                          capacityLabel: l10n.tripCapacity,
+                          estimatedPriceLabel: l10n.customerEstimatedPrice,
+                        ),
+                      ),
                     ),
                 ],
               ),
             ),
+          ),
+        ],
+      ),
     );
   }
 }
