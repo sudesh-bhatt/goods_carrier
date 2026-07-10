@@ -12,35 +12,25 @@
 .swiftpm/
 migrate_working_dir/
 
-# IntelliJ — ignore local IDE state; keep shared SDK/module config in git.
-.idea/*
-!.idea/runConfigurations/
-!.idea/runConfigurations/**
-!.idea/modules.xml
-!.idea/misc.xml
-!.idea/dart.xml
-!.idea/libraries/
-!.idea/libraries/**
-.idea/runConfigurations/_template__of_Flutter*.xml
-
+# IDE / editor local state
+.idea/
+.vscode/
+.cursor/
 *.iml
-!goods_carrier.iml
-!android/goods_carrier_android.iml
 *.ipr
 *.iws
 
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
-
 # Local secrets — copy .env.example → .env, then run: dart run tool/sync_env.dart
 .env
+.env.example
 ios/Flutter/Secrets.xcconfig
 
 # Postman local sync / collection exports (not app source)
 postman/
 .postman/
+
+# Local API notes (not app source)
+docs/driver_subscription_payments_api.md
 
 # Flutter/Dart/Pub related
 **/doc/api/
