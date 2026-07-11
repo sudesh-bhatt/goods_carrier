@@ -30,6 +30,16 @@ class AppConfigNotifier extends StateNotifier<AppConfigState> {
   final SharedPreferences _prefs;
   final Dio _dio;
 
+  Future<void> hydrateFromPrefsOnly() async {
+    final cached = _store.load();
+    final appUrl = cached?.appUrl;
+    if (appUrl != null) {
+      await RuntimeApiBaseUrl.set(appUrl, prefs: _prefs);
+      _dio.options.baseUrl = RuntimeApiBaseUrl.current;
+    }
+    state = AppConfigState(config: cached);
+  }
+
   Future<void> load() async {
     if (state.isLoading) return;
     final cached = _store.load();

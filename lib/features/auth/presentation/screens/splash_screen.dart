@@ -1,18 +1,39 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/router/app_routes.dart';
+import '../../../../core/services/app_update_service.dart';
+import '../../../../core/utils/app_version_utils.dart';
 import '../../../../generated/assets.dart';
 import '../../../../shared/domain/enums/session_phase.dart';
+import '../../../../shared/data/api/app/app_config_api_client.dart';
 import '../../../../core/config/env_config.dart';
 import '../../../../core/providers/app_config_provider.dart';
 import '../providers/auth_provider.dart';
 
 const _kProgressDuration = Duration(milliseconds: 1800);
 const _kNavigateDelay = Duration(milliseconds: 2600);
+
+@visibleForTesting
+String? minimumVersionForCurrentPlatform(
+  AppConfigData? config, {
+  bool? isAndroid,
+  bool? isIOS,
+}) {
+  final android = isAndroid ?? Platform.isAndroid;
+  final ios = isIOS ?? Platform.isIOS;
+
+  if (android) return config?.minimumAndroidVersion;
+  if (ios) return config?.minimumIosVersion;
+  return null;
+}
 
 /// Splash — restores session via API, then routes to login or onboarding/home.
 class SplashScreen extends ConsumerStatefulWidget {
@@ -39,13 +60,77 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     );
     _ctrl.forward();
 
-    Future.microtask(() async {
-      if (EnvConfig.useRemoteApi) {
-        await ref.read(appConfigProvider.notifier).load();
-      }
-      await ref.read(authProvider.notifier).restoreSession();
-      Future.delayed(_kNavigateDelay, _navigateNext);
-    });
+    Future.microtask(_runSplashFlow);
+  }
+
+  Future<void> _runSplashFlow() async {
+    final appConfigNotifier = ref.read(appConfigProvider.notifier);
+    if (EnvConfig.useRemoteApi) {
+      await appConfigNotifier.load();
+    } else {
+      await appConfigNotifier.hydrateFromPrefsOnly();
+    }
+    if (!mounted) return;
+
+    final config = ref.read(appConfigProvider).config;
+    if (config?.maintenanceMode == true) {
+      context.go(AppRoutes.maintenance);
+      return;
+    }
+
+    if (await _isBelowPlatformMinimum(config)) {
+      if (!mounted) return;
+      final proceed = await _showUpdateDialog(
+        force: config?.forceUpdate ?? false,
+      );
+      if (!mounted) return;
+      if (!proceed) return;
+    }
+
+    await ref.read(authProvider.notifier).restoreSession();
+    if (!mounted) return;
+    Future.delayed(_kNavigateDelay, _navigateNext);
+  }
+
+  Future<bool> _isBelowPlatformMinimum(AppConfigData? config) async {
+    final minimum = minimumVersionForCurrentPlatform(config);
+    if (minimum == null || minimum.trim().isEmpty) return false;
+
+    final packageInfo = await PackageInfo.fromPlatform();
+    return AppVersionUtils.isBelowMinimum(
+      installed: packageInfo.version,
+      minimum: minimum,
+    );
+  }
+
+  Future<bool> _showUpdateDialog({required bool force}) async {
+    final result = await showDialog<bool>(
+      context: context,
+      barrierDismissible: !force,
+      builder: (context) {
+        final l10n = context.l10n;
+        return AlertDialog(
+          title: Text(l10n.updateAvailableTitle),
+          content: Text(l10n.updateAvailableBody),
+          actions: [
+            if (!force)
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: Text(l10n.updateActionLater),
+              ),
+            FilledButton(
+              onPressed: () async {
+                await AppUpdateService().startUpdate();
+                if (context.mounted) Navigator.of(context).pop(false);
+              },
+              child: Text(l10n.updateActionUpdate),
+            ),
+          ],
+        );
+      },
+    );
+
+    return result ?? !force;
   }
 
   void _navigateNext() {
