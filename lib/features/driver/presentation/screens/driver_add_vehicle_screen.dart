@@ -25,6 +25,7 @@ import '../../../../shared/domain/models/driver_vehicle_detail.dart';
 import '../../../../shared/domain/models/driver_vehicle_edit_result.dart';
 import '../../../../shared/domain/models/driver_vehicle_masters.dart';
 import '../../../../shared/presentation/widgets/inputs/app_phone_field.dart';
+import '../../../../shared/presentation/widgets/layout/app_bottom_safe_area.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
 import '../../../auth/presentation/widgets/driver_profile_form_widgets.dart';
 import '../providers/driver_vehicles_provider.dart';
@@ -959,7 +960,6 @@ class _StickySubmitBar extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
           width: double.infinity,
-          padding: EdgeInsets.all(24.w),
           decoration: const BoxDecoration(
             color: Color.fromRGBO(245, 250, 255, 0.95),
             borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
@@ -971,33 +971,36 @@ class _StickySubmitBar extends StatelessWidget {
               ),
             ],
           ),
-          child: Material(
-            color: DriverVehicleTokens.accentOrange,
-            borderRadius: BorderRadius.circular(16.r),
-            child: InkWell(
-              onTap: loading ? null : onPressed,
+          child: AppBottomSafeArea(
+            minimum: EdgeInsets.all(24.w),
+            child: Material(
+              color: DriverVehicleTokens.accentOrange,
               borderRadius: BorderRadius.circular(16.r),
-              child: SizedBox(
-                height: 56.h,
-                child: Center(
-                  child: loading
-                      ? const SizedBox(
-                          width: 22,
-                          height: 22,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
+              child: InkWell(
+                onTap: loading ? null : onPressed,
+                borderRadius: BorderRadius.circular(16.r),
+                child: SizedBox(
+                  height: 56.h,
+                  child: Center(
+                    child: loading
+                        ? const SizedBox(
+                            width: 22,
+                            height: 22,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : Text(
+                            label,
+                            style: TextStyle(
+                              fontFamily: FontRes.MANROPE_BOLD,
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
                           ),
-                        )
-                      : Text(
-                          label,
-                          style: TextStyle(
-                            fontFamily: FontRes.MANROPE_BOLD,
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                          ),
-                        ),
+                  ),
                 ),
               ),
             ),

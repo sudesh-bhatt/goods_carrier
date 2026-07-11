@@ -14,6 +14,7 @@ import '../../../../core/utils/map_location_helper.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../res/font_res.dart';
 import '../../../../shared/domain/enums/saved_address_label.dart';
+import '../../../../shared/presentation/widgets/layout/app_bottom_safe_area.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
 import '../../../../shared/presentation/widgets/navigation/confirmation_bottom_sheet.dart';
 import '../providers/customer_saved_addresses_provider.dart';
@@ -344,35 +345,37 @@ class _StickySaveBar extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
         child: Container(
           width: double.infinity,
-          padding: EdgeInsets.all(24.w),
           color: SavedAddressTokens.screenBg.withValues(alpha: 0.8),
-          child: Material(
-            color: SavedAddressTokens.chipSelected,
-            borderRadius: BorderRadius.circular(24.r),
-            child: InkWell(
-              onTap: loading ? null : onPressed,
+          child: AppBottomSafeArea(
+            minimum: EdgeInsets.all(24.w),
+            child: Material(
+              color: SavedAddressTokens.chipSelected,
               borderRadius: BorderRadius.circular(24.r),
-              child: SizedBox(
-                height: 68.h,
-                child: Center(
-                  child: loading
-                      ? SizedBox(
-                          width: 24.w,
-                          height: 24.w,
-                          child: const CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
+              child: InkWell(
+                onTap: loading ? null : onPressed,
+                borderRadius: BorderRadius.circular(24.r),
+                child: SizedBox(
+                  height: 68.h,
+                  child: Center(
+                    child: loading
+                        ? SizedBox(
+                            width: 24.w,
+                            height: 24.w,
+                            child: const CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : Text(
+                            label,
+                            style: TextStyle(
+                              fontFamily: FontRes.MANROPE_BOLD,
+                              fontSize: 18.sp,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
                           ),
-                        )
-                      : Text(
-                          label,
-                          style: TextStyle(
-                            fontFamily: FontRes.MANROPE_BOLD,
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                          ),
-                        ),
+                  ),
                 ),
               ),
             ),

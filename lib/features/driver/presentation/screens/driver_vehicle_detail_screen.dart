@@ -15,6 +15,7 @@ import '../../../../res/font_res.dart';
 import '../../../../shared/domain/enums/driver_vehicle_status.dart';
 import '../../../../shared/domain/models/driver_vehicle_detail.dart';
 import '../../../../shared/domain/models/driver_vehicle_edit_result.dart';
+import '../../../../shared/presentation/widgets/layout/app_bottom_safe_area.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
 import '../../../../shared/presentation/widgets/profile/profile_image_content.dart';
 import '../providers/driver_vehicles_provider.dart';
@@ -518,7 +519,6 @@ class _StickyEditBar extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
           width: double.infinity,
-          padding: EdgeInsets.all(24.w),
           decoration: const BoxDecoration(
             color: Color.fromRGBO(245, 250, 255, 0.95),
             borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
@@ -530,30 +530,34 @@ class _StickyEditBar extends StatelessWidget {
               ),
             ],
           ),
-          child: Material(
-            color: DriverVehicleTokens.accentOrange,
-            borderRadius: BorderRadius.circular(16.r),
-            child: InkWell(
-              onTap: onPressed,
+          child: AppBottomSafeArea(
+            minimum: EdgeInsets.all(24.w),
+            child: Material(
+              color: DriverVehicleTokens.accentOrange,
               borderRadius: BorderRadius.circular(16.r),
-              child: SizedBox(
-                height: 56.h,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.edit_outlined, color: Colors.white, size: 12.w),
-                    SizedBox(width: 8.w),
-                    Text(
-                      label,
-                      style: TextStyle(
-                        fontFamily: FontRes.MANROPE_BOLD,
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w700,
-                        height: 24 / 16,
-                        color: Colors.white,
+              child: InkWell(
+                onTap: onPressed,
+                borderRadius: BorderRadius.circular(16.r),
+                child: SizedBox(
+                  height: 56.h,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.edit_outlined,
+                          color: Colors.white, size: 12.w),
+                      SizedBox(width: 8.w),
+                      Text(
+                        label,
+                        style: TextStyle(
+                          fontFamily: FontRes.MANROPE_BOLD,
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w700,
+                          height: 24 / 16,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

@@ -72,7 +72,8 @@ class _DriverProfilePageState extends ConsumerState<DriverProfilePage>
 
   Future<void> _refreshProfile() async {
     if (!EnvConfig.useRemoteApi) return;
-    final refreshed = await ref.read(authProvider.notifier).refreshDriverProfile();
+    final refreshed =
+        await ref.read(authProvider.notifier).refreshDriverProfile();
     if (!mounted || !refreshed) return;
     _loadUser(ref.read(authProvider).user);
   }
@@ -94,7 +95,9 @@ class _DriverProfilePageState extends ConsumerState<DriverProfilePage>
   void _loadUser(User? user) {
     if (user == null) return;
     if (user.name.trim().isNotEmpty) _nameCtrl.text = user.name;
-    _applyPhone(user.phone.isNotEmpty ? user.phone : ref.read(authProvider).phoneNumber);
+    _applyPhone(user.phone.isNotEmpty
+        ? user.phone
+        : ref.read(authProvider).phoneNumber);
     if (user.email.trim().isNotEmpty) _emailCtrl.text = user.email;
     _savedImagePath = user.profileImageUrl;
 
@@ -150,7 +153,8 @@ class _DriverProfilePageState extends ConsumerState<DriverProfilePage>
     if (user.businessEmail != null && user.businessEmail!.isNotEmpty) {
       _businessEmailCtrl.text = user.businessEmail!;
     }
-    if (user.businessCountryCode != null && user.businessCountryCode!.isNotEmpty) {
+    if (user.businessCountryCode != null &&
+        user.businessCountryCode!.isNotEmpty) {
       _businessDialCode = user.businessCountryCode!;
     }
     if (user.businessPhone != null && user.businessPhone!.isNotEmpty) {
@@ -181,7 +185,6 @@ class _DriverProfilePageState extends ConsumerState<DriverProfilePage>
     _scrollCtrl.dispose();
     super.dispose();
   }
-
 
   String? _optionalGst(String? value) {
     if (value == null || value.trim().isEmpty) return null;
@@ -224,15 +227,13 @@ class _DriverProfilePageState extends ConsumerState<DriverProfilePage>
                 leading:
                     Icon(Icons.photo_camera_outlined, color: colors.primary),
                 title: Text(l10n.profilePhotoTakePhoto),
-                onTap: () =>
-                    Navigator.pop(sheetContext, ImageSource.camera),
+                onTap: () => Navigator.pop(sheetContext, ImageSource.camera),
               ),
               ListTile(
                 leading:
                     Icon(Icons.photo_library_outlined, color: colors.primary),
                 title: Text(l10n.profilePhotoChooseGallery),
-                onTap: () =>
-                    Navigator.pop(sheetContext, ImageSource.gallery),
+                onTap: () => Navigator.pop(sheetContext, ImageSource.gallery),
               ),
               SizedBox(height: AppBottomSheetTokens.sectionGap.h),
               AppBottomSheetSecondaryButton(
@@ -308,8 +309,7 @@ class _DriverProfilePageState extends ConsumerState<DriverProfilePage>
       businessEmail: _businessEmailCtrl.text.trim().isEmpty
           ? null
           : _businessEmailCtrl.text.trim(),
-      businessCountryCode:
-          businessPhone == null ? null : _businessDialCode,
+      businessCountryCode: businessPhone == null ? null : _businessDialCode,
       businessPhone: businessPhone,
       profileImageUrl: profileImageUrl,
     );
@@ -387,217 +387,222 @@ class _DriverProfilePageState extends ConsumerState<DriverProfilePage>
         title: title,
         showBack: true,
       ),
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        behavior: HitTestBehavior.opaque,
-        child: Form(
-          key: _formKey,
-          autovalidateMode: _submitted
-              ? AutovalidateMode.onUserInteraction
-              : AutovalidateMode.disabled,
-          child: SingleChildScrollView(
-            controller: _scrollCtrl,
-            padding: EdgeInsets.fromLTRB(16.w, 24.h, 16.w, 32.h),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Center(
-                  child: CustomerProfileAvatar(
-                    colors: colors,
-                    image: _profileImage,
-                    savedImagePath: _savedImagePath,
-                    onTap: _pickProfileImage,
+      body: SafeArea(
+        top: false,
+        child: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          behavior: HitTestBehavior.opaque,
+          child: Form(
+            key: _formKey,
+            autovalidateMode: _submitted
+                ? AutovalidateMode.onUserInteraction
+                : AutovalidateMode.disabled,
+            child: SingleChildScrollView(
+              controller: _scrollCtrl,
+              padding: EdgeInsets.fromLTRB(16.w, 24.h, 16.w, 32.h),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Center(
+                    child: CustomerProfileAvatar(
+                      colors: colors,
+                      image: _profileImage,
+                      savedImagePath: _savedImagePath,
+                      onTap: _pickProfileImage,
+                    ),
                   ),
-                ),
-                SizedBox(height: 24.h),
-                DriverProfilePersonalSectionHeader(
-                  title: l10n.driverProfilePersonalDetails,
-                ),
-                SizedBox(height: 12.h),
-                DriverProfileSectionCard(
-                  child: Column(
-                    children: [
-                      DriverProfilePersonalField(
-                        label: l10n.profileName,
-                        hint: 'e.g. Vikram Singh',
-                        controller: _nameCtrl,
-                        keyboardType: TextInputType.name,
-                        textCapitalization: TextCapitalization.words,
-                        textInputAction: TextInputAction.next,
-                        autofocus: !widget.isEditMode,
-                        validator: (v) => Validators.required(v, l10n.profileName),
-                      ),
-                      SizedBox(height: 16.h),
-                      AppPhoneField(
-                        label: l10n.profilePhone,
-                        labelStyle: AppPhoneFieldLabelStyle.profilePersonal,
-                        size: AppPhoneFieldSize.compact,
-                        controller: _phoneCtrl,
-                        dialCode: _dialCode,
-                        onDialCodeChanged: (code) => safeSetState(
-                          () => _dialCode = code.dialCode ?? '+91',
+                  SizedBox(height: 24.h),
+                  DriverProfilePersonalSectionHeader(
+                    title: l10n.driverProfilePersonalDetails,
+                  ),
+                  SizedBox(height: 12.h),
+                  DriverProfileSectionCard(
+                    child: Column(
+                      children: [
+                        DriverProfilePersonalField(
+                          label: l10n.profileName,
+                          hint: 'e.g. Vikram Singh',
+                          controller: _nameCtrl,
+                          keyboardType: TextInputType.name,
+                          textCapitalization: TextCapitalization.words,
+                          textInputAction: TextInputAction.next,
+                          autofocus: !widget.isEditMode,
+                          validator: (v) =>
+                              Validators.required(v, l10n.profileName),
                         ),
-                      ),
-                      SizedBox(height: 16.h),
-                      DriverProfilePersonalField(
-                        label: l10n.profileEmailOptional,
-                        hint: 'john@carrier.com',
-                        controller: _emailCtrl,
-                        keyboardType: TextInputType.emailAddress,
-                        textInputAction: TextInputAction.next,
-                        validator: (v) {
-                          if (v == null || v.trim().isEmpty) return null;
-                          return Validators.email(v);
-                        },
-                      ),
-                      SizedBox(height: 16.h),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: DriverProfilePersonalField(
-                              label: l10n.profileCity,
-                              hint: 'Ahmedabad',
-                              controller: _cityCtrl,
-                              textInputAction: TextInputAction.next,
-                              validator: (v) => Validators.required(v, l10n.profileCity),
-                            ),
+                        SizedBox(height: 16.h),
+                        AppPhoneField(
+                          label: l10n.profilePhone,
+                          labelStyle: AppPhoneFieldLabelStyle.profilePersonal,
+                          size: AppPhoneFieldSize.compact,
+                          controller: _phoneCtrl,
+                          dialCode: _dialCode,
+                          onDialCodeChanged: (code) => safeSetState(
+                            () => _dialCode = code.dialCode ?? '+91',
                           ),
-                          SizedBox(width: 12.w),
-                          Expanded(
-                            child: DriverProfilePersonalField(
-                              label: l10n.profilePostalCode,
-                              hint: '001238',
-                              controller: _postalCtrl,
-                              keyboardType: TextInputType.number,
-                              textInputAction: TextInputAction.next,
-                              validator: (v) =>
-                                  Validators.required(v, l10n.profilePostalCode),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 16.h),
-                      DriverProfileAddressField(
-                        label: l10n.profileFullAddress,
-                        hint: 'Street number, building...',
-                        controller: _addressCtrl,
-                        textInputAction: TextInputAction.next,
-                        validator: (v) =>
-                            Validators.required(v, l10n.profileFullAddress),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 24.h),
-                DriverProfileBusinessSectionHeader(
-                  title: l10n.driverProfileBusinessDetails,
-                ),
-                SizedBox(height: 16.h),
-                DriverProfileSectionCard(
-                  borderRadius: 16,
-                  gap: 20,
-                  useBusinessShadow: true,
-                  child: Column(
-                    children: [
-                      DriverProfileBusinessField(
-                        label: l10n.profileCompanyName,
-                        hint: 'Enter legally registered name',
-                        controller: _companyCtrl,
-                        textCapitalization: TextCapitalization.words,
-                        textInputAction: TextInputAction.next,
-                      ),
-                      SizedBox(height: 20.h),
-                      DriverProfileBusinessField(
-                        label: l10n.profileGstName,
-                        hint: 'GST name',
-                        controller: _gstNameCtrl,
-                        textInputAction: TextInputAction.next,
-                      ),
-                      SizedBox(height: 20.h),
-                      DriverProfileBusinessField(
-                        label: l10n.profileGstNumberOptional,
-                        hint: '22AAAAA0000A1Z5',
-                        controller: _gstNumberCtrl,
-                        textCapitalization: TextCapitalization.characters,
-                        textInputAction: TextInputAction.next,
-                        validator: _optionalGst,
-                      ),
-                      SizedBox(height: 20.h),
-                      DriverProfileBusinessField(
-                        label: l10n.profileBusinessEmail,
-                        hint: 'name@company.com',
-                        controller: _businessEmailCtrl,
-                        keyboardType: TextInputType.emailAddress,
-                        textInputAction: TextInputAction.next,
-                        validator: (v) {
-                          if (v == null || v.trim().isEmpty) return null;
-                          return Validators.email(v);
-                        },
-                      ),
-                      SizedBox(height: 20.h),
-                      DriverProfileBusinessPhoneField(
-                        label: l10n.profileBusinessPhone,
-                        hint: '00000 00000',
-                        controller: _businessPhoneCtrl,
-                        dialCode: _businessDialCode,
-                        onDialCodeChanged: (code) => safeSetState(
-                          () => _businessDialCode = code.dialCode ?? '+91',
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 24.h),
-                Center(
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12.r),
-                      boxShadow: [
-                        BoxShadow(
-                          color: colors.primary.withValues(alpha: 0.3),
-                          blurRadius: 24,
-                          offset: Offset(0, 8.h),
+                        SizedBox(height: 16.h),
+                        DriverProfilePersonalField(
+                          label: l10n.profileEmailOptional,
+                          hint: 'john@carrier.com',
+                          controller: _emailCtrl,
+                          keyboardType: TextInputType.emailAddress,
+                          textInputAction: TextInputAction.next,
+                          validator: (v) {
+                            if (v == null || v.trim().isEmpty) return null;
+                            return Validators.email(v);
+                          },
+                        ),
+                        SizedBox(height: 16.h),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: DriverProfilePersonalField(
+                                label: l10n.profileCity,
+                                hint: 'Ahmedabad',
+                                controller: _cityCtrl,
+                                textInputAction: TextInputAction.next,
+                                validator: (v) =>
+                                    Validators.required(v, l10n.profileCity),
+                              ),
+                            ),
+                            SizedBox(width: 12.w),
+                            Expanded(
+                              child: DriverProfilePersonalField(
+                                label: l10n.profilePostalCode,
+                                hint: '001238',
+                                controller: _postalCtrl,
+                                keyboardType: TextInputType.number,
+                                textInputAction: TextInputAction.next,
+                                validator: (v) => Validators.required(
+                                    v, l10n.profilePostalCode),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 16.h),
+                        DriverProfileAddressField(
+                          label: l10n.profileFullAddress,
+                          hint: 'Street number, building...',
+                          controller: _addressCtrl,
+                          textInputAction: TextInputAction.next,
+                          validator: (v) =>
+                              Validators.required(v, l10n.profileFullAddress),
                         ),
                       ],
                     ),
-                    child: SizedBox(
-                      width: 274.w,
-                      height: 56.h,
-                      child: ElevatedButton(
-                        onPressed: isLoading ? null : _submit,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: colors.primary,
-                          elevation: 0,
-                          shadowColor: Colors.transparent,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12.r),
+                  ),
+                  SizedBox(height: 24.h),
+                  DriverProfileBusinessSectionHeader(
+                    title: l10n.driverProfileBusinessDetails,
+                  ),
+                  SizedBox(height: 16.h),
+                  DriverProfileSectionCard(
+                    borderRadius: 16,
+                    gap: 20,
+                    useBusinessShadow: true,
+                    child: Column(
+                      children: [
+                        DriverProfileBusinessField(
+                          label: l10n.profileCompanyName,
+                          hint: 'Enter legally registered name',
+                          controller: _companyCtrl,
+                          textCapitalization: TextCapitalization.words,
+                          textInputAction: TextInputAction.next,
+                        ),
+                        SizedBox(height: 20.h),
+                        DriverProfileBusinessField(
+                          label: l10n.profileGstName,
+                          hint: 'GST name',
+                          controller: _gstNameCtrl,
+                          textInputAction: TextInputAction.next,
+                        ),
+                        SizedBox(height: 20.h),
+                        DriverProfileBusinessField(
+                          label: l10n.profileGstNumberOptional,
+                          hint: '22AAAAA0000A1Z5',
+                          controller: _gstNumberCtrl,
+                          textCapitalization: TextCapitalization.characters,
+                          textInputAction: TextInputAction.next,
+                          validator: _optionalGst,
+                        ),
+                        SizedBox(height: 20.h),
+                        DriverProfileBusinessField(
+                          label: l10n.profileBusinessEmail,
+                          hint: 'name@company.com',
+                          controller: _businessEmailCtrl,
+                          keyboardType: TextInputType.emailAddress,
+                          textInputAction: TextInputAction.next,
+                          validator: (v) {
+                            if (v == null || v.trim().isEmpty) return null;
+                            return Validators.email(v);
+                          },
+                        ),
+                        SizedBox(height: 20.h),
+                        DriverProfileBusinessPhoneField(
+                          label: l10n.profileBusinessPhone,
+                          hint: '00000 00000',
+                          controller: _businessPhoneCtrl,
+                          dialCode: _businessDialCode,
+                          onDialCodeChanged: (code) => safeSetState(
+                            () => _businessDialCode = code.dialCode ?? '+91',
                           ),
                         ),
-                        child: isLoading
-                            ? SizedBox(
-                                width: 22.w,
-                                height: 22.w,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2.5,
-                                  color: colors.onPrimary,
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 24.h),
+                  Center(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12.r),
+                        boxShadow: [
+                          BoxShadow(
+                            color: colors.primary.withValues(alpha: 0.3),
+                            blurRadius: 24,
+                            offset: Offset(0, 8.h),
+                          ),
+                        ],
+                      ),
+                      child: SizedBox(
+                        width: 274.w,
+                        height: 56.h,
+                        child: ElevatedButton(
+                          onPressed: isLoading ? null : _submit,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: colors.primary,
+                            elevation: 0,
+                            shadowColor: Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12.r),
+                            ),
+                          ),
+                          child: isLoading
+                              ? SizedBox(
+                                  width: 22.w,
+                                  height: 22.w,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2.5,
+                                    color: colors.onPrimary,
+                                  ),
+                                )
+                              : Text(
+                                  ctaLabel,
+                                  style: TextStyle(
+                                    fontFamily: 'Manrope',
+                                    fontSize: 18.sp,
+                                    fontWeight: FontWeight.w700,
+                                    height: 28 / 18,
+                                    color: colors.onPrimary,
+                                  ),
                                 ),
-                              )
-                            : Text(
-                                ctaLabel,
-                                style: TextStyle(
-                                  fontFamily: 'Manrope',
-                                  fontSize: 18.sp,
-                                  fontWeight: FontWeight.w700,
-                                  height: 28 / 18,
-                                  color: colors.onPrimary,
-                                ),
-                              ),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
