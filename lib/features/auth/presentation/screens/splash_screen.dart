@@ -22,6 +22,48 @@ const _kProgressDuration = Duration(milliseconds: 1800);
 const _kNavigateDelay = Duration(milliseconds: 2600);
 
 @visibleForTesting
+String? splashGateRedirectForConfig(AppConfigData? config) {
+  if (config?.maintenanceMode == true) return AppRoutes.maintenance;
+  return null;
+}
+
+@visibleForTesting
+bool shouldPromptUpdate({required bool isBelowPlatformMinimum}) {
+  return isBelowPlatformMinimum;
+}
+
+@visibleForTesting
+bool updateDialogAllowsLater({required bool force}) => !force;
+
+@visibleForTesting
+Widget buildUpdateDialogContent({
+  required BuildContext context,
+  required bool force,
+  required VoidCallback onLater,
+  required Future<void> Function() onUpdate,
+}) {
+  final l10n = context.l10n;
+  return PopScope(
+    canPop: updateDialogAllowsLater(force: force),
+    child: AlertDialog(
+      title: Text(l10n.updateAvailableTitle),
+      content: Text(l10n.updateAvailableBody),
+      actions: [
+        if (updateDialogAllowsLater(force: force))
+          TextButton(
+            onPressed: onLater,
+            child: Text(l10n.updateActionLater),
+          ),
+        FilledButton(
+          onPressed: onUpdate,
+          child: Text(l10n.updateActionUpdate),
+        ),
+      ],
+    ),
+  );
+}
+
+@visibleForTesting
 String? minimumVersionForCurrentPlatform(
   AppConfigData? config, {
   bool? isAndroid,
@@ -73,12 +115,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     if (!mounted) return;
 
     final config = ref.read(appConfigProvider).config;
-    if (config?.maintenanceMode == true) {
-      context.go(AppRoutes.maintenance);
+    final gateRedirect = splashGateRedirectForConfig(config);
+    if (gateRedirect != null) {
+      context.go(gateRedirect);
       return;
     }
 
-    if (await _isBelowPlatformMinimum(config)) {
+    final isBelowPlatformMinimum = await _isBelowPlatformMinimum(config);
+    if (shouldPromptUpdate(isBelowPlatformMinimum: isBelowPlatformMinimum)) {
       if (!mounted) return;
       final proceed = await _showUpdateDialog(
         force: config?.forceUpdate ?? false,
@@ -104,33 +148,30 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   Future<bool> _showUpdateDialog({required bool force}) async {
-    final result = await showDialog<bool>(
-      context: context,
-      barrierDismissible: !force,
-      builder: (context) {
-        final l10n = context.l10n;
-        return AlertDialog(
-          title: Text(l10n.updateAvailableTitle),
-          content: Text(l10n.updateAvailableBody),
-          actions: [
-            if (!force)
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: Text(l10n.updateActionLater),
-              ),
-            FilledButton(
-              onPressed: () async {
-                await AppUpdateService().startUpdate();
-                if (context.mounted) Navigator.of(context).pop(false);
-              },
-              child: Text(l10n.updateActionUpdate),
-            ),
-          ],
-        );
-      },
-    );
+    do {
+      var updateStarted = false;
+      final result = await showDialog<bool>(
+        context: context,
+        barrierDismissible: updateDialogAllowsLater(force: force),
+        builder: (context) {
+          return buildUpdateDialogContent(
+            context: context,
+            force: force,
+            onLater: () => Navigator.of(context).pop(true),
+            onUpdate: () async {
+              await AppUpdateService().startUpdate();
+              updateStarted = true;
+              if (context.mounted) Navigator.of(context).pop(false);
+            },
+          );
+        },
+      );
 
-    return result ?? !force;
+      if (!force) return result ?? true;
+      if (updateStarted) return false;
+    } while (mounted);
+
+    return false;
   }
 
   void _navigateNext() {
