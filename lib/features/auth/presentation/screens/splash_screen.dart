@@ -36,6 +36,14 @@ bool shouldPromptUpdate({required bool isBelowPlatformMinimum}) {
 bool updateDialogAllowsLater({required bool force}) => !force;
 
 @visibleForTesting
+bool shouldRepeatUpdateDialog({
+  required bool force,
+  required bool updateStarted,
+}) {
+  return force && updateStarted;
+}
+
+@visibleForTesting
 Widget buildUpdateDialogContent({
   required BuildContext context,
   required bool force,
@@ -168,7 +176,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       );
 
       if (!force) return result ?? true;
-      if (updateStarted) return false;
+      if (shouldRepeatUpdateDialog(
+          force: force, updateStarted: updateStarted)) {
+        continue;
+      }
+      return false;
     } while (mounted);
 
     return false;

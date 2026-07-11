@@ -24,4 +24,36 @@ void main() {
     expect(data.appIconUrl, '/storage/app_settings/x.png');
     expect(data.supportedLanguages.single.code, 'en');
   });
+
+  test('parses boolean flags from tolerant wire formats', () {
+    final truthyValues = [true, 1, 'true', 'TRUE', '1'];
+    for (final value in truthyValues) {
+      final data = AppConfigData.fromJson({
+        'force_update': value,
+        'maintenance_mode': value,
+      });
+
+      expect(data.forceUpdate, isTrue, reason: 'force_update: $value');
+      expect(
+        data.maintenanceMode,
+        isTrue,
+        reason: 'maintenance_mode: $value',
+      );
+    }
+
+    final falseyValues = [false, 0, 'false', 'FALSE', '0', null, 'yes', 2];
+    for (final value in falseyValues) {
+      final data = AppConfigData.fromJson({
+        'force_update': value,
+        'maintenance_mode': value,
+      });
+
+      expect(data.forceUpdate, isFalse, reason: 'force_update: $value');
+      expect(
+        data.maintenanceMode,
+        isFalse,
+        reason: 'maintenance_mode: $value',
+      );
+    }
+  });
 }

@@ -38,6 +38,21 @@ void main() {
       expect(updateDialogAllowsLater(force: false), isTrue);
     });
 
+    test('force update repeats dialog after update starts', () {
+      expect(
+        shouldRepeatUpdateDialog(force: true, updateStarted: true),
+        isTrue,
+      );
+      expect(
+        shouldRepeatUpdateDialog(force: false, updateStarted: true),
+        isFalse,
+      );
+      expect(
+        shouldRepeatUpdateDialog(force: true, updateStarted: false),
+        isFalse,
+      );
+    });
+
     testWidgets('force update dialog has no Later action and cannot pop', (
       tester,
     ) async {

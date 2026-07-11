@@ -13,10 +13,10 @@ void main() {
     );
   });
 
-  test('set updates current; null/empty ignored', () {
-    RuntimeApiBaseUrl.set('https://api.example/');
+  test('set updates current; null/empty ignored', () async {
+    await RuntimeApiBaseUrl.set('https://api.example/');
     expect(RuntimeApiBaseUrl.current, 'https://api.example');
-    RuntimeApiBaseUrl.set('  ');
+    await RuntimeApiBaseUrl.set('  ');
     expect(RuntimeApiBaseUrl.current, 'https://api.example');
   });
 }

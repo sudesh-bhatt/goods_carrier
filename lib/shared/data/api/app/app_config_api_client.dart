@@ -64,12 +64,28 @@ class AppConfigData {
       defaultLanguage: data['default_language']?.toString(),
       minimumAndroidVersion: data['minimum_android_version']?.toString(),
       minimumIosVersion: data['minimum_ios_version']?.toString(),
-      forceUpdate: data['force_update'] as bool? ?? false,
-      maintenanceMode: data['maintenance_mode'] as bool? ?? false,
+      forceUpdate: _parseBool(data['force_update']),
+      maintenanceMode: _parseBool(data['maintenance_mode']),
       appUrl: data['app_url']?.toString(),
       appIcon: data['app_icon']?.toString(),
       appIconUrl: data['app_icon_url']?.toString(),
     );
+  }
+
+  static bool _parseBool(Object? value) {
+    if (value is bool) return value;
+    if (value is num) return value == 1;
+    if (value is String) {
+      switch (value.trim().toLowerCase()) {
+        case 'true':
+        case '1':
+          return true;
+        case 'false':
+        case '0':
+          return false;
+      }
+    }
+    return false;
   }
 
   Map<String, dynamic> toJson() => {
