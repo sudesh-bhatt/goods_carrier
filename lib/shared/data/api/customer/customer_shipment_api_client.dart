@@ -159,7 +159,7 @@ class CustomerShipmentApiClient {
     return ShipmentMasters.fromJson(ApiEnvelope.parseData(response.data));
   }
 
-  Future<Shipment> assignDriver(
+  Future<ShipmentAssignmentResult> assignDriver(
     String id,
     String driverId, {
     String fallbackCustomerId = '',
@@ -170,9 +170,8 @@ class CustomerShipmentApiClient {
         'driver_id': int.tryParse(driverId) ?? driverId,
       },
     );
-    return ShipmentApiMapper.fromJson(
+    return ShipmentApiMapper.parseAssignment(
       ApiEnvelope.parseData(response.data),
-      fallbackCustomerId: fallbackCustomerId,
     );
   }
 }

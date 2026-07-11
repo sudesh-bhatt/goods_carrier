@@ -2794,6 +2794,12 @@ abstract class AppLocalizations {
   /// **'Post a shipment first to request this trip.'**
   String get customerTripRequestNoShipments;
 
+  /// No description provided for @customerConfirmRequestBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to show interest in this trip? The driver/transporter will be notified.'**
+  String get customerConfirmRequestBody;
+
   /// No description provided for @customerTripRequestSentTitle.
   ///
   /// In en, this message translates to:
@@ -2937,6 +2943,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Expert Driver'**
   String get customerExpertDriver;
+
+  /// No description provided for @customerDriverAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted'**
+  String get customerDriverAccepted;
 
   /// No description provided for @actionRequest.
   ///

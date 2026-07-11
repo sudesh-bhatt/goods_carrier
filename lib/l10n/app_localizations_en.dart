@@ -1426,6 +1426,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Post a shipment first to request this trip.';
 
   @override
+  String get customerConfirmRequestBody =>
+      'Are you sure you want to show interest in this trip? The driver/transporter will be notified.';
+
+  @override
   String get customerTripRequestSentTitle => 'Request Sent Successfully';
 
   @override
@@ -1499,6 +1503,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get customerExpertDriver => 'Expert Driver';
+
+  @override
+  String get customerDriverAccepted => 'Accepted';
 
   @override
   String get actionRequest => 'Request';

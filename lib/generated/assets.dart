@@ -44,6 +44,8 @@ class Assets {
       SvgGenImage('assets/svg/pickup_vehicle.svg');
   static const AssetGenImage splashScreenLogo =
       AssetGenImage('assets/images/splash_screen_logo.png');
+  static const AssetGenImage subscriptionLogisticsBackground =
+      AssetGenImage('assets/images/subscription_logistics_background.png');
   static const SvgGenImage truckVehicle =
       SvgGenImage('assets/svg/truck_vehicle.svg');
   static const $AssetsAssetsGen assets = $AssetsAssetsGen();

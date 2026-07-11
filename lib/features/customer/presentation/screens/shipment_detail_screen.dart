@@ -163,7 +163,40 @@ class _ShipmentDetailScreenState extends ConsumerState<ShipmentDetailScreen>
               toSubtitle:
                   toSub.isNotEmpty ? toSub : shipment.drop.fullAddress,
             ),
-            if (detail.interestedDrivers.isNotEmpty) ...[
+            if (detail.assignedDriver != null) ...[
+              SizedBox(height: 32.h),
+              PublishDriverInterestCard(
+                driverName: detail.assignedDriver!.name,
+                expertLabel: detail.assignedDriver!.subtitle ??
+                    l10n.customerExpertDriver,
+                vehicleName: detail.assignedDriver!.vehicleName.isNotEmpty
+                    ? detail.assignedDriver!.vehicleName
+                    : shipment.vehicleType.label,
+                vehicleNumber:
+                    detail.assignedDriver!.vehicleNumber.toUpperCase(),
+                capacityLabel: l10n.tripCapacity,
+                capacityValue: detail.assignedDriver!.capacityLabel.isNotEmpty
+                    ? detail.assignedDriver!.capacityLabel.toUpperCase()
+                    : shipment.loadCapacityLabel.toUpperCase(),
+                avatarUrl: detail.assignedDriver!.avatarUrl,
+                statusLabel: l10n.customerDriverAccepted,
+                onTap: () => _onViewAssignedDriver(
+                  context,
+                  shipment,
+                  detail.assignedDriver!,
+                ),
+                onCall: () => _contactDriver(
+                  context,
+                  detail.assignedDriver!,
+                  whatsApp: false,
+                ),
+                onWhatsApp: () => _contactDriver(
+                  context,
+                  detail.assignedDriver!,
+                  whatsApp: true,
+                ),
+              ),
+            ] else if (detail.interestedDrivers.isNotEmpty) ...[
               SizedBox(height: 32.h),
               ...detail.interestedDrivers.map((driver) {
                 return Padding(
@@ -177,12 +210,7 @@ class _ShipmentDetailScreenState extends ConsumerState<ShipmentDetailScreen>
                     capacityLabel: l10n.tripCapacity,
                     capacityValue: driver.capacityLabel.toUpperCase(),
                     avatarUrl: driver.avatarUrl,
-                    onTap: () => DriverDetailSheet.show(
-                      context,
-                      driverId: driver.driverId,
-                      shipmentId: shipment.id,
-                      driver: driver,
-                    ),
+                    onTap: () => _onSelectDriver(context, shipment, driver),
                     onCall: () => _contactDriver(
                       context,
                       driver,
@@ -228,6 +256,66 @@ class _ShipmentDetailScreenState extends ConsumerState<ShipmentDetailScreen>
         ),
       ),
     );
+  }
+
+  Future<void> _onViewAssignedDriver(
+    BuildContext context,
+    Shipment shipment,
+    ShipmentInterestedDriver driver,
+  ) async {
+    await DriverDetailSheet.show(
+      context,
+      driverId: driver.driverId,
+      shipmentId: shipment.id,
+      driver: driver,
+      isAssigned: true,
+    );
+  }
+
+  Future<void> _onSelectDriver(
+    BuildContext context,
+    Shipment shipment,
+    ShipmentInterestedDriver driver,
+  ) async {
+    final result = await DriverDetailSheet.show(
+      context,
+      driverId: driver.driverId,
+      shipmentId: shipment.id,
+      driver: driver,
+    );
+    if (!mounted || result == null) return;
+
+    final current = _detail;
+    if (current == null) return;
+
+    final assignedDriver = result.driver.capacityLabel.isNotEmpty
+        ? result.driver
+        : ShipmentInterestedDriver(
+            driverId: result.driver.driverId,
+            name: result.driver.name,
+            subtitle: result.driver.subtitle,
+            vehicleName: result.driver.vehicleName.isNotEmpty
+                ? result.driver.vehicleName
+                : current.shipment.vehicleType.label,
+            vehicleNumber: result.driver.vehicleNumber,
+            capacityLabel: current.shipment.loadCapacityLabel,
+            phone: result.driver.phone,
+            countryCode: result.driver.countryCode,
+            avatarUrl: result.driver.avatarUrl ?? driver.avatarUrl,
+            offeredPrice: result.driver.offeredPrice ?? driver.offeredPrice,
+            note: result.driver.note ?? driver.note,
+          );
+
+    safeSetState(() {
+      _detail = current.copyWith(
+        shipment: current.shipment.copyWith(
+          status: ShipmentStatus.assigned,
+          assignedDriverId: result.driverId,
+        ),
+        assignedDriver: assignedDriver,
+        interestedDrivers: const [],
+      );
+    });
   }
 
   Shipment? _resolveCachedShipment() {

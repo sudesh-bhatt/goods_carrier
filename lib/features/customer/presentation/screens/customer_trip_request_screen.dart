@@ -10,6 +10,7 @@ import '../../../../core/router/app_routes.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../res/font_res.dart';
 import '../../../../shared/domain/entities/driver_trip.dart';
+import '../../../../shared/domain/entities/driver_trip_display.dart';
 import '../../../../shared/domain/entities/shipment.dart';
 import '../../../../shared/presentation/widgets/feedback/error_view.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
@@ -91,39 +92,19 @@ class _CustomerTripRequestScreenState
   }
 
   Future<void> _submit(DriverTrip trip) async {
-    safeSetState(() => _submitted = true);
-    if (_selectedShipment == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.customerSelectShipment)),
-      );
-      return;
-    }
-    if (!(_formKey.currentState?.validate() ?? false)) return;
-
-    final shipmentId = _shipmentApiId(_selectedShipment!);
-    if (shipmentId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.errorGeneric)),
-      );
-      return;
-    }
-
     safeSetState(() => _isSubmitting = true);
     try {
       await ref.read(customerTripActionsProvider.notifier).submitRequest(
             trip: trip,
-            shipmentId: shipmentId,
-            note: _noteCtrl.text.trim(),
           );
       if (!mounted) return;
 
-      final shipment = _selectedShipment!;
       context.pushReplacement(
         AppRoutes.customerTripRequestSuccess,
         extra: CustomerTripRequestSuccessArgs(
-          fromCity: shipment.pickup.displayLabel,
-          toCity: shipment.drop.displayLabel,
-          pickupDateTime: shipment.pickupDateTime,
+          fromCity: trip.fromDisplayLabel,
+          toCity: trip.toDisplayLabel,
+          pickupDateTime: trip.estimatedStartDate,
           estimatedPrice: trip.estimatedPrice,
         ),
       );

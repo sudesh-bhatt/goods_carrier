@@ -23,23 +23,27 @@ class DriverDetailSheet extends ConsumerWidget {
     required this.driverId,
     required this.shipmentId,
     required this.driver,
+    required this.isAssigned,
   });
 
   final String driverId;
   final String shipmentId;
   final ShipmentInterestedDriver driver;
+  final bool isAssigned;
 
-  static Future<bool?> show(
+  static Future<ShipmentAssignmentResult?> show(
     BuildContext context, {
     required String driverId,
     required String shipmentId,
     ShipmentInterestedDriver? driver,
+    bool isAssigned = false,
   }) =>
-      AppModalBottomSheet.show<bool>(
+      AppModalBottomSheet.show<ShipmentAssignmentResult>(
         context: context,
         builder: (_) => DriverDetailSheet._(
           driverId: driverId,
           shipmentId: shipmentId,
+          isAssigned: isAssigned,
           driver: driver ??
               ShipmentInterestedDriver(
                 driverId: driverId,
@@ -57,7 +61,11 @@ class DriverDetailSheet extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _DriverHeader(driver: driver, expertLabel: l10n.customerExpertDriver),
+          _DriverHeader(
+            driver: driver,
+            expertLabel: l10n.customerExpertDriver,
+            statusLabel: isAssigned ? l10n.customerDriverAccepted : null,
+          ),
           SizedBox(height: 20.h),
           _InfoCard(
             title: 'Vehicle Info',
@@ -98,21 +106,33 @@ class DriverDetailSheet extends ConsumerWidget {
               note: driver.note,
             ),
           ],
-          SizedBox(height: AppBottomSheetTokens.sectionGap.h),
-          AppBottomSheetActionRow(
-            secondaryLabel: l10n.actionNo,
-            primaryLabel: l10n.shipmentSelectDriver,
-            onSecondary: () => Navigator.of(context).pop(false),
-            onPrimary: () async {
-              final apiShipmentId = ref
-                  .read(customerShipmentsProvider.notifier)
-                  .apiResourceIdFor(shipmentId);
-              await ref
-                  .read(customerShipmentsProvider.notifier)
-                  .selectDriver(apiShipmentId, driverId);
-              if (context.mounted) Navigator.of(context).pop(true);
-            },
-          ),
+          if (!isAssigned) ...[
+            SizedBox(height: AppBottomSheetTokens.sectionGap.h),
+            AppBottomSheetActionRow(
+              secondaryLabel: l10n.actionNo,
+              primaryLabel: l10n.shipmentSelectDriver,
+              onSecondary: () => Navigator.of(context).pop(),
+              onPrimary: () async {
+                final apiShipmentId = ref
+                    .read(customerShipmentsProvider.notifier)
+                    .apiResourceIdFor(shipmentId);
+                final result = await ref
+                    .read(customerShipmentsProvider.notifier)
+                    .selectDriver(apiShipmentId, driverId);
+                if (!context.mounted) return;
+                if (result == null) {
+                  final error = ref.read(customerShipmentsProvider).error;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(error ?? context.l10n.errorGeneric),
+                    ),
+                  );
+                  return;
+                }
+                Navigator.of(context).pop(result);
+              },
+            ),
+          ],
         ],
       ),
     );
@@ -123,15 +143,20 @@ class _DriverHeader extends StatelessWidget {
   const _DriverHeader({
     required this.driver,
     required this.expertLabel,
+    this.statusLabel,
   });
 
   final ShipmentInterestedDriver driver;
   final String expertLabel;
+  final String? statusLabel;
 
   @override
   Widget build(BuildContext context) {
     final subtitle = driver.subtitle?.trim();
     final hasPhone = driver.phone != null && driver.phone!.isNotEmpty;
+    final badgeLabel = statusLabel?.trim().isNotEmpty == true
+        ? statusLabel!.trim()
+        : 'Verified Driver';
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -173,7 +198,7 @@ class _DriverHeader extends StatelessWidget {
                   borderRadius: BorderRadius.circular(9999),
                 ),
                 child: Text(
-                  'Verified Driver',
+                  badgeLabel.toUpperCase(),
                   style: TextStyle(
                     fontFamily: FontRes.MANROPE_SEMIBOLD,
                     fontSize: 10.sp,

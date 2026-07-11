@@ -1,22 +1,23 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 /// Bottom-inset-aware padding for sticky CTA bars and footers.
 ///
-/// Wraps [child] in a bottom-only [SafeArea] whose [minimum] padding is the
-/// bar's visual padding. `SafeArea.minimum` applies `max(minimum, inset)`,
-/// NOT their sum, so:
+/// Uses [MediaQuery.viewPadding] (not [MediaQuery.padding]) so Android
+/// edge-to-edge + 3-button navigation is respected even when `padding.bottom`
+/// is incorrectly reported as 0.
 ///
-/// * devices with no bottom system UI (older iPhones, gesture-nav hidden)
-///   render exactly [minimum] — pixel-identical to a plain `Padding`;
-/// * Android 3-button navigation (~48dp opaque inset) grows the bottom
-///   padding just enough to clear the bar;
-/// * iPhone home indicator (34pt) is cleared without double padding.
+/// Applies `max(minimum.bottom, systemInset)` — never the sum — so:
 ///
-/// No platform checks — the system inset from `MediaQuery.viewPadding`
-/// is the single source of truth on both platforms.
+/// * devices with no bottom system UI render exactly [minimum];
+/// * Android 3-button navigation grows just enough to clear the bar;
+/// * iPhone home indicator is cleared without double padding.
 ///
-/// Place this INSIDE the decorated container so the bar's background
-/// extends behind the system navigation area:
+/// When the keyboard is open, system inset is skipped (keyboard covers the
+/// nav bar). Prefer placing this INSIDE the decorated container so the bar's
+/// background can still extend behind the system navigation area when used
+/// outside [AppSystemBottomInset].
 ///
 /// ```dart
 /// Container(
@@ -42,12 +43,30 @@ class AppBottomSafeArea extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      top: false,
-      left: false,
-      right: false,
-      minimum: minimum,
-      child: child,
+    final mq = MediaQuery.of(context);
+    final keyboardOpen = mq.viewInsets.bottom > 0;
+    final systemBottom = keyboardOpen ? 0.0 : mq.viewPadding.bottom;
+
+    final resolved = EdgeInsets.only(
+      left: minimum.left,
+      top: minimum.top,
+      right: minimum.right,
+      bottom: math.max(minimum.bottom, systemBottom),
+    );
+
+    return Padding(
+      padding: resolved,
+      child: MediaQuery(
+        data: mq.removePadding(
+          removeLeft: resolved.left > 0,
+          removeTop: resolved.top > 0,
+          removeRight: resolved.right > 0,
+          removeBottom: resolved.bottom > 0,
+        ).removeViewPadding(
+          removeBottom: systemBottom > 0,
+        ),
+        child: child,
+      ),
     );
   }
 }

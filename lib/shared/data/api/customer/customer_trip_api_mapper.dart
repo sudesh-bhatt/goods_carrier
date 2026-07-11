@@ -6,7 +6,7 @@ abstract final class CustomerTripApiMapper {
     return CustomerTripRequestResult(
       id: _readInt(json['id']) ?? 0,
       driverTripId: _readInt(json['driver_trip_id']) ?? 0,
-      shipmentId: _readInt(json['shipment_id']) ?? 0,
+      shipmentId: _readInt(json['shipment_id']),
       status: json['status']?.toString() ?? 'pending',
       note: json['note']?.toString(),
     );
@@ -16,15 +16,6 @@ abstract final class CustomerTripApiMapper {
     final id = json['report_id']?.toString() ?? json['id']?.toString() ?? '';
     return id.isNotEmpty ? id : 'REP-${DateTime.now().millisecondsSinceEpoch}';
   }
-
-  static Map<String, dynamic> toRequestBody({
-    required int shipmentId,
-    required String note,
-  }) =>
-      {
-        'shipment_id': shipmentId,
-        'note': note.trim(),
-      };
 
   static Map<String, dynamic> toReportBody({
     required String reasonSlug,

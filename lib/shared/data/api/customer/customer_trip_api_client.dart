@@ -12,15 +12,9 @@ class CustomerTripApiClient {
 
   Future<CustomerTripRequestResult> submitTripRequest({
     required String tripId,
-    required int shipmentId,
-    required String note,
   }) async {
     final response = await _dio.post<Map<String, dynamic>>(
       ApiConstants.customerTripRequests(tripId),
-      data: CustomerTripApiMapper.toRequestBody(
-        shipmentId: shipmentId,
-        note: note,
-      ),
     );
     return CustomerTripApiMapper.requestFromJson(
       ApiEnvelope.parseData(response.data),

@@ -160,11 +160,25 @@ class LocalShipmentRepository implements IShipmentRepository {
   }
 
   @override
-  Future<void> assignDriver(String shipmentId, String driverId) async {
+  Future<ShipmentAssignmentResult> assignDriver(
+    String shipmentId,
+    String driverId,
+  ) async {
     await _ensureLoaded();
     await _delay();
-    final idx = _shipments.indexWhere((s) => s.id == shipmentId);
-    if (idx == -1) return;
+    final idx = _shipments.indexWhere(
+      (s) => s.id == shipmentId || s.apiId == shipmentId,
+    );
+    if (idx == -1) {
+      return ShipmentAssignmentResult(
+        shipmentId: shipmentId,
+        driverId: driverId,
+        driver: ShipmentInterestedDriver(
+          driverId: driverId,
+          name: 'Driver',
+        ),
+      );
+    }
     _shipments[idx] = _shipments[idx].copyWith(
       status: ShipmentStatus.assigned,
       assignedDriverId: driverId,
@@ -172,6 +186,17 @@ class LocalShipmentRepository implements IShipmentRepository {
     if (!_dummyIds.contains(shipmentId)) {
       await _persistUserShipments();
     }
+    return ShipmentAssignmentResult(
+      shipmentId: _shipments[idx].id,
+      driverId: driverId,
+      driver: ShipmentInterestedDriver(
+        driverId: driverId,
+        name: 'Driver',
+        vehicleName: _shipments[idx].vehicleType.label,
+        capacityLabel: _shipments[idx].loadCapacityLabel,
+      ),
+      status: 'accepted',
+    );
   }
 
   // ── Driver operations ────────────────────────────────────────────────────

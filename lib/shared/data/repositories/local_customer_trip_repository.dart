@@ -8,8 +8,6 @@ class LocalCustomerTripRepository implements ICustomerTripRepository {
   @override
   Future<CustomerTripRequestResult> submitTripRequest({
     required String tripId,
-    required int shipmentId,
-    required String note,
   }) async {
     await Future<void>.delayed(const Duration(milliseconds: 300));
     _requestCounter += 1;
@@ -17,9 +15,7 @@ class LocalCustomerTripRepository implements ICustomerTripRepository {
     return CustomerTripRequestResult(
       id: _requestCounter,
       driverTripId: tripNumeric,
-      shipmentId: shipmentId,
       status: 'pending',
-      note: note,
     );
   }
 

@@ -6,6 +6,7 @@ import '../../../../core/providers/repository_providers.dart';
 import '../../../../shared/domain/entities/shipment.dart';
 import '../../../../shared/domain/enums/session_phase.dart';
 import '../../../../shared/domain/enums/shipment_status.dart';
+import '../../../../shared/domain/models/customer_shipment_detail.dart';
 import '../../../../shared/domain/models/shipment_submit_options.dart';
 import '../../../../shared/domain/repositories/i_shipment_repository.dart';
 
@@ -218,28 +219,52 @@ class CustomerShipmentsNotifier
   }
 
   /// Assign a driver — optimistic update + remote call.
-  Future<void> selectDriver(String shipmentId, String driverId) async {
+  /// Returns assignment details on success; `null` on failure.
+  Future<ShipmentAssignmentResult?> selectDriver(
+    String shipmentId,
+    String driverId,
+  ) async {
     final prev = state.shipments;
     state = state.copyWith(
       shipments: prev.map((s) {
-        return s.id == shipmentId
+        final matches = s.id == shipmentId ||
+            s.apiId == shipmentId ||
+            s.apiResourceId == shipmentId;
+        return matches
             ? s.copyWith(
-                status:          ShipmentStatus.assigned,
+                status: ShipmentStatus.assigned,
                 assignedDriverId: driverId,
               )
             : s;
       }).toList(),
     );
     try {
-      await _repo.assignDriver(
+      final result = await _repo.assignDriver(
         apiResourceIdFor(shipmentId),
         driverId,
       );
+      state = state.copyWith(
+        shipments: state.shipments.map((s) {
+          final matches = s.id == shipmentId ||
+              s.apiId == shipmentId ||
+              s.apiResourceId == shipmentId ||
+              s.id == result.shipmentId ||
+              s.apiId == result.shipmentId;
+          return matches
+              ? s.copyWith(
+                  status: ShipmentStatus.assigned,
+                  assignedDriverId: result.driverId,
+                )
+              : s;
+        }).toList(),
+      );
+      return result;
     } catch (e) {
       state = state.copyWith(
         shipments: prev,
         error: ApiExceptionMapper.userMessage(e),
       );
+      return null;
     }
   }
   Shipment? byId(String id) =>

@@ -15,15 +15,11 @@ class CustomerTripActionsNotifier extends StateNotifier<String?> {
 
   Future<CustomerTripRequestResult> submitRequest({
     required DriverTrip trip,
-    required int shipmentId,
-    required String note,
   }) async {
     state = null;
     try {
       final result = await _repo.submitTripRequest(
         tripId: trip.apiResourceId,
-        shipmentId: shipmentId,
-        note: note,
       );
       _ref.read(customerDashboardProvider.notifier).markInterested(trip.id);
       return result;

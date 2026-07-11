@@ -77,9 +77,11 @@ class RemoteCustomerShipmentRepository implements IShipmentRepository {
       );
 
   @override
-  Future<void> assignDriver(String shipmentId, String driverId) async {
-    await _api.assignDriver(shipmentId, driverId);
-  }
+  Future<ShipmentAssignmentResult> assignDriver(
+    String shipmentId,
+    String driverId,
+  ) =>
+      _api.assignDriver(shipmentId, driverId);
 
   // ── Driver operations ────────────────────────────────────────────────────
 

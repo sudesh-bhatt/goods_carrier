@@ -1423,6 +1423,10 @@ class AppLocalizationsHi extends AppLocalizations {
       'इस यात्रा का अनुरोध करने के लिए पहले शिपमेंट पोस्ट करें।';
 
   @override
+  String get customerConfirmRequestBody =>
+      'क्या आप वाकई इस यात्रा में रुचि दिखाना चाहते हैं? ड्राइवर/ट्रांसपोर्टर को सूचित किया जाएगा।';
+
+  @override
   String get customerTripRequestSentTitle => 'अनुरोध सफलतापूर्वक भेजा गया';
 
   @override
@@ -1496,6 +1500,9 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get customerExpertDriver => 'विशेषज्ञ ड्राइवर';
+
+  @override
+  String get customerDriverAccepted => 'स्वीकृत';
 
   @override
   String get actionRequest => 'अनुरोध';
@@ -1801,26 +1808,25 @@ class AppLocalizationsHi extends AppLocalizations {
   String get settingsLogoutConfirm => 'क्या आप वाकई लॉगआउट करना चाहते हैं?';
 
   @override
-  String get customerSettingsNotificationsSection => 'Notifications';
+  String get customerSettingsNotificationsSection => 'सूचनाएं';
 
   @override
-  String get customerSettingsPushNotifications => 'Push Notifications';
+  String get customerSettingsPushNotifications => 'पुश सूचनाएं';
 
   @override
-  String get customerSettingsPushNotificationsSub =>
-      'Real-time shipment updates';
+  String get customerSettingsPushNotificationsSub => 'रीयल-टाइम शिपमेंट अपडेट';
 
   @override
-  String get customerSettingsLanguageSection => 'Language setting';
+  String get customerSettingsLanguageSection => 'भाषा सेटिंग';
 
   @override
-  String get customerSettingsChooseLanguage => 'Choose Language';
+  String get customerSettingsChooseLanguage => 'भाषा चुनें';
 
   @override
-  String get customerSettingsLegalSection => 'Legal & About';
+  String get customerSettingsLegalSection => 'कानूनी और जानकारी';
 
   @override
-  String get customerSettingsAboutApp => 'About Good Carrier';
+  String get customerSettingsAboutApp => 'गुड कैरियर के बारे में';
 
   @override
   String get customerSettingsVersionFooter => 'GOOD CARRIER V4.2.0-STABLE';

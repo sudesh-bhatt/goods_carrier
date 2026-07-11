@@ -8,7 +8,7 @@ import '../../shared/data/api/customer/customer_shipment_api_client.dart';
 import '../../shared/data/api/driver/driver_dashboard_api_client.dart';
 import '../../shared/data/api/driver/driver_trip_api_client.dart';
 import '../../shared/data/api/driver/driver_vehicle_api_client.dart';
-import '../../shared/data/api/customer/customer_settings_api_client.dart';
+import '../../shared/data/api/settings/settings_api_client.dart';
 import '../../shared/data/api/customer/customer_support_api_client.dart';
 import '../../shared/data/api/driver/driver_payment_api_client.dart';
 import '../../shared/data/api/driver/driver_subscription_api_client.dart';
@@ -42,6 +42,7 @@ import '../../shared/domain/repositories/i_onboarding_repository.dart';
 import '../../shared/domain/repositories/i_reports_repository.dart';
 import '../../shared/domain/repositories/i_customer_trip_repository.dart';
 import '../../shared/domain/repositories/i_shipment_repository.dart';
+import '../../shared/domain/enums/user_role.dart';
 import '../../shared/domain/repositories/i_trip_repository.dart';
 import '../network/dio_client.dart';
 import 'shared_preferences_provider.dart';
@@ -195,9 +196,11 @@ final reportsRepositoryProvider = Provider<IReportsRepository>((ref) {
   return LocalReportsRepository();
 });
 
-final customerSettingsApiClientProvider =
-    Provider<CustomerSettingsApiClient>((ref) {
-  return CustomerSettingsApiClient(ref.read(dioProvider));
+/// Role-specific settings API client — pass the logged-in user's role so
+/// driver users hit `/api/driver/settings/*` instead of the customer endpoints.
+final settingsApiClientProvider =
+    Provider.family<SettingsApiClient, UserRole>((ref, role) {
+  return SettingsApiClient(ref.read(dioProvider), role: role);
 });
 
 final customerSupportApiClientProvider =

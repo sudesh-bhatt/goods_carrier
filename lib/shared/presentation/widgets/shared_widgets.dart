@@ -35,6 +35,7 @@ export 'feedback/empty_state.dart';
 
 // Layout
 export 'layout/app_bottom_safe_area.dart';
+export 'layout/app_system_bottom_inset.dart';
 
 // Navigation
 export 'navigation/app_bar_widget.dart';

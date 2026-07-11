@@ -11,14 +11,8 @@ class RemoteCustomerTripRepository implements ICustomerTripRepository {
   @override
   Future<CustomerTripRequestResult> submitTripRequest({
     required String tripId,
-    required int shipmentId,
-    required String note,
   }) =>
-      _api.submitTripRequest(
-        tripId: tripId,
-        shipmentId: shipmentId,
-        note: note,
-      );
+      _api.submitTripRequest(tripId: tripId);
 
   @override
   Future<String> reportTrip({

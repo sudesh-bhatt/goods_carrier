@@ -141,6 +141,8 @@ class CustomerHomeTripCard extends StatelessWidget {
                       ),
                       Text(
                         trip.estimatedPrice.inr,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontFamily: FontRes.MANROPE_EXTRABOLD,
                           fontSize: 21.sp,
@@ -152,6 +154,7 @@ class CustomerHomeTripCard extends StatelessWidget {
                     ],
                   ),
                 ),
+                SizedBox(width: 8.w),
                 _ViewDetailsButton(
                   label: l10n.actionViewDetails,
                   onPressed: onViewDetails,
@@ -252,7 +255,8 @@ class _RouteRow extends StatelessWidget {
   }
 }
 
-/// Figma outline button — 140×44, padding 10×25, 14.5px label, single line.
+/// Outline CTA — height matches Figma (44); width sizes to label so it
+/// never ellipsizes on narrow Android widths / larger text scale.
 class _ViewDetailsButton extends StatelessWidget {
   const _ViewDetailsButton({
     required this.label,
@@ -267,16 +271,13 @@ class _ViewDetailsButton extends StatelessWidget {
     final colors = context.colors;
 
     return SizedBox(
-      width: 140.w,
       height: 44.h,
       child: OutlinedButton(
         onPressed: onPressed,
         style: OutlinedButton.styleFrom(
           foregroundColor: colors.primary,
-          padding: EdgeInsets.symmetric(horizontal: 25.w, vertical: 10.h),
-          minimumSize: Size(140.w, 44.h),
-          fixedSize: Size(140.w, 44.h),
-          alignment: Alignment.center,
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+          minimumSize: Size(0, 44.h),
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           visualDensity: VisualDensity.compact,
           side: BorderSide(color: colors.primary, width: 1),
@@ -289,7 +290,6 @@ class _ViewDetailsButton extends StatelessWidget {
           maxLines: 1,
           softWrap: false,
           textAlign: TextAlign.center,
-          overflow: TextOverflow.ellipsis,
           style: TextStyle(
             fontFamily: FontRes.MANROPE_SEMIBOLD,
             fontSize: 14.5.sp,

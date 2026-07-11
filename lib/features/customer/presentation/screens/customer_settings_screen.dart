@@ -11,6 +11,9 @@ import '../../../settings/presentation/providers/push_notifications_provider.dar
 import '../../../../core/config/env_config.dart';
 import '../../../../core/mixins/safe_set_state_mixin.dart';
 import '../../../../core/providers/repository_providers.dart';
+import '../../../../shared/data/api/settings/settings_api_client.dart';
+import '../../../../shared/domain/enums/user_role.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
 import '../widgets/settings/customer_settings_tokens.dart';
 import '../widgets/settings/customer_settings_widgets.dart';
@@ -30,6 +33,12 @@ class _CustomerSettingsScreenState extends ConsumerState<CustomerSettingsScreen>
     with SafeSetStateMixin {
   var _syncingRemote = false;
 
+  /// Role-specific settings client so drivers hit `/api/driver/settings/*`.
+  SettingsApiClient get _settingsApi {
+    final role = ref.read(authProvider).user?.role ?? UserRole.customer;
+    return ref.read(settingsApiClientProvider(role));
+  }
+
   @override
   void initState() {
     super.initState();
@@ -41,8 +50,7 @@ class _CustomerSettingsScreenState extends ConsumerState<CustomerSettingsScreen>
   Future<void> _syncFromRemote() async {
     safeSetState(() => _syncingRemote = true);
     try {
-      final settings =
-          await ref.read(customerSettingsApiClientProvider).fetchSettings();
+      final settings = await _settingsApi.fetchSettings();
       if (!mounted) return;
       await ref
           .read(pushNotificationsProvider.notifier)
@@ -91,12 +99,47 @@ class _CustomerSettingsScreenState extends ConsumerState<CustomerSettingsScreen>
       await ref.read(localeProvider.notifier).setLocale(selected);
       if (EnvConfig.useRemoteApi) {
         try {
-          await ref
-              .read(customerSettingsApiClientProvider)
-              .updateLanguage(selected.languageCode);
+          await _settingsApi.updateLanguage(selected.languageCode);
         } catch (_) {}
       }
     }
+  }
+
+  void _showAboutAppDialog(BuildContext context) {
+    final l10n = context.l10n;
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(
+              Icons.local_shipping_rounded,
+              size: 48.w,
+              color: CustomerSettingsTokens.primaryOrange,
+            ),
+            SizedBox(width: 16.w),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Good Carrier'),
+                  Text(
+                    '4.2.0',
+                    style: Theme.of(dialogContext).textTheme.bodySmall,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(l10n.actionClose),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -131,9 +174,7 @@ class _CustomerSettingsScreenState extends ConsumerState<CustomerSettingsScreen>
                 await ref.read(pushNotificationsProvider.notifier).setEnabled(v);
                 if (!EnvConfig.useRemoteApi) return;
                 try {
-                  await ref
-                      .read(customerSettingsApiClientProvider)
-                      .updatePushNotification(v);
+                  await _settingsApi.updatePushNotification(v);
                 } catch (_) {}
               },
             ),
@@ -168,18 +209,7 @@ class _CustomerSettingsScreenState extends ConsumerState<CustomerSettingsScreen>
                 ),
                 SettingsLegalRow(
                   label: l10n.customerSettingsAboutApp,
-                  onTap: () {
-                    showAboutDialog(
-                      context: context,
-                      applicationName: 'Good Carrier',
-                      applicationVersion: '4.2.0',
-                      applicationIcon: Icon(
-                        Icons.local_shipping_rounded,
-                        size: 48.w,
-                        color: CustomerSettingsTokens.primaryOrange,
-                      ),
-                    );
-                  },
+                  onTap: () => _showAboutAppDialog(context),
                 ),
               ],
             ),

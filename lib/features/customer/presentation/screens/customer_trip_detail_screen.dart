@@ -19,10 +19,12 @@ import '../../../../shared/domain/entities/shipment.dart';
 import '../../../../shared/presentation/widgets/feedback/error_view.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
 import '../../../driver/presentation/providers/driver_shipment_requests_provider.dart';
-import '../models/customer_trip_request_screen_args.dart';
+import '../../../driver/presentation/widgets/confirm_request_bottom_sheet.dart';
+import '../models/customer_trip_request_success_args.dart';
 import '../models/report_trip_screen_args.dart';
 import '../providers/customer_dashboard_provider.dart';
 import '../providers/customer_shipments_provider.dart';
+import '../providers/customer_trip_actions_provider.dart';
 import '../widgets/customer_light_chrome.dart';
 import '../widgets/driver_detail_sheet.dart';
 import '../widgets/trip_detail/trip_detail_driver_sections.dart';
@@ -55,6 +57,7 @@ class _CustomerTripDetailScreenState
   DriverShipmentDetail? _driverDetail;
   bool _isLoadingDetail = false;
   String? _loadError;
+  bool _isSubmittingRequest = false;
 
   @override
   void initState() {
@@ -325,16 +328,51 @@ class _CustomerTripDetailScreenState
             label: trip.isInterested
                 ? l10n.driverRequestSent
                 : l10n.actionRequest,
-            onPressed: trip.isInterested
+            isLoading: _isSubmittingRequest,
+            onPressed: trip.isInterested || _isSubmittingRequest
                 ? () {}
-                : () => context.push(
-                      AppRoutes.customerTripRequestOf(trip.apiResourceId),
-                      extra: CustomerTripRequestScreenArgs(trip: trip),
-                    ),
+                : () => _onRequestPressed(trip),
           ),
         ),
       ),
     );
+  }
+
+  Future<void> _onRequestPressed(DriverTrip trip) async {
+    final l10n = context.l10n;
+    final confirmed = await ConfirmRequestBottomSheet.show(
+      context,
+      title: l10n.driverConfirmRequestTitle,
+      body: l10n.customerConfirmRequestBody,
+      secondaryLabel: l10n.actionNo,
+      primaryLabel: l10n.driverConfirmYesContinue,
+    );
+    if (!confirmed || !mounted) return;
+
+    safeSetState(() => _isSubmittingRequest = true);
+    try {
+      await ref.read(customerTripActionsProvider.notifier).submitRequest(
+            trip: trip,
+          );
+      if (!mounted) return;
+      context.push(
+        AppRoutes.customerTripRequestSuccess,
+        extra: CustomerTripRequestSuccessArgs(
+          fromCity: trip.fromDisplayLabel,
+          toCity: trip.toDisplayLabel,
+          pickupDateTime: trip.estimatedStartDate,
+          estimatedPrice: trip.estimatedPrice,
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      final error = ref.read(customerTripActionsProvider);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error ?? context.l10n.errorGeneric)),
+      );
+    } finally {
+      if (mounted) safeSetState(() => _isSubmittingRequest = false);
+    }
   }
 
   Shipment? _resolveShipment() {

@@ -22,6 +22,10 @@ class AppModalBottomSheet {
       context: context,
       useRootNavigator: true,
       isScrollControlled: isScrollControlled,
+      // Sheet shells ([AppBottomSheetContainer], etc.) own bottom inset via
+      // viewPadding. Flutter's default SafeArea uses padding (unreliable on
+      // Android edge-to-edge) and would also inset the top awkwardly.
+      useSafeArea: false,
       showDragHandle: showDragHandle,
       isDismissible: isDismissible,
       enableDrag: enableDrag,

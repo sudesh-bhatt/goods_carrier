@@ -89,10 +89,29 @@ abstract final class ShipmentApiMapper {
     String fallbackCustomerId = '',
   }) {
     final shipment = fromJson(json, fallbackCustomerId: fallbackCustomerId);
+    final interested = _parseInterestedDriverDetails(json, shipment);
     return CustomerShipmentDetail(
       shipment: shipment,
       paymentSummary: _parsePaymentSummary(json, shipment.estimatedPrice),
-      interestedDrivers: _parseInterestedDriverDetails(json, shipment),
+      interestedDrivers: interested,
+      assignedDriver: _resolveAssignedDriver(json, shipment, interested),
+    );
+  }
+
+  /// Parses `POST /api/customer/shipments/{id}/assign` response `data`.
+  static ShipmentAssignmentResult parseAssignment(Map<String, dynamic> json) {
+    final driver = _parseAssignmentDriver(json);
+    final driverId = driver.driverId.isNotEmpty
+        ? driver.driverId
+        : _stringId(json['driver_id']);
+    return ShipmentAssignmentResult(
+      shipmentId: _stringId(json['shipment_id'] ?? json['id']),
+      driverId: driverId,
+      driver: driver,
+      status: _firstString(json, ['status']).isNotEmpty
+          ? _firstString(json, ['status'])
+          : 'accepted',
+      offeredPrice: driver.offeredPrice,
     );
   }
 
@@ -557,6 +576,144 @@ abstract final class ShipmentApiMapper {
         note: note.isNotEmpty ? note : null,
       );
     }).where((d) => d.driverId.isNotEmpty).toList(growable: false);
+  }
+
+  static ShipmentInterestedDriver? _resolveAssignedDriver(
+    Map<String, dynamic> source,
+    Shipment shipment,
+    List<ShipmentInterestedDriver> interested,
+  ) {
+    final assignedId = shipment.assignedDriverId;
+    if (assignedId != null && assignedId.isNotEmpty) {
+      final fromList = interested
+          .where((d) => d.driverId == assignedId)
+          .firstOrNull;
+      if (fromList != null) return fromList;
+    }
+
+    final accepted = interested.where((d) {
+      return assignedId != null && d.driverId == assignedId;
+    }).firstOrNull;
+    if (accepted != null) return accepted;
+
+    final nested = source['assigned_driver'] ?? source['driver'];
+    if (nested is Map<String, dynamic>) {
+      return _parseAssignmentDriver({
+        'driver': nested,
+        'driver_id': nested['id'] ?? nested['driver_id'],
+        'vehicle': source['vehicle'] ?? nested['vehicle'],
+        'offered_price': source['offered_price'] ?? nested['offered_price'],
+        'note': source['note'] ?? nested['note'],
+      }, fallbackVehicle: shipment.vehicleType.label);
+    }
+
+    // Accepted request in the requests list.
+    final rawList = source['requests'] ??
+        source['interested_drivers'] ??
+        source['driver_requests'];
+    if (rawList is List) {
+      for (final item in rawList.whereType<Map<String, dynamic>>()) {
+        final status = item['status']?.toString().toLowerCase() ?? '';
+        if (status == 'accepted' || status == 'assigned') {
+          final parsed = _parseInterestedDriverDetails(
+            {'requests': [item]},
+            shipment,
+          );
+          if (parsed.isNotEmpty) return parsed.first;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  static ShipmentInterestedDriver _parseAssignmentDriver(
+    Map<String, dynamic> json, {
+    String fallbackVehicle = '',
+  }) {
+    final nestedDriver = json['driver'];
+    final driverMap =
+        nestedDriver is Map<String, dynamic> ? nestedDriver : json;
+
+    final nestedVehicle = json['vehicle'];
+    final vehicleMap =
+        nestedVehicle is Map<String, dynamic> ? nestedVehicle : null;
+
+    final name = _firstString(driverMap, [
+      'name',
+      'driver_name',
+      'full_name',
+    ]);
+
+    var vehicleName = vehicleMap != null
+        ? _firstString(vehicleMap, [
+            'vehicle_type',
+            'vehicle_name',
+            'name',
+            'type',
+          ])
+        : '';
+    if (vehicleName.isEmpty) {
+      vehicleName = fallbackVehicle;
+    }
+
+    var vehicleNumber = vehicleMap != null
+        ? _firstString(vehicleMap, [
+            'registration_number',
+            'vehicle_number',
+            'vehicle_no',
+          ])
+        : '';
+    if (vehicleNumber.isEmpty) {
+      vehicleNumber = _firstString(json, [
+        'vehicle_number',
+        'registration_number',
+      ]);
+    }
+
+    var capacity = vehicleMap != null
+        ? _firstString(vehicleMap, ['capacity', 'load_capacity'])
+        : '';
+    if (capacity.isEmpty) {
+      capacity = _firstString(json, ['capacity', 'load_capacity']);
+    }
+
+    final countryCode = _firstString(driverMap, [
+      'country_code',
+      'dial_code',
+    ]);
+    final offeredPrice = _parseDouble(json['offered_price']);
+    final note = _firstString(json, [
+      'note',
+      'message',
+      'additional_note',
+    ]);
+
+    return ShipmentInterestedDriver(
+      driverId: _stringId(
+        json['driver_id'] ??
+            driverMap['id'] ??
+            driverMap['driver_id'],
+      ),
+      name: name.isNotEmpty ? name : 'Driver',
+      subtitle: _firstString(driverMap, ['title', 'subtitle', 'role']),
+      vehicleName: vehicleName,
+      vehicleNumber: vehicleNumber,
+      capacityLabel: capacity,
+      phone: _firstString(driverMap, [
+        'phone',
+        'mobile',
+        'business_phone',
+      ]),
+      countryCode: countryCode.isNotEmpty ? countryCode : '+91',
+      avatarUrl: _firstString(driverMap, [
+        'avatar',
+        'profile_image_url',
+        'photo',
+      ]),
+      offeredPrice: offeredPrice > 0 ? offeredPrice : null,
+      note: note.isNotEmpty ? note : null,
+    );
   }
 
   static ShipmentPaymentSummary _parsePaymentSummary(

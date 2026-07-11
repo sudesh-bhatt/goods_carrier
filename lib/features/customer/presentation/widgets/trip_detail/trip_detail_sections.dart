@@ -448,10 +448,12 @@ class TripDetailRequestFooter extends StatelessWidget {
     super.key,
     required this.label,
     required this.onPressed,
+    this.isLoading = false,
   });
 
   final String label;
   final VoidCallback onPressed;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -473,7 +475,7 @@ class TripDetailRequestFooter extends StatelessWidget {
                   BorderRadius.circular(TripDetailTokens.buttonRadius.r),
               elevation: 0,
               child: InkWell(
-                onTap: onPressed,
+                onTap: isLoading ? null : onPressed,
                 borderRadius:
                     BorderRadius.circular(TripDetailTokens.buttonRadius.r),
                 child: Container(
@@ -496,16 +498,25 @@ class TripDetailRequestFooter extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: Text(
-                    label,
-                    style: TextStyle(
-                      fontFamily: FontRes.MANROPE_BOLD,
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.w700,
-                      height: 28 / 18,
-                      color: Colors.white,
-                    ),
-                  ),
+                  child: isLoading
+                      ? SizedBox(
+                          width: 24.w,
+                          height: 24.w,
+                          child: const CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            color: Colors.white,
+                          ),
+                        )
+                      : Text(
+                          label,
+                          style: TextStyle(
+                            fontFamily: FontRes.MANROPE_BOLD,
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w700,
+                            height: 28 / 18,
+                            color: Colors.white,
+                          ),
+                        ),
                 ),
               ),
             ),

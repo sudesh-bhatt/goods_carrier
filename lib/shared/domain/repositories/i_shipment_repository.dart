@@ -49,7 +49,10 @@ abstract class IShipmentRepository {
   });
 
   /// Locks in [driverId] as the selected driver for [shipmentId].
-  Future<void> assignDriver(String shipmentId, String driverId);
+  Future<ShipmentAssignmentResult> assignDriver(
+    String shipmentId,
+    String driverId,
+  );
 
   // ── Driver operations ────────────────────────────────────────────────────
 

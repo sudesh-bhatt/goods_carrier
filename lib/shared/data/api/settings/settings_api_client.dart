@@ -2,9 +2,10 @@ import 'package:dio/dio.dart';
 
 import '../../../../core/network/api_constants.dart';
 import '../../../../core/network/api_envelope.dart';
+import '../../../domain/enums/user_role.dart';
 
-class CustomerSettingsData {
-  const CustomerSettingsData({
+class UserSettingsData {
+  const UserSettingsData({
     this.pushNotificationsEnabled = true,
     this.languageCode = 'en',
   });
@@ -13,17 +14,31 @@ class CustomerSettingsData {
   final String languageCode;
 }
 
-class CustomerSettingsApiClient {
-  CustomerSettingsApiClient(this._dio);
+/// Settings API client that targets the role-specific endpoints:
+/// customers use `/api/customer/settings/*`, drivers use the shared
+/// `/api/settings/*` endpoints.
+class SettingsApiClient {
+  SettingsApiClient(this._dio, {required UserRole role}) : _role = role;
 
   final Dio _dio;
+  final UserRole _role;
 
-  Future<CustomerSettingsData> fetchSettings() async {
-    final response = await _dio.get<Map<String, dynamic>>(
-      ApiConstants.customerSettings,
-    );
+  String get _settingsPath => _role == UserRole.driver
+      ? ApiConstants.settings
+      : ApiConstants.customerSettings;
+
+  String get _pushPath => _role == UserRole.driver
+      ? ApiConstants.settingsPush
+      : ApiConstants.customerSettingsPush;
+
+  String get _languagePath => _role == UserRole.driver
+      ? ApiConstants.settingsLanguage
+      : ApiConstants.customerSettingsLanguage;
+
+  Future<UserSettingsData> fetchSettings() async {
+    final response = await _dio.get<Map<String, dynamic>>(_settingsPath);
     final data = ApiEnvelope.parseData(response.data);
-    return CustomerSettingsData(
+    return UserSettingsData(
       pushNotificationsEnabled:
           data['push_notifications'] as bool? ??
               data['push_notifications_enabled'] as bool? ??
@@ -37,14 +52,14 @@ class CustomerSettingsApiClient {
 
   Future<void> updatePushNotification(bool enabled) async {
     await _dio.post<void>(
-      ApiConstants.customerSettingsPush,
+      _pushPath,
       data: {'push_notifications': enabled},
     );
   }
 
   Future<void> updateLanguage(String languageCode) async {
     await _dio.post<void>(
-      ApiConstants.customerSettingsLanguage,
+      _languagePath,
       data: {'language': languageCode},
     );
   }

@@ -45,11 +45,16 @@ class AppBottomSheetContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
+    final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
+    // Prefer viewPadding — MediaQuery.padding.bottom can be 0 on Android
+    // edge-to-edge even when a 3-button nav bar is present.
+    final systemBottom = keyboardInset > 0
+        ? 0.0
+        : MediaQuery.viewPaddingOf(context).bottom;
     final isBounded = maxHeight != null;
 
     return Padding(
-      padding: EdgeInsets.only(bottom: bottomInset),
+      padding: EdgeInsets.only(bottom: keyboardInset),
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: backgroundColor,
@@ -64,8 +69,8 @@ class AppBottomSheetContainer extends StatelessWidget {
             ),
           ],
         ),
-        child: SafeArea(
-          top: false,
+        child: Padding(
+          padding: EdgeInsets.only(bottom: systemBottom),
           child: ConstrainedBox(
             constraints: isBounded
                 ? BoxConstraints(maxHeight: maxHeight!)

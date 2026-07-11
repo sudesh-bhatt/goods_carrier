@@ -10,6 +10,7 @@ import 'features/settings/presentation/providers/locale_provider.dart';
 import 'features/settings/presentation/providers/theme_provider.dart';
 import 'l10n/app_localizations.dart';
 import 'shared/presentation/widgets/feedback/connectivity_banner.dart';
+import 'shared/presentation/widgets/layout/app_system_bottom_inset.dart';
 
 // ─── Scroll behaviour ─────────────────────────────────────────────────────────
 
@@ -104,13 +105,16 @@ class GoodsCarrierApp extends ConsumerWidget {
             final isTablet = mq.size.shortestSide >= 600;
             final isOnline = ref.watch(isOnlineProvider);
 
+            // Clamp text scale first (preserves system viewPadding), then apply
+            // the universal bottom inset so nested MediaQueries cannot restore
+            // a stale padding.bottom and undo the guard.
             Widget content = MediaQuery(
               data: mq.copyWith(
                 textScaler: TextScaler.linear(
                   mq.textScaler.scale(1.0).clamp(0.85, 1.20),
                 ),
               ),
-              child: routerChild!,
+              child: AppSystemBottomInset(child: routerChild!),
             );
 
             if (isTablet) {

@@ -235,6 +235,7 @@ class PublishDriverInterestCard extends StatelessWidget {
     required this.capacityLabel,
     required this.capacityValue,
     this.avatarUrl,
+    this.statusLabel,
     this.onTap,
     this.onCall,
     this.onWhatsApp,
@@ -247,12 +248,18 @@ class PublishDriverInterestCard extends StatelessWidget {
   final String capacityLabel;
   final String capacityValue;
   final String? avatarUrl;
+  /// e.g. "Accepted" for the assigned driver.
+  final String? statusLabel;
   final VoidCallback? onTap;
   final VoidCallback? onCall;
   final VoidCallback? onWhatsApp;
 
   @override
   Widget build(BuildContext context) {
+    final isTappable = onTap != null;
+    final trimmedStatus = statusLabel?.trim();
+    final hasStatus = trimmedStatus != null && trimmedStatus.isNotEmpty;
+
     return Material(
       color: ShipmentPublishTokens.cardDriver,
       borderRadius:
@@ -288,16 +295,21 @@ class PublishDriverInterestCard extends StatelessWidget {
                                   color: ShipmentPublishTokens.bodyDark,
                                 ),
                               ),
-                              Text(
-                                expertLabel,
-                                style: TextStyle(
-                                  fontFamily: FontRes.MANROPE_MEDIUM,
-                                  fontSize: 10.sp,
-                                  fontWeight: FontWeight.w500,
-                                  height: 1.5,
-                                  color: ShipmentPublishTokens.subtitleGrey,
+                              if (expertLabel.trim().isNotEmpty)
+                                Text(
+                                  expertLabel,
+                                  style: TextStyle(
+                                    fontFamily: FontRes.MANROPE_MEDIUM,
+                                    fontSize: 10.sp,
+                                    fontWeight: FontWeight.w500,
+                                    height: 1.5,
+                                    color: ShipmentPublishTokens.subtitleGrey,
+                                  ),
                                 ),
-                              ),
+                              if (hasStatus) ...[
+                                SizedBox(height: 2.h),
+                                _StatusBadge(label: trimmedStatus),
+                              ],
                             ],
                           ),
                         ),
@@ -305,6 +317,7 @@ class PublishDriverInterestCard extends StatelessWidget {
                     ),
                     SizedBox(height: 16.h),
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
                           child: _VehicleMeta(
@@ -340,10 +353,45 @@ class PublishDriverInterestCard extends StatelessWidget {
                     ),
                     onTap: onWhatsApp,
                   ),
+                  if (isTappable) ...[
+                    SizedBox(height: 12.h),
+                    Icon(
+                      Icons.chevron_right_rounded,
+                      size: 22.w,
+                      color: ShipmentPublishTokens.subtitleGrey,
+                    ),
+                  ],
                 ],
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StatusBadge extends StatelessWidget {
+  const _StatusBadge({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
+      decoration: BoxDecoration(
+        color: ShipmentPublishTokens.publishBg,
+        borderRadius: BorderRadius.circular(9999),
+      ),
+      child: Text(
+        label.toUpperCase(),
+        style: TextStyle(
+          fontFamily: FontRes.MANROPE_SEMIBOLD,
+          fontSize: 10.sp,
+          fontWeight: FontWeight.w600,
+          height: 14 / 10,
+          color: ShipmentPublishTokens.publishFg,
         ),
       ),
     );
@@ -424,9 +472,11 @@ class _VehicleMeta extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           title,
+          textAlign: TextAlign.start,
           style: TextStyle(
             fontFamily: FontRes.MANROPE_BOLD,
             fontSize: 14.sp,
@@ -437,6 +487,7 @@ class _VehicleMeta extends StatelessWidget {
         ),
         Text(
           subtitle,
+          textAlign: TextAlign.start,
           style: TextStyle(
             fontFamily: FontRes.MANROPE_REGULAR,
             fontSize: 12.sp,

@@ -184,7 +184,7 @@ class SettingsLanguageCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 80.h,
+      constraints: BoxConstraints(minHeight: 80.h),
       padding: EdgeInsets.fromLTRB(16.w, 16.w, 8.w, 16.w),
       decoration: BoxDecoration(
         color: CustomerSettingsTokens.cardFill,
@@ -198,7 +198,7 @@ class SettingsLanguageCard extends StatelessWidget {
           Expanded(
             child: Text(
               title,
-              maxLines: 1,
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontFamily: FontRes.MANROPE_SEMIBOLD,
@@ -245,8 +245,9 @@ class _LanguageDropdownChip extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(24.r),
         child: Container(
-          width: 112.w,
+          constraints: BoxConstraints(minWidth: 112.w),
           height: 40.h,
+          padding: EdgeInsets.only(left: 16.w, right: 10.w),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(24.r),
@@ -263,31 +264,26 @@ class _LanguageDropdownChip extends StatelessWidget {
             ],
           ),
           child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.only(left: 16.w),
-                  child: Text(
-                    label,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: _labelStyle.copyWith(
-                      fontSize: 12.sp,
-                      height: 1,
-                    ),
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: _labelStyle.copyWith(
+                    fontSize: 12.sp,
+                    height: 1,
                   ),
                 ),
               ),
-              SizedBox(
-                width: 44.w,
-                child: Center(
-                  child: Icon(
-                    Icons.keyboard_arrow_down_rounded,
-                    size: 24.w,
-                    color: CustomerSettingsTokens.labelBrown,
-                  ),
-                ),
+              SizedBox(width: 4.w),
+              Icon(
+                Icons.keyboard_arrow_down_rounded,
+                size: 24.w,
+                color: CustomerSettingsTokens.labelBrown,
               ),
             ],
           ),

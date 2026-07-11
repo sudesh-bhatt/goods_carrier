@@ -107,8 +107,8 @@ class RemoteShipmentRepository implements IShipmentRepository {
   }
 
   @override
-  Future<void> assignDriver(String shipmentId, String driverId) {
-    throw UnsupportedError('assignDriver endpoint not in Postman collection');
+  Future<ShipmentAssignmentResult> assignDriver(String shipmentId, String driverId) {
+    throw UnsupportedError('Use RemoteCustomerShipmentRepository.assignDriver');
   }
 
   @override

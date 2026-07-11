@@ -50,12 +50,15 @@ class _AppPickerSheetBody<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
+    final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
+    final systemBottom = keyboardInset > 0
+        ? 0.0
+        : MediaQuery.viewPaddingOf(context).bottom;
     final maxHeight = MediaQuery.sizeOf(context).height *
         AppPickerBottomSheet._maxHeightFraction;
 
     return Padding(
-      padding: EdgeInsets.only(bottom: bottomInset),
+      padding: EdgeInsets.only(bottom: keyboardInset),
       child: Container(
         constraints: BoxConstraints(maxHeight: maxHeight),
         decoration: BoxDecoration(
@@ -69,88 +72,92 @@ class _AppPickerSheetBody<T> extends StatelessWidget {
             ),
           ],
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(height: 16.h),
-            Container(
-              width: 48.w,
-              height: 6.h,
-              decoration: BoxDecoration(
-                color: AppPickerBottomSheet._handleColor.withValues(alpha: 0.4),
-                borderRadius: BorderRadius.circular(999),
+        child: Padding(
+          padding: EdgeInsets.only(bottom: systemBottom),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(height: 16.h),
+              Container(
+                width: 48.w,
+                height: 6.h,
+                decoration: BoxDecoration(
+                  color:
+                      AppPickerBottomSheet._handleColor.withValues(alpha: 0.4),
+                  borderRadius: BorderRadius.circular(999),
+                ),
               ),
-            ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(32.w, 20.h, 32.w, 16.h),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  title,
-                  style: TextStyle(
-                    fontFamily: FontRes.MANROPE_EXTRABOLD,
-                    fontSize: 24.sp,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.6,
-                    color: AppPickerBottomSheet._titleColor,
+              Padding(
+                padding: EdgeInsets.fromLTRB(32.w, 20.h, 32.w, 16.h),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      fontFamily: FontRes.MANROPE_EXTRABOLD,
+                      fontSize: 24.sp,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.6,
+                      color: AppPickerBottomSheet._titleColor,
+                    ),
                   ),
                 ),
               ),
-            ),
-            Flexible(
-              child: ListView.separated(
-                shrinkWrap: true,
-                padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 24.h),
-                itemCount: items.length,
-                separatorBuilder: (_, __) => SizedBox(height: 8.h),
-                itemBuilder: (context, index) {
-                  final item = items[index];
-                  return Material(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12.r),
-                    child: InkWell(
-                      onTap: () {
-                        HapticFeedback.selectionClick();
-                        Navigator.pop(context, item.value);
-                      },
+              Flexible(
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 24.h),
+                  itemCount: items.length,
+                  separatorBuilder: (_, __) => SizedBox(height: 8.h),
+                  itemBuilder: (context, index) {
+                    final item = items[index];
+                    return Material(
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(12.r),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 16.w,
-                          vertical: 14.h,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              item.label,
-                              style: TextStyle(
-                                fontFamily: FontRes.MANROPE_MEDIUM,
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.w500,
-                                color: AppPickerBottomSheet._titleColor,
-                              ),
-                            ),
-                            if (item.subtitle != null) ...[
-                              SizedBox(height: 4.h),
+                      child: InkWell(
+                        onTap: () {
+                          HapticFeedback.selectionClick();
+                          Navigator.pop(context, item.value);
+                        },
+                        borderRadius: BorderRadius.circular(12.r),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16.w,
+                            vertical: 14.h,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
                               Text(
-                                item.subtitle!,
+                                item.label,
                                 style: TextStyle(
-                                  fontFamily: FontRes.MANROPE_REGULAR,
-                                  fontSize: 13.sp,
-                                  color: const Color(0xFF6B7280),
+                                  fontFamily: FontRes.MANROPE_MEDIUM,
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppPickerBottomSheet._titleColor,
                                 ),
                               ),
+                              if (item.subtitle != null) ...[
+                                SizedBox(height: 4.h),
+                                Text(
+                                  item.subtitle!,
+                                  style: TextStyle(
+                                    fontFamily: FontRes.MANROPE_REGULAR,
+                                    fontSize: 13.sp,
+                                    color: const Color(0xFF6B7280),
+                                  ),
+                                ),
+                              ],
                             ],
-                          ],
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
