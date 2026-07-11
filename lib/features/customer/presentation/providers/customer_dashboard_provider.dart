@@ -120,15 +120,15 @@ class CustomerDashboardNotifier extends StateNotifier<CustomerDashboardState> {
 
   Future<void> refresh() => _load();
 
-  Future<void> selectVehicleType(int id) async {
-    final nextId = state.selectedVehicleTypeId == id ? null : id;
+  Future<void> selectVehicleType(int? id) async {
+    if (state.selectedVehicleTypeId == id) return;
     final query = state.query.copyWith(
-      vehicleTypeId: nextId,
-      clearVehicleTypeId: nextId == null,
+      vehicleTypeId: id,
+      clearVehicleTypeId: id == null,
     );
     state = state.copyWith(
-      selectedVehicleTypeId: nextId,
-      clearSelectedVehicleTypeId: nextId == null,
+      selectedVehicleTypeId: id,
+      clearSelectedVehicleTypeId: id == null,
     );
     await _load(query: query);
   }
@@ -139,9 +139,19 @@ class CustomerDashboardNotifier extends StateNotifier<CustomerDashboardState> {
     int? vehicleTypeId,
     bool clearVehicleTypeId = false,
   }) async {
-    final selectedId = clearVehicleTypeId
-        ? null
-        : (vehicleTypeId ?? state.selectedVehicleTypeId);
+    final int? selectedId;
+    if (clearVehicleTypeId) {
+      selectedId = null;
+    } else if (vehicleTypeId != null) {
+      selectedId = vehicleTypeId;
+    } else if (filter.vehicleClass != null) {
+      selectedId = homeDashboardVehicleTypeIdFor(
+        state.vehicleTypes,
+        filter.vehicleClass!,
+      );
+    } else {
+      selectedId = null;
+    }
     final query = _buildQuery(
       search: search,
       filter: filter,

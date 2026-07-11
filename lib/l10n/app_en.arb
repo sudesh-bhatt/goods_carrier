@@ -375,6 +375,7 @@
   "filterCalendar": "Calendar",
   "filterToday": "TODAY",
   "filterVehicleClass": "Vehicle Class",
+  "filterVehicleAll": "All",
   "filterLoadCapacity": "Load Capacity",
   "filterApply": "Apply Filters",
   "customerMyShipment": "My Shipment",

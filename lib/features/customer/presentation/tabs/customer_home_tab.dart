@@ -10,6 +10,7 @@ import '../../../../core/mixins/safe_set_state_mixin.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../res/font_res.dart';
 import '../../../../shared/domain/entities/driver_trip.dart';
+import '../../../../shared/domain/entities/shipment_masters.dart';
 import '../../../../shared/domain/models/shipment_filter.dart';
 import '../../../../shared/presentation/widgets/filters/filter_search_sheet.dart';
 import '../../../../shared/presentation/widgets/feedback/home_feed_empty_state.dart';
@@ -48,6 +49,28 @@ class _CustomerHomeTabState extends ConsumerState<CustomerHomeTab>
     super.dispose();
   }
 
+  void _syncFilterVehicleClass(int? vehicleTypeId) {
+    final types = ref.read(customerDashboardProvider).vehicleTypes;
+    final vehicleClass =
+        homeDashboardVehicleClassForId(types, vehicleTypeId);
+    _shipmentFilter = _shipmentFilter.copyWith(
+      vehicleClass: vehicleClass,
+      clearVehicleClass: vehicleClass == null,
+    );
+  }
+
+  ShipmentFilter _filterSyncedWithChips() {
+    final dashboard = ref.read(customerDashboardProvider);
+    final vehicleClass = homeDashboardVehicleClassForId(
+      dashboard.vehicleTypes,
+      dashboard.selectedVehicleTypeId,
+    );
+    return _shipmentFilter.copyWith(
+      vehicleClass: vehicleClass,
+      clearVehicleClass: vehicleClass == null,
+    );
+  }
+
   void _resetFilters() {
     safeSetState(() {
       _shipmentFilter = const ShipmentFilter();
@@ -66,12 +89,27 @@ class _CustomerHomeTabState extends ConsumerState<CustomerHomeTab>
       _shipmentFilter.hasActiveFilters;
 
   Future<void> _reloadDashboard() async {
-    final dashboard = ref.read(customerDashboardProvider);
     await ref.read(customerDashboardProvider.notifier).applyFilters(
           search: _searchCtrl.text,
           filter: _shipmentFilter,
-          vehicleTypeId: dashboard.selectedVehicleTypeId,
+          clearVehicleTypeId: _shipmentFilter.vehicleClass == null,
         );
+  }
+
+  Future<void> _onVehicleChipSelected(int? id) async {
+    safeSetState(() => _syncFilterVehicleClass(id));
+    await ref.read(customerDashboardProvider.notifier).selectVehicleType(id);
+  }
+
+  Future<void> _openFilterSheet() async {
+    final initial = _filterSyncedWithChips();
+    final result = await FilterSearchSheet.show(
+      context,
+      initial: initial,
+    );
+    if (result == null || !mounted) return;
+    safeSetState(() => _shipmentFilter = result);
+    await _reloadDashboard();
   }
 
   List<DriverTrip> _filterTripsLocally(List<DriverTrip> source) {
@@ -150,16 +188,7 @@ class _CustomerHomeTabState extends ConsumerState<CustomerHomeTab>
                       safeSetState(() {});
                       if (EnvConfig.useRemoteApi) _reloadDashboard();
                     },
-                    onFilterTap: () async {
-                      final result = await FilterSearchSheet.show(
-                        context,
-                        initial: _shipmentFilter,
-                      );
-                      if (result != null) {
-                        safeSetState(() => _shipmentFilter = result);
-                        await _reloadDashboard();
-                      }
-                    },
+                    onFilterTap: _openFilterSheet,
                   ),
                   SizedBox(height: 24.h),
                   Text(
@@ -176,9 +205,8 @@ class _CustomerHomeTabState extends ConsumerState<CustomerHomeTab>
                   CustomerHomeVehicleChips(
                     vehicleTypes: state.vehicleTypes,
                     selectedVehicleTypeId: state.selectedVehicleTypeId,
-                    onSelected: (id) => ref
-                        .read(customerDashboardProvider.notifier)
-                        .selectVehicleType(id),
+                    allLabel: l10n.filterVehicleAll,
+                    onSelected: _onVehicleChipSelected,
                   ),
                   SizedBox(height: 20.h),
                 ],

@@ -920,6 +920,9 @@ class AppLocalizationsGu extends AppLocalizations {
   String get filterVehicleClass => 'વાહન વર્ગ';
 
   @override
+  String get filterVehicleAll => 'બધા';
+
+  @override
   String get filterLoadCapacity => 'લોડ ક્ષમતા';
 
   @override

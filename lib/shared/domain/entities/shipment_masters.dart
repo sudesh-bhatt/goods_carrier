@@ -37,6 +37,45 @@ List<ShipmentMasterOption> homeDashboardVehicleTypes(
 ) =>
     types.where((t) => t.showsOnCustomerHomeChips).toList(growable: false);
 
+/// Maps a home-chip master option to [VehicleType] for filter-sheet sync.
+VehicleType? vehicleTypeFromMasterOption(ShipmentMasterOption option) {
+  final key = (option.slug ?? option.name).trim();
+  if (key.isEmpty) return null;
+  final normalized =
+      key.toLowerCase().replaceAll('-', '_').replaceAll(' ', '_');
+  for (final type in VehicleType.values) {
+    if (type.apiValue == normalized || type.name == normalized) {
+      return type;
+    }
+  }
+  if (normalized.contains('pickup')) return VehicleType.pickupTruck;
+  if (normalized.contains('mini')) return VehicleType.mini;
+  if (normalized.contains('heavy')) return VehicleType.heavyDuty;
+  if (normalized.contains('truck')) return VehicleType.truck;
+  return null;
+}
+
+int? homeDashboardVehicleTypeIdFor(
+  Iterable<ShipmentMasterOption> types,
+  VehicleType type,
+) {
+  for (final item in types) {
+    if (vehicleTypeFromMasterOption(item) == type) return item.id;
+  }
+  return null;
+}
+
+VehicleType? homeDashboardVehicleClassForId(
+  Iterable<ShipmentMasterOption> types,
+  int? id,
+) {
+  if (id == null) return null;
+  for (final item in types) {
+    if (item.id == id) return vehicleTypeFromMasterOption(item);
+  }
+  return null;
+}
+
 class WeightUnitOption {
   const WeightUnitOption({required this.value, required this.label});
 

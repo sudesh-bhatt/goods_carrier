@@ -153,8 +153,11 @@ class _ShipmentDetailScreenState extends ConsumerState<ShipmentDetailScreen>
             PublishRouteCard(
               tripIdLabel: l10n.tripId,
               displayId: displayId,
-              publishLabel:
-                  customerShipmentStatusBadgeLabel(l10n, shipment.status),
+              publishLabel: customerShipmentStatusBadgeLabel(
+                l10n,
+                shipment.status,
+                allottedStatus: shipment.allottedStatus,
+              ),
               fromTitle: fromTitle,
               fromSubtitle: fromSub.isNotEmpty
                   ? fromSub

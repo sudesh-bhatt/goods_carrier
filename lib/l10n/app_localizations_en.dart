@@ -925,6 +925,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get filterVehicleClass => 'Vehicle Class';
 
   @override
+  String get filterVehicleAll => 'All';
+
+  @override
   String get filterLoadCapacity => 'Load Capacity';
 
   @override

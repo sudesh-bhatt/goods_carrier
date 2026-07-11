@@ -111,18 +111,20 @@ class CustomerHomeSearchRow extends StatelessWidget {
   }
 }
 
-/// Vehicle filter chips — labels/ids from dashboard `vehicle_types` API.
+/// Vehicle filter chips — "All" + labels/ids from dashboard `vehicle_types` API.
 class CustomerHomeVehicleChips extends StatelessWidget {
   const CustomerHomeVehicleChips({
     super.key,
     required this.vehicleTypes,
     required this.selectedVehicleTypeId,
     required this.onSelected,
+    required this.allLabel,
   });
 
   final List<ShipmentMasterOption> vehicleTypes;
   final int? selectedVehicleTypeId;
-  final ValueChanged<int> onSelected;
+  final ValueChanged<int?> onSelected;
+  final String allLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -132,10 +134,18 @@ class CustomerHomeVehicleChips extends StatelessWidget {
       height: 44.h,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        itemCount: vehicleTypes.length,
+        itemCount: vehicleTypes.length + 1,
         separatorBuilder: (_, __) => SizedBox(width: 10.w),
         itemBuilder: (context, index) {
-          final option = vehicleTypes[index];
+          if (index == 0) {
+            return _VehicleChip(
+              label: allLabel,
+              materialIcon: Icons.apps_rounded,
+              selected: selectedVehicleTypeId == null,
+              onTap: () => onSelected(null),
+            );
+          }
+          final option = vehicleTypes[index - 1];
           return _VehicleChip(
             label: option.name,
             icon: _assetForOption(option),
@@ -158,13 +168,15 @@ class CustomerHomeVehicleChips extends StatelessWidget {
 class _VehicleChip extends StatelessWidget {
   const _VehicleChip({
     required this.label,
-    required this.icon,
+    this.icon,
+    this.materialIcon,
     required this.selected,
     required this.onTap,
-  });
+  }) : assert(icon != null || materialIcon != null);
 
   final String label;
-  final SvgGenImage icon;
+  final SvgGenImage? icon;
+  final IconData? materialIcon;
   final bool selected;
   final VoidCallback onTap;
 
@@ -189,7 +201,10 @@ class _VehicleChip extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                icon.svgTint(width: 16.w, height: 16.w, color: fg),
+                if (icon != null)
+                  icon!.svgTint(width: 16.w, height: 16.w, color: fg)
+                else
+                  Icon(materialIcon, size: 16.w, color: fg),
                 SizedBox(width: 6.w),
                 Text(
                   label,

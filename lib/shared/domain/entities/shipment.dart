@@ -87,6 +87,7 @@ class Shipment {
     this.assignedDriverId,
     this.interestedDriverIds = const [],
     this.interestCount = 0,
+    this.allottedStatus,
   });
 
   final String id;                        // TRK-XXXX
@@ -109,8 +110,13 @@ class Shipment {
   final String? assignedDriverId;
   final List<String> interestedDriverIds;
 
-  /// From list API `interest_count` when driver IDs are not included.
+  /// From list/detail API `request_count` / `interest_count` when driver IDs
+  /// are not included.
   final int interestCount;
+
+  /// Human-readable allotment label from API (`allotted_status`), e.g.
+  /// "Driver Assigned". Prefer this over [status] for list/detail badges.
+  final String? allottedStatus;
 
   bool get isActive    => status == ShipmentStatus.assigned || status == ShipmentStatus.inTransit;
   bool get isPending   => status == ShipmentStatus.pending || status == ShipmentStatus.interestReceived;
@@ -129,6 +135,7 @@ class Shipment {
     String? assignedDriverId,
     List<String>? interestedDriverIds,
     int? interestCount,
+    String? allottedStatus,
     double? estimatedPrice,
   }) => Shipment(
     id: id, customerId: customerId, pickup: pickup, drop: drop,
@@ -140,6 +147,7 @@ class Shipment {
     assignedDriverId: assignedDriverId ?? this.assignedDriverId,
     interestedDriverIds: interestedDriverIds ?? this.interestedDriverIds,
     interestCount: interestCount ?? this.interestCount,
+    allottedStatus: allottedStatus ?? this.allottedStatus,
   );
 
   // ── JSON ────────────────────────────────────────────────────────────────
@@ -178,6 +186,13 @@ class Shipment {
                                  ?.map((e) => e.toString())
                                  .toList() ??
                              const [],
+        interestCount: (j['request_count'] as num?)?.toInt() ??
+            (j['interest_count'] as num?)?.toInt() ??
+            0,
+        allottedStatus: (j['allotted_status'] as String?)?.trim().isNotEmpty ==
+                true
+            ? (j['allotted_status'] as String).trim()
+            : null,
       );
 
   static String _stringId(dynamic raw) {
@@ -219,6 +234,8 @@ class Shipment {
         'estimated_price':       estimatedPrice,
         'assigned_driver_id':    assignedDriverId,
         'interested_driver_ids': interestedDriverIds,
+        'interest_count':        interestCount,
+        if (allottedStatus != null) 'allotted_status': allottedStatus,
       };
 
   @override

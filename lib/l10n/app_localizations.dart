@@ -1840,6 +1840,12 @@ abstract class AppLocalizations {
   /// **'Vehicle Class'**
   String get filterVehicleClass;
 
+  /// No description provided for @filterVehicleAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get filterVehicleAll;
+
   /// No description provided for @filterLoadCapacity.
   ///
   /// In en, this message translates to:

@@ -58,6 +58,7 @@ class MyShipmentListCard extends StatelessWidget {
             shipmentIdLabel: shipmentIdLabel,
             displayId: _displayId,
             status: shipment.status,
+            allottedStatus: shipment.allottedStatus,
           ),
           SizedBox(height: 24.h),
           _PriceBlock(
@@ -97,11 +98,13 @@ class _HeaderRow extends StatelessWidget {
     required this.shipmentIdLabel,
     required this.displayId,
     required this.status,
+    this.allottedStatus,
   });
 
   final String shipmentIdLabel;
   final String displayId;
   final ShipmentStatus status;
+  final String? allottedStatus;
 
   @override
   Widget build(BuildContext context) {
@@ -137,23 +140,30 @@ class _HeaderRow extends StatelessWidget {
             ],
           ),
         ),
-        _StatusBadge(status: status),
+        _StatusBadge(status: status, allottedStatus: allottedStatus),
       ],
     );
   }
 }
 
 class _StatusBadge extends StatelessWidget {
-  const _StatusBadge({required this.status});
+  const _StatusBadge({required this.status, this.allottedStatus});
 
   final ShipmentStatus status;
+  final String? allottedStatus;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final label = customerShipmentStatusBadgeLabel(l10n, status);
+    final label = customerShipmentStatusBadgeLabel(
+      l10n,
+      status,
+      allottedStatus: allottedStatus,
+    );
+    final hasAllotted =
+        allottedStatus != null && allottedStatus!.trim().isNotEmpty;
     final (bg, fg) = switch (status) {
-      ShipmentStatus.cancelled => (
+      ShipmentStatus.cancelled when !hasAllotted => (
           MyShipmentCardTokens.expiredBg,
           MyShipmentCardTokens.expiredFg,
         ),

@@ -922,6 +922,9 @@ class AppLocalizationsHi extends AppLocalizations {
   String get filterVehicleClass => 'वाहन वर्ग';
 
   @override
+  String get filterVehicleAll => 'सभी';
+
+  @override
   String get filterLoadCapacity => 'लोड क्षमता';
 
   @override

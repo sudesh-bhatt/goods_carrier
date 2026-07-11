@@ -204,7 +204,15 @@ abstract final class ShipmentApiMapper {
       estimatedPrice: _parsePrice(source),
       assignedDriverId: _parseAssignedDriverId(source),
       interestedDriverIds: _parseInterestedDriverIds(source),
-      interestCount: _readInt(source['interest_count']) ?? 0,
+      interestCount: _readInt(
+            source['request_count'] ??
+                source['interest_count'] ??
+                source['interest_request_count'],
+          ) ??
+          (source['requests'] is List
+              ? (source['requests'] as List).length
+              : 0),
+      allottedStatus: _parseAllottedStatus(source),
     );
 
     return ShipmentFormPrefill(
@@ -745,6 +753,14 @@ abstract final class ShipmentApiMapper {
       if (id != null) return _stringId(id);
     }
     return null;
+  }
+
+  static String? _parseAllottedStatus(Map<String, dynamic> source) {
+    final raw = source['allotted_status'] ?? source['allotment_status'];
+    if (raw == null) return null;
+    final value = raw.toString().trim();
+    if (value.isEmpty || value.toLowerCase() == 'null') return null;
+    return value;
   }
 
   static double _parsePrice(Map<String, dynamic> source) {

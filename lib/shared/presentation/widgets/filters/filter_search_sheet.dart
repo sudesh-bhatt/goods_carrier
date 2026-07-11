@@ -78,15 +78,8 @@ class _FilterSearchSheetState extends State<FilterSearchSheet>
 
   void _clearAll() {
     HapticFeedback.lightImpact();
-    safeSetState(() {
-      _filter = const ShipmentFilter();
-      _fromCtrl.clear();
-      _toCtrl.clear();
-      _isCalendarExpanded = false;
-      _calendarMonth = DateTime(_today.year, _today.month);
-      _pickupDateTouched = false;
-      _capacityTouched = false;
-    });
+    // Pop empty filter so callers close the sheet and reload the list.
+    Navigator.of(context).pop(const ShipmentFilter());
   }
 
   DateTime get _today {
