@@ -73,4 +73,15 @@ abstract final class EnvConfig {
 
     return '';
   }
+
+  /// Full iOS App Store URL used by update prompts.
+  static String get iosAppStoreUrl {
+    const fromDefine = String.fromEnvironment('IOS_APP_STORE_URL');
+    if (fromDefine.isNotEmpty) return fromDefine;
+
+    final fromFile = dotenv.env['IOS_APP_STORE_URL']?.trim();
+    if (fromFile != null && fromFile.isNotEmpty) return fromFile;
+
+    return '';
+  }
 }
