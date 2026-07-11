@@ -125,6 +125,12 @@
   "roleDriverTitle": "ડ્રાઇવર / ટ્રાન્સપોર્ટર",
   "roleDriverDescription": "ટ્રિપ પોસ્ટ કરો અને કમાઓ. વિશ્વસનીય પરિવહન ઇચ્છતા વ્યવસાયો સાથે જોડાઓ.",
   "splashInitializing": "સિસ્ટમ શરૂ થઈ રહ્યું છે",
+  "maintenanceTitle": "જાળવણી ચાલી રહી છે",
+  "maintenanceBody": "અમે નિર્ધારિત જાળવણી કરી રહ્યા છીએ. કૃપા કરીને પછીથી ફરી પ્રયાસ કરો.",
+  "updateAvailableTitle": "અપડેટ ઉપલબ્ધ છે",
+  "updateAvailableBody": "નવું અપડેટ ઉપલબ્ધ છે. કૃપા કરીને એપ અપડેટ કરો.",
+  "updateActionUpdate": "અપડેટ કરો",
+  "updateActionLater": "પછી",
 
   "profileName": "પૂરું નામ",
   "profileEmail": "ઈમેઇલ સરનામું",

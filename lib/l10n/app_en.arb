@@ -158,6 +158,16 @@
 
   "splashInitializing": "SYSTEM INITIALIZING",
   "@splashInitializing": { "description": "Progress label on the splash screen" },
+  "maintenanceTitle": "Under maintenance",
+  "@maintenanceTitle": { "description": "Title for the maintenance mode screen" },
+  "maintenanceBody": "We're performing scheduled maintenance. Please try again later.",
+  "@maintenanceBody": { "description": "Body copy for the maintenance mode screen" },
+  "updateAvailableTitle": "Update available",
+  "@updateAvailableTitle": { "description": "Title for the app update prompt" },
+  "updateAvailableBody": "A new update is available. Please update the app.",
+  "@updateAvailableBody": { "description": "Body copy for the app update prompt" },
+  "updateActionUpdate": "Update",
+  "updateActionLater": "Later",
 
   "profileName": "Full Name",
   "profileEmail": "Email Address",

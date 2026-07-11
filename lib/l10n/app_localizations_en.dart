@@ -366,6 +366,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get splashInitializing => 'SYSTEM INITIALIZING';
 
   @override
+  String get maintenanceTitle => 'Under maintenance';
+
+  @override
+  String get maintenanceBody =>
+      'We\'re performing scheduled maintenance. Please try again later.';
+
+  @override
+  String get updateAvailableTitle => 'Update available';
+
+  @override
+  String get updateAvailableBody =>
+      'A new update is available. Please update the app.';
+
+  @override
+  String get updateActionUpdate => 'Update';
+
+  @override
+  String get updateActionLater => 'Later';
+
+  @override
   String get profileName => 'Full Name';
 
   @override

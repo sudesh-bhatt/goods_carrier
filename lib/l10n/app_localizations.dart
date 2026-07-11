@@ -784,6 +784,42 @@ abstract class AppLocalizations {
   /// **'SYSTEM INITIALIZING'**
   String get splashInitializing;
 
+  /// Title for the maintenance mode screen
+  ///
+  /// In en, this message translates to:
+  /// **'Under maintenance'**
+  String get maintenanceTitle;
+
+  /// Body copy for the maintenance mode screen
+  ///
+  /// In en, this message translates to:
+  /// **'We\'re performing scheduled maintenance. Please try again later.'**
+  String get maintenanceBody;
+
+  /// Title for the app update prompt
+  ///
+  /// In en, this message translates to:
+  /// **'Update available'**
+  String get updateAvailableTitle;
+
+  /// Body copy for the app update prompt
+  ///
+  /// In en, this message translates to:
+  /// **'A new update is available. Please update the app.'**
+  String get updateAvailableBody;
+
+  /// No description provided for @updateActionUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get updateActionUpdate;
+
+  /// No description provided for @updateActionLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get updateActionLater;
+
   /// No description provided for @profileName.
   ///
   /// In en, this message translates to:

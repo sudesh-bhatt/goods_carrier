@@ -366,6 +366,26 @@ class AppLocalizationsHi extends AppLocalizations {
   String get splashInitializing => 'सिस्टम प्रारंभ हो रहा है';
 
   @override
+  String get maintenanceTitle => 'रखरखाव चल रहा है';
+
+  @override
+  String get maintenanceBody =>
+      'हम निर्धारित रखरखाव कर रहे हैं। कृपया बाद में फिर प्रयास करें।';
+
+  @override
+  String get updateAvailableTitle => 'अपडेट उपलब्ध है';
+
+  @override
+  String get updateAvailableBody =>
+      'एक नया अपडेट उपलब्ध है। कृपया ऐप अपडेट करें।';
+
+  @override
+  String get updateActionUpdate => 'अपडेट करें';
+
+  @override
+  String get updateActionLater => 'बाद में';
+
+  @override
   String get profileName => 'पूरा नाम';
 
   @override

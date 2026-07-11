@@ -6,6 +6,7 @@ import '../../features/auth/presentation/providers/auth_provider.dart';
 import '../../features/auth/presentation/screens/customer_profile_setup_screen.dart';
 import '../../features/auth/presentation/screens/driver_profile_setup_screen.dart';
 import '../../features/auth/presentation/screens/language_selection_screen.dart';
+import '../../features/auth/presentation/screens/maintenance_screen.dart';
 import '../../features/auth/presentation/screens/otp_verification_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/role_selection_screen.dart';
@@ -66,13 +67,19 @@ import '../../features/driver/presentation/tabs/driver_home_tab.dart';
 import '../../features/driver/presentation/tabs/driver_my_trips_tab.dart';
 import '../../features/driver/presentation/tabs/driver_notifications_tab.dart';
 import '../../features/driver/presentation/tabs/driver_profile_tab.dart';
+import '../providers/app_config_provider.dart';
 import 'app_routes.dart';
+import 'maintenance_redirect.dart';
 
 // ─── Router notifier ──────────────────────────────────────────────────────────
 
 class _RouterNotifier extends ChangeNotifier {
   _RouterNotifier(this._ref) {
     _ref.listen<AuthState>(authProvider, (_, __) => notifyListeners());
+    _ref.listen<AppConfigState>(
+      appConfigProvider,
+      (_, __) => notifyListeners(),
+    );
   }
   final Ref _ref;
 }
@@ -86,10 +93,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     initialLocation: AppRoutes.splash,
     debugLogDiagnostics: false,
     refreshListenable: notifier,
-
     redirect: (context, state) {
       final auth = ref.read(authProvider);
+      final appConfig = ref.read(appConfigProvider);
       final loc = state.matchedLocation;
+
+      final maintenanceRedirect = resolveMaintenanceRedirect(
+        isMaintenanceMode: appConfig.config?.maintenanceMode == true,
+        location: loc,
+      );
+      if (maintenanceRedirect != null) return maintenanceRedirect;
 
       if (loc == AppRoutes.splash) return null;
 
@@ -122,11 +135,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       }
       return AppRoutes.loginScreen;
     },
-
     routes: [
       GoRoute(
         path: AppRoutes.splash,
         builder: (_, __) => const SplashScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.maintenance,
+        builder: (_, __) => const MaintenanceScreen(),
       ),
       GoRoute(
         path: AppRoutes.roleSelection,
@@ -502,7 +518,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           final extra = state.extra;
           if (extra is! SubscriptionPaymentResultArgs) {
             return const _RouterErrorPage(
-              error: FormatException('Missing subscription payment result args'),
+              error:
+                  FormatException('Missing subscription payment result args'),
             );
           }
           return DriverSubscriptionPaymentResultScreen(args: extra);
@@ -547,7 +564,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
     ],
-
     errorBuilder: (context, state) => _RouterErrorPage(error: state.error),
   );
 });

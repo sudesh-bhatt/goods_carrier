@@ -365,6 +365,26 @@ class AppLocalizationsGu extends AppLocalizations {
   String get splashInitializing => 'સિસ્ટમ શરૂ થઈ રહ્યું છે';
 
   @override
+  String get maintenanceTitle => 'જાળવણી ચાલી રહી છે';
+
+  @override
+  String get maintenanceBody =>
+      'અમે નિર્ધારિત જાળવણી કરી રહ્યા છીએ. કૃપા કરીને પછીથી ફરી પ્રયાસ કરો.';
+
+  @override
+  String get updateAvailableTitle => 'અપડેટ ઉપલબ્ધ છે';
+
+  @override
+  String get updateAvailableBody =>
+      'નવું અપડેટ ઉપલબ્ધ છે. કૃપા કરીને એપ અપડેટ કરો.';
+
+  @override
+  String get updateActionUpdate => 'અપડેટ કરો';
+
+  @override
+  String get updateActionLater => 'પછી';
+
+  @override
   String get profileName => 'પૂરું નામ';
 
   @override
