@@ -31,6 +31,7 @@ import '../../shared/data/repositories/remote/remote_reports_repository.dart';
 import '../../shared/data/repositories/local_driver_address_repository.dart';
 import '../../shared/data/repositories/remote/driver/remote_driver_trip_repository.dart';
 import '../../shared/data/repositories/remote/onboarding/remote_onboarding_repository.dart';
+import '../../shared/data/local/app_config_preferences_store.dart';
 import '../../shared/data/local/auth_preferences_store.dart';
 import '../../shared/domain/repositories/i_auth_repository.dart';
 import '../../shared/domain/repositories/i_customer_address_repository.dart';
@@ -228,4 +229,9 @@ final customerTripRepositoryProvider = Provider<ICustomerTripRepository>((ref) {
 
 final appConfigApiClientProvider = Provider<AppConfigApiClient>((ref) {
   return AppConfigApiClient(ref.read(dioProvider));
+});
+
+final appConfigPreferencesStoreProvider =
+    Provider<AppConfigPreferencesStore>((ref) {
+  return AppConfigPreferencesStore(ref.read(sharedPreferencesProvider));
 });
