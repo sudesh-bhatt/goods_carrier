@@ -1,6 +1,6 @@
 # API Integration Status
 
-Last updated: 2026-06-17
+Last updated: 2026-07-11
 
 Toggle: `USE_REMOTE_API=true` in `.env`
 
@@ -11,7 +11,7 @@ Toggle: `USE_REMOTE_API=true` in `.env`
 | 1 | Auth & onboarding | 95% |
 | 2 | Customer module | 90% |
 | 3 | Driver module | 95% |
-| 4 | Shared services | 85% |
+| 4 | Shared services | 90% |
 | 5 | Monetization & tracking | 25% |
 
 **Overall: ~88%** of documented API surface wired in app.
@@ -27,7 +27,7 @@ Toggle: `USE_REMOTE_API=true` in `.env`
 | Onboarding role/lang/terms | ✅ |
 | Customer profile create/update/avatar | ✅ |
 | Driver profile create/update/avatar/get | ✅ |
-| `GET /api/app/config` splash | ✅ |
+| `GET /api/app/config` splash + dynamic runtime config | ✅ |
 
 ---
 
@@ -75,7 +75,7 @@ Toggle: `USE_REMOTE_API=true` in `.env`
 | Reports submit | ✅ |
 | Customer support | ✅ |
 | Customer settings sync | ✅ |
-| App config splash | ✅ |
+| App config splash/base URL/prefs/maintenance/version/branding | ✅ |
 | FCM push | ❌ |
 
 ---
