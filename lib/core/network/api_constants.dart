@@ -1,11 +1,11 @@
-import '../config/env_config.dart';
+import '../config/runtime_api_base_url.dart';
 
 /// All Goods Carrier API surface constants.
 ///
-/// Paths are relative to [EnvConfig.apiBaseUrl].
+/// Paths are relative to [RuntimeApiBaseUrl.current].
 abstract final class ApiConstants {
   // ── Base ───────────────────────────────────────────────────────────────────
-  static String get baseUrl => EnvConfig.apiBaseUrl;
+  static String get baseUrl => RuntimeApiBaseUrl.current;
 
   // ── Timeouts ───────────────────────────────────────────────────────────────
   static const Duration connectTimeout = Duration(seconds: 15);

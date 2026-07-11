@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import '../config/env_config.dart';
+import '../config/runtime_api_base_url.dart';
 
 /// Helpers for local vs remote profile image references.
 abstract final class ProfileImageUtils {
@@ -37,7 +37,7 @@ abstract final class ProfileImageUtils {
     if (isLocalFileAvailable(trimmed)) return null;
     if (isRemoteUrl(trimmed)) return trimmed;
     if (isServerRelativePath(trimmed)) {
-      return '${EnvConfig.apiBaseUrl}$trimmed';
+      return '${RuntimeApiBaseUrl.current}$trimmed';
     }
     return null;
   }

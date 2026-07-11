@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app.dart';
 import 'core/config/env_config.dart';
+import 'core/config/runtime_api_base_url.dart';
 import 'core/providers/shared_preferences_provider.dart';
 import 'core/utils/platform_utils.dart';
 import 'features/settings/presentation/providers/locale_provider.dart';
@@ -24,6 +25,7 @@ Future<void> main() async {
   // Read both persisted preferences before the first frame so there is
   // no flicker on theme or language on cold start.
   final prefs = await SharedPreferences.getInstance();
+  RuntimeApiBaseUrl.initFromPrefs(prefs);
   final savedThemeMode = loadPersistedThemeMode(prefs);
   final savedLocale = loadPersistedLocale(prefs);
 
