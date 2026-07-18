@@ -5,11 +5,17 @@ class ShipmentMasterOption {
     required this.id,
     required this.name,
     this.slug,
+    this.capacityRange,
+    this.iconUrl,
+    this.imageUrl,
   });
 
   final int id;
   final String name;
   final String? slug;
+  final String? capacityRange;
+  final String? iconUrl;
+  final String? imageUrl;
 
   factory ShipmentMasterOption.fromJson(Map<String, dynamic> json) {
     final rawId = json['id'];
@@ -22,20 +28,92 @@ class ShipmentMasterOption {
       slug: json['slug'] as String? ??
           json['code'] as String? ??
           json['value'] as String?,
+      capacityRange: _optionalString(json, const [
+        'capacity_range',
+        'capacity',
+        'capacity_label',
+      ]),
+      iconUrl: _optionalString(json, const [
+        'icon_url',
+        'icon',
+      ]),
+      imageUrl: _optionalString(json, const [
+        'image_url',
+        'image',
+      ]),
     );
   }
 
-  /// Hidden from customer home vehicle chips (e.g. backend-only types).
-  bool get showsOnCustomerHomeChips {
-    final key = (slug ?? name).trim().toLowerCase();
-    return key != 'tempo' && !key.contains('tempo');
+  static String? _optionalString(Map<String, dynamic> json, List<String> keys) {
+    for (final key in keys) {
+      final value = json[key];
+      if (value is String && value.trim().isNotEmpty) return value.trim();
+    }
+    return null;
   }
+
+  /// Whether this type appears on customer home vehicle chips.
+  /// All API vehicle types are shown — no client-side type exclusions.
+  bool get showsOnCustomerHomeChips => true;
 }
 
 List<ShipmentMasterOption> homeDashboardVehicleTypes(
   Iterable<ShipmentMasterOption> types,
 ) =>
-    types.where((t) => t.showsOnCustomerHomeChips).toList(growable: false);
+    types.toList(growable: false);
+
+/// Previous hardcoded filter pills — used when masters API fails / is empty.
+const fallbackFilterVehicleTypes = <ShipmentMasterOption>[
+  ShipmentMasterOption(id: 1, name: 'Mini', slug: 'mini'),
+  ShipmentMasterOption(id: 2, name: 'Pickup', slug: 'pickup'),
+  ShipmentMasterOption(id: 3, name: 'Truck', slug: 'truck'),
+];
+
+List<ShipmentMasterOption> resolveFilterVehicleTypes(
+  Iterable<ShipmentMasterOption>? types,
+) {
+  final list = types?.toList(growable: false) ?? const [];
+  return list.isNotEmpty ? list : fallbackFilterVehicleTypes;
+}
+
+/// Fills missing [ShipmentMasterOption.iconUrl] / media from [masters] by id/slug.
+List<ShipmentMasterOption> enrichVehicleTypeMedia(
+  List<ShipmentMasterOption> types,
+  Iterable<ShipmentMasterOption> masters,
+) {
+  if (types.isEmpty || masters.isEmpty) return types;
+  return types.map((type) {
+    final hasIcon = type.iconUrl != null && type.iconUrl!.trim().isNotEmpty;
+    final hasImage = type.imageUrl != null && type.imageUrl!.trim().isNotEmpty;
+    final hasCapacity =
+        type.capacityRange != null && type.capacityRange!.trim().isNotEmpty;
+    if (hasIcon && hasImage && hasCapacity) return type;
+
+    ShipmentMasterOption? match;
+    for (final master in masters) {
+      if (master.id == type.id) {
+        match = master;
+        break;
+      }
+      final typeSlug = (type.slug ?? '').toLowerCase();
+      final masterSlug = (master.slug ?? '').toLowerCase();
+      if (typeSlug.isNotEmpty && typeSlug == masterSlug) {
+        match = master;
+        break;
+      }
+    }
+    if (match == null) return type;
+
+    return ShipmentMasterOption(
+      id: type.id,
+      name: type.name,
+      slug: type.slug ?? match.slug,
+      capacityRange: hasCapacity ? type.capacityRange : match.capacityRange,
+      iconUrl: hasIcon ? type.iconUrl : match.iconUrl,
+      imageUrl: hasImage ? type.imageUrl : match.imageUrl,
+    );
+  }).toList(growable: false);
+}
 
 /// Maps a home-chip master option to [VehicleType] for filter-sheet sync.
 VehicleType? vehicleTypeFromMasterOption(ShipmentMasterOption option) {

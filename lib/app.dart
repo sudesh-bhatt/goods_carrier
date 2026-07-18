@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'core/providers/connectivity_provider.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
+import 'core/widgets/firebase_messaging_bootstrap.dart';
 import 'features/settings/presentation/providers/locale_provider.dart';
 import 'features/settings/presentation/providers/theme_provider.dart';
 import 'l10n/app_localizations.dart';
@@ -59,7 +60,7 @@ class GoodsCarrierApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(themeProvider);
+    ref.watch(themeProvider);
     final locale    = ref.watch(localeProvider);
     final router    = ref.watch(appRouterProvider);
 
@@ -68,7 +69,8 @@ class GoodsCarrierApp extends ConsumerWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-        return MaterialApp.router(
+        return FirebaseMessagingBootstrap(
+          child: MaterialApp.router(
           title: 'Goods Carrier',
           debugShowCheckedModeBanner: false,
 
@@ -128,6 +130,7 @@ class GoodsCarrierApp extends ConsumerWidget {
 
             return ConnectivityBanner(isOnline: isOnline, child: content);
           },
+        ),
         );
       },
     );

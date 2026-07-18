@@ -39,6 +39,7 @@ class ShipmentFilter {
     this.toCity,
     this.pickupDate,
     this.vehicleClass,
+    this.vehicleTypeId,
     this.capacityBand = LoadCapacityBand.from500kgTo2t,
     this.capacityRangeStart = 500,
     this.capacityRangeEnd = 2000,
@@ -49,6 +50,9 @@ class ShipmentFilter {
   final String? toCity;
   final DateTime? pickupDate;
   final VehicleType? vehicleClass;
+
+  /// Preferred API filter id from vehicle masters / dashboard types.
+  final int? vehicleTypeId;
   final LoadCapacityBand capacityBand;
 
   /// Selected load range in kg (0–[LoadCapacityBand.maxKg]).
@@ -63,6 +67,7 @@ class ShipmentFilter {
       (toCity?.trim().isNotEmpty ?? false) ||
       pickupDate != null ||
       vehicleClass != null ||
+      vehicleTypeId != null ||
       restrictCapacity;
 
   /// Human-readable capacity label from the current slider range.
@@ -97,6 +102,7 @@ class ShipmentFilter {
     String? toCity,
     DateTime? pickupDate,
     VehicleType? vehicleClass,
+    int? vehicleTypeId,
     LoadCapacityBand? capacityBand,
     double? capacityRangeStart,
     double? capacityRangeEnd,
@@ -105,6 +111,7 @@ class ShipmentFilter {
     bool clearToCity = false,
     bool clearPickupDate = false,
     bool clearVehicleClass = false,
+    bool clearVehicleTypeId = false,
   }) {
     return ShipmentFilter(
       fromCity: clearFromCity ? null : (fromCity ?? this.fromCity),
@@ -114,6 +121,9 @@ class ShipmentFilter {
       vehicleClass: clearVehicleClass
           ? null
           : (vehicleClass ?? this.vehicleClass),
+      vehicleTypeId: clearVehicleTypeId
+          ? null
+          : (vehicleTypeId ?? this.vehicleTypeId),
       capacityBand: capacityBand ?? this.capacityBand,
       capacityRangeStart: capacityRangeStart ?? this.capacityRangeStart,
       capacityRangeEnd: capacityRangeEnd ?? this.capacityRangeEnd,

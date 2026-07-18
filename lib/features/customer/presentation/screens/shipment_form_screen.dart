@@ -245,7 +245,11 @@ class _ShipmentFormScreenState extends ConsumerState<ShipmentFormScreen>
   }
 
   Future<void> _pickVehicle() async {
-    final picked = await ShipmentFormPickers.showVehicleType(context);
+    final masters = ref.read(shipmentMastersProvider).valueOrNull;
+    final picked = await ShipmentFormPickers.showVehicleType(
+      context,
+      vehicleTypes: masters?.vehicleTypes ?? const [],
+    );
     if (picked == null) return;
     safeSetState(() {
       _vehicleType = picked;

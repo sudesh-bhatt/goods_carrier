@@ -48,7 +48,7 @@ class DriverVehicleApiClient {
 
   Future<DriverVehicleMasters> fetchMasters() async {
     final response = await _dio.get<Map<String, dynamic>>(
-      ApiConstants.driverVehicleMasters,
+      ApiConstants.vehicleMasters,
     );
     final data = ApiEnvelope.parseData(response.data);
     return DriverVehicleApiMapper.mastersFromJson(data);

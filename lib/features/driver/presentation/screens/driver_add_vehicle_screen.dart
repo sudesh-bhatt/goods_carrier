@@ -27,6 +27,7 @@ import '../../../../shared/domain/models/driver_vehicle_masters.dart';
 import '../../../../shared/presentation/widgets/inputs/app_phone_field.dart';
 import '../../../../shared/presentation/widgets/layout/app_bottom_safe_area.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
+import '../../../../shared/presentation/widgets/profile/profile_image_content.dart';
 import '../../../auth/presentation/widgets/driver_profile_form_widgets.dart';
 import '../providers/driver_vehicles_provider.dart';
 import '../widgets/vehicles/driver_vehicle_tokens.dart';
@@ -314,9 +315,8 @@ class _DriverAddVehicleScreenState extends ConsumerState<DriverAddVehicleScreen>
                           children: [
                             _HeroImageCard(
                               imagePath: _vehiclePhotoPath,
-                              fleetCode: _registrationCtrl.text.isEmpty
-                                  ? 'V-902-XLR'
-                                  : _registrationCtrl.text,
+                              typeImageUrl: _selectedType?.imageUrl,
+                              vehicleName: _selectedType?.name ?? '',
                               onPick: () => _pickImage(
                                 kind: VehicleImageCropKind.vehicleHero,
                                 existingPath: _vehiclePhotoPath,
@@ -461,20 +461,30 @@ class _DriverAddVehicleScreenState extends ConsumerState<DriverAddVehicleScreen>
 class _HeroImageCard extends StatelessWidget {
   const _HeroImageCard({
     required this.imagePath,
-    required this.fleetCode,
+    required this.typeImageUrl,
+    required this.vehicleName,
     required this.onPick,
   });
 
   final String? imagePath;
-  final String fleetCode;
+  final String? typeImageUrl;
+  final String vehicleName;
   final VoidCallback onPick;
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final network = ProfileImageUtils.resolveNetworkUrl(imagePath);
     final local = ProfileImageUtils.isLocalFileAvailable(imagePath);
+    final typeRef = (typeImageUrl != null && typeImageUrl!.trim().isNotEmpty)
+        ? typeImageUrl!.trim()
+        : null;
+    final fallbackIcon = Icon(
+      Icons.local_shipping_rounded,
+      size: 64.w,
+      color: Colors.white24,
+    );
 
+    // Banner always follows selected vehicle type image (center-crop).
+    // Local pick is only for upload; type selection owns the banner preview.
     return GestureDetector(
       onTap: onPick,
       child: ClipRRect(
@@ -485,18 +495,19 @@ class _HeroImageCard extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              if (local)
-                Image.file(File(imagePath!), fit: BoxFit.cover)
-              else if (network != null)
-                Image.network(network, fit: BoxFit.cover)
-              else
-                Container(
-                  color: const Color(0xFF161C20),
-                  child: Icon(Icons.local_shipping_rounded,
-                      size: 64.w, color: Colors.white24),
-                ),
-              Container(
-                decoration: const BoxDecoration(
+              ColoredBox(
+                color: const Color(0xFF161C20),
+                child: typeRef != null
+                    ? ProfileImageContent(
+                        key: ValueKey(typeRef),
+                        imageReference: typeRef,
+                        fit: BoxFit.cover,
+                        placeholder: Center(child: fallbackIcon),
+                      )
+                    : Center(child: fallbackIcon),
+              ),
+              const DecoratedBox(
+                decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.bottomCenter,
                     end: Alignment.topCenter,
@@ -507,45 +518,22 @@ class _HeroImageCard extends StatelessWidget {
                   ),
                 ),
               ),
-              Positioned(
-                left: 16.w,
-                bottom: 16.h,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
-                      decoration: BoxDecoration(
-                        color: DriverVehicleTokens.fleetBadgeBlue,
-                        borderRadius: BorderRadius.circular(9999),
-                      ),
-                      child: Text(
-                        l10n.driverPrimaryFleetBadge,
-                        style: TextStyle(
-                          fontFamily: FontRes.MANROPE_BOLD,
-                          fontSize: 10.sp,
-                          fontWeight: FontWeight.w700,
-                          height: 15 / 10,
-                          letterSpacing: 1,
-                          color: DriverVehicleTokens.fleetBadgeText,
-                        ),
-                      ),
+              if (vehicleName.isNotEmpty)
+                Positioned(
+                  left: 16.w,
+                  bottom: 16.h,
+                  child: Text(
+                    vehicleName,
+                    style: TextStyle(
+                      fontFamily: FontRes.MANROPE_EXTRABOLD,
+                      fontSize: 24.sp,
+                      fontWeight: FontWeight.w800,
+                      height: 32 / 24,
+                      letterSpacing: -0.6,
+                      color: Colors.white,
                     ),
-                    SizedBox(height: 8.h),
-                    Text(
-                      fleetCode,
-                      style: TextStyle(
-                        fontFamily: FontRes.MANROPE_EXTRABOLD,
-                        fontSize: 24.sp,
-                        fontWeight: FontWeight.w800,
-                        height: 32 / 24,
-                        letterSpacing: -0.6,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
               if (local)
                 Positioned(
                   right: 12.w,
@@ -656,7 +644,11 @@ class _VehicleTypeDropdown extends StatelessWidget {
               .map(
                 (t) => DropdownMenuItem(
                   value: t,
-                  child: Text(t.name),
+                  child: Text(
+                    t.capacityRange.isEmpty
+                        ? t.name
+                        : '${t.name} (${t.capacityRange})',
+                  ),
                 ),
               )
               .toList(growable: false),

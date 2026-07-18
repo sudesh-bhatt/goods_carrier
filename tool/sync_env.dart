@@ -39,11 +39,13 @@ void main() {
 }
 
 void _regenerateResFiles() {
+  // Always rewrite lib/res/* — iFlutter may have left invalid duplicates.
   final result = Process.runSync(
     Platform.executable,
     ['run', 'tool/generate_res.dart'],
     workingDirectory: Directory.current.path,
   );
+  stdout.write(result.stdout);
   if (result.exitCode != 0) {
     stderr.writeln(result.stderr);
     stderr.writeln('Warning: tool/generate_res.dart failed');

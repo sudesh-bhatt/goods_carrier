@@ -145,12 +145,14 @@ class DriverShipmentRequestsNotifier
     required ShipmentFilter filter,
   }) {
     final capacity = filter.apiCapacityKg;
+    final vehicleTypeId = filter.vehicleTypeId ??
+        (filter.vehicleClass != null
+            ? TripApiMapper.defaultVehicleTypeId(filter.vehicleClass!)
+            : null);
 
     return DriverDashboardQuery(
       search: search.trim().isEmpty ? null : search.trim(),
-      vehicleTypeId: filter.vehicleClass != null
-          ? TripApiMapper.defaultVehicleTypeId(filter.vehicleClass!)
-          : null,
+      vehicleTypeId: vehicleTypeId,
       fromCity: filter.fromCity,
       toCity: filter.toCity,
       pickupDate: filter.pickupDate,

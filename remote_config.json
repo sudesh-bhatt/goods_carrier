@@ -1,0 +1,26 @@
+{
+  "conditions": [],
+  "parameters": {
+    "welcome_banner_text": {
+      "defaultValue": {
+        "value": ""
+      },
+      "description": "Optional home banner copy. Empty = hidden."
+    },
+    "show_referral_banner": {
+      "defaultValue": {
+        "value": "false"
+      },
+      "description": "Feature flag to show the referral promo banner."
+    },
+    "support_whatsapp_number": {
+      "defaultValue": {
+        "value": ""
+      },
+      "description": "Support WhatsApp number used by in-app help (digits with country code)."
+    }
+  },
+  "version": {
+    "versionNumber": "1"
+  }
+}

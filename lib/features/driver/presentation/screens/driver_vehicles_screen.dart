@@ -4,7 +4,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
+import '../../../../core/providers/vehicle_masters_provider.dart';
 import '../../../../core/router/app_routes.dart';
+import '../../../../shared/domain/entities/driver_vehicle.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
 import '../providers/driver_vehicles_provider.dart';
 import '../widgets/vehicles/driver_fleet_overview.dart';
@@ -26,16 +28,34 @@ class _DriverVehiclesScreenState extends ConsumerState<DriverVehiclesScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(driverVehiclesProvider.notifier).load();
+      ref.read(vehicleMastersProvider);
     });
   }
 
   Future<void> _reload() => ref.read(driverVehiclesProvider.notifier).load();
 
+  String? _typeIconFor(DriverVehicle vehicle) {
+    final masters = ref.read(vehicleMastersProvider).valueOrNull;
+    if (masters == null) return null;
+    for (final type in masters.vehicleTypes) {
+      if (vehicle.vehicleTypeId != null && type.id == vehicle.vehicleTypeId) {
+        return type.iconUrl.isNotEmpty ? type.iconUrl : null;
+      }
+      final name = vehicle.displayTypeName.toLowerCase();
+      if (type.name.toLowerCase() == name ||
+          type.slug.toLowerCase() ==
+              (vehicle.vehicleTypeSlug ?? '').toLowerCase()) {
+        return type.iconUrl.isNotEmpty ? type.iconUrl : null;
+      }
+    }
+    return null;
+  }
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final colors = context.colors;
     final state = ref.watch(driverVehiclesProvider);
+    ref.watch(vehicleMastersProvider);
     final showInitialLoading = state.isLoading && state.vehicles.isEmpty;
 
     return Scaffold(
@@ -57,7 +77,7 @@ class _DriverVehiclesScreenState extends ConsumerState<DriverVehiclesScreen> {
             child: SizedBox(
               width: 64.w,
               height: 64.w,
-              child: Icon(Icons.add_rounded, color: Colors.white, size: 17.5.w),
+              child: Icon(Icons.add_rounded, color: Colors.white, size: 28.w),
             ),
           ),
         ),
@@ -111,6 +131,7 @@ class _DriverVehiclesScreenState extends ConsumerState<DriverVehiclesScreen> {
                         child: DriverVehicleCard(
                           vehicle: vehicle,
                           capacityLabel: l10n.driverVehicleCapacityLabel,
+                          typeIconUrl: _typeIconFor(vehicle),
                           onTap: () => context.push(
                             AppRoutes.driverVehicleDetailOf(vehicle.id),
                           ),

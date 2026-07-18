@@ -147,7 +147,28 @@ void _writeAssetsRes(
   }
 
   buffer.writeln('}');
-  File('lib/res/assets_res.dart').writeAsStringSync(buffer.toString());
+  final out = buffer.toString();
+  _assertNoDuplicateConstNames(out);
+  File('lib/res/assets_res.dart').writeAsStringSync(out);
+}
+
+void _assertNoDuplicateConstNames(String source) {
+  final names = RegExp(r'static const String (\w+) =')
+      .allMatches(source)
+      .map((m) => m.group(1)!)
+      .toList();
+  final seen = <String>{};
+  for (final name in names) {
+    if (!seen.add(name)) {
+      stderr.writeln(
+        'ERROR: duplicate AssetsRes constant "$name". '
+        'iFlutter-style short names are invalid when basenames collide '
+        '(e.g. app_icon.png + app_icon.svg). Use dart run tool/generate_res.dart only.',
+      );
+      exitCode = 1;
+      exit(1);
+    }
+  }
 }
 
 void _writeDefaultRes(String projectName, String projectVersion) {

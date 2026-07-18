@@ -32,6 +32,13 @@ abstract final class DriverVehicleApiMapper {
                 id: id,
                 name: name,
                 slug: _firstString(item, ['slug', 'code']),
+                capacityRange: _firstString(item, [
+                  'capacity_range',
+                  'capacity',
+                  'capacity_label',
+                ]),
+                iconUrl: _firstString(item, ['icon_url', 'icon']),
+                imageUrl: _firstString(item, ['image_url', 'image']),
               ),
             );
           }

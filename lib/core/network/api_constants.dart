@@ -72,7 +72,8 @@ abstract final class ApiConstants {
   static String driverShipmentRequest(String id) =>
       '/api/driver/shipments/$id/requests';
   static const String driverVehicles = '/api/driver/vehicles';
-  static const String driverVehicleMasters = '/api/driver/vehicle-masters';
+  /// Global vehicle type masters (icons / images / capacity). Shared by customer + driver.
+  static const String vehicleMasters = '/api/driver/vehicle-masters';
   static String driverVehicle(int id) => '/api/driver/vehicles/$id';
   static const String driverAddresses = '/api/driver/addresses';
   static String driverAddress(int id) => '/api/driver/addresses/$id';

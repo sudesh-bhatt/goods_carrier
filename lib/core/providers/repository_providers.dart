@@ -9,6 +9,7 @@ import '../../shared/data/api/driver/driver_dashboard_api_client.dart';
 import '../../shared/data/api/driver/driver_trip_api_client.dart';
 import '../../shared/data/api/driver/driver_vehicle_api_client.dart';
 import '../../shared/data/api/settings/settings_api_client.dart';
+import '../../shared/data/api/legal/legal_page_api_client.dart';
 import '../../shared/data/api/customer/customer_support_api_client.dart';
 import '../../shared/data/api/driver/driver_payment_api_client.dart';
 import '../../shared/data/api/driver/driver_subscription_api_client.dart';
@@ -201,6 +202,10 @@ final reportsRepositoryProvider = Provider<IReportsRepository>((ref) {
 final settingsApiClientProvider =
     Provider.family<SettingsApiClient, UserRole>((ref, role) {
   return SettingsApiClient(ref.read(dioProvider), role: role);
+});
+
+final legalPageApiClientProvider = Provider<LegalPageApiClient>((ref) {
+  return LegalPageApiClient(ref.read(dioProvider));
 });
 
 final customerSupportApiClientProvider =

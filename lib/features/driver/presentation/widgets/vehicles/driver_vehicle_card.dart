@@ -12,11 +12,13 @@ class DriverVehicleCard extends StatelessWidget {
     super.key,
     required this.vehicle,
     required this.capacityLabel,
+    this.typeIconUrl,
     this.onTap,
   });
 
   final DriverVehicle vehicle;
   final String capacityLabel;
+  final String? typeIconUrl;
   final VoidCallback? onTap;
 
   @override
@@ -53,6 +55,7 @@ class DriverVehicleCard extends StatelessWidget {
                 children: [
                   DriverVehicleIconBadge(
                     icon: icon,
+                    iconUrl: typeIconUrl,
                     tint: iconColor,
                     background: iconBg,
                   ),

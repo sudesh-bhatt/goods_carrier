@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/mixins/safe_set_state_mixin.dart';
+import '../../../../core/providers/vehicle_masters_provider.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/utils/external_launcher.dart';
 import '../../../../core/extensions/svg_gen_image_extension.dart';
@@ -156,15 +157,36 @@ class _DriverVehicleDetailScreenState
   }
 }
 
-class _HeroCard extends StatelessWidget {
+class _HeroCard extends ConsumerWidget {
   const _HeroCard({required this.detail});
 
   final DriverVehicleDetail detail;
 
+  String? _iconUrl(WidgetRef ref) {
+    final masters = ref.watch(vehicleMastersProvider).valueOrNull;
+    if (masters == null) return null;
+    for (final type in masters.vehicleTypes) {
+      if (type.id == detail.vehicleTypeId && type.iconUrl.isNotEmpty) {
+        return type.iconUrl;
+      }
+      if (type.name.toLowerCase() == detail.vehicleTypeName.toLowerCase() &&
+          type.iconUrl.isNotEmpty) {
+        return type.iconUrl;
+      }
+    }
+    return null;
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final (iconColor, iconBg) = vehicleIconColors(detail.status);
     final icon = vehicleTypeIcon(detail.vehicleTypeName);
+    final tint = iconColor == DriverVehicleTokens.mutedGrey
+        ? DriverVehicleTokens.accentBrown
+        : iconColor;
+    final bg = iconBg == DriverVehicleTokens.maintenanceBg
+        ? DriverVehicleTokens.iconBrownBg
+        : iconBg;
 
     return Container(
       width: double.infinity,
@@ -189,12 +211,9 @@ class _HeroCard extends StatelessWidget {
             children: [
               DriverVehicleIconBadge(
                 icon: icon,
-                tint: iconColor == DriverVehicleTokens.mutedGrey
-                    ? DriverVehicleTokens.accentBrown
-                    : iconColor,
-                background: iconBg == DriverVehicleTokens.maintenanceBg
-                    ? DriverVehicleTokens.iconBrownBg
-                    : iconBg,
+                iconUrl: _iconUrl(ref),
+                tint: tint,
+                background: bg,
                 radius: 9999,
               ),
               _DetailStatusBadge(status: detail.status),

@@ -49,25 +49,35 @@ class _CustomerHomeTabState extends ConsumerState<CustomerHomeTab>
     super.dispose();
   }
 
+  /// Vehicle chips/filter from dashboard `vehicle_types` (not driver masters API).
+  List<ShipmentMasterOption> _resolvedVehicleTypes() {
+    final dashboardTypes = ref.read(customerDashboardProvider).vehicleTypes;
+    final visible = homeDashboardVehicleTypes(dashboardTypes);
+    return visible.isNotEmpty ? visible : fallbackFilterVehicleTypes;
+  }
+
   void _syncFilterVehicleClass(int? vehicleTypeId) {
-    final types = ref.read(customerDashboardProvider).vehicleTypes;
     final vehicleClass =
-        homeDashboardVehicleClassForId(types, vehicleTypeId);
+        homeDashboardVehicleClassForId(_resolvedVehicleTypes(), vehicleTypeId);
     _shipmentFilter = _shipmentFilter.copyWith(
       vehicleClass: vehicleClass,
       clearVehicleClass: vehicleClass == null,
+      vehicleTypeId: vehicleTypeId,
+      clearVehicleTypeId: vehicleTypeId == null,
     );
   }
 
   ShipmentFilter _filterSyncedWithChips() {
     final dashboard = ref.read(customerDashboardProvider);
     final vehicleClass = homeDashboardVehicleClassForId(
-      dashboard.vehicleTypes,
+      _resolvedVehicleTypes(),
       dashboard.selectedVehicleTypeId,
     );
     return _shipmentFilter.copyWith(
       vehicleClass: vehicleClass,
       clearVehicleClass: vehicleClass == null,
+      vehicleTypeId: dashboard.selectedVehicleTypeId,
+      clearVehicleTypeId: dashboard.selectedVehicleTypeId == null,
     );
   }
 
@@ -92,7 +102,8 @@ class _CustomerHomeTabState extends ConsumerState<CustomerHomeTab>
     await ref.read(customerDashboardProvider.notifier).applyFilters(
           search: _searchCtrl.text,
           filter: _shipmentFilter,
-          clearVehicleTypeId: _shipmentFilter.vehicleClass == null,
+          clearVehicleTypeId: _shipmentFilter.vehicleTypeId == null &&
+              _shipmentFilter.vehicleClass == null,
         );
   }
 
@@ -106,6 +117,7 @@ class _CustomerHomeTabState extends ConsumerState<CustomerHomeTab>
     final result = await FilterSearchSheet.show(
       context,
       initial: initial,
+      vehicleTypes: _resolvedVehicleTypes(),
     );
     if (result == null || !mounted) return;
     safeSetState(() => _shipmentFilter = result);
@@ -161,6 +173,7 @@ class _CustomerHomeTabState extends ConsumerState<CustomerHomeTab>
     final colors = context.colors;
     final l10n = context.l10n;
     final state = ref.watch(customerDashboardProvider);
+    final vehicleTypes = _resolvedVehicleTypes();
     final trips = EnvConfig.useRemoteApi
         ? state.trips
         : _filterTripsLocally(state.trips);
@@ -171,7 +184,9 @@ class _CustomerHomeTabState extends ConsumerState<CustomerHomeTab>
 
     return RefreshIndicator(
       color: colors.primary,
-      onRefresh: () => ref.read(customerDashboardProvider.notifier).refresh(),
+      onRefresh: () async {
+        await ref.read(customerDashboardProvider.notifier).refresh();
+      },
       child: CustomScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
@@ -203,7 +218,7 @@ class _CustomerHomeTabState extends ConsumerState<CustomerHomeTab>
                   ),
                   SizedBox(height: 16.h),
                   CustomerHomeVehicleChips(
-                    vehicleTypes: state.vehicleTypes,
+                    vehicleTypes: vehicleTypes,
                     selectedVehicleTypeId: state.selectedVehicleTypeId,
                     allLabel: l10n.filterVehicleAll,
                     onSelected: _onVehicleChipSelected,

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "562198395976",
+    "project_id": "goods-carrier-46fa1",
+    "storage_bucket": "goods-carrier-46fa1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:562198395976:android:80ff8974140ffd45002c7d",
+        "android_client_info": {
+          "package_name": "com.goodscarrier.goods_carrier"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0SnwrSMl-esN0Wl_pJeqPhYvpjgH-fE4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

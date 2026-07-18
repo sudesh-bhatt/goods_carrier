@@ -1,0 +1,33 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "goods-carrier-46fa1",
+          "appId": "1:562198395976:android:80ff8974140ffd45002c7d",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "goods-carrier-46fa1",
+          "appId": "1:562198395976:ios:533f92d16b76bcfd002c7d",
+          "uploadDebugSymbols": true,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "goods-carrier-46fa1",
+          "configurations": {
+            "android": "1:562198395976:android:80ff8974140ffd45002c7d",
+            "ios": "1:562198395976:ios:533f92d16b76bcfd002c7d"
+          }
+        }
+      }
+    }
+  },
+  "remoteconfig": {
+    "template": "remote_config.json"
+  }
+}

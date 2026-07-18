@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../../core/extensions/theme_ext.dart';
 import '../../../../../shared/domain/entities/driver_vehicle.dart';
+import '../../../../../shared/domain/entities/shipment_masters.dart';
 import '../../../../../shared/domain/enums/vehicle_type.dart';
 import '../../../../../shared/presentation/widgets/sheets/app_picker_bottom_sheet.dart';
 
@@ -9,19 +10,44 @@ import '../../../../../shared/presentation/widgets/sheets/app_picker_bottom_shee
 abstract final class ShipmentFormPickers {
   ShipmentFormPickers._();
 
-  static Future<VehicleType?> showVehicleType(BuildContext context) {
+  static Future<VehicleType?> showVehicleType(
+    BuildContext context, {
+    List<ShipmentMasterOption> vehicleTypes = const [],
+  }) {
+    final items = <AppPickerItem<VehicleType>>[];
+    if (vehicleTypes.isNotEmpty) {
+      final seen = <VehicleType>{};
+      for (final option in vehicleTypes) {
+        final mapped = vehicleTypeFromMasterOption(option);
+        if (mapped == null || seen.contains(mapped)) continue;
+        seen.add(mapped);
+        items.add(
+          AppPickerItem<VehicleType>(
+            value: mapped,
+            label: option.name,
+            subtitle: option.capacityRange?.isNotEmpty == true
+                ? option.capacityRange
+                : mapped.capacityLabel,
+          ),
+        );
+      }
+    }
+    if (items.isEmpty) {
+      items.addAll(
+        VehicleType.values.map(
+          (v) => AppPickerItem<VehicleType>(
+            value: v,
+            label: v.label,
+            subtitle: v.capacityLabel,
+          ),
+        ),
+      );
+    }
+
     return AppPickerBottomSheet.show<VehicleType>(
       context: context,
       title: context.l10n.shipmentFormVehicleRequirement,
-      items: VehicleType.values
-          .map(
-            (v) => AppPickerItem<VehicleType>(
-              value: v,
-              label: v.label,
-              subtitle: v.capacityLabel,
-            ),
-          )
-          .toList(),
+      items: items,
     );
   }
 

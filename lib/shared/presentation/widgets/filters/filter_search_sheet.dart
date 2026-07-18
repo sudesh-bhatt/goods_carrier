@@ -7,8 +7,9 @@ import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/mixins/safe_set_state_mixin.dart';
 import '../../../../res/font_res.dart';
-import '../../../domain/enums/vehicle_type.dart';
+import '../../../domain/entities/shipment_masters.dart';
 import '../../../domain/models/shipment_filter.dart';
+import '../network/dio_network_icon.dart';
 import '../sheets/app_bottom_sheet.dart';
 import '../sheets/app_modal_bottom_sheet.dart';
 
@@ -27,19 +28,30 @@ const _kScrim = Color(0x660F172A);
 /// if (result != null) applyFilter(result);
 /// ```
 class FilterSearchSheet extends StatefulWidget {
-  const FilterSearchSheet({super.key, required this.initial});
+  const FilterSearchSheet({
+    super.key,
+    required this.initial,
+    this.vehicleTypes = const [],
+  });
 
   final ShipmentFilter initial;
+
+  /// From vehicle-masters / dashboard. Falls back to Mini/Pickup/Truck when empty.
+  final List<ShipmentMasterOption> vehicleTypes;
 
   /// Presents the sheet and returns applied filters, or `null` if dismissed.
   static Future<ShipmentFilter?> show(
     BuildContext context, {
     ShipmentFilter initial = const ShipmentFilter(),
+    List<ShipmentMasterOption> vehicleTypes = const [],
   }) {
     return AppModalBottomSheet.show<ShipmentFilter>(
       context: context,
       barrierColor: _kScrim,
-      builder: (_) => FilterSearchSheet(initial: initial),
+      builder: (_) => FilterSearchSheet(
+        initial: initial,
+        vehicleTypes: vehicleTypes,
+      ),
     );
   }
 
@@ -67,6 +79,39 @@ class _FilterSearchSheetState extends State<FilterSearchSheet>
     _toCtrl = TextEditingController(text: widget.initial.toCity ?? '');
     final seed = _filter.pickupDate ?? _today;
     _calendarMonth = DateTime(seed.year, seed.month);
+  }
+
+  List<ShipmentMasterOption> get _vehicleOptions =>
+      resolveFilterVehicleTypes(widget.vehicleTypes);
+
+  void _toggleVehicleType(ShipmentMasterOption option) {
+    final selected = _filter.vehicleTypeId == option.id ||
+        (_filter.vehicleTypeId == null &&
+            _filter.vehicleClass != null &&
+            vehicleTypeFromMasterOption(option) == _filter.vehicleClass);
+    safeSetState(() {
+      if (selected) {
+        _filter = _filter.copyWith(
+          clearVehicleClass: true,
+          clearVehicleTypeId: true,
+        );
+      } else {
+        final mapped = vehicleTypeFromMasterOption(option);
+        _filter = _filter.copyWith(
+          vehicleTypeId: option.id,
+          vehicleClass: mapped,
+          clearVehicleClass: mapped == null,
+        );
+      }
+    });
+  }
+
+  bool _isVehicleSelected(ShipmentMasterOption option) {
+    if (_filter.vehicleTypeId != null) {
+      return _filter.vehicleTypeId == option.id;
+    }
+    final mapped = vehicleTypeFromMasterOption(option);
+    return mapped != null && mapped == _filter.vehicleClass;
   }
 
   @override
@@ -288,55 +333,20 @@ class _FilterSearchSheetState extends State<FilterSearchSheet>
                     SizedBox(height: 16.h),
                     SizedBox(
                       height: 44.h,
-                      child: ListView(
+                      child: ListView.separated(
                         scrollDirection: Axis.horizontal,
-                        children: [
-                          _VehiclePill(
-                            label: 'Mini',
-                            icon: Icons.local_shipping_outlined,
-                            selected:
-                                _filter.vehicleClass == VehicleType.mini,
-                            onTap: () => safeSetState(() {
-                              _filter = _filter.vehicleClass ==
-                                      VehicleType.mini
-                                  ? _filter.copyWith(clearVehicleClass: true)
-                                  : _filter.copyWith(
-                                      vehicleClass: VehicleType.mini,
-                                    );
-                            }),
-                          ),
-                          SizedBox(width: 8.w),
-                          _VehiclePill(
-                            label: 'Pickup',
-                            icon: Icons.fire_truck_outlined,
-                            selected: _filter.vehicleClass ==
-                                VehicleType.pickupTruck,
-                            onTap: () => safeSetState(() {
-                              _filter = _filter.vehicleClass ==
-                                      VehicleType.pickupTruck
-                                  ? _filter.copyWith(clearVehicleClass: true)
-                                  : _filter.copyWith(
-                                      vehicleClass:
-                                          VehicleType.pickupTruck,
-                                    );
-                            }),
-                          ),
-                          SizedBox(width: 8.w),
-                          _VehiclePill(
-                            label: 'Truck',
-                            icon: Icons.local_shipping_rounded,
-                            selected:
-                                _filter.vehicleClass == VehicleType.truck,
-                            onTap: () => safeSetState(() {
-                              _filter = _filter.vehicleClass ==
-                                      VehicleType.truck
-                                  ? _filter.copyWith(clearVehicleClass: true)
-                                  : _filter.copyWith(
-                                      vehicleClass: VehicleType.truck,
-                                    );
-                            }),
-                          ),
-                        ],
+                        itemCount: _vehicleOptions.length,
+                        separatorBuilder: (_, __) => SizedBox(width: 8.w),
+                        itemBuilder: (context, index) {
+                          final option = _vehicleOptions[index];
+                          return _VehiclePill(
+                            label: option.name,
+                            iconUrl: option.iconUrl,
+                            fallbackIcon: _materialIconForVehicle(option),
+                            selected: _isVehicleSelected(option),
+                            onTap: () => _toggleVehicleType(option),
+                          );
+                        },
                       ),
                     ),
                     SizedBox(height: 40.h),
@@ -886,13 +896,15 @@ class _DateChip extends StatelessWidget {
 class _VehiclePill extends StatelessWidget {
   const _VehiclePill({
     required this.label,
-    required this.icon,
+    required this.iconUrl,
+    required this.fallbackIcon,
     required this.selected,
     required this.onTap,
   });
 
   final String label;
-  final IconData icon;
+  final String? iconUrl;
+  final IconData fallbackIcon;
   final bool selected;
   final VoidCallback onTap;
 
@@ -913,7 +925,12 @@ class _VehiclePill extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: 16.w, color: fg),
+              VehicleTypeNetworkIcon(
+                iconUrl: iconUrl,
+                color: fg,
+                size: 16.w,
+                fallback: Icon(fallbackIcon, size: 16.w, color: fg),
+              ),
               SizedBox(width: 8.w),
               Text(
                 label,
@@ -930,6 +947,17 @@ class _VehiclePill extends StatelessWidget {
       ),
     );
   }
+}
+
+IconData _materialIconForVehicle(ShipmentMasterOption option) {
+  final key = (option.slug ?? option.name).toLowerCase();
+  if (key.contains('pickup')) return Icons.fire_truck_outlined;
+  if (key.contains('mini') || key.contains('van')) {
+    return Icons.local_shipping_outlined;
+  }
+  if (key.contains('tempo')) return Icons.airport_shuttle_rounded;
+  if (key.contains('heavy')) return Icons.fire_truck_rounded;
+  return Icons.local_shipping_rounded;
 }
 
 class _CapacitySegments extends StatelessWidget {

@@ -22,7 +22,6 @@ class DashboardPreferencesStore {
       return decoded
           .whereType<Map<String, dynamic>>()
           .map(ShipmentMasterOption.fromJson)
-          .where((t) => t.showsOnCustomerHomeChips)
           .toList(growable: false);
     } catch (_) {
       return const [];
@@ -48,5 +47,9 @@ class DashboardPreferencesStore {
         'id': option.id,
         'name': option.name,
         if (option.slug != null) 'slug': option.slug,
+        if (option.capacityRange != null)
+          'capacity_range': option.capacityRange,
+        if (option.iconUrl != null) 'icon_url': option.iconUrl,
+        if (option.imageUrl != null) 'image_url': option.imageUrl,
       };
 }

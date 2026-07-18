@@ -109,20 +109,7 @@ class DriverVehiclesNotifier extends StateNotifier<DriverVehiclesState> {
     );
   }
 
-  static final _localMasters = DriverVehicleMasters(
-    vehicleTypes: [
-      DriverVehicleTypeOption(id: 1, name: 'Mini Van', slug: 'mini'),
-      DriverVehicleTypeOption(id: 2, name: 'Pickup Truck', slug: 'pickup_truck'),
-      DriverVehicleTypeOption(id: 3, name: 'Flatbed Trailer', slug: 'truck'),
-      DriverVehicleTypeOption(id: 4, name: 'Heavy Duty Truck', slug: 'heavy_duty'),
-      DriverVehicleTypeOption(
-        id: 5,
-        name: 'Refrigerated Truck',
-        slug: 'refrigerated_truck',
-      ),
-    ],
-    capacityUnits: ['TON'],
-  );
+  static final _localMasters = DriverVehicleMasters.fallback;
 
   Future<void> load() async {
     state = state.copyWith(isLoading: true, clearError: true);
@@ -156,7 +143,16 @@ class DriverVehiclesNotifier extends StateNotifier<DriverVehiclesState> {
 
   Future<DriverVehicleMasters> fetchMasters() async {
     if (!EnvConfig.useRemoteApi) return _localMasters;
-    return _ref.read(driverVehicleApiClientProvider).fetchMasters();
+    try {
+      final masters =
+          await _ref.read(driverVehicleApiClientProvider).fetchMasters();
+      if (masters.vehicleTypes.isEmpty) {
+        return DriverVehicleMasters.fallback;
+      }
+      return masters;
+    } catch (_) {
+      return DriverVehicleMasters.fallback;
+    }
   }
 
   Future<bool> deleteVehicle(int id) async {

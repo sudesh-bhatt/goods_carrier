@@ -18,6 +18,7 @@ import '../../../../shared/presentation/widgets/inputs/app_phone_field.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../res/font_res.dart';
 import '../providers/auth_provider.dart';
+import 'terms_screen.dart';
 
 const _kLoginBannerAsset = 'assets/images/login_screen_banner.png';
 
@@ -360,7 +361,10 @@ class _FormCard extends StatelessWidget {
                   label: l10n.authPrivacyPolicy.toUpperCase(),
                   textTheme: textTheme,
                   colors: colors,
-                  onTap: () {},
+                  onTap: () => context.push(
+                    AppRoutes.terms,
+                    extra: LegalDocument.privacy,
+                  ),
                 ),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 6.w),

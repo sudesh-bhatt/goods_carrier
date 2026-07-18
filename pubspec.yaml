@@ -55,6 +55,13 @@ dependencies:
   razorpay_flutter: ^1.4.5
   package_info_plus: ^9.0.1
   in_app_update: ^4.2.5
+  flutter_html: ^3.0.0
+  firebase_core: ^4.12.1
+  firebase_crashlytics: ^5.2.6
+  firebase_messaging: ^16.4.3
+  firebase_remote_config: ^6.5.5
+  firebase_analytics: ^12.4.5
+  flutter_local_notifications: ^22.0.1
 
 dev_dependencies:
   flutter_test:

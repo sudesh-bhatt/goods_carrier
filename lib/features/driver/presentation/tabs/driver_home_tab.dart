@@ -7,9 +7,11 @@ import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../core/mixins/safe_set_state_mixin.dart';
+import '../../../../core/providers/vehicle_masters_provider.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../res/font_res.dart';
 import '../../../../shared/domain/entities/shipment.dart';
+import '../../../../shared/domain/entities/shipment_masters.dart';
 import '../../../../shared/domain/models/shipment_filter.dart';
 import '../../../../shared/presentation/widgets/feedback/skeleton_card.dart';
 import '../../../../shared/presentation/widgets/feedback/trip_empty_placeholder_view.dart';
@@ -39,6 +41,8 @@ class _DriverHomeTabState extends ConsumerState<DriverHomeTab>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Warm masters cache for filter pills (falls back locally on failure).
+      ref.read(vehicleMastersProvider);
       ref.read(driverShipmentRequestsProvider.notifier).loadForTab();
     });
   }
@@ -125,9 +129,13 @@ class _DriverHomeTabState extends ConsumerState<DriverHomeTab>
                       if (EnvConfig.useRemoteApi) _reloadDashboard();
                     },
                     onFilterTap: () async {
+                      final masters =
+                          ref.read(vehicleMastersProvider).valueOrNull;
                       final result = await FilterSearchSheet.show(
                         context,
                         initial: _shipmentFilter,
+                        vehicleTypes: masters?.asMasterOptions ??
+                            const <ShipmentMasterOption>[],
                       );
                       if (result != null) {
                         safeSetState(() => _shipmentFilter = result);

@@ -15,10 +15,12 @@
 
 If `font_res.dart` loses `MANROPE_*` constants, the whole app will show hundreds of analyzer errors — run the generator immediately.
 
-After adding assets/fonts or if those files show red squiggles, run:
+After adding assets/fonts or if those files show red squiggles / duplicate `APP_ICON`, run:
 
 ```bash
 dart run tool/generate_res.dart
+# or auto-detect + fix:
+dart run tool/fix_assets_res_if_broken.dart
 ```
 
-This is also run automatically by `dart run tool/sync_env.dart`.
+**Tip:** Disable the iFlutter extension’s auto-regenerate for `lib/res`, or run the command above whenever it overwrites those files. Prefer `lib/generated/assets.dart` (`Assets.*`) in app code so builds do not depend on `AssetsRes`.

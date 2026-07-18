@@ -7,19 +7,27 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../../../../core/config/env_config.dart';
 import '../../../../core/extensions/theme_ext.dart';
+import '../../../../core/providers/app_config_provider.dart';
+import '../../../../core/providers/firebase_providers.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/services/app_update_service.dart';
 import '../../../../core/utils/app_version_utils.dart';
 import '../../../../generated/assets.dart';
-import '../../../../shared/domain/enums/session_phase.dart';
 import '../../../../shared/data/api/app/app_config_api_client.dart';
-import '../../../../core/config/env_config.dart';
-import '../../../../core/providers/app_config_provider.dart';
+import '../../../../shared/domain/enums/session_phase.dart';
+import '../../../settings/presentation/providers/push_notifications_provider.dart';
 import '../providers/auth_provider.dart';
 
-const _kProgressDuration = Duration(milliseconds: 1800);
-const _kNavigateDelay = Duration(milliseconds: 2600);
+const _kStepAnimDuration = Duration(milliseconds: 400);
+const _kNavigateHold = Duration(milliseconds: 350);
+
+/// Splash progress milestones driven by real init work (not a fixed timer).
+const _kProgressStart = 0.08;
+const _kProgressAfterFcm = 0.40;
+const _kProgressAfterConfig = 0.72;
+const _kProgressAfterSession = 1.0;
 
 @visibleForTesting
 String? splashGateRedirectForConfig(AppConfigData? config) {
@@ -85,7 +93,7 @@ String? minimumVersionForCurrentPlatform(
   return null;
 }
 
-/// Splash — restores session via API, then routes to login or onboarding/home.
+/// Splash — FCM token → app config → session, with step-based progress.
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
@@ -96,24 +104,32 @@ class SplashScreen extends ConsumerStatefulWidget {
 class _SplashScreenState extends ConsumerState<SplashScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _ctrl;
-  late final Animation<double> _progress;
   var _navigated = false;
 
   @override
   void initState() {
     super.initState();
-
-    _ctrl = AnimationController(vsync: this, duration: _kProgressDuration);
-    _progress = CurvedAnimation(
-      parent: _ctrl,
-      curve: const Interval(0.15, 1.0, curve: Curves.easeInOut),
-    );
-    _ctrl.forward();
-
+    // Manual step animation — do not auto-forward on a fixed timer.
+    _ctrl = AnimationController(vsync: this, value: _kProgressStart);
     Future.microtask(_runSplashFlow);
   }
 
+  Future<void> _animateProgressTo(double value) async {
+    if (!mounted) return;
+    await _ctrl.animateTo(
+      value.clamp(0.0, 1.0),
+      duration: _kStepAnimDuration,
+      curve: Curves.easeOutCubic,
+    );
+  }
+
   Future<void> _runSplashFlow() async {
+    // 1) FCM token first — HeadersInterceptor needs X-FCM-Token on config.
+    await _ensureFcmToken();
+    if (!mounted) return;
+    await _animateProgressTo(_kProgressAfterFcm);
+
+    // 2) App config API
     final appConfigNotifier = ref.read(appConfigProvider.notifier);
     if (EnvConfig.useRemoteApi) {
       await appConfigNotifier.load();
@@ -121,10 +137,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       await appConfigNotifier.hydrateFromPrefsOnly();
     }
     if (!mounted) return;
+    await _animateProgressTo(_kProgressAfterConfig);
 
     final config = ref.read(appConfigProvider).config;
     final gateRedirect = splashGateRedirectForConfig(config);
     if (gateRedirect != null) {
+      await _animateProgressTo(_kProgressAfterSession);
+      if (!mounted) return;
       context.go(gateRedirect);
       return;
     }
@@ -139,9 +158,39 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       if (!proceed) return;
     }
 
+    // 3) Session restore
     await ref.read(authProvider.notifier).restoreSession();
     if (!mounted) return;
-    Future.delayed(_kNavigateDelay, _navigateNext);
+    await _animateProgressTo(_kProgressAfterSession);
+    if (!mounted) return;
+
+    await Future<void>.delayed(_kNavigateHold);
+    _navigateNext();
+  }
+
+  Future<void> _ensureFcmToken() async {
+    final pushEnabled = ref.read(pushNotificationsProvider);
+    if (!pushEnabled) {
+      if (kDebugMode) {
+        debugPrint('[Splash] Push disabled — skipping FCM token fetch');
+      }
+      return;
+    }
+
+    try {
+      final fcm = ref.read(fcmServiceProvider);
+      await fcm.initialize(requestPermission: true);
+      if (kDebugMode) {
+        debugPrint(
+          '[Splash] FCM ready — token present=${fcm.currentToken != null}',
+        );
+      }
+    } catch (e, st) {
+      // Splash must continue even if push permission / token fails.
+      if (kDebugMode) {
+        debugPrint('[Splash] FCM init failed: $e\n$st');
+      }
+    }
   }
 
   Future<bool> _isBelowPlatformMinimum(AppConfigData? config) async {
@@ -235,14 +284,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 48.w),
               child: AnimatedBuilder(
-                animation: _progress,
+                animation: _ctrl,
                 builder: (context, _) {
                   return Column(
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(4.r),
                         child: LinearProgressIndicator(
-                          value: _progress.value,
+                          value: _ctrl.value,
                           minHeight: 4.h,
                           backgroundColor: colors.borderColor,
                           color: colors.primary,

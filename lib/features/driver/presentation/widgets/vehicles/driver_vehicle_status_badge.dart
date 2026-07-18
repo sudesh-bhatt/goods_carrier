@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../../core/extensions/size_ext.dart';
 import '../../../../../res/font_res.dart';
 import '../../../../../shared/domain/enums/driver_vehicle_status.dart';
+import '../../../../../shared/presentation/widgets/network/dio_network_icon.dart';
 import 'driver_vehicle_tokens.dart';
 
 class DriverVehicleStatusBadge extends StatelessWidget {
@@ -74,6 +75,7 @@ class DriverVehicleIconBadge extends StatelessWidget {
   const DriverVehicleIconBadge({
     super.key,
     required this.icon,
+    this.iconUrl,
     this.tint = DriverVehicleTokens.accentOrange,
     this.background = DriverVehicleTokens.iconOrangeBg,
     this.size = 64,
@@ -82,6 +84,7 @@ class DriverVehicleIconBadge extends StatelessWidget {
   });
 
   final IconData icon;
+  final String? iconUrl;
   final Color tint;
   final Color background;
   final double size;
@@ -90,6 +93,7 @@ class DriverVehicleIconBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final fallback = Icon(icon, size: iconSize.w, color: tint);
     return Container(
       width: size.w,
       height: size.w,
@@ -98,7 +102,13 @@ class DriverVehicleIconBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(radius.r),
       ),
       alignment: Alignment.center,
-      child: Icon(icon, size: iconSize.w, color: tint),
+      clipBehavior: Clip.antiAlias,
+      child: VehicleTypeNetworkIcon(
+        iconUrl: iconUrl,
+        color: tint,
+        size: iconSize.w,
+        fallback: fallback,
+      ),
     );
   }
 }
@@ -113,6 +123,12 @@ IconData vehicleTypeIcon(String? name) {
   }
   if (lower.contains('trailer') || lower.contains('flatbed')) {
     return Icons.local_shipping_outlined;
+  }
+  if (lower.contains('tempo')) {
+    return Icons.airport_shuttle_rounded;
+  }
+  if (lower.contains('pickup')) {
+    return Icons.fire_truck_outlined;
   }
   return Icons.local_shipping_rounded;
 }

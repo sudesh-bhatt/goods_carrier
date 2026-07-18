@@ -9,6 +9,7 @@ import '../../../../core/theme/app_color_scheme.dart';
 
 import '../../../../res/font_res.dart';
 import '../../../../shared/domain/entities/shipment_masters.dart';
+import '../../../../shared/presentation/widgets/network/dio_network_icon.dart';
 
 /// Search + filter row on the customer home tab.
 class CustomerHomeSearchRow extends StatelessWidget {
@@ -148,7 +149,8 @@ class CustomerHomeVehicleChips extends StatelessWidget {
           final option = vehicleTypes[index - 1];
           return _VehicleChip(
             label: option.name,
-            icon: _assetForOption(option),
+            iconUrl: option.iconUrl,
+            assetIcon: _assetForOption(option),
             selected: selectedVehicleTypeId == option.id,
             onTap: () => onSelected(option.id),
           );
@@ -168,14 +170,16 @@ class CustomerHomeVehicleChips extends StatelessWidget {
 class _VehicleChip extends StatelessWidget {
   const _VehicleChip({
     required this.label,
-    this.icon,
+    this.iconUrl,
+    this.assetIcon,
     this.materialIcon,
     required this.selected,
     required this.onTap,
-  }) : assert(icon != null || materialIcon != null);
+  }) : assert(assetIcon != null || materialIcon != null || iconUrl != null);
 
   final String label;
-  final SvgGenImage? icon;
+  final String? iconUrl;
+  final SvgGenImage? assetIcon;
   final IconData? materialIcon;
   final bool selected;
   final VoidCallback onTap;
@@ -185,6 +189,13 @@ class _VehicleChip extends StatelessWidget {
     final colors = context.colors;
     final fg = selected ? colors.onPrimary : colors.textPrimary;
     final bg = selected ? colors.primary : const Color(0xFFF0F2F5);
+
+    Widget fallback;
+    if (assetIcon != null) {
+      fallback = assetIcon!.svgTint(width: 16.w, height: 16.w, color: fg);
+    } else {
+      fallback = Icon(materialIcon, size: 16.w, color: fg);
+    }
 
     return Material(
       color: bg,
@@ -201,10 +212,12 @@ class _VehicleChip extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (icon != null)
-                  icon!.svgTint(width: 16.w, height: 16.w, color: fg)
-                else
-                  Icon(materialIcon, size: 16.w, color: fg),
+                VehicleTypeNetworkIcon(
+                  iconUrl: iconUrl,
+                  color: fg,
+                  size: 16.w,
+                  fallback: fallback,
+                ),
                 SizedBox(width: 6.w),
                 Text(
                   label,

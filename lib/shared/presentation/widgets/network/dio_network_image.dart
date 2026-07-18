@@ -39,13 +39,25 @@ class _DioNetworkImageState extends ConsumerState<DioNetworkImage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (_loadedUrl != widget.url) {
-      _loadedUrl = widget.url;
-      _load();
+    _ensureLoaded();
+  }
+
+  @override
+  void didUpdateWidget(covariant DioNetworkImage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.url != widget.url) {
+      _ensureLoaded();
     }
   }
 
+  void _ensureLoaded() {
+    if (_loadedUrl == widget.url && (_bytes != null || _failed)) return;
+    _loadedUrl = widget.url;
+    _load();
+  }
+
   Future<void> _load() async {
+    final url = widget.url;
     safeSetState(() {
       _bytes = null;
       _failed = false;
@@ -54,7 +66,7 @@ class _DioNetworkImageState extends ConsumerState<DioNetworkImage> {
     try {
       final dio = ref.read(absoluteUrlDioProvider);
       final response = await dio.get<Uint8List>(
-        widget.url,
+        url,
         options: Options(
           responseType: ResponseType.bytes,
           followRedirects: true,
@@ -63,14 +75,14 @@ class _DioNetworkImageState extends ConsumerState<DioNetworkImage> {
         ),
       );
       final bytes = response.data;
-      if (!mounted) return;
+      if (!mounted || _loadedUrl != url) return;
       if (bytes == null || bytes.isEmpty) {
         safeSetState(() => _failed = true);
         return;
       }
       safeSetState(() => _bytes = bytes);
     } catch (_) {
-      if (!mounted) return;
+      if (!mounted || _loadedUrl != url) return;
       safeSetState(() => _failed = true);
     }
   }

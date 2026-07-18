@@ -144,6 +144,8 @@ class CustomerDashboardNotifier extends StateNotifier<CustomerDashboardState> {
       selectedId = null;
     } else if (vehicleTypeId != null) {
       selectedId = vehicleTypeId;
+    } else if (filter.vehicleTypeId != null) {
+      selectedId = filter.vehicleTypeId;
     } else if (filter.vehicleClass != null) {
       selectedId = homeDashboardVehicleTypeIdFor(
         state.vehicleTypes,

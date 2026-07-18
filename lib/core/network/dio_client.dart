@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../../features/settings/presentation/providers/locale_provider.dart';
+import '../providers/firebase_providers.dart';
 import '../providers/session_expired_provider.dart';
 import '../providers/shared_preferences_provider.dart';
 import 'api_constants.dart';
@@ -34,6 +35,7 @@ List<Interceptor> _dioInterceptors(
     HeadersInterceptor(
       deviceInfo: deviceInfo,
       languageCode: () => ref.read(localeProvider).languageCode,
+      fcmToken: () => ref.read(fcmServiceProvider).currentToken,
     ),
     AuthInterceptor(
       storage: storage,

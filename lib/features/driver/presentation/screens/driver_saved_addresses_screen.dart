@@ -63,7 +63,7 @@ class _DriverSavedAddressesScreenState
               child: Icon(
                 Icons.add_rounded,
                 color: Colors.white,
-                size: 17.5.w,
+                size: 28.w,
               ),
             ),
           ),

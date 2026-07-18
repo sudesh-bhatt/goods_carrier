@@ -105,43 +105,6 @@ class _CustomerSettingsScreenState extends ConsumerState<CustomerSettingsScreen>
     }
   }
 
-  void _showAboutAppDialog(BuildContext context) {
-    final l10n = context.l10n;
-    showDialog<void>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Row(
-          children: [
-            Icon(
-              Icons.local_shipping_rounded,
-              size: 48.w,
-              color: CustomerSettingsTokens.primaryOrange,
-            ),
-            SizedBox(width: 16.w),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Good Carrier'),
-                  Text(
-                    '4.2.0',
-                    style: Theme.of(dialogContext).textTheme.bodySmall,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(l10n.actionClose),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -209,7 +172,10 @@ class _CustomerSettingsScreenState extends ConsumerState<CustomerSettingsScreen>
                 ),
                 SettingsLegalRow(
                   label: l10n.customerSettingsAboutApp,
-                  onTap: () => _showAboutAppDialog(context),
+                  onTap: () => context.push(
+                    AppRoutes.terms,
+                    extra: LegalDocument.about,
+                  ),
                 ),
               ],
             ),
