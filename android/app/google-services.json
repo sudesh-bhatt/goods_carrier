@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:562198395976:android:80ff8974140ffd45002c7d",
+        "mobilesdk_app_id": "1:562198395976:android:d82ded50d7fbb47f002c7d",
         "android_client_info": {
-          "package_name": "com.goodscarrier.goods_carrier"
+          "package_name": "com.goodscarrier.app"
         }
       },
       "oauth_client": [],

@@ -24,7 +24,7 @@ abstract final class GoogleMapsSetupChecker {
 
     debugPrint(
       '[GoogleMapsSetup] env key present. Native tiles need Maps SDK for iOS '
-      '(bundle: com.goodscarrier.goodsCarrier) in Google Cloud Console.',
+      '(bundle/package: com.goodscarrier.app) in Google Cloud Console.',
     );
   }
 }

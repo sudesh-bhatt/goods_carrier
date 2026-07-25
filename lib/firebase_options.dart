@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyA0SnwrSMl-esN0Wl_pJeqPhYvpjgH-fE4',
-    appId: '1:562198395976:android:80ff8974140ffd45002c7d',
+    appId: '1:562198395976:android:d82ded50d7fbb47f002c7d',
     messagingSenderId: '562198395976',
     projectId: 'goods-carrier-46fa1',
     storageBucket: 'goods-carrier-46fa1.firebasestorage.app',
@@ -59,10 +59,10 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyBqKzDuO5rmAOLr-ZX3wFzSWhVYkIaEJdE',
-    appId: '1:562198395976:ios:533f92d16b76bcfd002c7d',
+    appId: '1:562198395976:ios:71e8b80661dd82e2002c7d',
     messagingSenderId: '562198395976',
     projectId: 'goods-carrier-46fa1',
     storageBucket: 'goods-carrier-46fa1.firebasestorage.app',
-    iosBundleId: 'com.goodscarrier.goodsCarrier',
+    iosBundleId: 'com.goodscarrier.app',
   );
 }

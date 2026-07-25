@@ -1,4 +1,4 @@
-package com.goodscarrier.goods_carrier
+package com.goodscarrier.app
 
 import io.flutter.embedding.android.FlutterActivity
 
