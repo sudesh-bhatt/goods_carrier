@@ -8,6 +8,7 @@ abstract final class NotificationsApiMapper {
         body: _firstString(json, ['body', 'message', 'description']),
         createdAt: DateTime.tryParse(json['created_at']?.toString() ?? '') ??
             DateTime.now(),
+        timeAgo: _nullableString(json['time_ago']),
         referenceId: _extractReferenceId(json),
         isRead: json['is_read'] as bool? ?? json['read'] as bool? ?? false,
       );

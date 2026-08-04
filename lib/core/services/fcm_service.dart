@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -16,13 +17,76 @@ const _androidChannel = AndroidNotificationChannel(
   importance: Importance.high,
 );
 
+/// Full FCM payload dump for debugging tray / receive issues (debug only).
+void _logRemoteMessage(String source, RemoteMessage message) {
+  if (!kDebugMode) return;
+
+  final notification = message.notification;
+  final payload = <String, Object?>{
+    'source': source,
+    'messageId': message.messageId,
+    'from': message.from,
+    'sentTime': message.sentTime?.toIso8601String(),
+    'collapseKey': message.collapseKey,
+    'category': message.category,
+    'contentAvailable': message.contentAvailable,
+    'mutableContent': message.mutableContent,
+    'messageType': message.messageType,
+    'ttl': message.ttl,
+    'threadId': message.threadId,
+    'data': message.data,
+    'notification': notification == null
+        ? null
+        : {
+            'title': notification.title,
+            'body': notification.body,
+            'titleLocKey': notification.titleLocKey,
+            'bodyLocKey': notification.bodyLocKey,
+            'titleLocArgs': notification.titleLocArgs,
+            'bodyLocArgs': notification.bodyLocArgs,
+            'android': notification.android == null
+                ? null
+                : {
+                    'channelId': notification.android!.channelId,
+                    'clickAction': notification.android!.clickAction,
+                    'count': notification.android!.count,
+                    'imageUrl': notification.android!.imageUrl,
+                    'link': notification.android!.link?.toString(),
+                    'priority': notification.android!.priority.name,
+                    'smallIcon': notification.android!.smallIcon,
+                    'sound': notification.android!.sound,
+                    'ticker': notification.android!.ticker,
+                    'tag': notification.android!.tag,
+                    'visibility': notification.android!.visibility.name,
+                  },
+            'apple': notification.apple == null
+                ? null
+                : {
+                    'badge': notification.apple!.badge,
+                    'sound': notification.apple!.sound?.name,
+                    'imageUrl': notification.apple!.imageUrl,
+                    'subtitle': notification.apple!.subtitle,
+                  },
+          },
+  };
+
+  debugPrint('[FCM] ===== $source FULL PAYLOAD =====');
+  debugPrint(const JsonEncoder.withIndent('  ').convert(payload));
+  if (notification == null) {
+    debugPrint(
+      '[FCM] WARNING: notification block is null — data-only message. '
+      'Foreground tray will NOT show unless we build a local notification '
+      'from data. Background/terminated tray also needs a notification block '
+      '(or native display handling).',
+    );
+  }
+}
+
 /// Must be a top-level function for background isolate registration.
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  if (kDebugMode) {
-    debugPrint('[FCM] background message: ${message.messageId}');
-  }
+  _logRemoteMessage('background/onReceive', message);
 }
 
 /// Handles FCM permission, token lifecycle, and foreground display.
@@ -168,10 +232,20 @@ class FcmService {
   }
 
   Future<void> _onForegroundMessage(RemoteMessage message) async {
-    _debugLog('foreground message: ${message.messageId}');
+    _logRemoteMessage('foreground/onMessage', message);
     final notification = message.notification;
-    if (notification == null) return;
+    if (notification == null) {
+      _debugLog(
+        'skipping local tray display — message.notification is null '
+        '(data-only payload)',
+      );
+      return;
+    }
 
+    _debugLog(
+      'showing local notification title="${notification.title}" '
+      'body="${notification.body}" channel=${_androidChannel.id}',
+    );
     await _localNotifications.show(
       id: notification.hashCode,
       title: notification.title,
@@ -192,7 +266,7 @@ class FcmService {
   }
 
   void _onMessageOpened(RemoteMessage message) {
-    _debugLog('opened from notification: ${message.data}');
+    _logRemoteMessage('opened/onMessageOpenedApp', message);
     onNotificationOpened?.call(message);
   }
 

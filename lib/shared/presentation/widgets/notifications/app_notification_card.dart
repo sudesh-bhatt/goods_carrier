@@ -32,7 +32,7 @@ class AppNotificationCard extends StatelessWidget {
         ? UserRole.customer
         : UserRole.driver;
     final iconStyle = NotificationIconResolver.resolve(item.type, role: role);
-    final timestamp = _formatTimestamp(item.createdAt);
+    final timestamp = _displayTimestamp(item);
     final timestampInTitleRow = _isPaymentRead &&
         item.type == NotificationType.paymentSuccess &&
         timestamp.contains('Yesterday');
@@ -127,6 +127,13 @@ class AppNotificationCard extends StatelessWidget {
     }
 
     return card;
+  }
+
+  /// Prefer API `time_ago` (server timezone, e.g. IST). Fallback for dummy data.
+  static String _displayTimestamp(NotificationItem item) {
+    final fromApi = item.timeAgo?.trim();
+    if (fromApi != null && fromApi.isNotEmpty) return fromApi;
+    return _formatTimestamp(item.createdAt);
   }
 
   static String _formatTimestamp(DateTime dt) {

@@ -103,7 +103,7 @@ class NotificationTile extends StatelessWidget {
 
                   // Timestamp
                   Text(
-                    _relativeTimestamp(item.createdAt),
+                    _displayTimestamp(item),
                     style: context.textTheme.labelSmall?.copyWith(
                       color: colors.textHint,
                     ),
@@ -115,6 +115,12 @@ class NotificationTile extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _displayTimestamp(NotificationItem item) {
+    final fromApi = item.timeAgo?.trim();
+    if (fromApi != null && fromApi.isNotEmpty) return fromApi;
+    return _relativeTimestamp(item.createdAt);
   }
 
   String _relativeTimestamp(DateTime dt) {
