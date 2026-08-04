@@ -34,10 +34,8 @@ class InitiateSubscriptionPaymentResult {
   final int? amountPaise;
   final String currency;
 
-  bool get canOpenRazorpay =>
-      razorpayOrderId != null &&
-      razorpayOrderId!.isNotEmpty &&
-      (razorpayKey?.isNotEmpty ?? false) &&
-      amountPaise != null &&
-      amountPaise! > 0;
+  /// True when the backend created a real Razorpay order. The publishable key
+  /// is checked separately because it can fall back to `EnvConfig`.
+  bool get hasRazorpayOrder =>
+      (razorpayOrderId?.isNotEmpty ?? false) && (amountPaise ?? 0) > 0;
 }

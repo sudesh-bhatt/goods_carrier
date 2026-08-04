@@ -51,6 +51,7 @@ class _DriverSubscriptionPaymentMethodScreenState
     _razorpay.init(
       onSuccess: _onRazorpaySuccess,
       onError: _onRazorpayError,
+      onExternalWallet: _onRazorpayExternalWallet,
     );
   }
 
@@ -76,45 +77,28 @@ class _DriverSubscriptionPaymentMethodScreenState
       _pendingInitiate = initiate;
       _activePlan = widget.args.plan;
 
+      // Without a real Razorpay order there is nothing to charge. Confirming
+      // on the backend's own `status` alone would hand out free subscriptions.
       final key = initiate.razorpayKey ?? EnvConfig.razorpayKey;
-      if (!initiate.canOpenRazorpay && key.isEmpty) {
+      if (!initiate.hasRazorpayOrder || key.isEmpty) {
         if (!mounted) return;
         throw StateError(context.l10n.driverSubscriptionRazorpayConfigError);
       }
 
-      if (initiate.canOpenRazorpay) {
-        final user = ref.read(authProvider).user;
-        _razorpay.openCheckout(
-          key: key,
-          orderId: initiate.razorpayOrderId!,
-          amountPaise: initiate.amountPaise!,
-          currency: initiate.currency,
-          name: 'Goods Carrier',
-          description: widget.args.plan.name,
-          contact: user?.phone,
-          email: user?.email,
-          transactionId: initiate.transactionId,
-          method: _selected.apiValue,
-        );
-        safeSetState(() => _isPaying = false);
-        return;
-      }
-
-      final confirm = await ref
-          .read(driverSubscriptionProvider.notifier)
-          .confirmPayment(
-            transactionId: initiate.transactionId,
-            gatewayTransactionId: initiate.transactionId,
-            success: initiate.status.toLowerCase() == 'success',
-          );
-
-      if (!mounted) return;
-      _goToResult(
-        success: confirm.success,
-        initiate: initiate,
-        plan: widget.args.plan,
-        failureMessage: confirm.message,
+      final user = ref.read(authProvider).user;
+      _razorpay.openCheckout(
+        key: key,
+        orderId: initiate.razorpayOrderId!,
+        amountPaise: initiate.amountPaise!,
+        currency: initiate.currency,
+        name: 'Goods Carrier',
+        description: widget.args.plan.name,
+        contact: user?.phone,
+        email: user?.email,
+        transactionId: initiate.transactionId,
+        preferredMethod: _selected.apiValue,
       );
+      safeSetState(() => _isPaying = false);
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -139,6 +123,9 @@ class _DriverSubscriptionPaymentMethodScreenState
             transactionId: initiate.transactionId,
             gatewayTransactionId: gatewayId,
             success: true,
+            razorpayOrderId: response.orderId ?? initiate.razorpayOrderId,
+            razorpayPaymentId: response.paymentId,
+            razorpaySignature: response.signature,
           );
 
       if (!mounted) return;
@@ -167,12 +154,20 @@ class _DriverSubscriptionPaymentMethodScreenState
     final plan = _activePlan ?? widget.args.plan;
     if (initiate == null) return;
 
+    safeSetState(() => _isPaying = false);
+    if (!mounted) return;
     _goToResult(
       success: false,
       initiate: initiate,
       plan: plan,
-      failureMessage: response.message ?? context.l10n.driverSubscriptionPaymentFailedBody,
+      failureMessage:
+          response.message ?? context.l10n.driverSubscriptionPaymentFailedBody,
     );
+  }
+
+  /// Razorpay hands off to a wallet app and the outcome arrives out of band, so
+  /// release the button rather than reporting an outcome we do not know.
+  void _onRazorpayExternalWallet(ExternalWalletResponse response) {
     safeSetState(() => _isPaying = false);
   }
 
@@ -184,7 +179,13 @@ class _DriverSubscriptionPaymentMethodScreenState
     String? failureMessage,
   }) {
     final paidAt = DateTime.now();
-    final expiresAt = paidAt.add(Duration(days: plan.durationDays));
+    // A successful confirm refreshes the subscription, so prefer the server's
+    // end date; fall back to the plan duration if that refresh failed.
+    final serverEndDate =
+        ref.read(driverSubscriptionProvider).currentSubscription?.endDate;
+    final expiresAt = serverEndDate != null && serverEndDate.isAfter(paidAt)
+        ? serverEndDate
+        : paidAt.add(Duration(days: plan.durationDays));
 
     context.pushReplacement(
       AppRoutes.driverSubscriptionPaymentResult,

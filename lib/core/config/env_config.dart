@@ -52,13 +52,45 @@ abstract final class EnvConfig {
     return true;
   }
 
-  /// Razorpay publishable key — used when initiate API does not return `razorpay_key`.
-  static String get razorpayKey {
-    const fromDefine = String.fromEnvironment('RAZORPAY_KEY');
-    if (fromDefine.isNotEmpty) return fromDefine;
+  /// Razorpay environment — `live` for production, `test` for sandbox.
+  ///
+  /// Must match the mode the backend creates orders in; a live key cannot pay
+  /// a test order. Anything other than `live` resolves to `test`.
+  static String get razorpayMode {
+    const fromDefine = String.fromEnvironment('RAZORPAY_MODE');
+    final raw = fromDefine.isNotEmpty
+        ? fromDefine
+        : (dotenv.env['RAZORPAY_MODE']?.trim() ?? '');
+    return raw.toLowerCase() == 'live' ? 'live' : 'test';
+  }
 
-    final fromFile = dotenv.env['RAZORPAY_KEY']?.trim();
-    if (fromFile != null && fromFile.isNotEmpty) return fromFile;
+  static bool get isRazorpayLive => razorpayMode == 'live';
+
+  /// Razorpay publishable key for the active [razorpayMode].
+  ///
+  /// Only a fallback — `razorpay_key` from the initiate response wins, since
+  /// the order lives on whichever Razorpay account the backend used. Never
+  /// holds the Key Secret; `.env` ships inside the app bundle.
+  static String get razorpayKey {
+    if (isRazorpayLive) {
+      const fromDefine = String.fromEnvironment('RAZORPAY_KEY_LIVE');
+      if (fromDefine.isNotEmpty) return fromDefine;
+
+      final fromFile = dotenv.env['RAZORPAY_KEY_LIVE']?.trim();
+      if (fromFile != null && fromFile.isNotEmpty) return fromFile;
+    } else {
+      const fromDefine = String.fromEnvironment('RAZORPAY_KEY_TEST');
+      if (fromDefine.isNotEmpty) return fromDefine;
+
+      final fromFile = dotenv.env['RAZORPAY_KEY_TEST']?.trim();
+      if (fromFile != null && fromFile.isNotEmpty) return fromFile;
+    }
+
+    const legacyDefine = String.fromEnvironment('RAZORPAY_KEY');
+    if (legacyDefine.isNotEmpty) return legacyDefine;
+
+    final legacyFile = dotenv.env['RAZORPAY_KEY']?.trim();
+    if (legacyFile != null && legacyFile.isNotEmpty) return legacyFile;
 
     return '';
   }

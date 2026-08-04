@@ -107,6 +107,9 @@ class DriverSubscriptionNotifier extends StateNotifier<DriverSubscriptionState> 
     required String transactionId,
     required String gatewayTransactionId,
     required bool success,
+    String? razorpayOrderId,
+    String? razorpayPaymentId,
+    String? razorpaySignature,
   }) async {
     state = state.copyWith(isProcessingPayment: true, clearError: true);
     try {
@@ -117,6 +120,9 @@ class DriverSubscriptionNotifier extends StateNotifier<DriverSubscriptionState> 
               transactionId: transactionId,
               gatewayTransactionId: gatewayTransactionId,
               paymentStatus: success ? 'success' : 'failed',
+              razorpayOrderId: razorpayOrderId,
+              razorpayPaymentId: razorpayPaymentId,
+              razorpaySignature: razorpaySignature,
             ),
           );
       if (result.success) {

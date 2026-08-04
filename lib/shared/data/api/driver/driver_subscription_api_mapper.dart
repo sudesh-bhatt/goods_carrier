@@ -36,27 +36,22 @@ abstract final class DriverSubscriptionApiMapper {
 
   static InitiateSubscriptionPaymentResult initiateFromJson(
     Map<String, dynamic> json,
-  ) {
-    final amountRaw = json['amount'] ?? json['amount_paise'];
-    var amountPaise = _readInt(amountRaw);
-    if (amountPaise != null && amountPaise < 1000) {
-      // Backend may return rupees — convert to paise for Razorpay.
-      amountPaise = (amountPaise * 100).round();
-    }
-
-    return InitiateSubscriptionPaymentResult(
-      transactionId: json['transaction_id']?.toString() ?? '',
-      status: json['status']?.toString() ?? 'pending',
-      paymentUrl: _nullableString(json['payment_url']),
-      upiIntent: _nullableString(json['upi_intent']),
-      razorpayOrderId: _nullableString(
-        json['razorpay_order_id'] ?? json['order_id'],
-      ),
-      razorpayKey: _nullableString(json['razorpay_key'] ?? json['key']),
-      amountPaise: amountPaise,
-      currency: json['currency']?.toString() ?? 'INR',
-    );
-  }
+  ) =>
+      InitiateSubscriptionPaymentResult(
+        transactionId: json['transaction_id']?.toString() ?? '',
+        status: json['status']?.toString() ?? 'pending',
+        paymentUrl: _nullableString(json['payment_url']),
+        upiIntent: _nullableString(json['upi_intent']),
+        razorpayOrderId: _nullableString(
+          json['razorpay_order_id'] ?? json['order_id'],
+        ),
+        razorpayKey: _nullableString(json['razorpay_key'] ?? json['key']),
+        // Paise, never rupees. Razorpay takes the authoritative amount from
+        // the order, so a unit mismatch surfaces as a checkout error rather
+        // than a silently wrong charge.
+        amountPaise: _readInt(json['amount_paise'] ?? json['amount']),
+        currency: json['currency']?.toString() ?? 'INR',
+      );
 
   static ConfirmSubscriptionPaymentResult confirmFromJson(
     Map<String, dynamic> json,
