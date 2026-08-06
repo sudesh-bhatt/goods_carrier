@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+  <g fill="none" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Map Pin Outer Boundary -->
+    <path d="M 250 450 C 130 350 70 240 70 170 A 180 180 0 1 1 430 170 C 430 240 370 350 250 450 Z" />
+    
+    <!-- Pin Base Oval Shadow -->
+    <ellipse cx="250" cy="465" rx="80" ry="12" fill="#FFFFFF" stroke="none" />
+
+    <!-- Inner 'G' Swoosh/Track -->
+    <path d="M 410 160 C 410 90 340 50 250 50 C 150 50 110 120 110 200 C 110 300 200 350 310 320" />
+    <path d="M 410 160 L 290 160" />
+
+    <!-- Truck Details -->
+    <!-- Cabin -->
+    <path d="M 190 270 L 190 210 C 190 190 210 170 240 170 L 290 170 L 300 270 Z" />
+    <path d="M 205 220 L 240 185 L 285 185 L 280 220 Z" /> <!-- Window -->
+    <path d="M 200 240 L 240 240" /> <!-- Front Grille Line -->
+
+    <!-- Cargo Bed -->
+    <path d="M 300 210 L 400 210 L 390 270 L 300 270 Z" />
+    <line x1="310" y1="230" x2="385" y2="230" />
+
+    <!-- Wheels -->
+    <circle cx="230" cy="270" r="16" fill="#000000" />
+    <circle cx="230" cy="270" r="6" fill="#FFFFFF" stroke="none" />
+    <circle cx="360" cy="270" r="16" fill="#000000" />
+    <circle cx="360" cy="270" r="6" fill="#FFFFFF" stroke="none" />
+  </g>
+</svg>
