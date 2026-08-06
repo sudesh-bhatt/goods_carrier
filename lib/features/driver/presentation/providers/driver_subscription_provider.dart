@@ -7,6 +7,7 @@ import '../../../../shared/domain/models/confirm_subscription_payment.dart';
 import '../../../../shared/domain/models/current_subscription.dart';
 import '../../../../shared/domain/models/initiate_subscription_payment.dart';
 import '../../../../shared/domain/models/subscription_plan.dart';
+import '../models/subscription_flow_args.dart';
 
 class DriverSubscriptionState {
   const DriverSubscriptionState({
@@ -15,6 +16,9 @@ class DriverSubscriptionState {
     this.isLoadingPlans = false,
     this.isProcessingPayment = false,
     this.error,
+    this.checkoutArgs,
+    this.pendingInitiate,
+    this.paymentResultArgs,
   });
 
   final List<SubscriptionPlan> plans;
@@ -22,6 +26,12 @@ class DriverSubscriptionState {
   final bool isLoadingPlans;
   final bool isProcessingPayment;
   final String? error;
+
+  /// Survives GoRouter dropping non-serializable `extra` when Razorpay's
+  /// Android CheckoutActivity backgrounds the Flutter activity (netbanking).
+  final SubscriptionCheckoutArgs? checkoutArgs;
+  final InitiateSubscriptionPaymentResult? pendingInitiate;
+  final SubscriptionPaymentResultArgs? paymentResultArgs;
 
   DriverSubscriptionState copyWith({
     List<SubscriptionPlan>? plans,
@@ -31,6 +41,12 @@ class DriverSubscriptionState {
     String? error,
     bool clearError = false,
     bool clearCurrentSubscription = false,
+    SubscriptionCheckoutArgs? checkoutArgs,
+    bool clearCheckoutArgs = false,
+    InitiateSubscriptionPaymentResult? pendingInitiate,
+    bool clearPendingInitiate = false,
+    SubscriptionPaymentResultArgs? paymentResultArgs,
+    bool clearPaymentResultArgs = false,
   }) =>
       DriverSubscriptionState(
         plans: plans ?? this.plans,
@@ -38,13 +54,21 @@ class DriverSubscriptionState {
             ? null
             : (currentSubscription ?? this.currentSubscription),
         isLoadingPlans: isLoadingPlans ?? this.isLoadingPlans,
-        isProcessingPayment:
-            isProcessingPayment ?? this.isProcessingPayment,
+        isProcessingPayment: isProcessingPayment ?? this.isProcessingPayment,
         error: clearError ? null : (error ?? this.error),
+        checkoutArgs:
+            clearCheckoutArgs ? null : (checkoutArgs ?? this.checkoutArgs),
+        pendingInitiate: clearPendingInitiate
+            ? null
+            : (pendingInitiate ?? this.pendingInitiate),
+        paymentResultArgs: clearPaymentResultArgs
+            ? null
+            : (paymentResultArgs ?? this.paymentResultArgs),
       );
 }
 
-class DriverSubscriptionNotifier extends StateNotifier<DriverSubscriptionState> {
+class DriverSubscriptionNotifier
+    extends StateNotifier<DriverSubscriptionState> {
   DriverSubscriptionNotifier(this._ref)
       : super(const DriverSubscriptionState());
 
@@ -53,7 +77,12 @@ class DriverSubscriptionNotifier extends StateNotifier<DriverSubscriptionState> 
   Future<void> loadPlans() async {
     state = state.copyWith(isLoadingPlans: true, clearError: true);
     if (!EnvConfig.useRemoteApi) {
-      state = const DriverSubscriptionState(plans: _dummyPlans);
+      state = state.copyWith(
+        plans: _dummyPlans,
+        isLoadingPlans: false,
+        clearError: true,
+        clearCurrentSubscription: true,
+      );
       return;
     }
 
@@ -66,9 +95,10 @@ class DriverSubscriptionNotifier extends StateNotifier<DriverSubscriptionState> 
       } catch (_) {
         current = null;
       }
-      state = DriverSubscriptionState(
+      state = state.copyWith(
         plans: _sortedPlans(plans),
         currentSubscription: current,
+        isLoadingPlans: false,
       );
     } catch (e) {
       state = state.copyWith(
@@ -81,17 +111,18 @@ class DriverSubscriptionNotifier extends StateNotifier<DriverSubscriptionState> 
   Future<InitiateSubscriptionPaymentResult> initiatePayment({
     required int planId,
     required String paymentMethod,
+    bool forceNew = false,
   }) async {
     state = state.copyWith(isProcessingPayment: true, clearError: true);
     try {
-      final result = await _ref
-          .read(driverSubscriptionApiClientProvider)
-          .initiatePayment(
-            InitiateSubscriptionPaymentRequest(
-              planId: planId,
-              paymentMethod: paymentMethod,
-            ),
-          );
+      final result =
+          await _ref.read(driverSubscriptionApiClientProvider).initiatePayment(
+                InitiateSubscriptionPaymentRequest(
+                  planId: planId,
+                  paymentMethod: paymentMethod,
+                  forceNew: forceNew,
+                ),
+              );
       state = state.copyWith(isProcessingPayment: false);
       return result;
     } catch (e) {
@@ -113,23 +144,23 @@ class DriverSubscriptionNotifier extends StateNotifier<DriverSubscriptionState> 
   }) async {
     state = state.copyWith(isProcessingPayment: true, clearError: true);
     try {
-      final result = await _ref
-          .read(driverSubscriptionApiClientProvider)
-          .confirmPayment(
-            ConfirmSubscriptionPaymentRequest(
-              transactionId: transactionId,
-              gatewayTransactionId: gatewayTransactionId,
-              paymentStatus: success ? 'success' : 'failed',
-              razorpayOrderId: razorpayOrderId,
-              razorpayPaymentId: razorpayPaymentId,
-              razorpaySignature: razorpaySignature,
-            ),
-          );
+      final result =
+          await _ref.read(driverSubscriptionApiClientProvider).confirmPayment(
+                ConfirmSubscriptionPaymentRequest(
+                  transactionId: transactionId,
+                  gatewayTransactionId: gatewayTransactionId,
+                  paymentStatus: success ? 'success' : 'failed',
+                  razorpayOrderId: razorpayOrderId,
+                  razorpayPaymentId: razorpayPaymentId,
+                  razorpaySignature: razorpaySignature,
+                ),
+              );
       if (result.success) {
         await loadPlans();
-      } else {
-        state = state.copyWith(isProcessingPayment: false);
       }
+      // Always clear — loadPlans() does not touch isProcessingPayment, so a
+      // successful confirm previously left the plans screen spinner stuck.
+      state = state.copyWith(isProcessingPayment: false);
       return result;
     } catch (e) {
       state = state.copyWith(
@@ -138,6 +169,34 @@ class DriverSubscriptionNotifier extends StateNotifier<DriverSubscriptionState> 
       );
       rethrow;
     }
+  }
+
+  void beginCheckout(SubscriptionCheckoutArgs args) {
+    state = state.copyWith(
+      checkoutArgs: args,
+      clearPendingInitiate: true,
+      clearPaymentResultArgs: true,
+      clearError: true,
+    );
+  }
+
+  void setPendingInitiate(InitiateSubscriptionPaymentResult initiate) {
+    state = state.copyWith(pendingInitiate: initiate);
+  }
+
+  void beginPaymentResult(SubscriptionPaymentResultArgs args) {
+    state = state.copyWith(
+      paymentResultArgs: args,
+      clearPendingInitiate: true,
+    );
+  }
+
+  void clearCheckoutFlow() {
+    state = state.copyWith(
+      clearCheckoutArgs: true,
+      clearPendingInitiate: true,
+      clearPaymentResultArgs: true,
+    );
   }
 
   List<SubscriptionPlan> _sortedPlans(List<SubscriptionPlan> plans) {

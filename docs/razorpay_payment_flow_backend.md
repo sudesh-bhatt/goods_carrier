@@ -185,17 +185,21 @@ This is the endpoint that needs the most new work.
 **Request from app:**
 
 ```json
-{ "plan_id": 2, "payment_method": "upi" }
+{ "plan_id": 2, "payment_method": "upi", "force_new": true }
 ```
 
 `payment_method` is one of `upi`, `card`, `netbanking`, `wallet`. It is the driver's stated preference, used to preselect a tab in the Razorpay sheet. **It is not a restriction** — the driver may still pay by another method, so record the actual method from the webhook, not this value.
+
+`force_new` is optional (default `false`). When `true`, do not reuse a pending order — create a new one (see step 4).
 
 **Required behaviour:**
 
 1. Authenticate the driver; reject non-drivers with `403`
 2. Load the plan by `plan_id`; `404` if missing, `422` if `is_active` is false
 3. Reject if the driver already has an active non-expired subscription, unless you intend to support renewal stacking — decide this and tell the mobile team (section 13)
-4. **Reuse before create:** if a `pending` transaction for this driver+plan exists and is younger than ~15 minutes, return its existing `razorpay_order_id` instead of creating a second order. Drivers tap "Secure Pay" repeatedly on slow networks; each tap otherwise creates an orphan order.
+4. **Reuse before create:** if a `pending` transaction for this driver+plan exists and is younger than ~15 minutes, **and** its Razorpay order status is still `created` (no payment attempt), return its existing `razorpay_order_id` instead of creating a second order. Drivers tap Subscribe repeatedly on slow networks; each tap otherwise creates an orphan order.
+   - **Never reuse** an order that is `attempted`, `paid`, or `expired` on Razorpay — Checkout then shows **"Uh! oh! Something went wrong"**. Mark the local row `failed`/`expired` and create a new order.
+   - If the request includes `"force_new": true`, skip reuse, expire/fail the old pending row, and always create a fresh Razorpay order. The app sends this after Checkout rejects a reused order.
 5. Create the local `payment_transactions` row with status `pending`
 6. Create the Razorpay order (below)
 7. Persist `razorpay_order_id` on that row
@@ -254,7 +258,8 @@ Notes on the order call:
     "razorpay_order_id": "order_PqRs123AbCdEf",
     "razorpay_key": "rzp_test_TLN1dDgRJcxeqG",
     "amount": 49900,
-    "currency": "INR"
+    "currency": "INR",
+    "reused": false
   }
 }
 ```
@@ -264,9 +269,10 @@ Notes on the order call:
 | `transaction_id` | Yes | Your reference. Echoed back on confirm and shown on the receipt |
 | `razorpay_order_id` | **Yes** | Without it the app refuses to open checkout. `order_id` also accepted |
 | `amount` | **Yes** | Integer paise, must equal the order amount. `amount_paise` also accepted |
-| `razorpay_key` | Strongly recommended | Publishable Key ID. Removes test/live mismatch. `key` also accepted |
+| `razorpay_key` | Strongly recommended | Publishable Key ID. Removes test/live mismatch. `key` / `key_id` also accepted |
 | `currency` | No | Defaults to `INR` |
 | `status` | No | Defaults to `pending` |
+| `reused` | No | `true` when you returned an existing pending order. App uses this to retry with `force_new` if Checkout rejects it |
 
 `payment_url` and `upi_intent` are ignored — do not implement them.
 
@@ -547,7 +553,8 @@ Deep linking from a tapped notification into the receipt screen is **not impleme
 
 | Scenario | Expected behaviour |
 |---|---|
-| Driver taps Pay twice quickly | Reuse the pending order (6.2 step 4). Never two orders for one intent |
+| Driver taps Pay twice quickly | Reuse the pending order **only if Razorpay order status is still `created`** (6.2 step 4). Never two orders for one intent |
+| App opens Checkout on a paid/attempted reused order | Razorpay shows "Uh oh". App retries once with `force_new: true`. Backend must honour that and never reuse non-`created` orders |
 | App killed after paying, before confirm | Webhook activates. Driver sees it on next `GET /current` |
 | Driver cancels in the Razorpay sheet | No confirm arrives. Transaction stays `pending`. Expire it via a scheduled job after ~30 min |
 | Payment fails (insufficient funds) | App posts `payment_status: failed`; `payment.failed` webhook confirms. Mark `failed` + reason |

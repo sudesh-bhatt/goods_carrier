@@ -43,10 +43,10 @@ import '../../features/customer/presentation/tabs/customer_shipments_tab.dart';
 import '../../features/driver/presentation/screens/driver_add_address_screen.dart';
 import '../../features/driver/presentation/screens/driver_add_vehicle_screen.dart';
 import '../../features/driver/presentation/screens/driver_payment_history_screen.dart';
-import '../../features/driver/presentation/screens/driver_subscription_payment_method_screen.dart';
 import '../../features/driver/presentation/screens/driver_subscription_payment_result_screen.dart';
 import '../../features/driver/presentation/screens/driver_subscription_plans_screen.dart';
 import '../../features/driver/presentation/models/subscription_flow_args.dart';
+import '../../features/driver/presentation/providers/driver_subscription_provider.dart';
 import '../../features/driver/presentation/screens/driver_vehicle_detail_screen.dart';
 import '../../features/driver/presentation/screens/driver_saved_addresses_screen.dart';
 import '../../features/driver/presentation/screens/driver_vehicles_screen.dart';
@@ -501,22 +501,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (_, __) => const DriverSubscriptionPlansScreen(),
       ),
       GoRoute(
-        path: AppRoutes.driverSubscriptionPayment,
-        builder: (_, state) {
-          final extra = state.extra;
-          if (extra is! SubscriptionCheckoutArgs) {
-            return const _RouterErrorPage(
-              error: FormatException('Missing subscription checkout args'),
-            );
-          }
-          return DriverSubscriptionPaymentMethodScreen(args: extra);
-        },
-      ),
-      GoRoute(
         path: AppRoutes.driverSubscriptionPaymentResult,
         builder: (_, state) {
-          final extra = state.extra;
-          if (extra is! SubscriptionPaymentResultArgs) {
+          final extra = state.extra is SubscriptionPaymentResultArgs
+              ? state.extra! as SubscriptionPaymentResultArgs
+              : ref.read(driverSubscriptionProvider).paymentResultArgs;
+          if (extra == null) {
             return const _RouterErrorPage(
               error:
                   FormatException('Missing subscription payment result args'),

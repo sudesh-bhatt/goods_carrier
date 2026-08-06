@@ -45,12 +45,15 @@ abstract final class DriverSubscriptionApiMapper {
         razorpayOrderId: _nullableString(
           json['razorpay_order_id'] ?? json['order_id'],
         ),
-        razorpayKey: _nullableString(json['razorpay_key'] ?? json['key']),
+        razorpayKey: _nullableString(
+          json['razorpay_key'] ?? json['key'] ?? json['key_id'],
+        ),
         // Paise, never rupees. Razorpay takes the authoritative amount from
         // the order, so a unit mismatch surfaces as a checkout error rather
         // than a silently wrong charge.
         amountPaise: _readInt(json['amount_paise'] ?? json['amount']),
         currency: json['currency']?.toString() ?? 'INR',
+        reused: json['reused'] == true,
       );
 
   static ConfirmSubscriptionPaymentResult confirmFromJson(

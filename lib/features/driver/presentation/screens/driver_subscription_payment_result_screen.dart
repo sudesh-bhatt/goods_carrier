@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -8,10 +9,11 @@ import '../../../../core/router/app_routes.dart';
 import '../../../../res/font_res.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
 import '../models/subscription_flow_args.dart';
+import '../providers/driver_subscription_provider.dart';
 import '../widgets/subscription/subscription_tokens.dart';
 
 /// Payment success / failure receipt — Figma `1:5178`.
-class DriverSubscriptionPaymentResultScreen extends StatelessWidget {
+class DriverSubscriptionPaymentResultScreen extends ConsumerWidget {
   const DriverSubscriptionPaymentResultScreen({
     super.key,
     required this.args,
@@ -19,8 +21,13 @@ class DriverSubscriptionPaymentResultScreen extends StatelessWidget {
 
   final SubscriptionPaymentResultArgs args;
 
+  void _leave(BuildContext context, WidgetRef ref) {
+    ref.read(driverSubscriptionProvider.notifier).clearCheckoutFlow();
+    context.go(AppRoutes.driverHome);
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final locale = Localizations.localeOf(context).toString();
     final dateLabel = args.paidAt != null
@@ -36,7 +43,7 @@ class DriverSubscriptionPaymentResultScreen extends StatelessWidget {
       backgroundColor: SubscriptionTokens.paymentScreenBg,
       appBar: FlowScreenAppBar(
         title: l10n.driverSubscriptionReceiptTitle,
-        onBackTap: () => context.go(AppRoutes.driverHome),
+        onBackTap: () => _leave(context, ref),
         showBack: true,
       ),
       body: SafeArea(
@@ -114,7 +121,8 @@ class DriverSubscriptionPaymentResultScreen extends StatelessWidget {
                             children: [
                               Expanded(
                                 child: _ReceiptField(
-                                  label: l10n.driverSubscriptionTransactionIdLabel,
+                                  label:
+                                      l10n.driverSubscriptionTransactionIdLabel,
                                   value: args.transactionId ?? '—',
                                 ),
                               ),
@@ -201,7 +209,7 @@ class DriverSubscriptionPaymentResultScreen extends StatelessWidget {
                   color: SubscriptionTokens.primaryOrange,
                   borderRadius: BorderRadius.circular(12.r),
                   child: InkWell(
-                    onTap: () => context.go(AppRoutes.driverHome),
+                    onTap: () => _leave(context, ref),
                     borderRadius: BorderRadius.circular(12.r),
                     child: Center(
                       child: Text(

@@ -8,16 +8,6 @@ typedef RazorpayExternalWalletHandler = void Function(
 
 /// Thin wrapper around [Razorpay] for subscription checkout.
 class RazorpayPaymentService {
-  /// Methods Razorpay accepts in `prefill.method`. Anything else is dropped so
-  /// checkout opens on its default screen instead of erroring.
-  static const _prefillableMethods = {
-    'card',
-    'netbanking',
-    'wallet',
-    'upi',
-    'emi',
-  };
-
   Razorpay? _razorpay;
 
   void init({
@@ -45,22 +35,21 @@ class RazorpayPaymentService {
     String? contact,
     String? email,
     String? transactionId,
-    String? preferredMethod,
   }) {
     final razorpay = _razorpay;
     if (razorpay == null) {
       throw StateError('RazorpayPaymentService.init must be called first');
     }
 
-    // Razorpay's top-level `method` option is for direct invocation and needs
-    // companion params (`vpa`, `bank`, `wallet`), so the driver's choice is
-    // passed as a prefill preference instead.
+    // Do NOT put `method` in prefill. Razorpay docs only allow `prefill.method`
+    // = `card` (and only when both contact + email are set). Values like
+    // `netbanking` / `upi` / `wallet` make CheckoutActivity show
+    // "Uh! oh! Something went wrong" immediately.
+    final normalizedContact = _normalizeContact(contact);
+    final normalizedEmail = _normalizeEmail(email);
     final prefill = <String, dynamic>{
-      if (contact != null && contact.isNotEmpty) 'contact': contact,
-      if (email != null && email.isNotEmpty) 'email': email,
-      if (preferredMethod != null &&
-          _prefillableMethods.contains(preferredMethod))
-        'method': preferredMethod,
+      if (normalizedContact != null) 'contact': normalizedContact,
+      if (normalizedEmail != null) 'email': normalizedEmail,
     };
 
     final options = <String, dynamic>{
@@ -75,7 +64,38 @@ class RazorpayPaymentService {
         'notes': {'transaction_id': transactionId},
     };
 
+    assert(() {
+      // ignore: avoid_print
+      print('[Razorpay] open options: '
+          'key=${key.substring(0, key.length.clamp(0, 12))}… '
+          'order_id=$orderId amount=$amountPaise currency=$currency '
+          'prefill=$prefill');
+      return true;
+    }());
+
     razorpay.open(options);
+  }
+
+  static String? _normalizeEmail(String? raw) {
+    if (raw == null) return null;
+    final trimmed = raw.trim();
+    if (trimmed.isEmpty || !trimmed.contains('@')) return null;
+    return trimmed;
+  }
+
+  /// Razorpay expects E.164 (`+91…`). Bare Indian numbers without a country
+  /// code are treated as `+1…` and can break checkout.
+  static String? _normalizeContact(String? raw) {
+    if (raw == null) return null;
+    final trimmed = raw.trim();
+    if (trimmed.isEmpty) return null;
+    if (trimmed.startsWith('+')) return trimmed;
+
+    final digits = trimmed.replaceAll(RegExp(r'\D'), '');
+    if (digits.isEmpty) return null;
+    if (digits.length == 10) return '+91$digits';
+    if (digits.startsWith('91') && digits.length == 12) return '+$digits';
+    return '+$digits';
   }
 
   void dispose() {

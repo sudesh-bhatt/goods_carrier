@@ -2,14 +2,20 @@ class InitiateSubscriptionPaymentRequest {
   const InitiateSubscriptionPaymentRequest({
     required this.planId,
     required this.paymentMethod,
+    this.forceNew = false,
   });
 
   final int planId;
   final String paymentMethod;
 
+  /// When true, backend must create a fresh Razorpay order even if a pending
+  /// transaction exists. Used after Checkout rejects a reused/paid order.
+  final bool forceNew;
+
   Map<String, dynamic> toJson() => {
         'plan_id': planId,
         'payment_method': paymentMethod,
+        if (forceNew) 'force_new': true,
       };
 }
 
@@ -23,6 +29,7 @@ class InitiateSubscriptionPaymentResult {
     this.razorpayKey,
     this.amountPaise,
     this.currency = 'INR',
+    this.reused = false,
   });
 
   final String transactionId;
@@ -33,6 +40,10 @@ class InitiateSubscriptionPaymentResult {
   final String? razorpayKey;
   final int? amountPaise;
   final String currency;
+
+  /// True when backend returned an existing pending order instead of creating
+  /// a new one. Reused paid/attempted orders make Razorpay show "Uh oh".
+  final bool reused;
 
   /// True when the backend created a real Razorpay order. The publishable key
   /// is checked separately because it can fall back to `EnvConfig`.

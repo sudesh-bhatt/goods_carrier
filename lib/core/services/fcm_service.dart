@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui' show Color;
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -203,6 +204,18 @@ class FcmService {
     _initializeFuture = null;
   }
 
+  /// Removes this app's notifications from the system tray (Android shade / iOS).
+  ///
+  /// Call on logout and session expiry so prior-user pushes do not linger.
+  Future<void> clearTrayNotifications() async {
+    try {
+      await _localNotifications.cancelAll();
+      _debugLog('cleared all tray notifications');
+    } catch (e) {
+      _debugLog('clearTrayNotifications failed: $e');
+    }
+  }
+
   Future<void> dispose() async {
     await _tokenRefreshSub?.cancel();
     await _foregroundSub?.cancel();
@@ -210,7 +223,8 @@ class FcmService {
   }
 
   Future<void> _setupLocalNotifications() async {
-    const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
+    // Stock Android requires a white alpha silhouette — not the launcher icon.
+    const androidInit = AndroidInitializationSettings('@drawable/ic_notification');
     const iosInit = DarwinInitializationSettings();
     const initSettings = InitializationSettings(
       android: androidInit,
@@ -257,7 +271,12 @@ class FcmService {
           channelDescription: _androidChannel.description,
           importance: Importance.high,
           priority: Priority.high,
-          icon: '@mipmap/ic_launcher',
+          // Small icon: white silhouette (required on AOSP / Motorola).
+          icon: '@drawable/ic_notification',
+          // Large icon: full-color brand mark in expanded shade (Samsung-like).
+          largeIcon:
+              const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
+          color: const Color(0xFFFF6D00),
         ),
         iOS: const DarwinNotificationDetails(),
       ),

@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/network/api_exception_mapper.dart';
+import '../../../../core/providers/firebase_providers.dart';
 import '../../../../core/providers/repository_providers.dart';
 import '../../../../core/providers/session_expired_provider.dart';
 import '../../../../core/providers/shared_preferences_provider.dart';
@@ -609,12 +610,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
     await _prefsStore.clearUser();
     await _prefsStore.clearPendingProfileImage();
+    await _ref.read(fcmServiceProvider).clearTrayNotifications();
     state = const AuthState();
   }
 
   Future<void> handleSessionExpired() async {
     await _authRepo.clearSession();
     await _prefsStore.clearUser();
+    await _ref.read(fcmServiceProvider).clearTrayNotifications();
     state = const AuthState(
       error: 'Session expired. Please log in again.',
     );

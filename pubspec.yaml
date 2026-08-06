@@ -102,6 +102,7 @@ flutter:
     - assets/images/splash_screen_logo.png
     - assets/images/subscription_logistics_background.png
     - assets/svg/app_icon.svg
+    - assets/svg/app_notification.svg
     - assets/svg/cta_right_arrow.svg
     - assets/svg/ic_otp_lock.svg
     - assets/svg/ic_profile_camera.svg

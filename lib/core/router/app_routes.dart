@@ -65,8 +65,6 @@ abstract final class AppRoutes {
   static const String driverEditProfile = '/driver/profile/edit';
   static const String driverEarnings = '/driver/earnings';
   static const String driverSubscriptionPlans = '/driver/subscription/plans';
-  static const String driverSubscriptionPayment =
-      '/driver/subscription/payment';
   static const String driverSubscriptionPaymentResult =
       '/driver/subscription/payment-result';
   static const String driverVehicles = '/driver/profile/vehicles';

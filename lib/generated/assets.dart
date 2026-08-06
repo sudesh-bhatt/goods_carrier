@@ -11,6 +11,8 @@ class Assets {
   static const SvgGenImage appIconSvg = SvgGenImage('assets/svg/app_icon.svg');
   static const AssetGenImage appLogo =
       AssetGenImage('assets/images/app_logo.png');
+  static const SvgGenImage appNotification =
+      SvgGenImage('assets/svg/app_notification.svg');
   static const SvgGenImage ctaRightArrow =
       SvgGenImage('assets/svg/cta_right_arrow.svg');
   static const AssetGenImage emptyTripPlaceholder =

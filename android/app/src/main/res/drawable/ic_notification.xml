@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  From assets/svg/app_notification.svg
+  White alpha silhouette for stock Android notification small icon.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="540"
+    android:viewportHeight="540">
+    <!-- SVG viewBox="-20 -20 540 540" → shift into 0..540 viewport -->
+    <group
+        android:translateX="20"
+        android:translateY="20">
+        <!-- Map pin outer boundary -->
+        <path
+            android:pathData="M 250 450 C 130 350 70 240 70 170 A 180 180 0 1 1 430 170 C 430 240 370 350 250 450 Z"
+            android:fillColor="#00000000"
+            android:strokeColor="#FFFFFFFF"
+            android:strokeWidth="20"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+
+        <!-- Pin base oval -->
+        <path
+            android:pathData="M 170,465 a 80,12 0 1,0 160,0 a 80,12 0 1,0 -160,0"
+            android:fillColor="#FFFFFFFF" />
+
+        <!-- Inner G swoosh / track -->
+        <path
+            android:pathData="M 410 160 C 410 90 340 50 250 50 C 150 50 110 120 110 200 C 110 300 200 350 310 320"
+            android:fillColor="#00000000"
+            android:strokeColor="#FFFFFFFF"
+            android:strokeWidth="20"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+        <path
+            android:pathData="M 410 160 L 290 160"
+            android:fillColor="#00000000"
+            android:strokeColor="#FFFFFFFF"
+            android:strokeWidth="20"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+
+        <!-- Truck cabin -->
+        <path
+            android:pathData="M 190 270 L 190 210 C 190 190 210 170 240 170 L 290 170 L 300 270 Z"
+            android:fillColor="#00000000"
+            android:strokeColor="#FFFFFFFF"
+            android:strokeWidth="20"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+        <path
+            android:pathData="M 205 220 L 240 185 L 285 185 L 280 220 Z"
+            android:fillColor="#00000000"
+            android:strokeColor="#FFFFFFFF"
+            android:strokeWidth="20"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+        <path
+            android:pathData="M 200 240 L 240 240"
+            android:fillColor="#00000000"
+            android:strokeColor="#FFFFFFFF"
+            android:strokeWidth="20"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+
+        <!-- Cargo bed -->
+        <path
+            android:pathData="M 300 210 L 400 210 L 390 270 L 300 270 Z"
+            android:fillColor="#00000000"
+            android:strokeColor="#FFFFFFFF"
+            android:strokeWidth="20"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+        <path
+            android:pathData="M 310 230 L 385 230"
+            android:fillColor="#00000000"
+            android:strokeColor="#FFFFFFFF"
+            android:strokeWidth="20"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+
+        <!-- Wheels (white rings — no black fill; status-bar icons must be white-only) -->
+        <path
+            android:pathData="M 214,270 a 16,16 0 1,0 32,0 a 16,16 0 1,0 -32,0"
+            android:fillColor="#00000000"
+            android:strokeColor="#FFFFFFFF"
+            android:strokeWidth="20"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+        <path
+            android:pathData="M 224,270 a 6,6 0 1,0 12,0 a 6,6 0 1,0 -12,0"
+            android:fillColor="#FFFFFFFF" />
+        <path
+            android:pathData="M 344,270 a 16,16 0 1,0 32,0 a 16,16 0 1,0 -32,0"
+            android:fillColor="#00000000"
+            android:strokeColor="#FFFFFFFF"
+            android:strokeWidth="20"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+        <path
+            android:pathData="M 354,270 a 6,6 0 1,0 12,0 a 6,6 0 1,0 -12,0"
+            android:fillColor="#FFFFFFFF" />
+    </group>
+</vector>

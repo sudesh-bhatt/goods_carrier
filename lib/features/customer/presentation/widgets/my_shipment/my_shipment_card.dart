@@ -245,53 +245,57 @@ class _CompactRouteRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(vertical: 4.h),
-          child: Column(
-            children: [
-              Container(
-                width: 12.w,
-                height: 12.w,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SizedBox(
+            width: 12.w,
+            child: Column(
+              children: [
+                Container(
+                  width: 12.w,
+                  height: 12.w,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: MyShipmentCardTokens.routeRing,
+                      width: 2,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 4.h),
+                    child: Center(
+                      child: Container(
+                        width: 2.w,
+                        height: double.infinity,
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [Color(0xFF8D7164), Color(0x008D7164)],
+                            stops: [0.33, 0.33],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  width: 12.w,
+                  height: 12.w,
+                  decoration: const BoxDecoration(
                     color: MyShipmentCardTokens.routeRing,
-                    width: 2,
+                    shape: BoxShape.circle,
                   ),
                 ),
-              ),
-              SizedBox(height: 4.h),
-              Container(
-                width: 2.w,
-                height: 40.h,
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [Color(0xFF8D7164), Color(0x008D7164)],
-                    stops: [0.33, 0.33],
-                  ),
-                ),
-              ),
-              SizedBox(height: 4.h),
-              Container(
-                width: 12.w,
-                height: 12.w,
-                decoration: const BoxDecoration(
-                  color: MyShipmentCardTokens.routeRing,
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-        SizedBox(width: 16.w),
-        Expanded(
-          child: SizedBox(
-            height: 80.h,
+          SizedBox(width: 16.w),
+          Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -301,8 +305,8 @@ class _CompactRouteRow extends StatelessWidget {
               ],
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
