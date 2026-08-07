@@ -20,14 +20,26 @@ abstract final class NotificationsApiMapper {
       'driver_interest_received' ||
       'interest_received' =>
         NotificationType.driverInterestReceived,
+      'shipment_request' ||
+      'trip_request' ||
+      'trip_request_created' =>
+        NotificationType.shipmentRequest,
+      'shipment_request_accepted' =>
+        NotificationType.shipmentRequestAccepted,
       'shipment_assigned' || 'assigned' => NotificationType.shipmentAssigned,
       'shipment_picked_up' || 'picked_up' => NotificationType.shipmentPickedUp,
       'shipment_delivered' || 'delivered' => NotificationType.shipmentDelivered,
       'trip_request_accepted' || 'request_accepted' =>
         NotificationType.tripRequestAccepted,
+      'trip_request_rejected' || 'request_rejected' =>
+        NotificationType.tripRequestRejected,
       'trip_cancelled' || 'cancelled' => NotificationType.tripCancelled,
       'subscription_purchase' || 'subscription' =>
         NotificationType.subscriptionPurchase,
+      'subscription_expiry_reminder' ||
+      'subscription_expiring' ||
+      'subscription_expiry' =>
+        NotificationType.subscriptionExpiryReminder,
       'shipment_drop_success' || 'drop_success' =>
         NotificationType.shipmentDropSuccess,
       'payment_success' || 'payment' => NotificationType.paymentSuccess,

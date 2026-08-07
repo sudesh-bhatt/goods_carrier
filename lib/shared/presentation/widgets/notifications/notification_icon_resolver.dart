@@ -43,22 +43,44 @@ abstract final class NotificationIconResolver {
           background: AppNotificationTokens.iconOrangeBg,
           iconSize: 20,
         ),
-      NotificationType.tripCancelled => const NotificationIconStyle(
+      // New shipment / trip request submitted
+      NotificationType.shipmentRequest => const NotificationIconStyle(
+          icon: Icons.add_box_outlined,
+          foreground: AppNotificationTokens.primary,
+          background: AppNotificationTokens.iconOrangeBg,
+        ),
+      // Customer accepted driver shipment request / assigned
+      NotificationType.shipmentRequestAccepted ||
+      NotificationType.shipmentAssigned =>
+        const NotificationIconStyle(
+          icon: Icons.assignment_turned_in_outlined,
+          foreground: AppNotificationTokens.primary,
+          background: AppNotificationTokens.iconOrangeBg,
+        ),
+      NotificationType.tripRequestAccepted => const NotificationIconStyle(
+          icon: Icons.thumb_up_alt_outlined,
+          foreground: AppNotificationTokens.primary,
+          background: AppNotificationTokens.iconOrangeBg,
+          iconSize: 20,
+        ),
+      NotificationType.tripRequestRejected ||
+      NotificationType.tripCancelled =>
+        const NotificationIconStyle(
           icon: Icons.close_rounded,
           foreground: AppNotificationTokens.primary,
           background: AppNotificationTokens.iconOrangeBg,
           iconSize: 20,
         ),
-      NotificationType.tripRequestAccepted ||
       NotificationType.shipmentDropSuccess ||
       NotificationType.shipmentPickedUp ||
-      NotificationType.shipmentAssigned ||
       NotificationType.shipmentDelivered =>
         const NotificationIconStyle(
           icon: Icons.local_shipping_outlined,
           foreground: AppNotificationTokens.primary,
           background: AppNotificationTokens.iconOrangeBg,
         ),
+      // Reached only if payment early-return above changes; keep exhaustive.
+      NotificationType.subscriptionExpiryReminder ||
       NotificationType.subscriptionPurchase ||
       NotificationType.paymentSuccess =>
         const NotificationIconStyle(
@@ -73,5 +95,6 @@ abstract final class NotificationIconResolver {
 
   static bool _isPaymentType(NotificationType type) =>
       type == NotificationType.subscriptionPurchase ||
+      type == NotificationType.subscriptionExpiryReminder ||
       type == NotificationType.paymentSuccess;
 }

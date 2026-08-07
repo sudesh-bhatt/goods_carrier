@@ -1176,6 +1176,38 @@ class AppLocalizationsGu extends AppLocalizations {
       'ચુકવણી ગેટવે કોન્ફિગર નથી. સપોર્ટનો સંપર્ક કરો.';
 
   @override
+  String get driverSubscriptionActiveSection => 'તમારો સક્રિય પ્લાન';
+
+  @override
+  String get driverSubscriptionActiveBadge => 'સક્રિય';
+
+  @override
+  String get driverSubscriptionChangePlan => 'પ્લાન બદલો';
+
+  @override
+  String get driverSubscriptionChangeSection => 'તમારો પ્લાન બદલો';
+
+  @override
+  String get driverSubscriptionChangeSectionSubtitle =>
+      'ગમે ત્યારે સ્વિચ કરો. વર્તમાન પ્લાન સમાપ્ત થયા પછી જ ફરી પસંદ થઈ શકે.';
+
+  @override
+  String get driverSubscriptionCurrentPlan => 'વર્તમાન પ્લાન';
+
+  @override
+  String get driverSubscriptionSwitchPlan => 'આ પ્લાન પર સ્વિચ કરો';
+
+  @override
+  String driverSubscriptionValidTill(String date) {
+    return '$date સુધી માન્ય';
+  }
+
+  @override
+  String driverSubscriptionTripsUsage(int used, int limit, int remaining) {
+    return '$limit માંથી $used ટ્રિપ વપરાઈ · $remaining બાકી';
+  }
+
+  @override
   String get driverPaymentHistoryEmptyTitle => 'હજી કોઈ ચુકવણી નથી';
 
   @override

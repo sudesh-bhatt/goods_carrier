@@ -65,18 +65,28 @@ abstract final class DriverSubscriptionApiMapper {
         subscriptionId: json['subscription_id']?.toString(),
       );
 
-  static CurrentSubscription currentFromJson(Map<String, dynamic> json) =>
-      CurrentSubscription(
-        id: _readInt(json['id']) ?? 0,
-        planId: _readInt(json['plan_id']) ?? 0,
-        planName: json['plan_name']?.toString() ?? '',
-        status: json['status']?.toString() ?? '',
-        startDate: DateTime.tryParse(json['start_date']?.toString() ?? '') ??
-            DateTime.now(),
-        endDate: DateTime.tryParse(json['end_date']?.toString() ?? '') ??
-            DateTime.now(),
-        isExpired: json['is_expired'] as bool? ?? false,
-      );
+  static CurrentSubscription currentFromJson(Map<String, dynamic> json) {
+    final plan = json['plan'];
+    final planMap = plan is Map<String, dynamic> ? plan : null;
+    return CurrentSubscription(
+      id: _readInt(json['id']) ?? 0,
+      planId: _readInt(json['plan_id'] ?? planMap?['id']) ?? 0,
+      planName: json['plan_name']?.toString() ??
+          planMap?['name']?.toString() ??
+          '',
+      status: json['status']?.toString() ?? '',
+      startDate: DateTime.tryParse(json['start_date']?.toString() ?? '') ??
+          DateTime.now(),
+      endDate: DateTime.tryParse(json['end_date']?.toString() ?? '') ??
+          DateTime.now(),
+      isExpired: json['is_expired'] as bool? ?? false,
+      price: _readDouble(json['price'] ?? planMap?['price']),
+      currency: (json['currency'] ?? planMap?['currency'])?.toString() ?? 'INR',
+      tripLimit: _readInt(json['trip_limit']),
+      tripsUsed: _readInt(json['trips_used']),
+      tripsRemaining: _readInt(json['trips_remaining']),
+    );
+  }
 
   static int? _readInt(dynamic raw) {
     if (raw == null) return null;

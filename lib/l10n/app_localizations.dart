@@ -2332,6 +2332,60 @@ abstract class AppLocalizations {
   /// **'Payment gateway is not configured. Contact support.'**
   String get driverSubscriptionRazorpayConfigError;
 
+  /// No description provided for @driverSubscriptionActiveSection.
+  ///
+  /// In en, this message translates to:
+  /// **'YOUR ACTIVE PLAN'**
+  String get driverSubscriptionActiveSection;
+
+  /// No description provided for @driverSubscriptionActiveBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get driverSubscriptionActiveBadge;
+
+  /// No description provided for @driverSubscriptionChangePlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Change plan'**
+  String get driverSubscriptionChangePlan;
+
+  /// No description provided for @driverSubscriptionChangeSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Change your plan'**
+  String get driverSubscriptionChangeSection;
+
+  /// No description provided for @driverSubscriptionChangeSectionSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch anytime. Your current plan stays selectable only after it expires.'**
+  String get driverSubscriptionChangeSectionSubtitle;
+
+  /// No description provided for @driverSubscriptionCurrentPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Current plan'**
+  String get driverSubscriptionCurrentPlan;
+
+  /// No description provided for @driverSubscriptionSwitchPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to this plan'**
+  String get driverSubscriptionSwitchPlan;
+
+  /// No description provided for @driverSubscriptionValidTill.
+  ///
+  /// In en, this message translates to:
+  /// **'Valid till {date}'**
+  String driverSubscriptionValidTill(String date);
+
+  /// No description provided for @driverSubscriptionTripsUsage.
+  ///
+  /// In en, this message translates to:
+  /// **'{used} of {limit} trips used · {remaining} left'**
+  String driverSubscriptionTripsUsage(int used, int limit, int remaining);
+
   /// No description provided for @driverPaymentHistoryEmptyTitle.
   ///
   /// In en, this message translates to:

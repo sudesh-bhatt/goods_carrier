@@ -1,11 +1,15 @@
 enum NotificationType {
   driverInterestReceived,
+  shipmentRequest,
+  shipmentRequestAccepted,
   shipmentAssigned,
   shipmentPickedUp,
   shipmentDelivered,
   tripRequestAccepted,
+  tripRequestRejected,
   tripCancelled,
   subscriptionPurchase,
+  subscriptionExpiryReminder,
   shipmentDropSuccess,
   paymentSuccess,
 }

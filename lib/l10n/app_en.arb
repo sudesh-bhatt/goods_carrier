@@ -462,6 +462,27 @@
     }
   },
   "driverSubscriptionRazorpayConfigError": "Payment gateway is not configured. Contact support.",
+  "driverSubscriptionActiveSection": "YOUR ACTIVE PLAN",
+  "driverSubscriptionActiveBadge": "Active",
+  "driverSubscriptionChangePlan": "Change plan",
+  "driverSubscriptionChangeSection": "Change your plan",
+  "driverSubscriptionChangeSectionSubtitle": "Switch anytime. Your current plan stays selectable only after it expires.",
+  "driverSubscriptionCurrentPlan": "Current plan",
+  "driverSubscriptionSwitchPlan": "Switch to this plan",
+  "driverSubscriptionValidTill": "Valid till {date}",
+  "@driverSubscriptionValidTill": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "driverSubscriptionTripsUsage": "{used} of {limit} trips used · {remaining} left",
+  "@driverSubscriptionTripsUsage": {
+    "placeholders": {
+      "used": {"type": "int"},
+      "limit": {"type": "int"},
+      "remaining": {"type": "int"}
+    }
+  },
   "driverPaymentHistoryEmptyTitle": "No payments yet",
   "driverPaymentHistoryEmptySubtitle": "Your subscription payments will appear here.",
   "driverPaymentHistoryLoadErrorTitle": "Could not load payment history",

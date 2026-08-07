@@ -1178,6 +1178,38 @@ class AppLocalizationsHi extends AppLocalizations {
       'भुगतान गेटवे कॉन्फ़िगर नहीं है। सहायता से संपर्क करें।';
 
   @override
+  String get driverSubscriptionActiveSection => 'आपका सक्रिय प्लान';
+
+  @override
+  String get driverSubscriptionActiveBadge => 'सक्रिय';
+
+  @override
+  String get driverSubscriptionChangePlan => 'प्लान बदलें';
+
+  @override
+  String get driverSubscriptionChangeSection => 'अपना प्लान बदलें';
+
+  @override
+  String get driverSubscriptionChangeSectionSubtitle =>
+      'कभी भी स्विच करें। वर्तमान प्लान समाप्त होने के बाद ही फिर चुन सकते हैं।';
+
+  @override
+  String get driverSubscriptionCurrentPlan => 'वर्तमान प्लान';
+
+  @override
+  String get driverSubscriptionSwitchPlan => 'इस प्लान पर स्विच करें';
+
+  @override
+  String driverSubscriptionValidTill(String date) {
+    return '$date तक मान्य';
+  }
+
+  @override
+  String driverSubscriptionTripsUsage(int used, int limit, int remaining) {
+    return '$limit में से $used ट्रिप उपयोग · $remaining शेष';
+  }
+
+  @override
   String get driverPaymentHistoryEmptyTitle => 'अभी कोई भुगतान नहीं';
 
   @override

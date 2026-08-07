@@ -76,8 +76,12 @@ class _NotificationsTabState extends ConsumerState<NotificationsTab>
       case NotificationsScope.driver:
         final route = switch (item.type) {
           NotificationType.tripRequestAccepted ||
-          NotificationType.tripCancelled ||
-          NotificationType.subscriptionPurchase =>
+          NotificationType.tripRequestRejected ||
+          NotificationType.tripCancelled =>
+            AppRoutes.driverTripDetailOf(refId),
+          NotificationType.subscriptionPurchase ||
+          NotificationType.subscriptionExpiryReminder ||
+          NotificationType.paymentSuccess =>
             AppRoutes.driverSubscriptionPlans,
           _ => AppRoutes.driverShipmentDetailOf(refId),
         };

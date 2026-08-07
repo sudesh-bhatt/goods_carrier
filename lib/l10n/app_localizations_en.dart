@@ -1181,6 +1181,38 @@ class AppLocalizationsEn extends AppLocalizations {
       'Payment gateway is not configured. Contact support.';
 
   @override
+  String get driverSubscriptionActiveSection => 'YOUR ACTIVE PLAN';
+
+  @override
+  String get driverSubscriptionActiveBadge => 'Active';
+
+  @override
+  String get driverSubscriptionChangePlan => 'Change plan';
+
+  @override
+  String get driverSubscriptionChangeSection => 'Change your plan';
+
+  @override
+  String get driverSubscriptionChangeSectionSubtitle =>
+      'Switch anytime. Your current plan stays selectable only after it expires.';
+
+  @override
+  String get driverSubscriptionCurrentPlan => 'Current plan';
+
+  @override
+  String get driverSubscriptionSwitchPlan => 'Switch to this plan';
+
+  @override
+  String driverSubscriptionValidTill(String date) {
+    return 'Valid till $date';
+  }
+
+  @override
+  String driverSubscriptionTripsUsage(int used, int limit, int remaining) {
+    return '$used of $limit trips used · $remaining left';
+  }
+
+  @override
   String get driverPaymentHistoryEmptyTitle => 'No payments yet';
 
   @override

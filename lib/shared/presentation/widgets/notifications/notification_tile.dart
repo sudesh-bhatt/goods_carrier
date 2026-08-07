@@ -164,6 +164,11 @@ class _TypeIcon extends StatelessWidget {
         Icons.person_add_alt_1_outlined,
         colors.primary.withOpacity(0.1),
       ),
+      NotificationType.shipmentRequest => (
+        Icons.add_box_outlined,
+        colors.primary.withOpacity(0.1),
+      ),
+      NotificationType.shipmentRequestAccepted ||
       NotificationType.shipmentAssigned => (
         Icons.assignment_turned_in_outlined,
         colors.success.withOpacity(0.1),
@@ -180,13 +185,15 @@ class _TypeIcon extends StatelessWidget {
         Icons.thumb_up_alt_outlined,
         colors.primary.withOpacity(0.1),
       ),
+      NotificationType.tripRequestRejected ||
       NotificationType.tripCancelled => (
         Icons.cancel_outlined,
         colors.error.withOpacity(0.1),
       ),
-      NotificationType.subscriptionPurchase => (
-        Icons.workspace_premium_outlined,
-        colors.primary.withOpacity(0.1),
+      NotificationType.subscriptionPurchase ||
+      NotificationType.subscriptionExpiryReminder => (
+        Icons.payments_outlined,
+        colors.success.withOpacity(0.1),
       ),
       NotificationType.shipmentDropSuccess => (
         Icons.location_on_outlined,
