@@ -1187,17 +1187,31 @@ class AppLocalizationsHi extends AppLocalizations {
   String get driverSubscriptionChangePlan => 'प्लान बदलें';
 
   @override
-  String get driverSubscriptionChangeSection => 'अपना प्लान बदलें';
+  String get driverSubscriptionBrowsePlans => 'प्लान देखें';
+
+  @override
+  String get driverSubscriptionChangeSection => 'उपलब्ध प्लान';
 
   @override
   String get driverSubscriptionChangeSectionSubtitle =>
-      'कभी भी स्विच करें। वर्तमान प्लान समाप्त होने के बाद ही फिर चुन सकते हैं।';
+      'कभी भी दूसरा प्लान खरीदें। वही प्लान फिर तभी खुलेगा जब उसकी ट्रिप खत्म हो जाएँ।';
 
   @override
   String get driverSubscriptionCurrentPlan => 'वर्तमान प्लान';
 
   @override
   String get driverSubscriptionSwitchPlan => 'इस प्लान पर स्विच करें';
+
+  @override
+  String get driverSubscriptionActiveNowBadge => 'अभी सक्रिय';
+
+  @override
+  String get driverSubscriptionTripsInUse => 'ट्रिप उपयोग में';
+
+  @override
+  String driverSubscriptionTripLimit(int count) {
+    return '$count ट्रिप शामिल';
+  }
 
   @override
   String driverSubscriptionValidTill(String date) {

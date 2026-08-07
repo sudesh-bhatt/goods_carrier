@@ -2350,16 +2350,22 @@ abstract class AppLocalizations {
   /// **'Change plan'**
   String get driverSubscriptionChangePlan;
 
+  /// No description provided for @driverSubscriptionBrowsePlans.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse plans'**
+  String get driverSubscriptionBrowsePlans;
+
   /// No description provided for @driverSubscriptionChangeSection.
   ///
   /// In en, this message translates to:
-  /// **'Change your plan'**
+  /// **'Available plans'**
   String get driverSubscriptionChangeSection;
 
   /// No description provided for @driverSubscriptionChangeSectionSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Switch anytime. Your current plan stays selectable only after it expires.'**
+  /// **'Buy another plan anytime. The same plan unlocks again only after its trips are used.'**
   String get driverSubscriptionChangeSectionSubtitle;
 
   /// No description provided for @driverSubscriptionCurrentPlan.
@@ -2373,6 +2379,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Switch to this plan'**
   String get driverSubscriptionSwitchPlan;
+
+  /// No description provided for @driverSubscriptionActiveNowBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Active now'**
+  String get driverSubscriptionActiveNowBadge;
+
+  /// No description provided for @driverSubscriptionTripsInUse.
+  ///
+  /// In en, this message translates to:
+  /// **'Trips in use'**
+  String get driverSubscriptionTripsInUse;
+
+  /// No description provided for @driverSubscriptionTripLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} trips included'**
+  String driverSubscriptionTripLimit(int count);
 
   /// No description provided for @driverSubscriptionValidTill.
   ///

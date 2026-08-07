@@ -10,6 +10,9 @@ class SubscriptionPlan {
     this.isActive = true,
     this.isRecommended = false,
     this.features = const [],
+    this.tripLimit,
+    this.billingCycle,
+    this.canPurchase = true,
   });
 
   final int id;
@@ -23,7 +26,18 @@ class SubscriptionPlan {
   final bool isRecommended;
   final List<String> features;
 
+  /// Max trips included in this plan (from API).
+  final int? tripLimit;
+
+  /// e.g. `monthly` from API.
+  final String? billingCycle;
+
+  /// Server-owned purchase gate: false while this plan still has unused trips
+  /// for the driver (FCFO stack). True again after that plan's trips are used.
+  final bool canPurchase;
+
   String get displayTagline => tagline ?? description ?? '';
 
-  String get priceLabel => '₹${price.toStringAsFixed(price.truncateToDouble() == price ? 0 : 2)}';
+  String get priceLabel =>
+      '₹${price.toStringAsFixed(price.truncateToDouble() == price ? 0 : 2)}';
 }

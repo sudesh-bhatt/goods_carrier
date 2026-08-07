@@ -220,6 +220,9 @@ class DriverSubscriptionNotifier
                     isActive: entry.value.isActive,
                     isRecommended: true,
                     features: entry.value.features,
+                    tripLimit: entry.value.tripLimit,
+                    billingCycle: entry.value.billingCycle,
+                    canPurchase: entry.value.canPurchase,
                   )
                 : entry.value,
           )

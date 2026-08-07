@@ -212,7 +212,7 @@ class _DriverSubscriptionPlansScreenState
                                               activeLabel: l10n
                                                   .driverSubscriptionActiveBadge,
                                               changePlanLabel: l10n
-                                                  .driverSubscriptionChangePlan,
+                                                  .driverSubscriptionBrowsePlans,
                                               perMonthLabel: l10n
                                                   .driverSubscriptionPerMonth,
                                               validTillLabel: l10n
@@ -333,7 +333,7 @@ class _DriverSubscriptionPlansScreenState
                                     SizedBox(height: 32.h),
                                 itemBuilder: (context, index) {
                                   final plan = state.plans[index];
-                                  final isCurrent =
+                                  final isFcfoActive =
                                       activePlanId != null &&
                                           plan.id == activePlanId;
                                   final appear = _stagger(
@@ -349,12 +349,17 @@ class _DriverSubscriptionPlansScreenState
                                       ).animate(appear),
                                       child: SubscriptionPlanCard(
                                         plan: plan,
-                                        isCurrentPlan: isCurrent,
-                                        forcePrimaryCta: hasActive && !isCurrent,
-                                        currentPlanLabel: l10n
-                                            .driverSubscriptionCurrentPlan,
-                                        switchPlanLabel: hasActive && !isCurrent
-                                            ? l10n.driverSubscriptionSwitchPlan
+                                        isFcfoActive: isFcfoActive,
+                                        forcePrimaryCta:
+                                            hasActive && plan.canPurchase,
+                                        activeNowLabel: l10n
+                                            .driverSubscriptionActiveNowBadge,
+                                        unavailablePurchaseLabel: l10n
+                                            .driverSubscriptionTripsInUse,
+                                        tripLimitLabel: plan.tripLimit != null
+                                            ? l10n.driverSubscriptionTripLimit(
+                                                plan.tripLimit!,
+                                              )
                                             : null,
                                         choosePlanLabel:
                                             l10n.driverSubscriptionChoosePlan,
@@ -365,7 +370,9 @@ class _DriverSubscriptionPlansScreenState
                                         perMonthLabel:
                                             l10n.driverSubscriptionPerMonth,
                                         onChoose: () {
-                                          if (isPaying || isCurrent) return;
+                                          if (isPaying || !plan.canPurchase) {
+                                            return;
+                                          }
                                           _subscribe(plan);
                                         },
                                       ),

@@ -27,11 +27,25 @@ abstract final class DriverSubscriptionApiMapper {
       description: _nullableString(json['description']),
       price: _readDouble(json['price']) ?? 0,
       currency: json['currency']?.toString() ?? 'INR',
-      durationDays: _readInt(json['duration_days']) ?? 30,
+      durationDays: _readInt(json['duration_days']) ??
+          _billingCycleToDays(json['billing_cycle']),
       isActive: json['is_active'] as bool? ?? true,
       isRecommended: json['is_recommended'] as bool? ?? false,
       features: features,
+      tripLimit: _readInt(json['trip_limit']),
+      billingCycle: _nullableString(json['billing_cycle']),
+      // Default true so older backends without the field stay purchasable.
+      canPurchase: json['can_purchase'] as bool? ?? true,
     );
+  }
+
+  static int _billingCycleToDays(dynamic raw) {
+    final cycle = raw?.toString().trim().toLowerCase();
+    return switch (cycle) {
+      'yearly' || 'annual' || 'year' => 365,
+      'weekly' || 'week' => 7,
+      _ => 30,
+    };
   }
 
   static InitiateSubscriptionPaymentResult initiateFromJson(

@@ -465,10 +465,19 @@
   "driverSubscriptionActiveSection": "YOUR ACTIVE PLAN",
   "driverSubscriptionActiveBadge": "Active",
   "driverSubscriptionChangePlan": "Change plan",
-  "driverSubscriptionChangeSection": "Change your plan",
-  "driverSubscriptionChangeSectionSubtitle": "Switch anytime. Your current plan stays selectable only after it expires.",
+  "driverSubscriptionBrowsePlans": "Browse plans",
+  "driverSubscriptionChangeSection": "Available plans",
+  "driverSubscriptionChangeSectionSubtitle": "Buy another plan anytime. The same plan unlocks again only after its trips are used.",
   "driverSubscriptionCurrentPlan": "Current plan",
   "driverSubscriptionSwitchPlan": "Switch to this plan",
+  "driverSubscriptionActiveNowBadge": "Active now",
+  "driverSubscriptionTripsInUse": "Trips in use",
+  "driverSubscriptionTripLimit": "{count} trips included",
+  "@driverSubscriptionTripLimit": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
   "driverSubscriptionValidTill": "Valid till {date}",
   "@driverSubscriptionValidTill": {
     "placeholders": {

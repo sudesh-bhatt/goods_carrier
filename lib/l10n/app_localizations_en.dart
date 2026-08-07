@@ -1190,17 +1190,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get driverSubscriptionChangePlan => 'Change plan';
 
   @override
-  String get driverSubscriptionChangeSection => 'Change your plan';
+  String get driverSubscriptionBrowsePlans => 'Browse plans';
+
+  @override
+  String get driverSubscriptionChangeSection => 'Available plans';
 
   @override
   String get driverSubscriptionChangeSectionSubtitle =>
-      'Switch anytime. Your current plan stays selectable only after it expires.';
+      'Buy another plan anytime. The same plan unlocks again only after its trips are used.';
 
   @override
   String get driverSubscriptionCurrentPlan => 'Current plan';
 
   @override
   String get driverSubscriptionSwitchPlan => 'Switch to this plan';
+
+  @override
+  String get driverSubscriptionActiveNowBadge => 'Active now';
+
+  @override
+  String get driverSubscriptionTripsInUse => 'Trips in use';
+
+  @override
+  String driverSubscriptionTripLimit(int count) {
+    return '$count trips included';
+  }
 
   @override
   String driverSubscriptionValidTill(String date) {

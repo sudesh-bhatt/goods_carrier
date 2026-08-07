@@ -15,9 +15,10 @@ class SubscriptionPlanCard extends StatelessWidget {
     required this.perMonthLabel,
     required this.onChoose,
     this.features = const [],
-    this.isCurrentPlan = false,
-    this.currentPlanLabel = 'Current plan',
-    this.switchPlanLabel,
+    this.isFcfoActive = false,
+    this.activeNowLabel = 'Active now',
+    this.unavailablePurchaseLabel = 'Trips in use',
+    this.tripLimitLabel,
     this.forcePrimaryCta = false,
   });
 
@@ -28,28 +29,33 @@ class SubscriptionPlanCard extends StatelessWidget {
   final String recommendedLabel;
   final String perMonthLabel;
   final VoidCallback onChoose;
-  final bool isCurrentPlan;
-  final String currentPlanLabel;
 
-  /// When set and not current, used instead of Choose / Subscribe Now.
-  final String? switchPlanLabel;
+  /// True when this plan is the FCFO plan currently consuming trips.
+  final bool isFcfoActive;
+  final String activeNowLabel;
 
-  /// Force orange primary CTA (e.g. other plans while user has an active sub).
+  /// CTA when [SubscriptionPlan.canPurchase] is false.
+  final String unavailablePurchaseLabel;
+
+  /// Optional e.g. "5 trips included".
+  final String? tripLimitLabel;
+
+  /// Orange primary CTA for purchasable plans (e.g. while another plan is owned).
   final bool forcePrimaryCta;
 
   @override
   Widget build(BuildContext context) {
-    final isRecommended = plan.isRecommended && !isCurrentPlan;
-    final emphasize = (isRecommended || forcePrimaryCta) && !isCurrentPlan;
+    final canPurchase = plan.canPurchase;
+    final isRecommended = plan.isRecommended && canPurchase;
+    final emphasize = canPurchase && (isRecommended || forcePrimaryCta);
     final displayFeatures = features.isNotEmpty ? features : plan.features;
-    final ctaLabel = isCurrentPlan
-        ? currentPlanLabel
-        : (switchPlanLabel ??
-            (isRecommended ? subscribeNowLabel : choosePlanLabel));
+    final ctaLabel = canPurchase
+        ? (isRecommended ? subscribeNowLabel : choosePlanLabel)
+        : unavailablePurchaseLabel;
 
     return AnimatedOpacity(
       duration: const Duration(milliseconds: 280),
-      opacity: isCurrentPlan ? 0.72 : 1,
+      opacity: canPurchase ? 1 : 0.72,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
@@ -66,7 +72,7 @@ class SubscriptionPlanCard extends StatelessWidget {
                       color: SubscriptionTokens.primaryOrange,
                       width: 2,
                     )
-                  : isCurrentPlan
+                  : !canPurchase
                       ? Border.all(
                           color: SubscriptionTokens.secondaryButtonBg,
                           width: 1.5,
@@ -99,7 +105,7 @@ class SubscriptionPlanCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    if (isCurrentPlan)
+                    if (isFcfoActive || !canPurchase)
                       Container(
                         margin: EdgeInsets.only(left: 8.w),
                         padding: EdgeInsets.symmetric(
@@ -107,16 +113,23 @@ class SubscriptionPlanCard extends StatelessWidget {
                           vertical: 4.h,
                         ),
                         decoration: BoxDecoration(
-                          color: SubscriptionTokens.upiIconBg,
+                          color: isFcfoActive
+                              ? SubscriptionTokens.successGreenStart
+                                  .withValues(alpha: 0.12)
+                              : SubscriptionTokens.upiIconBg,
                           borderRadius: BorderRadius.circular(999.r),
                         ),
                         child: Text(
-                          currentPlanLabel,
+                          isFcfoActive
+                              ? activeNowLabel
+                              : unavailablePurchaseLabel,
                           style: TextStyle(
                             fontFamily: FontRes.MANROPE_BOLD,
                             fontSize: 11.sp,
                             fontWeight: FontWeight.w700,
-                            color: SubscriptionTokens.upiIcon,
+                            color: isFcfoActive
+                                ? SubscriptionTokens.successGreenStart
+                                : SubscriptionTokens.upiIcon,
                           ),
                         ),
                       ),
@@ -132,6 +145,18 @@ class SubscriptionPlanCard extends StatelessWidget {
                       fontWeight: FontWeight.w500,
                       height: 20 / 14,
                       color: SubscriptionTokens.bodyGrey,
+                    ),
+                  ),
+                ],
+                if (tripLimitLabel != null && tripLimitLabel!.isNotEmpty) ...[
+                  SizedBox(height: 8.h),
+                  Text(
+                    tripLimitLabel!,
+                    style: TextStyle(
+                      fontFamily: FontRes.MANROPE_SEMIBOLD,
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w600,
+                      color: SubscriptionTokens.primaryOrange,
                     ),
                   ),
                 ],
@@ -179,7 +204,7 @@ class SubscriptionPlanCard extends StatelessWidget {
                 _PlanCtaButton(
                   label: ctaLabel,
                   isPrimary: emphasize,
-                  enabled: !isCurrentPlan,
+                  enabled: canPurchase,
                   onTap: onChoose,
                 ),
               ],
