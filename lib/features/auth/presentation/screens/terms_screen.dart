@@ -458,7 +458,7 @@ const _privacyFallback = <(String, String)>[
 const _aboutFallback = <(String, String)>[
   (
     '1. Who We Are',
-    'Good Carrier is a logistics marketplace that connects Customers who need to move goods with Drivers who have the right vehicles for the job. Our goal is simple: make goods transport across India more reliable, transparent, and easy to manage from your phone.',
+    'Goods Carrier is a logistics marketplace that connects Customers who need to move goods with Drivers who have the right vehicles for the job. Our goal is simple: make goods transport across India more reliable, transparent, and easy to manage from your phone.',
   ),
   (
     '2. What We Do',
@@ -466,7 +466,7 @@ const _aboutFallback = <(String, String)>[
   ),
   (
     '3. For Customers',
-    'Customers can create shipment requests, filter by vehicle type and capacity, compare options, and stay updated through in-app notifications. Good Carrier helps you find suitable logistics partners without calling around manually.',
+    'Customers can create shipment requests, filter by vehicle type and capacity, compare options, and stay updated through in-app notifications. Goods Carrier helps you find suitable logistics partners without calling around manually.',
   ),
   (
     '4. For Drivers',

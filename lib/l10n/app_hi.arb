@@ -215,7 +215,6 @@
   "shipmentNoDriversYet": "अभी तक किसी ड्राइवर ने रुचि नहीं दिखाई",
   "shipmentId": "शिपमेंट ID",
   "shipmentActiveCount": "{count} सक्रिय शिपमेंट",
-  "customerHomeBrandTitle": "Good Carrier",
   "customerHomeDriverTrips": "ड्राइवर यात्राएं",
   "customerHomeEmptyTitle": "कोई ड्राइवर यात्रा नहीं",
   "customerHomeInterestBadge": "आपकी रुचि दर्ज है",
@@ -618,7 +617,7 @@
   "customerSettingsLanguageSection": "भाषा सेटिंग",
   "customerSettingsChooseLanguage": "भाषा चुनें",
   "customerSettingsLegalSection": "कानूनी और जानकारी",
-  "customerSettingsAboutApp": "गुड कैरियर के बारे में",
-  "customerSettingsVersionFooter": "GOOD CARRIER V4.2.0-STABLE",
+  "customerSettingsAboutApp": "गुड्स कैरियर के बारे में",
+  "customerSettingsVersionFooter": "GOODS CARRIER V4.2.0-STABLE",
   "settingsVersion": "संस्करण {version}"
 }

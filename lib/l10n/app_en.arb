@@ -262,7 +262,6 @@
       "count": { "type": "int" }
     }
   },
-  "customerHomeBrandTitle": "Good Carrier",
   "customerHomeDriverTrips": "Driver Trips",
   "customerHomeEmptyTitle": "No Driver Trips",
   "customerHomeInterestBadge": "YOUR ARE IN INTEREST",
@@ -722,8 +721,8 @@
   "customerSettingsLanguageSection": "Language setting",
   "customerSettingsChooseLanguage": "Choose Language",
   "customerSettingsLegalSection": "Legal & About",
-  "customerSettingsAboutApp": "About Good Carrier",
-  "customerSettingsVersionFooter": "GOOD CARRIER V4.2.0-STABLE",
+  "customerSettingsAboutApp": "About Goods Carrier",
+  "customerSettingsVersionFooter": "GOODS CARRIER V4.2.0-STABLE",
   "settingsVersion": "Version {version}",
   "@settingsVersion": {
     "placeholders": {

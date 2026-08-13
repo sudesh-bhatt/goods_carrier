@@ -3,11 +3,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/branding/app_branding.dart';
 import '../../../core/extensions/size_ext.dart';
 import '../../../core/extensions/theme_ext.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/config/env_config.dart';
 import '../../../features/auth/presentation/providers/auth_provider.dart';
+import '../../../features/customer/presentation/providers/customer_dashboard_provider.dart';
 import '../../../features/customer/presentation/providers/customer_notifications_provider.dart';
 import '../../../features/customer/presentation/providers/customer_shipments_provider.dart';
 import '../../../features/customer/presentation/widgets/customer_light_chrome.dart';
@@ -42,8 +44,12 @@ class AppMainShellScreen extends ConsumerWidget {
       tab.index,
       initialLocation: tab.index == navigationShell.currentIndex,
     );
-    if (role == UserRole.customer && tab == AppMainTab.listings) {
-      ref.read(customerShipmentsProvider.notifier).loadForTab();
+    if (role == UserRole.customer) {
+      if (tab == AppMainTab.home) {
+        ref.read(customerDashboardProvider.notifier).loadForTab();
+      } else if (tab == AppMainTab.listings) {
+        ref.read(customerShipmentsProvider.notifier).loadForTab();
+      }
     }
     if (tab == AppMainTab.notifications) {
       switch (role) {
@@ -64,8 +70,13 @@ class AppMainShellScreen extends ConsumerWidget {
     }
   }
 
-  String _titleForTab(AppMainTab tab, AppLocalizations l10n) => switch (tab) {
-        AppMainTab.home => l10n.customerHomeBrandTitle,
+  String _titleForTab(
+    AppMainTab tab,
+    AppLocalizations l10n,
+    AppBranding branding,
+  ) =>
+      switch (tab) {
+        AppMainTab.home => branding.appName(l10n),
         AppMainTab.listings => switch (role) {
             UserRole.customer => l10n.customerMyShipment,
             UserRole.driver => l10n.driverMyTripsTitle,
@@ -78,6 +89,7 @@ class AppMainShellScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
     final l10n = context.l10n;
+    final branding = AppBranding.of(ref);
     final tab = _currentTab;
     final user = ref.watch(authProvider).user;
 
@@ -106,7 +118,7 @@ class AppMainShellScreen extends ConsumerWidget {
               )
             else
               CustomerMainHeader(
-                title: _titleForTab(tab, l10n),
+                title: _titleForTab(tab, l10n, branding),
                 userInitials: user?.initials ?? '?',
                 profileImageUrl: user?.profileImageUrl,
                 onProfile: tab == AppMainTab.profile

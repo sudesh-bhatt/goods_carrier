@@ -646,9 +646,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get customerHomeBrandTitle => 'Good Carrier';
-
-  @override
   String get customerHomeDriverTrips => 'Driver Trips';
 
   @override
@@ -1879,10 +1876,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customerSettingsLegalSection => 'Legal & About';
 
   @override
-  String get customerSettingsAboutApp => 'About Good Carrier';
+  String get customerSettingsAboutApp => 'About Goods Carrier';
 
   @override
-  String get customerSettingsVersionFooter => 'GOOD CARRIER V4.2.0-STABLE';
+  String get customerSettingsVersionFooter => 'GOODS CARRIER V4.2.0-STABLE';
 
   @override
   String settingsVersion(String version) {

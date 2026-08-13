@@ -70,9 +70,16 @@ class CustomerDashboardNotifier extends StateNotifier<CustomerDashboardState> {
   DashboardPreferencesStore get _prefsStore =>
       _ref.read(dashboardPreferencesStoreProvider);
 
-  Future<void> _load({CustomerDashboardQuery? query}) async {
+  Future<void> _load({
+    CustomerDashboardQuery? query,
+    bool showLoadingIndicator = true,
+  }) async {
     final nextQuery = query ?? state.query;
-    state = state.copyWith(isLoading: true, query: nextQuery, error: null);
+    if (showLoadingIndicator) {
+      state = state.copyWith(isLoading: true, query: nextQuery, error: null);
+    } else {
+      state = state.copyWith(query: nextQuery, error: null);
+    }
 
     try {
       if (!EnvConfig.useRemoteApi) {
@@ -118,7 +125,13 @@ class CustomerDashboardNotifier extends StateNotifier<CustomerDashboardState> {
     }
   }
 
-  Future<void> refresh() => _load();
+  Future<void> refresh({bool showLoadingIndicator = true}) =>
+      _load(showLoadingIndicator: showLoadingIndicator);
+
+  /// Called when the customer home tab becomes visible.
+  Future<void> loadForTab() => _load(
+        showLoadingIndicator: state.trips.isEmpty,
+      );
 
   Future<void> selectVehicleType(int? id) async {
     if (state.selectedVehicleTypeId == id) return;

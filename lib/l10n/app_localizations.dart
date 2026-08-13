@@ -1312,12 +1312,6 @@ abstract class AppLocalizations {
   /// **'{count} active shipment(s)'**
   String shipmentActiveCount(int count);
 
-  /// No description provided for @customerHomeBrandTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Good Carrier'**
-  String get customerHomeBrandTitle;
-
   /// No description provided for @customerHomeDriverTrips.
   ///
   /// In en, this message translates to:
@@ -3643,13 +3637,13 @@ abstract class AppLocalizations {
   /// No description provided for @customerSettingsAboutApp.
   ///
   /// In en, this message translates to:
-  /// **'About Good Carrier'**
+  /// **'About Goods Carrier'**
   String get customerSettingsAboutApp;
 
   /// No description provided for @customerSettingsVersionFooter.
   ///
   /// In en, this message translates to:
-  /// **'GOOD CARRIER V4.2.0-STABLE'**
+  /// **'GOODS CARRIER V4.2.0-STABLE'**
   String get customerSettingsVersionFooter;
 
   /// No description provided for @settingsVersion.

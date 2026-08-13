@@ -11,10 +11,16 @@ import '../../../settings/presentation/providers/push_notifications_provider.dar
 import '../../../../core/config/env_config.dart';
 import '../../../../core/mixins/safe_set_state_mixin.dart';
 import '../../../../core/providers/repository_providers.dart';
+import '../../../../core/providers/vehicle_masters_provider.dart';
 import '../../../../shared/data/api/settings/settings_api_client.dart';
 import '../../../../shared/domain/enums/user_role.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../../shared/presentation/widgets/navigation/app_bar_widget.dart';
+import '../providers/customer_dashboard_provider.dart';
+import '../providers/customer_notifications_provider.dart';
+import '../providers/customer_shipments_provider.dart';
+import '../../../driver/presentation/providers/driver_shipment_requests_provider.dart';
+import '../../../driver/presentation/providers/driver_trips_provider.dart';
 import '../widgets/settings/customer_settings_tokens.dart';
 import '../widgets/settings/customer_settings_widgets.dart';
 import '../../../../shared/presentation/widgets/sheets/app_picker_bottom_sheet.dart';
@@ -56,8 +62,11 @@ class _CustomerSettingsScreenState extends ConsumerState<CustomerSettingsScreen>
           .read(pushNotificationsProvider.notifier)
           .setEnabled(settings.pushNotificationsEnabled);
       final locale = Locale(settings.languageCode);
-      if (supportedAppLocales.contains(locale)) {
+      final previous = ref.read(localeProvider);
+      if (supportedAppLocales.contains(locale) &&
+          locale.languageCode != previous.languageCode) {
         await ref.read(localeProvider.notifier).setLocale(locale);
+        _refreshLocalizedFeeds();
       }
     } catch (_) {
     } finally {
@@ -71,6 +80,28 @@ class _CustomerSettingsScreenState extends ConsumerState<CustomerSettingsScreen>
       'gu' => l10n.settingsLanguageGujarati,
       _ => l10n.settingsLanguageEnglish,
     };
+  }
+
+  /// Re-fetch feeds so backend-translated fields match the new Accept-Language.
+  void _refreshLocalizedFeeds() {
+    final role = ref.read(authProvider).user?.role ?? UserRole.customer;
+    switch (role) {
+      case UserRole.customer:
+        ref
+            .read(customerDashboardProvider.notifier)
+            .refresh(showLoadingIndicator: false);
+        ref.read(customerShipmentsProvider.notifier).refresh();
+        ref
+            .read(customerNotificationsProvider.notifier)
+            .refresh(showLoadingIndicator: false);
+      case UserRole.driver:
+        ref.read(driverShipmentRequestsProvider.notifier).refresh();
+        ref.read(driverTripsProvider.notifier).refresh();
+        ref
+            .read(driverNotificationsProvider.notifier)
+            .refresh(showLoadingIndicator: false);
+        ref.invalidate(vehicleMastersProvider);
+    }
   }
 
   Future<void> _pickLanguage(BuildContext context) async {
@@ -95,14 +126,18 @@ class _CustomerSettingsScreenState extends ConsumerState<CustomerSettingsScreen>
       ],
     );
 
-    if (selected != null && context.mounted) {
-      await ref.read(localeProvider.notifier).setLocale(selected);
-      if (EnvConfig.useRemoteApi) {
-        try {
-          await _settingsApi.updateLanguage(selected.languageCode);
-        } catch (_) {}
-      }
+    if (selected == null || !context.mounted) return;
+
+    final previous = ref.read(localeProvider);
+    if (selected.languageCode == previous.languageCode) return;
+
+    await ref.read(localeProvider.notifier).setLocale(selected);
+    if (EnvConfig.useRemoteApi) {
+      try {
+        await _settingsApi.updateLanguage(selected.languageCode);
+      } catch (_) {}
     }
+    _refreshLocalizedFeeds();
   }
 
   @override
