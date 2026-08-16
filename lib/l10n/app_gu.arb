@@ -567,8 +567,8 @@
     }
   },
   "driverTripFormPriceRequired": "માન્ય અંદાજિત કિંમત દાખલ કરો",
-  "tripFrom": "થી",
-  "tripTo": "સુધી",
+  "tripFrom": "ક્યાંથી",
+  "tripTo": "ક્યાં સુધી",
   "tripDate": "ટ્રિપ તારીખ",
   "tripCapacity": "ભાર ક્ષમતા",
   "tripVehicle": "વાહન",

@@ -567,8 +567,8 @@
     }
   },
   "driverTripFormPriceRequired": "मान्य अनुमानित कीमत दर्ज करें",
-  "tripFrom": "से",
-  "tripTo": "तक",
+  "tripFrom": "कहाँ से",
+  "tripTo": "कहाँ तक",
   "tripDate": "ट्रिप की तारीख",
   "tripCapacity": "भार क्षमता",
   "tripVehicle": "वाहन",

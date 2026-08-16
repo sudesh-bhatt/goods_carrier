@@ -200,6 +200,7 @@ abstract final class TripApiMapper {
       estimatedStartDate: _parseStartDate(source),
       estimatedEndDate: _parseEndDate(source),
       vehicleCategory: _parseVehicleType(source),
+      vehicleTypeName: _parseVehicleTypeName(source),
       vehicleNumber: _parseVehicleNumber(source),
       loadCapacity: cap.raw > 0 ? cap.raw : null,
       capacityUnit: cap.raw > 0 ? cap.unit : null,
@@ -277,6 +278,7 @@ abstract final class TripApiMapper {
       vehicleNumber: parsed.vehicleNumber.isNotEmpty
           ? parsed.vehicleNumber
           : submitted.vehicleNumber,
+      vehicleTypeName: parsed.vehicleTypeName ?? submitted.vehicleTypeName,
       loadCapacityTons: parsed.loadCapacityTons > 0
           ? parsed.loadCapacityTons
           : submitted.loadCapacityTons,
@@ -392,6 +394,33 @@ abstract final class TripApiMapper {
       json['vehicle_type'] as String? ??
           json['vehicle_category'] as String?,
     );
+  }
+
+  /// Raw vehicle type name straight from the API, already localized per
+  /// `Accept-Language` (e.g. "ટ્રક" for gu, "ट्रक" for hi). Kept separate from
+  /// [_parseVehicleType] because that only recognizes English slugs/keywords
+  /// and silently defaults when the API returns a translated name instead.
+  static String? _parseVehicleTypeName(Map<String, dynamic> json) {
+    final nested = json['vehicle_type'];
+    if (nested is Map<String, dynamic>) {
+      final name = nested['name'] as String?;
+      if (name != null && name.trim().isNotEmpty) return name.trim();
+    } else if (nested is String && nested.trim().isNotEmpty) {
+      return nested.trim();
+    }
+
+    final vehicle = json['vehicle'];
+    if (vehicle is Map<String, dynamic>) {
+      final vehicleType = vehicle['vehicle_type'];
+      if (vehicleType is String && vehicleType.trim().isNotEmpty) {
+        return vehicleType.trim();
+      }
+      if (vehicleType is Map<String, dynamic>) {
+        final name = vehicleType['name'] as String?;
+        if (name != null && name.trim().isNotEmpty) return name.trim();
+      }
+    }
+    return null;
   }
 
   /// Supports numeric capacity, separate `capacity_unit`, and combined strings

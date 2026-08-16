@@ -1725,10 +1725,10 @@ class AppLocalizationsGu extends AppLocalizations {
   String get driverTripFormPriceRequired => 'માન્ય અંદાજિત કિંમત દાખલ કરો';
 
   @override
-  String get tripFrom => 'થી';
+  String get tripFrom => 'ક્યાંથી';
 
   @override
-  String get tripTo => 'સુધી';
+  String get tripTo => 'ક્યાં સુધી';
 
   @override
   String get tripDate => 'ટ્રિપ તારીખ';

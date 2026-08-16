@@ -16,6 +16,7 @@ class DriverTrip {
     required this.estimatedPrice,
     required this.status,
     this.apiId,
+    this.vehicleTypeName,
     this.loadCapacity,
     this.capacityUnit,
     this.driverPhone,
@@ -33,6 +34,10 @@ class DriverTrip {
   final DateTime estimatedStartDate;
   final DateTime estimatedEndDate;
   final VehicleType vehicleCategory;
+  /// Vehicle type name as returned by the API, already localized per
+  /// `Accept-Language` (e.g. "ટ્રક" for gu). Prefer this for display over
+  /// [vehicleCategory]'s hardcoded English label — see [vehicleTypeDisplayLabel].
+  final String? vehicleTypeName;
   final String vehicleNumber;   // MH 02 CC 4156
   final double loadCapacityTons;
   /// Raw capacity value as returned by the API (e.g. 200 for `"200 KG"`).
@@ -62,6 +67,7 @@ class DriverTrip {
     DateTime? estimatedStartDate,
     DateTime? estimatedEndDate,
     VehicleType? vehicleCategory,
+    String? vehicleTypeName,
     String? vehicleNumber,
     double? loadCapacityTons,
     double? loadCapacity,
@@ -83,6 +89,7 @@ class DriverTrip {
         estimatedStartDate: estimatedStartDate ?? this.estimatedStartDate,
         estimatedEndDate: estimatedEndDate ?? this.estimatedEndDate,
         vehicleCategory: vehicleCategory ?? this.vehicleCategory,
+        vehicleTypeName: vehicleTypeName ?? this.vehicleTypeName,
         vehicleNumber: vehicleNumber ?? this.vehicleNumber,
         loadCapacityTons: loadCapacityTons ?? this.loadCapacityTons,
         loadCapacity: loadCapacity ?? this.loadCapacity,

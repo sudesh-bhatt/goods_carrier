@@ -262,7 +262,7 @@ class DriverMyTripDetailsGrid extends StatelessWidget {
               Expanded(
                 child: _DetailCell(
                   label: l10n.driverTripFormVehicleCategory.toUpperCase(),
-                  value: trip.vehicleCategory.label,
+                  value: trip.vehicleTypeDisplayLabel,
                 ),
               ),
               SizedBox(width: 16.w),

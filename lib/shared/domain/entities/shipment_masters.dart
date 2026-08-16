@@ -214,8 +214,14 @@ class ShipmentMasters {
   int? vehicleTypeIdFor(VehicleType type) {
     final slug = type.apiValue;
     for (final item in vehicleTypes) {
-      if (item.slug?.toLowerCase() == slug) return item.id;
-      if (item.name.toLowerCase().contains(type.label.toLowerCase())) {
+      final itemSlug = item.slug?.toLowerCase();
+      if (itemSlug == null || itemSlug.isEmpty) continue;
+      // `item.name` is translated per locale, so it can't be matched
+      // reliably — `slug` stays English (e.g. API "pickup" vs enum
+      // "pickup_truck"), hence the two-way contains check.
+      if (itemSlug == slug ||
+          slug.contains(itemSlug) ||
+          itemSlug.contains(slug)) {
         return item.id;
       }
     }

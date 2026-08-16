@@ -1727,10 +1727,10 @@ class AppLocalizationsHi extends AppLocalizations {
   String get driverTripFormPriceRequired => 'मान्य अनुमानित कीमत दर्ज करें';
 
   @override
-  String get tripFrom => 'से';
+  String get tripFrom => 'कहाँ से';
 
   @override
-  String get tripTo => 'तक';
+  String get tripTo => 'कहाँ तक';
 
   @override
   String get tripDate => 'ट्रिप की तारीख';

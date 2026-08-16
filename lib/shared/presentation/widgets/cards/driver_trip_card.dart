@@ -6,6 +6,7 @@ import '../../../../core/extensions/num_ext.dart';
 import '../../../../core/extensions/size_ext.dart';
 import '../../../../core/extensions/theme_ext.dart';
 import '../../../../shared/domain/entities/driver_trip.dart';
+import '../../../../shared/domain/entities/driver_trip_display.dart';
 import '../buttons/app_button.dart';
 import '../route/route_timeline.dart';
 import '../status/status_chip.dart';
@@ -198,7 +199,7 @@ class _TripMetaRow extends StatelessWidget {
         ),
         _MetaItem(
           icon: Icons.local_shipping_outlined,
-          label: trip.vehicleCategory.label,
+          label: trip.vehicleTypeDisplayLabel,
           color: colors.textSecondary,
         ),
         _MetaItem(

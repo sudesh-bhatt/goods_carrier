@@ -165,11 +165,15 @@ class _HeroCard extends ConsumerWidget {
   String? _iconUrl(WidgetRef ref) {
     final masters = ref.watch(vehicleMastersProvider).valueOrNull;
     if (masters == null) return null;
+    // `type.name` is translated per locale — match on `slug` (always
+    // English) instead, never on the display name.
+    final slug = detail.vehicleTypeSlug.toLowerCase();
     for (final type in masters.vehicleTypes) {
       if (type.id == detail.vehicleTypeId && type.iconUrl.isNotEmpty) {
         return type.iconUrl;
       }
-      if (type.name.toLowerCase() == detail.vehicleTypeName.toLowerCase() &&
+      if (slug.isNotEmpty &&
+          type.slug.toLowerCase() == slug &&
           type.iconUrl.isNotEmpty) {
         return type.iconUrl;
       }

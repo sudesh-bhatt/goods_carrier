@@ -107,7 +107,7 @@ class CustomerHomeTripCard extends StatelessWidget {
                       Expanded(
                         child: _MetaCell(
                           label: l10n.tripVehicle,
-                          value: trip.vehicleCategory.label,
+                          value: trip.vehicleTypeDisplayLabel,
                         ),
                       ),
                       SizedBox(width: 12.w),

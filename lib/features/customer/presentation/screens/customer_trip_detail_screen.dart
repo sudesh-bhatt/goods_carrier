@@ -293,7 +293,7 @@ class _CustomerTripDetailScreenState
             TripDetailScheduleSection(
               startDateTime: trip.estimatedStartDate,
               endDateTime: trip.estimatedEndDate,
-              vehicleLabel: trip.vehicleCategory.label,
+              vehicleLabel: trip.vehicleTypeDisplayLabel,
               vehicleNumber: vehicleNumber,
               capacityLabel: trip.loadCapacityLabel,
               startDateLabel: l10n.customerTripEstimatedStartDate,

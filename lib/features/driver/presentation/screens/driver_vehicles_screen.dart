@@ -37,14 +37,14 @@ class _DriverVehiclesScreenState extends ConsumerState<DriverVehiclesScreen> {
   String? _typeIconFor(DriverVehicle vehicle) {
     final masters = ref.read(vehicleMastersProvider).valueOrNull;
     if (masters == null) return null;
+    // `type.name` is translated per locale — match on `slug` (always
+    // English) instead, never on the display name.
+    final vehicleSlug = (vehicle.vehicleTypeSlug ?? '').toLowerCase();
     for (final type in masters.vehicleTypes) {
       if (vehicle.vehicleTypeId != null && type.id == vehicle.vehicleTypeId) {
         return type.iconUrl.isNotEmpty ? type.iconUrl : null;
       }
-      final name = vehicle.displayTypeName.toLowerCase();
-      if (type.name.toLowerCase() == name ||
-          type.slug.toLowerCase() ==
-              (vehicle.vehicleTypeSlug ?? '').toLowerCase()) {
+      if (vehicleSlug.isNotEmpty && type.slug.toLowerCase() == vehicleSlug) {
         return type.iconUrl.isNotEmpty ? type.iconUrl : null;
       }
     }

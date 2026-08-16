@@ -8,6 +8,17 @@ extension DriverTripDisplay on DriverTrip {
 
   String get toDisplayLabel => toCity;
 
+  /// Vehicle type label for display — prefers the API's already-localized
+  /// [DriverTrip.vehicleTypeName] over [DriverTrip.vehicleCategory]'s
+  /// hardcoded English label. Falls back to the enum label for local/dummy
+  /// data where the API name isn't available.
+  String get vehicleTypeDisplayLabel {
+    final apiName = vehicleTypeName?.trim();
+    return apiName != null && apiName.isNotEmpty
+        ? apiName
+        : vehicleCategory.label;
+  }
+
   String get estimatedStartLabel =>
       _formatSchedule(estimatedStartDate);
 
